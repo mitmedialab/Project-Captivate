@@ -1,0 +1,10 @@
+stm32wbxx_hal_flash_ex.c:288:19:HAL_FLASHEx_OBProgram	24	static
+stm32wbxx_hal_flash_ex.c:389:6:HAL_FLASHEx_OBGetConfig	0	static
+stm32wbxx_hal_flash_ex.c:428:10:HAL_FLASHEx_FlashEmptyCheck	0	static
+stm32wbxx_hal_flash_ex.c:445:6:HAL_FLASHEx_ForceFlashEmpty	0	static
+stm32wbxx_hal_flash_ex.c:461:6:HAL_FLASHEx_SuspendOperation	0	static
+stm32wbxx_hal_flash_ex.c:475:6:HAL_FLASHEx_AllowOperation	0	static
+stm32wbxx_hal_flash_ex.c:491:10:HAL_FLASHEx_IsOperationSuspended	0	static
+stm32wbxx_hal_flash_ex.c:532:6:FLASH_PageErase	0	static
+stm32wbxx_hal_flash_ex.c:152:19:HAL_FLASHEx_Erase	24	static
+stm32wbxx_hal_flash_ex.c:224:19:HAL_FLASHEx_Erase_IT	16	static
