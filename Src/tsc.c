@@ -33,13 +33,13 @@ void MX_TSC_Init(void)
   /** Configure the TSC peripheral 
   */
   htsc.Instance = TSC;
-  htsc.Init.CTPulseHighLength = TSC_CTPH_2CYCLES;
-  htsc.Init.CTPulseLowLength = TSC_CTPL_2CYCLES;
+  htsc.Init.CTPulseHighLength = TSC_CTPH_1CYCLE;
+  htsc.Init.CTPulseLowLength = TSC_CTPL_1CYCLE;
   htsc.Init.SpreadSpectrum = DISABLE;
   htsc.Init.SpreadSpectrumDeviation = 1;
   htsc.Init.SpreadSpectrumPrescaler = TSC_SS_PRESC_DIV1;
   htsc.Init.PulseGeneratorPrescaler = TSC_PG_PRESC_DIV4;
-  htsc.Init.MaxCountValue = TSC_MCV_8191;
+  htsc.Init.MaxCountValue = TSC_MCV_511;
   htsc.Init.IODefaultMode = TSC_IODEF_OUT_PP_LOW;
   htsc.Init.SynchroPinPolarity = TSC_SYNC_POLARITY_FALLING;
   htsc.Init.AcquisitionMode = TSC_ACQ_MODE_NORMAL;
@@ -87,6 +87,9 @@ void HAL_TSC_MspInit(TSC_HandleTypeDef* tscHandle)
     GPIO_InitStruct.Alternate = GPIO_AF9_TSC;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* TSC interrupt Init */
+    HAL_NVIC_SetPriority(TSC_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(TSC_IRQn);
   /* USER CODE BEGIN TSC_MspInit 1 */
 
   /* USER CODE END TSC_MspInit 1 */
@@ -112,6 +115,8 @@ void HAL_TSC_MspDeInit(TSC_HandleTypeDef* tscHandle)
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7);
 
+    /* TSC interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TSC_IRQn);
   /* USER CODE BEGIN TSC_MspDeInit 1 */
 
   /* USER CODE END TSC_MspDeInit 1 */

@@ -27,6 +27,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "lights.h"
+#include "accMag.h"
+#include "touch.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,11 +48,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+osThreadId shiftRegLightsHandle;
+osThreadId rgbLightHandle;
+osThreadId accMagHandle;
+osThreadId touchSensingHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-osThreadId shiftRegLightsHandle;
-osThreadId rgbLightHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -59,6 +63,7 @@ osThreadId rgbLightHandle;
 
 void StartDefaultTask(void const * argument);
 
+extern void MX_TOUCHSENSING_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
@@ -109,13 +114,20 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
 {
+  /* init code for TOUCHSENSING */
+  MX_TOUCHSENSING_Init();
 
   /* USER CODE BEGIN StartDefaultTask */
   osThreadDef(shiftRegLightsTask, ShiftRegLightThread, osPriorityNormal, 0, 128);
   osThreadDef(rgbLightTask, RGB_LightThread, osPriorityNormal, 0, 128);
+  //osThreadDef(accMagTask, accMagThread, osPriorityNormal, 0, 128);
+  osThreadDef(touchSensingTask, touchSensingThread, osPriorityNormal, 0, 128);
+
 
   shiftRegLightsHandle = osThreadCreate(osThread(shiftRegLightsTask), NULL);
-  rgbLightHandle = osThreadCreate(osThread(rgbLightTask), NULL);
+  //rgbLightHandle = osThreadCreate(osThread(rgbLightTask), NULL);
+  //accMagHandle = osThreadCreate(osThread(accMagTask), NULL);
+  touchSensingHandle = osThreadCreate(osThread(touchSensingTask), NULL);
 
 
   /* Infinite loop */

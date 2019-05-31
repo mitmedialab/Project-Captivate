@@ -1,6 +1,8 @@
 #ifndef __lights_H
 #define __lights_H
 
+#include "stdint.h"
+
 //#ifdef __cplusplus
 // extern "C" {
 // }

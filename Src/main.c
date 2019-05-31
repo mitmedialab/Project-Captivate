@@ -25,6 +25,7 @@
 #include "i2c.h"
 #include "rf.h"
 #include "spi.h"
+#include "touchsensing.h"
 #include "tsc.h"
 #include "usb.h"
 #include "gpio.h"
@@ -97,7 +98,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_I2C1_SMBUS_Init();
+  MX_I2C1_Init();
   MX_RF_Init();
   MX_TSC_Init();
   MX_USB_PCD_Init();
@@ -208,7 +209,22 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint8_t temp_var = 0;
+void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc)
+{
+  /* Prevent unused argument(s) compilation warning */
+  HAL_GPIO_TogglePin(LED1_BLUE_GPIO_Port, LED1_BLUE_Pin);
+  if (HAL_TSC_GroupGetStatus(htsc, TSC_GROUP2_IDX) == TSC_GROUP_COMPLETED){
+    temp_var = HAL_TSC_GroupGetValue(htsc, TSC_GROUP2_IDX);
+  }
 
+//  TSC_GROUP2_IO2
+//  TSC_GROUP2_IO3
+//  TSC_GROUP2_IO4
+  /* NOTE : This function should not be modified, when the callback is needed,
+            the HAL_TSC_ConvCpltCallback could be implemented in the user file.
+   */
+}
 /* USER CODE END 4 */
 
 /**
