@@ -213,9 +213,11 @@ uint8_t temp_var = 0;
 void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc)
 {
   /* Prevent unused argument(s) compilation warning */
-  HAL_GPIO_TogglePin(LED1_BLUE_GPIO_Port, LED1_BLUE_Pin);
   if (HAL_TSC_GroupGetStatus(htsc, TSC_GROUP2_IDX) == TSC_GROUP_COMPLETED){
     temp_var = HAL_TSC_GroupGetValue(htsc, TSC_GROUP2_IDX);
+    if(temp_var <= 100){
+      HAL_GPIO_TogglePin(LED1_BLUE_GPIO_Port, LED1_BLUE_Pin);
+    }
   }
 
 //  TSC_GROUP2_IO2
