@@ -88,7 +88,7 @@ void HAL_TSC_MspInit(TSC_HandleTypeDef* tscHandle)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* TSC interrupt Init */
-    HAL_NVIC_SetPriority(TSC_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(TSC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TSC_IRQn);
   /* USER CODE BEGIN TSC_MspInit 1 */
 
