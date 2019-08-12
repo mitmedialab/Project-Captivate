@@ -58,14 +58,30 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define PA0_Pin GPIO_PIN_0
+#define PA0_GPIO_Port GPIOA
+#define BLINK_PWM_Pin GPIO_PIN_1
+#define BLINK_PWM_GPIO_Port GPIOA
+#define BLINK_SIDE_SIG_Pin GPIO_PIN_2
+#define BLINK_SIDE_SIG_GPIO_Port GPIOA
+#define TP_SS_Pin GPIO_PIN_3
+#define TP_SS_GPIO_Port GPIOA
+#define BATT_MEAS_Pin GPIO_PIN_6
+#define BATT_MEAS_GPIO_Port GPIOA
 #define SPI_SDIO_Pin GPIO_PIN_7
 #define SPI_SDIO_GPIO_Port GPIOA
 #define LED_SS_Pin GPIO_PIN_8
 #define LED_SS_GPIO_Port GPIOA
+#define BATT_MEAS_CTRL_Pin GPIO_PIN_2
+#define BATT_MEAS_CTRL_GPIO_Port GPIOB
+#define BLINK_SIG_Pin GPIO_PIN_0
+#define BLINK_SIG_GPIO_Port GPIOB
 #define LED1_BLUE_Pin GPIO_PIN_1
 #define LED1_BLUE_GPIO_Port GPIOB
 #define LED1_RED_Pin GPIO_PIN_4
 #define LED1_RED_GPIO_Port GPIOE
+#define ANALOG_EXP_CONN_Pin GPIO_PIN_10
+#define ANALOG_EXP_CONN_GPIO_Port GPIOA
 #define LED_PWM_Pin GPIO_PIN_15
 #define LED_PWM_GPIO_Port GPIOA
 #define SPI_SCK_Pin GPIO_PIN_3

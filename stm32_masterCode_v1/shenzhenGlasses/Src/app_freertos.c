@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */     
 #include "lights.h"
 #include "touch.h"
+#include "thermopile.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,7 @@
 osThreadId shiftRegLightsHandle;
 osThreadId rgbLightHandle;
 osThreadId touchSensingHandle;
+osThreadId thermopileHandle;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 
@@ -116,13 +118,16 @@ void StartDefaultTask(void const * argument)
 	//MX_TOUCHSENSING_Init();
 
 	/* USER CODE BEGIN StartDefaultTask */
-	osThreadDef(shiftRegLightsTask, ShiftRegLightThread, osPriorityNormal, 0, 128);
+	//osThreadDef(shiftRegLightsTask, ShiftRegLightThread, osPriorityNormal, 0, 128);
 	osThreadDef(rgbLightTask, RGB_LightThread, osPriorityNormal, 0, 128);
+  osThreadDef(thermopileTask, ThermopileThread, osPriorityNormal, 0, 128);
 	//osThreadDef(touchSensingTask, touchSensingThread, osPriorityNormal, 0, 128);
 
 
-	shiftRegLightsHandle = osThreadCreate(osThread(shiftRegLightsTask), NULL);
-	rgbLightHandle = osThreadCreate(osThread(rgbLightTask), NULL);
+	//shiftRegLightsHandle = osThreadCreate(osThread(shiftRegLightsTask), NULL);
+	//rgbLightHandle = osThreadCreate(osThread(rgbLightTask), NULL);
+  thermopileHandle = osThreadCreate(osThread(thermopileTask), NULL);
+
 	//touchSensingHandle = osThreadCreate(osThread(touchSensingTask), NULL);
 
 
