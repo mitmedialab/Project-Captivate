@@ -1,0 +1,134 @@
+Configuration	crowdWearableSystem
+STM32CubeMX 	5.2.0
+Date	06/12/2019
+MCU	STM32WB55CGUx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN11 Single-ended	ADC1_IN11	PA6
+I2C1	I2C	I2C1_SCL	PB8
+I2C1	I2C	I2C1_SDA	PB9
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	OSC_OUT
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_IN	PC14-OSC32_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_OUT	PC15-OSC32_OUT
+RF	Activate RF1	RF_RF1	RF1
+SPI1	Half-Duplex Master	SPI1_MOSI	PA7
+SPI1	Half-Duplex Master	SPI1_SCK	PB3
+SYS	Serial Wire	SYS_JTCK-SWCLK	PA14
+SYS	Serial Wire	SYS_JTMS-SWDIO	PA13
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+TSC:Group 2	G2_IO1	TSC_G2_IO1	PB4
+TSC:Group 2	G2_IO2	TSC_G2_IO2	PB5
+TSC:Group 2	G2_IO3	TSC_G2_IO3	PB6
+TSC:Group 2	G2_IO4	TSC_G2_IO4	PB7
+USB	Device (FS)	USB_DM	PA11
+USB	Device (FS)	USB_DP	PA12
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PC14-OSC32_IN	RCC_OSC32_IN	
+3	PC15-OSC32_OUT	RCC_OSC32_OUT	
+5	PB8	I2C1_SCL	
+6	PB9	I2C1_SDA	
+14	PA5	GPIO_EXTI5	LH_SIG
+15	PA6	ADC1_IN11	BATT_MEAS
+16	PA7	SPI1_MOSI	LED_MOSI
+17	PA8	GPIO_Output	LED_SS
+18	PA9	GPIO_Output	LED_PWM
+19	PB2	GPIO_Output	BATT_MEAS_CTRL
+21	RF1	RF_RF1	
+24	OSC_OUT	RCC_OSC_OUT	
+25	OSC_IN	RCC_OSC_IN	
+28	PB0	GPIO_Output	LED1_RED
+29	PB1	GPIO_Output	LED1_GREEN
+30	PE4	GPIO_Output	LED1_BLUE
+37	PA11	USB_DM	USB_DN
+38	PA12	USB_DP	
+39	PA13	SYS_JTMS-SWDIO	
+41	PA14	SYS_JTCK-SWCLK	
+42	PA15	GPIO_Output	BUZZER
+43	PB3	SPI1_SCK	LED_SCK
+44	PB4	TSC_G2_IO1	
+45	PB5	TSC_G2_IO2	
+46	PB6	TSC_G2_IO3	
+47	PB7	TSC_G2_IO4	
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN11 Single-ended	ADC1_IN11	PA6
+I2C1	I2C	I2C1_SCL	PB8
+I2C1	I2C	I2C1_SDA	PB9
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	OSC_OUT
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_IN	PC14-OSC32_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_OUT	PC15-OSC32_OUT
+RF	Activate RF1	RF_RF1	RF1
+SPI1	Half-Duplex Master	SPI1_MOSI	PA7
+SPI1	Half-Duplex Master	SPI1_SCK	PB3
+SYS	Serial Wire	SYS_JTCK-SWCLK	PA14
+SYS	Serial Wire	SYS_JTMS-SWDIO	PA13
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+TSC:Group 2	G2_IO1	TSC_G2_IO1	PB4
+TSC:Group 2	G2_IO2	TSC_G2_IO2	PB5
+TSC:Group 2	G2_IO3	TSC_G2_IO3	PB6
+TSC:Group 2	G2_IO4	TSC_G2_IO4	PB7
+USB	Device (FS)	USB_DM	PA11
+USB	Device (FS)	USB_DP	PA12
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PC14-OSC32_IN	RCC_OSC32_IN	
+3	PC15-OSC32_OUT	RCC_OSC32_OUT	
+5	PB8	I2C1_SCL	
+6	PB9	I2C1_SDA	
+14	PA5	GPIO_EXTI5	LH_SIG
+15	PA6	ADC1_IN11	BATT_MEAS
+16	PA7	SPI1_MOSI	LED_MOSI
+17	PA8	GPIO_Output	LED_SS
+18	PA9	GPIO_Output	LED_PWM
+19	PB2	GPIO_Output	BATT_MEAS_CTRL
+21	RF1	RF_RF1	
+24	OSC_OUT	RCC_OSC_OUT	
+25	OSC_IN	RCC_OSC_IN	
+28	PB0	GPIO_Output	LED1_RED
+29	PB1	GPIO_Output	LED1_GREEN
+30	PE4	GPIO_Output	LED1_BLUE
+37	PA11	USB_DM	USB_DN
+38	PA12	USB_DP	
+39	PA13	SYS_JTMS-SWDIO	
+41	PA14	SYS_JTCK-SWCLK	
+42	PA15	GPIO_Output	BUZZER
+43	PB3	SPI1_SCK	LED_SCK
+44	PB4	TSC_G2_IO1	
+45	PB5	TSC_G2_IO2	
+46	PB6	TSC_G2_IO3	
+47	PB7	TSC_G2_IO4	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : crowdWearableSystem
+Project Folder : C:\dev\attentionDevBoard\stm32_masterCode
+Toolchain / IDE : TrueSTUDIO
+Firmware Package Name and Version : STM32Cube FW_WB V1.1.1
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : Yes
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : Yes
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
