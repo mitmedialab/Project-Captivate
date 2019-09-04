@@ -58,7 +58,6 @@ osThreadId_t defaultTaskHandle;
 void StartDefaultTask(void *argument);
 
 extern void MX_TOUCHSENSING_Init(void);
-extern void MX_STM32_WPAN_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**

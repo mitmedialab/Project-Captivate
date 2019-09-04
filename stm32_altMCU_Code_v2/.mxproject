@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/dev/attentionDevBoard/stm32_altMCU_Code_v2/Inc
+HeaderPath=C:/dev/stm32/Resenv-Shenzhen-2019-Code/stm32_altMCU_Code_v2/Inc
 HeaderFiles=gpio.h;adc.h;FreeRTOSConfig.h;i2c.h;spi.h;stm32f3xx_it.h;stm32f3xx_hal_conf.h;main.h;
-SourcePath=C:/dev/attentionDevBoard/stm32_altMCU_Code_v2/Src
+SourcePath=C:/dev/stm32/Resenv-Shenzhen-2019-Code/stm32_altMCU_Code_v2/Src
 SourceFiles=gpio.c;adc.c;freertos.c;i2c.c;spi.c;stm32f3xx_it.c;stm32f3xx_hal_msp.c;stm32f3xx_hal_timebase_tim.c;main.c;
 
 [PreviousLibFiles]
