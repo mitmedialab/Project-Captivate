@@ -38,18 +38,24 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "main.h"
+#include "stm32wbxx_hal_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef enum
+{
+  COLOR_RED		= 0,
+  COLOR_BLUE	= 1,
+  COLOR_GREEN	= 2
+  } ColorCode;
 /* USER CODE END PTD */
 
 /* Private defines -----------------------------------------------------------*/
 #define C_SIZE_CMD_STRING       256U
-#define C_PANID                 0x0000U
-#define C_CHANNEL_NB            11U
+#define C_PANID                 0x1234U
+#define C_CHANNEL_NB            26U
 
 /* FreeRtos stacks attributes */
 const osThreadAttr_t ThreadMsgM0ToM4Process_attr = {
@@ -73,8 +79,15 @@ const osThreadAttr_t ThreadCliProcess_attr = {
  };
 
 /* USER CODE BEGIN PD */
+#define C_LIGHT_RESSOURCE				"light"
+
+#define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
+#define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
+#define C_TIME_RESSOURCE						"time"
+#define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
 
 /* USER CODE END PD */
+
 
 /* Private macros ------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
@@ -86,7 +99,9 @@ static void APP_THREAD_CheckWirelessFirmwareInfo(void);
 static void APP_THREAD_DeviceConfig(void);
 static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext);
 static void APP_THREAD_TraceError(const char * pMess, uint32_t ErrCode);
+#if (CFG_FULL_LOW_POWER == 0)
 static void Send_CLI_To_M0(void);
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 static void Send_CLI_Ack_For_OT(void);
 static void HostTxCb( void );
 static void Wait_Getting_Ack_From_M0(void);
@@ -101,15 +116,44 @@ extern void MX_USART1_UART_Init(void);
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 static uint32_t ProcessCmdString(uint8_t* buf , uint32_t len);
 #else
+#if (CFG_FULL_LOW_POWER == 0)
 static void RxCpltCallback(void);
-#endif
+#endif /* (CFG_FULL_LOW_POWER == 0) */
+#endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
 /* FreeRTos wrapper functions */
 static void APP_THREAD_FreeRTOSProcessMsgM0ToM4Task(void *argument);
+#if (CFG_FULL_LOW_POWER == 0)
 static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument);
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN PFP */
+static void APP_THREAD_DummyReqHandler(void * p_context,
+                  otCoapHeader * pHeader,
+                  otMessage * pMessage,
+                  const otMessageInfo * pMessageInfo);
 
+static void APP_THREAD_SendCoapUnicastRequest();
+
+static void APP_THREAD_CoapRequestHandler(otCoapHeader        * pHeader,
+                                  otMessage           * pMessage,
+                                  const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader        * pHeader,
+                                  otMessage           * pMessage,
+                                  const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader        * pHeader,
+                                  otMessage           * pMessage,
+                                  const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader        * pHeader,
+                                  otMessage           * pMessage,
+                                  const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader        * pHeader,
+                                  otMessage           * pMessage,
+                                  const otMessageInfo * pMessageInfo);
 /* USER CODE END PFP */
 
 /* Private variables -----------------------------------------------*/
@@ -118,10 +162,14 @@ static uint8_t TmpString[C_SIZE_CMD_STRING];
 static uint8_t VcpRxBuffer[sizeof(TL_CmdSerial_t)];        /* Received Data over USB are stored in this buffer */
 static uint8_t VcpTxBuffer[sizeof(TL_EvtPacket_t) + 254U]; /* Transmit buffer over USB */
 #else
+#if (CFG_FULL_LOW_POWER == 0)
 static uint8_t aRxBuffer[C_SIZE_CMD_STRING];
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
+#if (CFG_FULL_LOW_POWER == 0)
 static uint8_t CommandString[C_SIZE_CMD_STRING];
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 static __IO uint16_t indexReceiveChar = 0;
 static __IO uint16_t CptReceiveCmdFromUser = 0;
 
@@ -136,10 +184,50 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t ThreadNotifRspEvtBuffer[size
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t ThreadCliCmdBuffer;
 
 static osThreadId_t OsTaskMsgM0ToM4Id;      /* Task managing the M0 to M4 messaging        */
+#if (CFG_FULL_LOW_POWER == 0)
 static osThreadId_t OsTaskCliId;            /* Task used to manage CLI comamnd             */
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN PV */
+//static otCoapResource OT_Light_Ressource = {C_LIGHT_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapRequestHandler, NULL};
 
+static otCoapResource OT_Lights_Complex_Ressource = {C_LIGHTS_SIMPLE_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapLightsSimpleRequestHandler, NULL};
+static otCoapResource OT_Lights_Simple_Ressource = {C_LIGHTS_COMPLEX_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapLightsComplexRequestHandler, NULL};
+static otCoapResource OT_Time_Ressource = {C_TIME_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapTimeRequestHandler, NULL};
+static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapToggleLoggingRequestHandler, NULL};
+
+static otMessageInfo OT_MessageInfo = {0};
+static otCoapHeader  OT_Header = {0};
+static uint8_t OT_Command = 0;
+static uint16_t OT_BufferIdRead = 1U;
+static uint16_t OT_BufferIdSend = 1U;
+
+static otMessage   * pOT_Message = NULL;
+static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
+
+otMasterKey raw = {0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44,
+		0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44};
+//otIp6Address binary_border_ipv6;
+static char border_ipv6[100] = "fd11:22::994e:6ed7:263d:6187";
+//static char border_ipv6[100] = "FF03::1";
+//const char border_ipv6[50] = "fd33:3333:3344:0:0:ff:fe00:e400";
+otError   error = OT_ERROR_NONE;
+static uint8_t OT_ReceivedCommand = 0;
+static char OT_BufferSend[20] = "TEST PAYLOAD";
+volatile otIp6Address * myAddress;
+volatile otMessageInfo * tempMessageInfo;
+volatile uint16_t myRloc16;
+volatile otNetifAddress * unicastAddresses;
+
+volatile bool isEnabledIpv6;
+volatile otNetifMulticastAddress * multicastAddresses;
+volatile otIp6Address *  meshLocalEID;
+volatile otIp6Address * linkLocalIPV6;
+volatile otMessageInfo * receivedMessage;
+
+ColorCode lightMessage;
+
+uint32_t lightSimpleMessage;
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -193,9 +281,9 @@ void APP_THREAD_Init( void )
   /* Configure the Thread device at start */
   APP_THREAD_DeviceConfig();
 
- /* USER CODE BEGIN APP_THREAD_INIT_2 */
+  /* USER CODE BEGIN APP_THREAD_INIT_2 */
 
- /* USER CODE END APP_THREAD_INIT_2 */
+  /* USER CODE END APP_THREAD_INIT_2 */
 }
 
 /**
@@ -217,7 +305,7 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
   case ERR_THREAD_SET_STATE_CB :
     APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_STATE_CB ",ErrCode);
     break;
-   case ERR_THREAD_SET_CHANNEL :
+  case ERR_THREAD_SET_CHANNEL :
     APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_CHANNEL ",ErrCode);
     break;
   case ERR_THREAD_SET_PANID :
@@ -241,7 +329,7 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
   default :
     APP_THREAD_TraceError("ERROR Unknown ", 0);
     break;
-    }
+  }
 }
 
 /*************************************************************
@@ -292,7 +380,12 @@ static void APP_THREAD_DeviceConfig(void)
   }
 
   /* USER CODE BEGIN DEVICECONFIG */
-
+  error = otCoapStart(NULL, OT_DEFAULT_COAP_PORT);
+//  error = otCoapAddResource(NULL, &OT_Light_Ressource);
+  error = otCoapAddResource(NULL, &OT_Lights_Complex_Ressource);
+  error = otCoapAddResource(NULL, &OT_Lights_Simple_Ressource);
+  error = otCoapAddResource(NULL, &OT_Time_Ressource);
+  error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
   /* USER CODE END DEVICECONFIG */
 }
 
@@ -428,6 +521,7 @@ static void APP_THREAD_FreeRTOSProcessMsgM0ToM4Task(void *argument)
   }
 }
 
+#if (CFG_FULL_LOW_POWER == 0)
 static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument)
 {
   UNUSED(argument);
@@ -443,13 +537,462 @@ static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument)
     /* USER END END APP_THREAD_FREERTOS_SEND_CLI_TO_M0_2 */
   }
 }
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN FREERTOS_WRAPPER_FUNCTIONS */
 
 /* USER CODE END FREERTOS_WRAPPER_FUNCTIONS */
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
+static void APP_THREAD_DummyRespHandler(void                * p_context,
+									  otCoapHeader        * pHeader,
+									  otMessage           * pMessage,
+									  const otMessageInfo * pMessageInfo,
+									  otError             Result)
+{
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(p_context);
+	UNUSED(pHeader);
+	UNUSED(pMessage);
+	UNUSED(pMessageInfo);
+	UNUSED(Result);
+}
 
+/**
+  * @brief Dummy request handler
+  * @param
+  * @retval None
+  */
+static void APP_THREAD_CoapDummyReqHandler(void            * p_context,
+                                   otCoapHeader        * pHeader,
+                                   otMessage           * pMessage,
+                                   const otMessageInfo * pMessageInfo)
+{
+    tempMessageInfo = pMessageInfo;
+    receivedMessage = (otMessageInfo *) pMessage;
+}
+
+static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader * pHeader,
+                                  otMessage            * pMessage,
+                                  const otMessageInfo  * pMessageInfo)
+{
+  do
+  {
+    //APP_THREAD_SendCoapUnicastRequest();
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightSimpleMessage, sizeof(lightSimpleMessage)) == 1U)
+	{
+    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+
+
+    	//if 0
+    	if(lightMessage == COLOR_RED)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+    	}
+
+    	// if 1
+    	else if (lightMessage == COLOR_BLUE)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+
+    	//if 2
+    	else if (lightMessage == COLOR_GREEN)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+	}
+
+    tempMessageInfo = pMessageInfo;
+    receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
+    {
+      break;
+    }
+
+    if (otCoapHeaderGetCode(pHeader) != OT_COAP_CODE_PUT)
+    {
+      break;
+    }
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
+    {
+      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+    }
+
+    if (OT_ReceivedCommand == 1U)
+    {
+      //BSP_LED_Toggle(LED1);
+    }
+
+  } while (false);
+}
+
+static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader * pHeader,
+                                  otMessage            * pMessage,
+                                  const otMessageInfo  * pMessageInfo)
+{
+  do
+  {
+    //APP_THREAD_SendCoapUnicastRequest();
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+	{
+    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+
+
+    	//if 0
+    	if(lightMessage == COLOR_RED)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+    	}
+
+    	// if 1
+    	else if (lightMessage == COLOR_BLUE)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+
+    	//if 2
+    	else if (lightMessage == COLOR_GREEN)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+	}
+
+    tempMessageInfo = pMessageInfo;
+    receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
+    {
+      break;
+    }
+
+    if (otCoapHeaderGetCode(pHeader) != OT_COAP_CODE_PUT)
+    {
+      break;
+    }
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
+    {
+      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+    }
+
+    if (OT_ReceivedCommand == 1U)
+    {
+      //BSP_LED_Toggle(LED1);
+    }
+
+  } while (false);
+}
+
+static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader * pHeader,
+                                  otMessage            * pMessage,
+                                  const otMessageInfo  * pMessageInfo)
+{
+  do
+  {
+    //APP_THREAD_SendCoapUnicastRequest();
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+	{
+    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+
+
+    	//if 0
+    	if(lightMessage == COLOR_RED)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+    	}
+
+    	// if 1
+    	else if (lightMessage == COLOR_BLUE)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+
+    	//if 2
+    	else if (lightMessage == COLOR_GREEN)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+	}
+
+    tempMessageInfo = pMessageInfo;
+    receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
+    {
+      break;
+    }
+
+    if (otCoapHeaderGetCode(pHeader) != OT_COAP_CODE_PUT)
+    {
+      break;
+    }
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
+    {
+      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+    }
+
+    if (OT_ReceivedCommand == 1U)
+    {
+      //BSP_LED_Toggle(LED1);
+    }
+
+  } while (false);
+}
+
+static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
+                                  otMessage            * pMessage,
+                                  const otMessageInfo  * pMessageInfo)
+{
+  do
+  {
+    //APP_THREAD_SendCoapUnicastRequest();
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+	{
+    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+
+
+    	//if 0
+    	if(lightMessage == COLOR_RED)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+    	}
+
+    	// if 1
+    	else if (lightMessage == COLOR_BLUE)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+
+    	//if 2
+    	else if (lightMessage == COLOR_GREEN)
+    	{
+//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+		}
+	}
+
+    tempMessageInfo = pMessageInfo;
+    receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
+    {
+      break;
+    }
+
+    if (otCoapHeaderGetCode(pHeader) != OT_COAP_CODE_PUT)
+    {
+      break;
+    }
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
+    {
+      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+    }
+
+    if (OT_ReceivedCommand == 1U)
+    {
+      //BSP_LED_Toggle(LED1);
+    }
+
+  } while (false);
+}
+
+/**
+ * @brief Initialize CoAP write buffer.
+ * @param  None
+ * @retval None
+ */
+//static void APP_THREAD_InitPayloadWrite(void)
+//{
+//  uint8_t i;
+//  for(i = 0; i < COAP_PAYLOAD_LENGTH; i++)
+//  {
+//    PayloadWrite[i] = 0xFF;
+//  }
+//}
+
+/**
+ * @brief Task associated to the push button.
+ * @param  None
+ * @retval None
+ */
+//static void APP_THREAD_SendCoapMsg(void)
+//{
+//  APP_DBG("********* STEP 1: Send a CoAP NON-CONFIRMABLE PUT Request *********");
+//  /* Send a NON-CONFIRMABLE PUT Request */
+//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
+//
+//  /* Insert Delay here using Hw timer server */
+//  /* Start the timer */
+//  HW_TS_Start(TimerID, (uint32_t)WAIT_TIMEOUT);
+//  UTIL_SEQ_WaitEvt(EVENT_TIMER);
+//
+//  APP_DBG("********* STEP 2: Send a CoAP CONFIRMABLE PUT Request *********");
+//  /* Send a CONFIRMABLE PUT Request */
+//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
+//}
+//
+//static void APP_THREAD_TimingElapsed(void)
+//{
+//  APP_DBG("--- APP_THREAD_TimingElapsed ---");
+//  UTIL_SEQ_SetEvt(EVENT_TIMER);
+//}
+//
+///**
+// * @brief  Compare the message received versus the original message.
+// * @param  None
+// * @retval None
+// */
+//static bool APP_THREAD_CheckMsgValidity(void)
+//{
+//  bool valid = true;
+//  uint32_t i;
+//
+//  for(i = 0; i < COAP_PAYLOAD_LENGTH; i++)
+//  {
+//    if(PayloadRead[i] != PayloadWrite[i])
+//    {
+//      valid = false;
+//    }
+//  }
+//
+//  if(valid == true)
+//  {
+//    APP_DBG("PAYLOAD Comparison OK!");
+//  }else
+//  {
+//    APP_THREAD_Error(ERR_THREAD_MSG_COMPARE_FAILED, 0);
+//  }
+//  return valid;
+//}
+
+static void APP_THREAD_SendCoapUnicastRequest()
+{
+  //otError   error = OT_ERROR_NONE;
+
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_APEND_URI,error);
+//  }
+//  if (pOT_Message == NULL)
+//  {
+//    APP_THREAD_Error(ERR_ALLOC_MSG,error);
+//  }
+  //error = otMessageAppend(pOT_Message, &OT_BufferSend, sizeof(OT_BufferSend));
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
+//  }
+
+//  memcpy(&OT_MessageInfo.mPeerAddr, &OT_PeerAddress, sizeof(OT_MessageInfo.mPeerAddr));
+//  error = otCoapSendRequest(NULL,
+//          pOT_Message,
+//          &OT_MessageInfo,
+//          &APP_THREAD_DummyRespHandler,
+//          (void*)&APP_THREAD_DataRespHandler);
+
+  /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
+  // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
+
+	do{
+//			  myRloc16 = otThreadGetRloc16(NULL);
+//			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+//			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+//			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
+//			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
+//			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+
+
+			  // clear info
+			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
+
+			  // set border IP address
+			   error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+
+			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+
+			   // error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
+			  //error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
+
+			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+			  //OT_MessageInfo.mHopLimit = 20;
+
+			  /************** CREATE NEW MESSAGE ********************ifco*/
+
+			  // create header
+			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+			  //otCoapHeaderSetMessageId(&OT_Header,OT_BufferIdSend); //may not need since sendRequest should set to 0
+			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
+
+			  // the name of the resource
+			  //error = otCoapHeaderAppendUriPathOptions(&OT_Header,C_RESSOURCE_BASIC);
+			  error = otCoapHeaderAppendUriPathOptions(&OT_Header,"light");
+
+			  // This function adds Payload Marker indicating beginning of the payload to the CoAP header
+			  otCoapHeaderSetPayloadMarker(&OT_Header);
+
+			  // creates new message with headers but with empty payload
+			  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+			  if (pOT_Message == NULL) while(1);
+			  // Append bytes to a message (this is where the payload gets added)
+
+			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
+			  error = otMessageAppend(pOT_Message, &OT_MessageInfo, sizeof(OT_MessageInfo));
+
+			  if (error != OT_ERROR_NONE) while(1);
+
+			  error = otCoapSendRequest(NULL,
+						pOT_Message,
+						&OT_MessageInfo,
+						NULL,
+						(void*) NULL);
+
+			  // if error: free allocated message buffer if one was allocated
+			  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+			  {
+				otMessageFree(pOT_Message);
+			  }
+
+			  //HAL_Delay(10000);
+			}while(false);
+
+}
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
 /*************************************************************
@@ -548,10 +1091,10 @@ void Pre_OtCmdProcessing(void)
   */
 static void Wait_Getting_Ack_From_M0(void)
 {
-    while (FlagReceiveAckFromM0 == 0)
-   {
-   }
-   FlagReceiveAckFromM0 = 0;
+  while (FlagReceiveAckFromM0 == 0)
+  {
+  }
+  FlagReceiveAckFromM0 = 0;
 }
 
 /**
@@ -563,7 +1106,7 @@ static void Wait_Getting_Ack_From_M0(void)
   */
 static void Receive_Ack_From_M0(void)
 {
-    FlagReceiveAckFromM0 = 1;
+  FlagReceiveAckFromM0 = 1;
 }
 
 /**
@@ -580,6 +1123,7 @@ static void Receive_Notification_From_M0(void)
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 #else
+#if (CFG_FULL_LOW_POWER == 0)
 static void RxCpltCallback(void)
 {
   /* Filling buffer and wait for '\r' char */
@@ -598,6 +1142,7 @@ static void RxCpltCallback(void)
   /* Once a character has been sent, put back the device in reception mode */
   HW_UART_Receive_IT(CFG_CLI_UART, aRxBuffer, 1U, RxCpltCallback);
 }
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
@@ -640,6 +1185,7 @@ static uint32_t  ProcessCmdString( uint8_t* buf , uint32_t len )
 }
 #endif/* (CFG_USB_INTERFACE_ENABLE != 0) */
 
+#if (CFG_FULL_LOW_POWER == 0)
 /**
  * @brief Process sends receive CLI command to M0.
  * @param  None
@@ -659,6 +1205,7 @@ static void Send_CLI_To_M0(void)
 
   TL_CLI_SendCmd();
 }
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /**
  * @brief Send notification for CLI TL Channel.
@@ -679,11 +1226,16 @@ static void Send_CLI_Ack_For_OT(void)
  */
 void APP_THREAD_Init_UART_CLI(void)
 {
+#if (CFG_FULL_LOW_POWER == 0)
   OsTaskCliId = osThreadNew(APP_THREAD_FreeRTOSSendCLIToM0Task, NULL,&ThreadCliProcess_attr);
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 
-  #if (CFG_USB_INTERFACE_ENABLE != 0)
-  #else
+#if (CFG_USB_INTERFACE_ENABLE != 0)
+#else
+#if (CFG_FULL_LOW_POWER == 0)
+  MX_USART1_UART_Init();
   HW_UART_Receive_IT(CFG_CLI_UART, aRxBuffer, 1, RxCpltCallback);
+#endif /* (CFG_FULL_LOW_POWER == 0) */
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 }
 

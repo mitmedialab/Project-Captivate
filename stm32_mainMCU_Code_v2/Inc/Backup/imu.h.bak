@@ -1,12 +1,12 @@
 #ifndef __imu_H
 #define __imu_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
+// fixing some c++ conversion issues
+#define uint8_t byte
+typedef bool boolean;
 
 #include "stdint.h"
-
+#include "i2c.h"
 
 /**
   ******************************************************************************
@@ -14,24 +14,12 @@
   ******************************************************************************
   */
 
-//The default I2C address for the BNO080 on the SparkX breakout is 0x4B. 0x4A is also possible.
-#define BNO080_DEFAULT_ADDRESS 0x4B
-
-//Platform specific configurations
-
-//Define the size of the I2C buffer based on the platform the user has
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
-
-//I2C_BUFFER_LENGTH is defined in Wire.H
-#define I2C_BUFFER_LENGTH BUFFER_LENGTH
-
-#else
+//The default I2C address for the BNO080 on the SparkX breakout is 0x4A. 0x4B is also possible.
+#define BNO080_DEFAULT_ADDRESS 0x4A
 
 //The catch-all default is 32
 #define I2C_BUFFER_LENGTH 32
 
-#endif
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 //Registers
@@ -103,10 +91,10 @@ const byte CHANNEL_GYRO = 5;
 class BNO080
 {
 public:
-	boolean begin(uint8_t deviceAddress = BNO080_DEFAULT_ADDRESS, TwoWire &wirePort = Wire, uint8_t intPin = 255); //By default use the default I2C addres, and use Wire port, and don't declare an INT pin
-	boolean beginSPI(uint8_t user_CSPin, uint8_t user_WAKPin, uint8_t user_INTPin, uint8_t user_RSTPin, uint32_t spiPortSpeed = 3000000, SPIClass &spiPort = SPI);
+	//boolean begin(uint8_t deviceAddress = BNO080_DEFAULT_ADDRESS, I2C_HandleTypeDef &wirePort = &hi2c1, uint8_t intPin = 255); //By default use the default I2C addres, and use Wire port, and don't declare an INT pin
 
-	void enableDebugging(Stream &debugPort = Serial); //Turn on debug printing. If user doesn't specify then Serial will be used.
+	//not using SPI
+	//boolean beginSPI(uint8_t user_CSPin, uint8_t user_WAKPin, uint8_t user_INTPin, uint8_t user_RSTPin, uint32_t spiPortSpeed = 3000000, SPIClass &spiPort = SPI);
 
 	void softReset();	  //Try to reset the IMU via software
 	uint8_t resetReason(); //Query the IMU for the reason it last reset
@@ -215,18 +203,16 @@ public:
 
 private:
 	//Variables
-	TwoWire *_i2cPort;		//The generic connection to user's chosen I2C hardware
+	I2C_HandleTypeDef *_i2cPort;
 	uint8_t _deviceAddress; //Keeps track of I2C address. setI2CAddress changes this.
 
-	Stream *_debugPort;			 //The stream to send debug messages to if enabled. Usually Serial.
-	boolean _printDebug = false; //Flag to print debugging variables
-
-	SPIClass *_spiPort;			 //The generic connection to user's chosen SPI hardware
-	unsigned long _spiPortSpeed; //Optional user defined port speed
-	uint8_t _cs;				 //Pins needed for SPI
-	uint8_t _wake;
-	uint8_t _int;
-	uint8_t _rst;
+	//not using SPI
+//	SPIClass *_spiPort;			 //The generic connection to user's chosen SPI hardware
+//	unsigned long _spiPortSpeed; //Optional user defined port speed
+//	uint8_t _cs;				 //Pins needed for SPI
+//	uint8_t _wake;
+//	uint8_t _int;
+//	uint8_t _rst;
 
 	//These are the raw sensor values (without Q applied) pulled from the user requested Input Report
 	uint16_t rawAccelX, rawAccelY, rawAccelZ, accelAccuracy;
@@ -252,10 +238,6 @@ private:
 	int16_t gyro_Q1 = 9;
 	int16_t magnetometer_Q1 = 4;
 };
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

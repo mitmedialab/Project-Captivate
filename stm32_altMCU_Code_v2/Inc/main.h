@@ -58,10 +58,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define TP_AFE_OUT_Pin GPIO_PIN_0
-#define TP_AFE_OUT_GPIO_Port GPIOA
-#define TP_THERMISTOR_Pin GPIO_PIN_1
-#define TP_THERMISTOR_GPIO_Port GPIOA
 #define ANALOG_EXP_CONN_Pin GPIO_PIN_2
 #define ANALOG_EXP_CONN_GPIO_Port GPIOA
 #define ADC_ALERT_Pin GPIO_PIN_3
@@ -72,6 +68,14 @@ void Error_Handler(void);
 #define IMU_INT_GPIO_Port GPIOA
 #define TP_SS_Pin GPIO_PIN_6
 #define TP_SS_GPIO_Port GPIOA
+#define TP25_Pin GPIO_PIN_8
+#define TP25_GPIO_Port GPIOA
+#define TP24_Pin GPIO_PIN_9
+#define TP24_GPIO_Port GPIOA
+#define TP22_Pin GPIO_PIN_10
+#define TP22_GPIO_Port GPIOA
+#define TP20_Pin GPIO_PIN_12
+#define TP20_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

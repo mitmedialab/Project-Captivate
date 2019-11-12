@@ -23,9 +23,11 @@
 #include "stm32wbxx_it.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "tsl_time.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "lp5523.h"
+//#include "hw.h"
+#include "cmsis_os.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +61,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TSC_HandleTypeDef htsc;
+extern ADC_HandleTypeDef hadc1;
+extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
@@ -163,6 +166,33 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles ADC1 global interrupt.
+  */
+void ADC1_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_IRQn 0 */
+
+  /* USER CODE END ADC1_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_IRQn 1 */
+
+  /* USER CODE END ADC1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles CPU2 SEV interrupt through EXTI line 40 and PWR CPU2 HOLD wake-up interrupt.
+  */
+void C2SEV_PWR_C2H_IRQHandler(void)
+{
+  /* USER CODE BEGIN C2SEV_PWR_C2H_IRQn 0 */
+
+  /* USER CODE END C2SEV_PWR_C2H_IRQn 0 */
+  /* USER CODE BEGIN C2SEV_PWR_C2H_IRQn 1 */
+
+  /* USER CODE END C2SEV_PWR_C2H_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM1 update interrupt and TIM16 global interrupt.
   */
 void TIM1_UP_TIM16_IRQHandler(void)
@@ -177,20 +207,44 @@ void TIM1_UP_TIM16_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles TSC global interrupt.
+  * @brief This function handles I2C1 event interrupt.
   */
-void TSC_IRQHandler(void)
+void I2C1_EV_IRQHandler(void)
 {
-  /* USER CODE BEGIN TSC_IRQn 0 */
+  /* USER CODE BEGIN I2C1_EV_IRQn 0 */
 
-  /* USER CODE END TSC_IRQn 0 */
-  HAL_TSC_IRQHandler(&htsc);
-  /* USER CODE BEGIN TSC_IRQn 1 */
+  /* USER CODE END I2C1_EV_IRQn 0 */
+  HAL_I2C_EV_IRQHandler(&hi2c1);
+  /* USER CODE BEGIN I2C1_EV_IRQn 1 */
+  osThreadFlagsSet(threadFrontLightsTaskHandle,1);
 
-  /* USER CODE END TSC_IRQn 1 */
+  /* USER CODE END I2C1_EV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles PWR switching on the fly, end of BLE activity, end of 802.15.4 activity, end of critical radio phase interrupt.
+  */
+void PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQHandler(void)
+{
+  /* USER CODE BEGIN PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn 0 */
+
+  /* USER CODE END PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn 0 */
+  /* USER CODE BEGIN PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn 1 */
+
+  /* USER CODE END PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
+void IPCC_C1_TX_IRQHandler(void)
+{
+  HW_IPCC_Tx_Handler();
 
+  return;
+}
+void IPCC_C1_RX_IRQHandler(void)
+{
+  HW_IPCC_Rx_Handler();
+  return;
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

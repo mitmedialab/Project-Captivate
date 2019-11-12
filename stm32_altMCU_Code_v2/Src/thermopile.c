@@ -9,9 +9,9 @@
 #include "thermopile.h"
 #include "gpio.h"
 #include "stm32f3xx_hal.h"
-//#include "spi.h"
+#include "spi.h"
 #include "i2c.h"
-
+#include "adc.h"
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
@@ -43,12 +43,29 @@
 /*
  * THREADS
  */
-void ThermopileThread(void){
+volatile uint32_t ADC_Data[600] = {0};
+volatile uint16_t temp_ADC_Data[120] = {0};
+
+void ThermopileTask(void){
 
   Setup_LMP91051();
 
+  //HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start_DMA(&hadc1, ADC_Data, 600);
+
   while(1){
-    osDelay(1000);
+//	HAL_ADC_Start_IT(&hadc1);
+//	  osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
+//	  HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Data, 600);
+	  osDelay(4000);
+	  HAL_ADC_Stop_DMA(&hadc1);
+	  HAL_ADC_Start_DMA(&hadc1, ADC_Data, 600);
+
+//    for(int i = 0; i <= 120; i++){
+//    	HAL_ADC_PollForConversion(&hadc1,100);
+//    	temp_ADC_Data[i] = HAL_ADC_GetValue(&hadc1);
+//    }
 
   }
 }
@@ -61,16 +78,11 @@ void ThermopileThread(void){
 void Setup_LMP91051(void){
   uint8_t packet[2];
   packet[0] = LMP91051_CFG_REG;
-  packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN;
-
-  //todo: add blocking semaphore so no LED conflict
+  packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_250 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
-  HAL_SPI_Transmit(&hspi3, packet, 2, 0);
+  HAL_SPI_Transmit(&hspi3, packet, 2, 1);
   HAL_Delay(2);
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 }
-
-
-
 

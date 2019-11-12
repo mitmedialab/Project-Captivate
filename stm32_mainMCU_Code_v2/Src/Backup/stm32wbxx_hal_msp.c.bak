@@ -73,8 +73,17 @@ void HAL_MspInit(void)
   /* PendSV_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
 
-  /* USER CODE BEGIN MspInit 1 */
+  /* Peripheral interrupt init */
+  /* C2SEV_PWR_C2H_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(C2SEV_PWR_C2H_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(C2SEV_PWR_C2H_IRQn);
+  /* PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQn);
 
+  /* USER CODE BEGIN MspInit 1 */
+  HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn , 15, 0);
+  HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn , 15, 0);
   /* USER CODE END MspInit 1 */
 }
 

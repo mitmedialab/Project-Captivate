@@ -26,7 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
-
+#include "lp5523.h"
+#include "blink.h"
+#include "app_entry.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +48,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+osThreadId_t threadCheckToggleLightsTaskHandle;
+osThreadId_t blinkTaskHandle;
 /* USER CODE END Variables */
 osThreadId_t defaultTaskHandle;
 
@@ -57,9 +60,17 @@ osThreadId_t defaultTaskHandle;
 
 void StartDefaultTask(void *argument);
 
-extern void MX_TOUCHSENSING_Init(void);
 extern void MX_STM32_WPAN_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* USER CODE BEGIN VPORT_SUPPORT_TICKS_AND_SLEEP */
+__weak void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
+{
+  // Generated when configUSE_TICKLESS_IDLE == 2.
+  // Function called in tasks.c (in portTASK_FUNCTION).
+  // TO BE COMPLETED or TO BE REPLACED by a user one, overriding that weak one.
+}
+/* USER CODE END VPORT_SUPPORT_TICKS_AND_SLEEP */
 
 /**
   * @brief  FreeRTOS initialization
@@ -98,7 +109,25 @@ osKernelInitialize();
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+//  const osThreadAttr_t threadFrontLightsTask_attributes = {
+//        .name = "threadFrontLightsTask",
+//        .priority = (osPriority_t) osPriorityNormal,
+//        .stack_size = 1024
+//      };
+//  threadFrontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &threadFrontLightsTask_attributes);
+
+
+//  const osThreadAttr_t blinkTask_attributes = {
+//        .name = "blinkTask",
+//        .priority = (osPriority_t) osPriorityNormal,
+//        .stack_size = 1024
+//      };
+//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
   /* add threads, ... */
+
+	/* Init code for STM32_WPAN */
+  APPE_Init();
   /* USER CODE END RTOS_THREADS */
 
 }
@@ -112,12 +141,10 @@ osKernelInitialize();
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-    
-                 
-  /* init code for TOUCHSENSING */
-  MX_TOUCHSENSING_Init();
-
   /* USER CODE BEGIN StartDefaultTask */
+
+
+
   /* Infinite loop */
   for(;;)
   {

@@ -9,7 +9,8 @@
 #include "thermopile.h"
 #include "gpio.h"
 #include "stm32wbxx_hal.h"
-#include "spi.h"
+//#include "spi.h"
+#include "i2c.h"
 
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
@@ -42,34 +43,34 @@
 /*
  * THREADS
  */
-void ThermopileThread(void){
-
-  Setup_LMP91051();
-
-  while(1){
-    osDelay(1000);
-
-  }
-}
+//void ThermopileThread(void){
+//
+//  Setup_LMP91051();
+//
+//  while(1){
+//    osDelay(1000);
+//
+//  }
+//}
 
 
 /*
  * Helper Functions
  */
 
-void Setup_LMP91051(void){
-  uint8_t packet[2];
-  packet[0] = LMP91051_CFG_REG;
-  packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN;
-
-  //todo: add blocking semaphore so no LED conflict
-
-  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
-  HAL_SPI_Transmit(&hspi1, packet, 2, 0);
-  HAL_Delay(2);
-  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
-}
-
+//void Setup_LMP91051(void){
+//  uint8_t packet[2];
+//  packet[0] = LMP91051_CFG_REG;
+//  packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN;
+//
+//  //todo: add blocking semaphore so no LED conflict
+//
+//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
+//  HAL_SPI_Transmit(&hspi1, packet, 2, 0);
+//  HAL_Delay(2);
+//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
+//}
+//
 
 
 

@@ -21,15 +21,23 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "adc.h"
+#include "comp.h"
 #include "i2c.h"
 #include "rf.h"
-#include "touchsensing.h"
-#include "tsc.h"
-#include "usb.h"
+#include "rtc.h"
+#include "app_entry.h"
+#include "app_common.h"
+#include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+//#include "stm32_lpm.h"
+//#include "dbg_trace.h"
+//#include "hw_conf.h"
+//#include "otp.h"
 
 /* USER CODE END Includes */
 
@@ -58,7 +66,10 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void Reset_Device( void );
+static void Init_Exti( void );
+static void Reset_IPCC( void );
+static void Reset_BackupDomain( void );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -83,22 +94,25 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  Reset_Device();
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  Init_Exti(); /**< Configure the system Power Mode */
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TSC_Init();
   MX_I2C1_Init();
+  MX_RTC_Init();
+  MX_COMP1_Init();
+  MX_ADC1_Init();
+  MX_TIM2_Init();
   MX_RF_Init();
-  MX_USB_PCD_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -133,14 +147,18 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
+  /** Configure LSE Drive Capability 
+  */
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   /** Configure the main internal regulator output voltage 
   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI1
-                              |RCC_OSCILLATORTYPE_HSE;
+                              |RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
@@ -174,14 +192,17 @@ void SystemClock_Config(void)
   /** Initializes the peripherals clocks 
   */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_USB;
+                              |RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC;
   PeriphClkInitStruct.PLLSAI1.PLLN = 6;
   PeriphClkInitStruct.PLLSAI1.PLLP = RCC_PLLP_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLQ = RCC_PLLQ_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLR = RCC_PLLR_DIV2;
-  PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_USBCLK;
+  PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADCCLK;
+  PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
-  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLLSAI1;
+  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSI;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
   PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE0;
@@ -190,9 +211,88 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN Smps */
+
+  /* USER CODE END Smps */
 }
 
 /* USER CODE BEGIN 4 */
+static void Reset_Device( void )
+{
+#if ( CFG_HW_RESET_BY_FW == 1 )
+  Reset_BackupDomain();
+
+  Reset_IPCC();
+#endif
+
+  return;
+}
+
+static void Init_Exti( void )
+{
+  /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
+  LL_EXTI_DisableIT_0_31(~0);
+  LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
+
+
+static void Reset_IPCC( void )
+{
+  LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
+
+  LL_C1_IPCC_ClearFlag_CHx(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  LL_C2_IPCC_ClearFlag_CHx(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  LL_C1_IPCC_DisableTransmitChannel(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  LL_C2_IPCC_DisableTransmitChannel(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  LL_C1_IPCC_DisableReceiveChannel(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  LL_C2_IPCC_DisableReceiveChannel(
+      IPCC,
+      LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+      | LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+  return;
+}
+
+static void Reset_BackupDomain( void )
+{
+  if ((LL_RCC_IsActiveFlag_PINRST() != FALSE) && (LL_RCC_IsActiveFlag_SFTRST() == FALSE))
+  {
+    HAL_PWR_EnableBkUpAccess(); /**< Enable access to the RTC registers */
+
+    /**
+     *  Write twice the value to flush the APB-AHB bridge
+     *  This bit shall be written in the register before writing the next one
+     */
+    HAL_PWR_EnableBkUpAccess();
+
+    __HAL_RCC_BACKUPRESET_FORCE();
+    __HAL_RCC_BACKUPRESET_RELEASE();
+  }
+
+  return;
+}
 
 /* USER CODE END 4 */
 

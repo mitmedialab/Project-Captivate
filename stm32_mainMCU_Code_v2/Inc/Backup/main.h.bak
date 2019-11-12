@@ -58,16 +58,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BLINK_SIG_Pin GPIO_PIN_3
+#define BLINK_SIG_Pin GPIO_PIN_0
 #define BLINK_SIG_GPIO_Port GPIOA
-#define LH_SIG_Pin GPIO_PIN_4
+#define LH_SIG_Pin GPIO_PIN_1
 #define LH_SIG_GPIO_Port GPIOA
+#define BLINK_SIGA3_Pin GPIO_PIN_3
+#define BLINK_SIGA3_GPIO_Port GPIOA
 #define IMU_INT_Pin GPIO_PIN_5
 #define IMU_INT_GPIO_Port GPIOA
 #define EXPANSION_INT_Pin GPIO_PIN_2
 #define EXPANSION_INT_GPIO_Port GPIOB
-#define BLINK_SIGA15_Pin GPIO_PIN_15
-#define BLINK_SIGA15_GPIO_Port GPIOA
 #define BLINK_PWM_Pin GPIO_PIN_3
 #define BLINK_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

@@ -28,7 +28,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lp5523.h"
+#include "hw.h"
+#include "cmsis_os.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,8 +55,11 @@ void MemManage_Handler(void);
 void BusFault_Handler(void);
 void UsageFault_Handler(void);
 void DebugMon_Handler(void);
+void ADC1_IRQHandler(void);
+void C2SEV_PWR_C2H_IRQHandler(void);
 void TIM1_UP_TIM16_IRQHandler(void);
-void TSC_IRQHandler(void);
+void I2C1_EV_IRQHandler(void);
+void PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

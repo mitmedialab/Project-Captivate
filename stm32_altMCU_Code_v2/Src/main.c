@@ -22,8 +22,10 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -93,9 +95,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC1_Init();
   MX_I2C1_Init();
   MX_SPI3_Init();
+  MX_ADC1_Init();
+  MX_DMA_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -104,14 +108,26 @@ int main(void)
   MX_FREERTOS_Init(); 
 
   /* Start scheduler */
-  osKernelStart();
+  //osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  //while(HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED) != HAL_OK);
+  while(HAL_TIM_Base_Start(&htim2) != HAL_OK);
+
+
+  volatile uint16_t ADC_Data[5] = {0};
+  //while(HAL_ADC_Start_DMA(&hadc1, (uint32_t*) ADC_Data, 5) != HAL_OK);
+  HAL_ADC_Start_IT(&hadc1);
   while (1)
   {
+//	  HAL_Delay(1000);
+	  if(HAL_ADC_PollForConversion(&hadc1,100000) == HAL_OK){
+		  ADC_Data[0] = HAL_ADC_GetValue(&hadc1);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -162,6 +178,24 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+///**
+//  * @brief  Conversion complete callback in non blocking mode
+//  * @param  hadc: ADC handle
+//  * @note   This example shows a simple way to report end of conversion
+//  *         and get conversion result. You can add your own implementation.
+//  * @retval None
+//  */
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+//{
+//	int i = 0;
+//}
+
+/* USER CODE BEGIN 4 */
+volatile uint8_t temp = 0;
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+  /* This is called after the conversion is completed */
+	temp += 1;
+}
 /* USER CODE END 4 */
 
 /**
