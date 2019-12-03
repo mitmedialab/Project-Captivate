@@ -31,9 +31,16 @@
 #include "app_conf.h"
 #include "stm32_lpm.h"
 #include "cmsis_os.h"
+#include "lp5523.h"
+#include "stm32wbxx_hal.h"
+#include "rtc.h"
+#include "master_thread.h"
+//#include <time.h>
+
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 #include "vcp.h"
 #include "vcp_conf.h"
+
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
 /* Private includes -----------------------------------------------------------*/
@@ -50,6 +57,27 @@ typedef enum
   COLOR_BLUE	= 1,
   COLOR_GREEN	= 2
   } ColorCode;
+
+struct tm
+{
+	int	tm_sec;
+    int	tm_min;
+    int	tm_hour;
+    int	tm_mday;
+    int	tm_mon;
+    int	tm_year;
+    int	tm_wday;
+    int	tm_yday;
+    int	tm_isdst;
+  #ifdef __TM_GMTOFF
+    long	__TM_GMTOFF;
+  #endif
+  #ifdef __TM_ZONE
+    const char *__TM_ZONE;
+  #endif
+};
+
+
 /* USER CODE END PTD */
 
 /* Private defines -----------------------------------------------------------*/
@@ -79,12 +107,6 @@ const osThreadAttr_t ThreadCliProcess_attr = {
  };
 
 /* USER CODE BEGIN PD */
-#define C_LIGHT_RESSOURCE				"light"
-
-#define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
-#define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
-#define C_TIME_RESSOURCE						"time"
-#define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
 
 /* USER CODE END PD */
 
@@ -127,16 +149,28 @@ static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument);
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN PFP */
+static void APP_THREAD_SendDataResponse(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo);
+
 static void APP_THREAD_DummyReqHandler(void * p_context,
                   otCoapHeader * pHeader,
                   otMessage * pMessage,
                   const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_SendCoapUnicastRequest();
+static void APP_THREAD_SendNextBuffer(void);
+//static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type);
+//static void APP_THREAD_SendCoapUnicastRequest(char* message, char* ipv6_addr  , char* resource);
+static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_length, char* ipv6_addr  , char* resource);
 
-static void APP_THREAD_CoapRequestHandler(otCoapHeader        * pHeader,
-                                  otMessage           * pMessage,
-                                  const otMessageInfo * pMessageInfo);
+static void APP_THREAD_SendCoapUnicastMsg(struct LogPacket *message,
+											uint8_t msgSize,
+											char* ipv6_addr,
+											char* resource,
+											uint8_t msgID);
+
+//static void APP_THREAD_CoapRequestHandler(otCoapHeader        * pHeader,
+//                                  otMessage           * pMessage,
+//                                  const otMessageInfo * pMessageInfo);
 
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader        * pHeader,
                                   otMessage           * pMessage,
@@ -150,9 +184,13 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader        * pHe
                                   otMessage           * pMessage,
                                   const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader        * pHeader,
+static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader        * pHeader,
                                   otMessage           * pMessage,
                                   const otMessageInfo * pMessageInfo);
+
+void APP_THREAD_GetBorderRouterIP(void);
+void updateRTC(time_t now);
+void APP_THREAD_SendMyIP(void);
 /* USER CODE END PFP */
 
 /* Private variables -----------------------------------------------*/
@@ -192,11 +230,14 @@ static osThreadId_t OsTaskCliId;            /* Task used to manage CLI comamnd  
 
 static otCoapResource OT_Lights_Complex_Ressource = {C_LIGHTS_SIMPLE_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapLightsSimpleRequestHandler, NULL};
 static otCoapResource OT_Lights_Simple_Ressource = {C_LIGHTS_COMPLEX_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapLightsComplexRequestHandler, NULL};
-static otCoapResource OT_Time_Ressource = {C_TIME_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapTimeRequestHandler, NULL};
+static otCoapResource OT_Border_Time_Ressource = {C_BORER_TIME_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapBorderTimeRequestHandler, NULL};
 static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapToggleLoggingRequestHandler, NULL};
 
-static otMessageInfo OT_MessageInfo = {0};
-static otCoapHeader  OT_Header = {0};
+otMessageInfo OT_MessageInfo = {0};
+otCoapHeader  OT_Header = {0};
+const char borderSyncResource[15] = "borderSync";
+const char borderPacket[15] = "borderLog";
+
 static uint8_t OT_Command = 0;
 static uint16_t OT_BufferIdRead = 1U;
 static uint16_t OT_BufferIdSend = 1U;
@@ -204,10 +245,15 @@ static uint16_t OT_BufferIdSend = 1U;
 static otMessage   * pOT_Message = NULL;
 static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
 
-otMasterKey raw = {0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44,
+const otMasterKey masterKey = {0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44,
 		0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44};
+const otExtendedPanId extendedPanId = {0x11, 0x11, 0x11, 0x11, 0x22, 0x22, 0x22, 0x22};
+const char networkName[20] = "PatrickNetwork";
+
 //otIp6Address binary_border_ipv6;
-static char border_ipv6[100] = "fd11:22::994e:6ed7:263d:6187";
+//static char border_ipv6[100] = "fd11:22::994e:6ed7:263d:6187";
+//static char border_ipv6[50] = 0x0;
+
 //static char border_ipv6[100] = "FF03::1";
 //const char border_ipv6[50] = "fd33:3333:3344:0:0:ff:fe00:e400";
 otError   error = OT_ERROR_NONE;
@@ -219,14 +265,17 @@ volatile uint16_t myRloc16;
 volatile otNetifAddress * unicastAddresses;
 
 volatile bool isEnabledIpv6;
-volatile otNetifMulticastAddress * multicastAddresses;
-volatile otIp6Address *  meshLocalEID;
-volatile otIp6Address * linkLocalIPV6;
+//volatile otNetifMulticastAddress * multicastAddresses;
+//volatile otIp6Address *  meshLocalEID;
+//volatile otIp6Address * linkLocalIPV6;
 volatile otMessageInfo * receivedMessage;
 
+struct LogMessage logMessage;
 ColorCode lightMessage;
+union ColorComplex lightMessageComplex;
 
-uint32_t lightSimpleMessage;
+struct SystemCal borderRouter = {{0},0};
+
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -344,7 +393,7 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
  */
 static void APP_THREAD_DeviceConfig(void)
 {
-  otError error;
+  volatile otError error;
   error = otInstanceErasePersistentInfo(NULL);
   if (error != OT_ERROR_NONE)
   {
@@ -362,6 +411,24 @@ static void APP_THREAD_DeviceConfig(void)
   {
     APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
   }
+
+  error = otThreadSetMasterKey(NULL, &masterKey);
+  if (error != OT_ERROR_NONE)
+  {
+    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+  }
+
+  error = otThreadSetNetworkName(NULL, networkName);
+  if (error != OT_ERROR_NONE)
+  {
+    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+  }
+  error = otThreadSetExtendedPanId(NULL , &extendedPanId);
+  if (error != OT_ERROR_NONE)
+  {
+    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+  }
+
   error = otLinkSetPanId(NULL, C_PANID);
   if (error != OT_ERROR_NONE)
   {
@@ -379,11 +446,16 @@ static void APP_THREAD_DeviceConfig(void)
   }
 
   /* USER CODE BEGIN DEVICECONFIG */
+
+//  otThreadSetMasterKey(NULL, masterKey)
+//  otThreadSetNetworkName(NULL, networkName)
+//  otThreadSetExtendedPanId(NULL , extendedPanId);
+
   error = otCoapStart(NULL, OT_DEFAULT_COAP_PORT);
 //  error = otCoapAddResource(NULL, &OT_Light_Ressource);
   error = otCoapAddResource(NULL, &OT_Lights_Complex_Ressource);
   error = otCoapAddResource(NULL, &OT_Lights_Simple_Ressource);
-  error = otCoapAddResource(NULL, &OT_Time_Ressource);
+  error = otCoapAddResource(NULL, &OT_Border_Time_Ressource);
   error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
   /* USER CODE END DEVICECONFIG */
 }
@@ -415,27 +487,31 @@ static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext)
       break;
     case OT_DEVICE_ROLE_DETACHED:
       /* USER CODE BEGIN OT_DEVICE_ROLE_DETACHED */
-
+    	borderRouter.epoch = 0;
       /* USER CODE END OT_DEVICE_ROLE_DETACHED */
       break;
     case OT_DEVICE_ROLE_CHILD:
       /* USER CODE BEGIN OT_DEVICE_ROLE_CHILD */
-
+    	//APP_THREAD_GetBorderRouterIP();
+    	APP_THREAD_SendMyIP();
       /* USER CODE END OT_DEVICE_ROLE_CHILD */
       break;
     case OT_DEVICE_ROLE_ROUTER :
       /* USER CODE BEGIN OT_DEVICE_ROLE_ROUTER */
-
+    	//APP_THREAD_GetBorderRouterIP();
+    	APP_THREAD_SendMyIP();
       /* USER CODE END OT_DEVICE_ROLE_ROUTER */
       break;
     case OT_DEVICE_ROLE_LEADER :
       /* USER CODE BEGIN OT_DEVICE_ROLE_LEADER */
-
+    	//APP_THREAD_GetBorderRouterIP();
+    	APP_THREAD_SendMyIP();
       /* USER CODE END OT_DEVICE_ROLE_LEADER */
       break;
     default:
       /* USER CODE BEGIN DEFAULT */
-
+    	//APP_THREAD_GetBorderRouterIP();
+    	APP_THREAD_SendMyIP();
       /* USER CODE END DEFAULT */
       break;
     }
@@ -571,47 +647,90 @@ static void APP_THREAD_DummyReqHandler(void            * p_context,
     receivedMessage = (otMessageInfo *) pMessage;
 }
 
+void APP_THREAD_GetBorderRouterIP(){
+	APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_BORDER_ROUTER, borderSyncResource);
+}
+
+
+char msgSendMyIP[5] = "cal";
+void APP_THREAD_SendMyIP(){
+	APP_THREAD_SendCoapUnicastRequest(msgSendMyIP, sizeof(msgSendMyIP), borderRouter.ipv6, borderSyncResource);
+//	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
+}
+
+void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket){
+//	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
+	APP_THREAD_SendCoapUnicastMsg(sensorPacket, sizeof(struct LogPacket), borderRouter.ipv6  , borderPacket, 1U);
+
+}
+
+///**
+// * @brief Task associated to the push button.
+// * @param  None
+// * @retval None
+// */
+//static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type)
+//{
+//  APP_DBG("********* STEP 1: Send a CoAP NON-CONFIRMABLE PUT Request *********");
+//  /* Send a NON-CONFIRMABLE PUT Request */
+//  if(otCoapType == )
+//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
+//
+////  /* Insert Delay here using Hw timer server */
+////  /* Start the timer */
+////  HW_TS_Start(TimerID, (uint32_t)WAIT_TIMEOUT);
+////  UTIL_SEQ_WaitEvt(EVENT_TIMER);
+//
+//  APP_DBG("********* STEP 2: Send a CoAP CONFIRMABLE PUT Request *********");
+//  /* Send a CONFIRMABLE PUT Request */
+//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
+//}
+//
+//static void APP_THREAD_TimingElapsed(void)
+//{
+//  APP_DBG("--- APP_THREAD_TimingElapsed ---");
+//  UTIL_SEQ_SetEvt(EVENT_TIMER);
+//}
+
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
                                   const otMessageInfo  * pMessageInfo)
 {
   do
   {
-    //APP_THREAD_SendCoapUnicastRequest();
-//	uint8_t lightSimpleMessage[10];
-    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightSimpleMessage, sizeof(lightSimpleMessage)) == 1U)
+	lightsSimpleMessage = 0;
+
+	//REMOVE THIS!!!!!!!!!
+//	APP_THREAD_GetBorderRouterIP(); //REMOVE THIS!!!!!!!!!
+	//REMOVE THIS!!!!!!!!!
+
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightsSimpleMessage, sizeof(lightsSimpleMessage)) == 4U)
 	{
-    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+//    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
 
+    	osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessage, 0U, 0U);
 
-    	//if 0
-    	if(lightMessage == COLOR_RED)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+//    	if(borderRouter.epoch == 0){
+//    		APP_THREAD_GetBorderRouterIP();
+//    	}else{
+//    		APP_THREAD_SendCoapUnicastRequest(NULL, borderRouter.ipv6, borderSyncResource);
+//    	}
+//    	char message[10] = "garb";;
+//    	char ipv6_multicast[15] = "ff03::2";
+    	//borderRouter.ipv6 = "fd11:33::6d2f:75a1:d927:9fc5";
+    	//char ipv6_multicast[50] = "fd11:33::6d2f:75a1:d927:9fc5";
+    	//char ipv6_multicast[50] = "deryfd11:1111:1122:0:22e2:b871:dc02:ad96";
 
-    	}
+//    	APP_THREAD_SendCoapUnicastRequest(message, borderRouter.ipv6, borderSyncResource);
 
-    	// if 1
-    	else if (lightMessage == COLOR_BLUE)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
-
-    	//if 2
-    	else if (lightMessage == COLOR_GREEN)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
 	}
-
-    tempMessageInfo = pMessageInfo;
     receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
+	{
+      APP_THREAD_SendDataResponse(pHeader, pMessageInfo);
+	  break;
+	}
 
     if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
     {
@@ -644,39 +763,30 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader * pHeader,
   {
     //APP_THREAD_SendCoapUnicastRequest();
 
-    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage)) == sizeof(logMessage))
 	{
-    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
-
-
-    	//if 0
-    	if(lightMessage == COLOR_RED)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-
-    	}
-
-    	// if 1
-    	else if (lightMessage == COLOR_BLUE)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
-
-    	//if 2
-    	else if (lightMessage == COLOR_GREEN)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
+    	osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, 0U);
+//    	//if 0
+//    	if(logMessage.status == ENABLE_LOG)
+//    	{
+//    		osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, 0U);
+//    	}
+//
+//    	// if 1
+//    	else if (logMessage.status == DISABLE_LOG)
+//    	{
+//    		osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessage, 0U, 0U);
+//		}
 	}
 
     tempMessageInfo = pMessageInfo;
     receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
+	{
+      APP_THREAD_SendDataResponse(pHeader, pMessageInfo);
+	  break;
+	}
 
     if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
     {
@@ -701,7 +811,9 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader * pHeader,
   } while (false);
 }
 
-static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader * pHeader,
+
+
+static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
                                   const otMessageInfo  * pMessageInfo)
 {
@@ -709,39 +821,52 @@ static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader * pHeader,
   {
     //APP_THREAD_SendCoapUnicastRequest();
 
-    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &borderRouter, sizeof(borderRouter)) == sizeof(borderRouter))
 	{
-    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+    	APP_THREAD_SendMyIP();
 
+//    	updateRTC(borderRouter.epoch);
 
-    	//if 0
-    	if(lightMessage == COLOR_RED)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+//    	border_ipv6 = ;
 
-    	}
+//    	APP_THREAD_SendCoapUnicastRequest();
 
-    	// if 1
-    	else if (lightMessage == COLOR_BLUE)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
-
-    	//if 2
-    	else if (lightMessage == COLOR_GREEN)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
+//    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+//
+//
+//    	//if 0
+//    	if(lightMessage == COLOR_RED)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+//
+//    	}
+//
+//    	// if 1
+//    	else if (lightMessage == COLOR_BLUE)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+//		}
+//
+//    	//if 2
+//    	else if (lightMessage == COLOR_GREEN)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+//		}
 	}
 
-    tempMessageInfo = pMessageInfo;
     receivedMessage = (otMessageInfo *) pMessage;
+
+    if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
+	{
+      APP_THREAD_SendDataResponse(pHeader, pMessageInfo);
+	  break;
+	}
 
     if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
     {
@@ -765,6 +890,74 @@ static void APP_THREAD_CoapTimeRequestHandler(otCoapHeader * pHeader,
 
   } while (false);
 }
+
+void updateRTC(time_t now)
+{
+
+//	RTC_TimeTypeDef sTime;
+//	RTC_DateTypeDef sDate;
+//
+//	struct tm time_tm;
+//	time_tm = *(localtime(&now));
+//
+//	sTime.Hours = (uint8_t)time_tm.tm_hour;
+//	sTime.Minutes = (uint8_t)time_tm.tm_min;
+//	sTime.Seconds = (uint8_t)time_tm.tm_sec;
+//	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+//	{
+//	_Error_Handler(__FILE__, __LINE__);
+//	}
+//
+//	if (time_tm.tm_wday == 0) { time_tm.tm_wday = 7; } // the chip goes mon tue wed thu fri sat sun
+//	sDate.WeekDay = (uint8_t)time_tm.tm_wday;
+//	sDate.Month = (uint8_t)time_tm.tm_mon+1; //momth 1- This is why date math is frustrating.
+//	sDate.Date = (uint8_t)time_tm.tm_mday;
+//	sDate.Year = (uint16_t)(time_tm.tm_year+1900-2000); // time.h is years since 1900, chip is years since 2000
+//
+//	/*
+//	* update the RTC
+//	*/
+//	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+//	{
+//	_Error_Handler(__FILE__, __LINE__);
+//	}
+//
+//	HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR0,0x32F2); // lock it in with the backup registers
+
+}
+
+/**
+ * @brief  This function compute the next message to be send
+ * @param  None
+ * @retval None
+ */
+//static void APP_THREAD_SendNextBuffer(void)
+//{
+//  uint16_t j;
+//  uint16_t mOffset;
+//
+//  if (OT_BufferIdSend < 5U)
+//  {
+//    /* Prepare next buffers to be send */
+//    OT_BufferIdSend++;
+//    mOffset=(OT_BufferIdSend - 1U) * COAP_PAYLOAD_MAX_LENGTH;
+//
+//    memset(OT_BufferSend, 0, COAP_PAYLOAD_MAX_LENGTH);
+//    for(j = mOffset; j < mOffset + COAP_PAYLOAD_MAX_LENGTH; j++)
+//    {
+//      OT_BufferSend[j - mOffset] = aDataBuffer[j];
+//    }
+//
+//    /* Send the data in unicast mode */
+//    APP_THREAD_SendCoapUnicastRequest();
+//  }
+//  else
+//  {
+//    /* Buffer transfer has been successfully  transfered */
+//    BSP_LED_On(LED1);
+//    APP_DBG(" ********* BUFFER HAS BEEN TRANFERED \r\n");
+//  }
+//}
 
 static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
@@ -774,35 +967,36 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
   {
     //APP_THREAD_SendCoapUnicastRequest();
 
-    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessage, sizeof(lightMessage)) == 1U)
+    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessageComplex, sizeof(lightMessageComplex)) == sizeof(lightMessageComplex))
 	{
-    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
+//    	lightMessageComplex = lightMessageComplex & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
 
+    	FrontLightsSet(&lightMessageComplex);
 
     	//if 0
-    	if(lightMessage == COLOR_RED)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-
-    	}
-
-    	// if 1
-    	else if (lightMessage == COLOR_BLUE)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
-
-    	//if 2
-    	else if (lightMessage == COLOR_GREEN)
-    	{
-//    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		}
+//    	if(lightMessage == COLOR_RED)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+//
+//    	}
+//
+//    	// if 1
+//    	else if (lightMessage == COLOR_BLUE)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+//		}
+//
+//    	//if 2
+//    	else if (lightMessage == COLOR_GREEN)
+//    	{
+////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+//		}
 	}
 
     tempMessageInfo = pMessageInfo;
@@ -845,33 +1039,8 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
 //  }
 //}
 
-/**
- * @brief Task associated to the push button.
- * @param  None
- * @retval None
- */
-//static void APP_THREAD_SendCoapMsg(void)
-//{
-//  APP_DBG("********* STEP 1: Send a CoAP NON-CONFIRMABLE PUT Request *********");
-//  /* Send a NON-CONFIRMABLE PUT Request */
-//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
-//
-//  /* Insert Delay here using Hw timer server */
-//  /* Start the timer */
-//  HW_TS_Start(TimerID, (uint32_t)WAIT_TIMEOUT);
-//  UTIL_SEQ_WaitEvt(EVENT_TIMER);
-//
-//  APP_DBG("********* STEP 2: Send a CoAP CONFIRMABLE PUT Request *********");
-//  /* Send a CONFIRMABLE PUT Request */
-//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
-//}
-//
-//static void APP_THREAD_TimingElapsed(void)
-//{
-//  APP_DBG("--- APP_THREAD_TimingElapsed ---");
-//  UTIL_SEQ_SetEvt(EVENT_TIMER);
-//}
-//
+
+
 ///**
 // * @brief  Compare the message received versus the original message.
 // * @param  None
@@ -900,7 +1069,199 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
 //  return valid;
 //}
 
-static void APP_THREAD_SendCoapUnicastRequest()
+//static void APP_THREAD_SendCoapUnicastRequest()
+//{
+//  //otError   error = OT_ERROR_NONE;
+//
+////  if (error != OT_ERROR_NONE)
+////  {
+////    APP_THREAD_Error(ERR_APEND_URI,error);
+////  }
+////  if (pOT_Message == NULL)
+////  {
+////    APP_THREAD_Error(ERR_ALLOC_MSG,error);
+////  }
+//  //error = otMessageAppend(pOT_Message, &OT_BufferSend, sizeof(OT_BufferSend));
+////  if (error != OT_ERROR_NONE)
+////  {
+////    APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
+////  }
+//
+////  memcpy(&OT_MessageInfo.mPeerAddr, &OT_PeerAddress, sizeof(OT_MessageInfo.mPeerAddr));
+////  error = otCoapSendRequest(NULL,
+////          pOT_Message,
+////          &OT_MessageInfo,
+////          &APP_THREAD_DummyRespHandler,
+////          (void*)&APP_THREAD_DataRespHandler);
+//
+//  /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
+//  // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
+//
+//	do{
+////			  myRloc16 = otThreadGetRloc16(NULL);
+////			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+////			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+////			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
+////			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
+////			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+//
+//
+//			  // clear info
+//			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
+//
+//			  // set border IP address
+//			   error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+//
+//			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+//
+//			   // error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
+//			  //error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
+//
+//			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+//			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+//			  //OT_MessageInfo.mHopLimit = 20;
+//
+//			  /************** CREATE NEW MESSAGE ********************ifco*/
+//
+//			  // create header
+//			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+//			  //otCoapHeaderSetMessageId(&OT_Header,OT_BufferIdSend); //may not need since sendRequest should set to 0
+//			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
+//
+//			  // the name of the resource
+//			  //error = otCoapHeaderAppendUriPathOptions(&OT_Header,C_RESSOURCE_BASIC);
+//			  error = otCoapHeaderAppendUriPathOptions(&OT_Header,"light");
+//
+//			  // This function adds Payload Marker indicating beginning of the payload to the CoAP header
+//			  otCoapHeaderSetPayloadMarker(&OT_Header);
+//
+//			  // creates new message with headers but with empty payload
+//			  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+//			  if (pOT_Message == NULL) while(1);
+//			  // Append bytes to a message (this is where the payload gets added)
+//
+//			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
+//			  error = otMessageAppend(pOT_Message, &OT_MessageInfo, sizeof(OT_MessageInfo));
+//
+//			  if (error != OT_ERROR_NONE) while(1);
+//
+//			  error = otCoapSendRequest(NULL,
+//						pOT_Message,
+//						&OT_MessageInfo,
+//						NULL,
+//						(void*) NULL);
+//
+//			  // if error: free allocated message buffer if one was allocated
+//			  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+//			  {
+//				otMessageFree(pOT_Message);
+//			  }
+//
+//			  //HAL_Delay(10000);
+//			}while(false);
+//
+//}
+
+//static void APP_THREAD_SendCoapUnicastRequest()
+//{
+//  //otError   error = OT_ERROR_NONE;
+//
+////  if (error != OT_ERROR_NONE)
+////  {
+////    APP_THREAD_Error(ERR_APEND_URI,error);
+////  }
+////  if (pOT_Message == NULL)
+////  {
+////    APP_THREAD_Error(ERR_ALLOC_MSG,error);
+////  }
+//  //error = otMessageAppend(pOT_Message, &OT_BufferSend, sizeof(OT_BufferSend));
+////  if (error != OT_ERROR_NONE)
+////  {
+////    APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
+////  }
+//
+////  memcpy(&OT_MessageInfo.mPeerAddr, &OT_PeerAddress, sizeof(OT_MessageInfo.mPeerAddr));
+////  error = otCoapSendRequest(NULL,
+////          pOT_Message,
+////          &OT_MessageInfo,
+////          &APP_THREAD_DummyRespHandler,
+////          (void*)&APP_THREAD_DataRespHandler);
+//
+//  /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
+//  // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
+//
+//	do{
+////			  myRloc16 = otThreadGetRloc16(NULL);
+////			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+////			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+////			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
+////			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
+////			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+//
+//
+//			  // clear info
+//			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
+//
+//			  // set border IP address
+//			   //error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+//			   error = otIp6AddressFromString(borderRouter.ipv6, &OT_MessageInfo.mPeerAddr);
+//
+//
+//			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+//
+//			   // error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
+//			  //error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
+//
+//			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+//			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+//			  //OT_MessageInfo.mHopLimit = 20;
+//
+//			  /************** CREATE NEW MESSAGE ********************ifco*/
+//
+//			  // create header
+//			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+//			  //otCoapHeaderSetMessageId(&OT_Header,OT_BufferIdSend); //may not need since sendRequest should set to 0
+//			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
+//
+//			  // the name of the resource
+//			  //error = otCoapHeaderAppendUriPathOptions(&OT_Header,C_RESSOURCE_BASIC);
+//			  error = otCoapHeaderAppendUriPathOptions(&OT_Header,"basic");
+//
+//			  // This function adds Payload Marker indicating beginning of the payload to the CoAP header
+//			  otCoapHeaderSetPayloadMarker(&OT_Header);
+//
+//			  // creates new message with headers but with empty payload
+//			  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+//			  if (pOT_Message == NULL) while(1);
+//			  // Append bytes to a message (this is where the payload gets added)
+//
+//			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
+//			  error = otMessageAppend(pOT_Message, &OT_MessageInfo, sizeof(OT_MessageInfo));
+//
+//			  if (error != OT_ERROR_NONE) while(1);
+//
+//			  error = otCoapSendRequest(NULL,
+//						pOT_Message,
+//						&OT_MessageInfo,
+//						NULL,
+//						(void*) NULL);
+//
+//			  // if error: free allocated message buffer if one was allocated
+//			  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+//			  {
+//				otMessageFree(pOT_Message);
+//			  }
+//
+//			  //HAL_Delay(10000);
+//			}while(false);
+//
+//}
+
+volatile otNetifMulticastAddress multicastAddresses;
+volatile otIp6Address  meshLocalEID;
+volatile otIp6Address linkLocalIPV6;
+
+static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_length, char* ipv6_addr  , char* resource)
 {
   //otError   error = OT_ERROR_NONE;
 
@@ -928,20 +1289,23 @@ static void APP_THREAD_SendCoapUnicastRequest()
   /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
   // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
 
+
+
 	do{
-//			  myRloc16 = otThreadGetRloc16(NULL);
-//			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
-//			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+			  myRloc16 = otThreadGetRloc16(NULL);
+			  isEnabledIpv6 = otIp6IsEnabled(NULL);
 //			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
 //			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
 //			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
-
+			  memcpy(&meshLocalEID, otThreadGetMeshLocalEid(NULL) ,sizeof(otIp6Address));
 
 			  // clear info
 			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
 
 			  // set border IP address
-			   error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+			   //error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+			   error = otIp6AddressFromString(ipv6_addr , &OT_MessageInfo.mPeerAddr);
+
 
 			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
 
@@ -950,6 +1314,9 @@ static void APP_THREAD_SendCoapUnicastRequest()
 
 			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
 			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+
+			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+			  OT_MessageInfo.mSockAddr = unicastAddresses->mAddress;
 			  //OT_MessageInfo.mHopLimit = 20;
 
 			  /************** CREATE NEW MESSAGE ********************ifco*/
@@ -961,7 +1328,7 @@ static void APP_THREAD_SendCoapUnicastRequest()
 
 			  // the name of the resource
 			  //error = otCoapHeaderAppendUriPathOptions(&OT_Header,C_RESSOURCE_BASIC);
-			  error = otCoapHeaderAppendUriPathOptions(&OT_Header,"light");
+			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
 
 			  // This function adds Payload Marker indicating beginning of the payload to the CoAP header
 			  otCoapHeaderSetPayloadMarker(&OT_Header);
@@ -972,7 +1339,8 @@ static void APP_THREAD_SendCoapUnicastRequest()
 			  // Append bytes to a message (this is where the payload gets added)
 
 			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
-			  error = otMessageAppend(pOT_Message, &OT_MessageInfo, sizeof(OT_MessageInfo));
+//			  error = otMessageAppend(pOT_Message, &OT_MessageInfo, sizeof(OT_MessageInfo));
+			  error = otMessageAppend(pOT_Message, message, message_length);
 
 			  if (error != OT_ERROR_NONE) while(1);
 
@@ -991,6 +1359,138 @@ static void APP_THREAD_SendCoapUnicastRequest()
 			  //HAL_Delay(10000);
 			}while(false);
 
+}
+
+static void APP_THREAD_SendCoapUnicastMsg(struct LogPacket *message, uint8_t msgSize, char* ipv6_addr  , char* resource, uint8_t msgID)
+{
+  //otError   error = OT_ERROR_NONE;
+
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_APEND_URI,error);
+//  }
+//  if (pOT_Message == NULL)
+//  {
+//    APP_THREAD_Error(ERR_ALLOC_MSG,error);
+//  }
+  //error = otMessageAppend(pOT_Message, &OT_BufferSend, sizeof(OT_BufferSend));
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
+//  }
+
+//  memcpy(&OT_MessageInfo.mPeerAddr, &OT_PeerAddress, sizeof(OT_MessageInfo.mPeerAddr));
+//  error = otCoapSendRequest(NULL,
+//          pOT_Message,
+//          &OT_MessageInfo,
+//          &APP_THREAD_DummyRespHandler,
+//          (void*)&APP_THREAD_DataRespHandler);
+
+  /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
+  // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
+
+
+
+	do{
+//			  myRloc16 = otThreadGetRloc16(NULL);
+//			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+//			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+//			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
+//			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
+//			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+
+			  // clear info
+			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
+
+			  // set border IP address
+			   error = otIp6AddressFromString(ipv6_addr , &OT_MessageInfo.mPeerAddr);
+
+			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+
+			   // error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
+			  //error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
+
+			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+			  //OT_MessageInfo.mHopLimit = 20;
+
+			  /************** CREATE NEW MESSAGE ********************ifco*/
+
+			  // create header
+			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+//			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+
+//			  otCoapHeaderSetMessageId(&OT_Header, msgID); `//may not need since sendRequest should set to 0
+			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
+
+			  // the name of the resource
+			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
+
+			  // need this so the coap server doesnt try to parse as 'utf-8' and error out
+			  otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
+
+			  // This function adds Payload Marker indicating beginning of the payload to the CoAP header
+			  otCoapHeaderSetPayloadMarker(&OT_Header);
+
+			  // creates new message with headers but with empty payload
+			  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+			  if (pOT_Message == NULL) while(1);
+			  // Append bytes to a message (this is where the payload gets added)
+
+
+
+			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
+			  error = otMessageAppend(pOT_Message, message, msgSize);
+
+			  if (error != OT_ERROR_NONE) while(1);
+
+			  error = otCoapSendRequest(NULL,
+						pOT_Message,
+						&OT_MessageInfo,
+						NULL,
+						(void*) NULL);
+
+			  // if error: free allocated message buffer if one was allocated
+			  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+			  {
+				otMessageFree(pOT_Message);
+			  }
+
+			  //HAL_Delay(10000);
+			}while(false);
+
+}
+
+/**
+ * @brief This function acknowledge the data reception by sending an ACK
+ *    back to the sender.
+ * @param  pRequestHeader coap header
+ * @param  pMessageInfo message info pointer
+ * @retval None
+ */
+static void APP_THREAD_SendDataResponse(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo)
+{
+  otError  error = OT_ERROR_NONE;
+
+  APP_DBG(" ********* APP_THREAD_SendDataResponse \r\n");
+  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_ACKNOWLEDGMENT, OT_COAP_CODE_CHANGED);
+  otCoapHeaderSetMessageId(&OT_Header, otCoapHeaderGetMessageId(pRequestHeader));
+  otCoapHeaderSetToken(&OT_Header,
+      otCoapHeaderGetToken(pRequestHeader),
+      otCoapHeaderGetTokenLength(pRequestHeader));
+
+  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+  if (pOT_Message == NULL)
+  {
+    //APP_THREAD_Error(ERR_NEW_MSG_ALLOC,error);
+  }
+  error = otCoapSendResponse(NULL, pOT_Message, pMessageInfo);
+  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+  {
+    otMessageFree(pOT_Message);
+    //APP_THREAD_Error(ERR_THREAD_DATA_RESPONSE,error);
+  }
 }
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 

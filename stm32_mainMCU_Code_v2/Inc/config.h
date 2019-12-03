@@ -1,30 +1,46 @@
 /**
  ******************************************************************************
- * File Name          : blink.h
-  * Description        : Header for Lights.
+ * File Name          : config.h
+  * Description        : configuration file
   ******************************************************************************
 
   *
   ******************************************************************************
  */
-#ifndef BLINK_H
-#define BLINK_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* includes -----------------------------------------------------------*/
-#include "stdint.h"
-#include "cmsis_os.h"
+
 /* typedef -----------------------------------------------------------*/
-struct blinkData{
+struct inertialData{
+	uint8_t			data[100];
+	uint32_t		tick_ms;
+};
+
+struct positionData{
+	uint8_t			data[100];
+	uint32_t		tick_ms;
+};
+
+struct tempData{
 	uint8_t			data[100];
 	uint32_t		tick_ms;
 };
 
 /* defines -----------------------------------------------------------*/
 
+// enable sensing subsystems
+#define BLINK_SENSING_ENABLE		1
+#define TEMP_SENSING_ENABLE			0
+#define POS_SENSING_ENABLE			0
+#define	INERTIA_SENSING_ENABLE		0
+
+#define DISABLE_SENSING				0
 
 /* macros ------------------------------------------------------------*/
 
@@ -33,17 +49,7 @@ struct blinkData{
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t blinkTaskHandle;
-osMessageQueueId_t	blinkMsgQueueHandle;
 
-//osSemaphoreDef(blinkSemDef);
-//osSemaphoreId (blinkSemaphore);
-
-//osSemaphoreId osSemaphoreCreate (blinkSemDef, 0);
-//
-//osSemaphoreWait(multiplex_id, osWaitForever);
-//        // do something
-//        osSemaphoreRelease(blinkSemaphore);
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -60,14 +66,6 @@ osMessageQueueId_t	blinkMsgQueueHandle;
  * @param  None
  * @retval None
  */
-void BlinkTask(void);
-
-/**
- * @brief blink setup.
- * @param  None
- * @retval None
- */
-void SetupBlinkSensing(void);
 
 /*************************************************************
  *

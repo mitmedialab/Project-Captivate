@@ -1,14 +1,14 @@
 /**
  ******************************************************************************
- * File Name          : blink.h
-  * Description        : Header for Lights.
+ * File Name          : master_thread.h
+  * Description        : the master thread that governs the system.
   ******************************************************************************
 
   *
   ******************************************************************************
  */
-#ifndef BLINK_H
-#define BLINK_H
+#ifndef MASTER_THREAD_H
+#define MASTER_THREAD_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,12 +17,33 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 #include "stdint.h"
 #include "cmsis_os.h"
+#include "config.h"
+#include "blink.h"
+#include "stm32wbxx_hal.h"
+//#include "position.h"
+//#include "inter_processor_comms.h"
 /* typedef -----------------------------------------------------------*/
-struct blinkData{
-	uint8_t			data[100];
-	uint32_t		tick_ms;
+
+struct LogPacket
+{
+	struct blinkData		blink;
+//	tempData				temp;
+//	inertialData			inertial;
+//	positionData			pos;
+	uint32_t				tick_ms;
+	uint32_t				epoch;
 };
 
+struct LogMessage
+{
+	uint8_t		status;
+	uint8_t		logStatus;
+	uint8_t		blinkEnabled;
+	uint8_t		tempEnabled;
+	uint8_t		intertialEnabled;
+	uint8_t		positionEnabled;
+
+};
 /* defines -----------------------------------------------------------*/
 
 
@@ -30,20 +51,22 @@ struct blinkData{
 
 
 /* function prototypes -----------------------------------------------*/
+void packetizeData(struct LogPacket *packet,
+		struct blinkData *blink,
+		struct tempData *temp,
+		struct inertialData *imu,
+		struct positionData *pos);
+void MasterThreadTask(void *argument);
 
+
+uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
 /* variables -----------------------------------------------*/
-osThreadId_t blinkTaskHandle;
-osMessageQueueId_t	blinkMsgQueueHandle;
+//osThreadId_t 		threadFrontLightsTaskHandle;
+//osMessageQueueId_t	lightsSimpleQueueHandle;
+osMessageQueueId_t	togLoggingQueueHandle;
+osThreadId_t masterThreadTaskHandle;
 
-//osSemaphoreDef(blinkSemDef);
-//osSemaphoreId (blinkSemaphore);
-
-//osSemaphoreId osSemaphoreCreate (blinkSemDef, 0);
-//
-//osSemaphoreWait(multiplex_id, osWaitForever);
-//        // do something
-//        osSemaphoreRelease(blinkSemaphore);
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -60,14 +83,6 @@ osMessageQueueId_t	blinkMsgQueueHandle;
  * @param  None
  * @retval None
  */
-void BlinkTask(void);
-
-/**
- * @brief blink setup.
- * @param  None
- * @retval None
- */
-void SetupBlinkSensing(void);
 
 /*************************************************************
  *

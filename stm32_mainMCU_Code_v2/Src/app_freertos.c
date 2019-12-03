@@ -29,6 +29,8 @@
 #include "lp5523.h"
 #include "blink.h"
 #include "app_entry.h"
+#include "master_thread.h"
+#include "system_settings.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,8 +50,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-osThreadId_t threadCheckToggleLightsTaskHandle;
-osThreadId_t blinkTaskHandle;
+//osThreadId_t threadCheckToggleLightsTaskHandle;
+//osThreadId_t blinkTaskHandle;
+//osThreadId_t masterThreadTaskHandle;
 /* USER CODE END Variables */
 osThreadId_t defaultTaskHandle;
 
@@ -112,17 +115,31 @@ osKernelInitialize();
   const osThreadAttr_t threadFrontLightsTask_attributes = {
         .name = "threadFrontLightsTask",
         .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 1024
+        .stack_size = 256
       };
   threadFrontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &threadFrontLightsTask_attributes);
 
+//#ifndef DONGLE_CODE
+  const osThreadAttr_t blinkTask_attributes = {
+        .name = "blinkTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 256
+      };
+  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
-//  const osThreadAttr_t blinkTask_attributes = {
-//        .name = "blinkTask",
-//        .priority = (osPriority_t) osPriorityNormal,
-//        .stack_size = 1024
-//      };
-//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+  lightsSimpleQueueHandle = osMessageQueueNew (MAX_LIGHT_SIMPLE_QUEUE_SIZE, sizeof(lightsSimpleMessage), NULL);
+//  lightsSimpleQueueHandle = osMessageQueueNew (2, sizeof(LogMessage), NULL);
+  blinkMsgQueueHandle = osMessageQueueNew (2, sizeof(struct blinkData *), NULL);
+
+  togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
+
+  const osThreadAttr_t masterThreadTask_attributes = {
+        .name = "masterThreadTask",
+        .priority = (osPriority_t) osPriorityNormal,
+        .stack_size = 256
+      };
+  masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
+//#endif
 
   /* add threads, ... */
 

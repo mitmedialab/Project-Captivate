@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "system_settings.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,6 +58,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#ifdef DONGLE_CODE
+#define LD1_Pin GPIO_PIN_4
+#define LD1_GPIO_Port GPIOA
+#define LD2_Pin GPIO_PIN_0
+#define LD2_GPIO_Port GPIOB
+#define LD3_Pin GPIO_PIN_1
+#define LD3_GPIO_Port GPIOB
+#endif
 #define BLINK_SIG_Pin GPIO_PIN_0
 #define BLINK_SIG_GPIO_Port GPIOA
 #define LH_SIG_Pin GPIO_PIN_1
