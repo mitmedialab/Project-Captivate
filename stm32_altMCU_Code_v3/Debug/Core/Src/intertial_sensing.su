@@ -1,0 +1,84 @@
+intertial_sensing.cpp:34:6:bool BNO080::begin(uint8_t, uint8_t)	0	static
+intertial_sensing.cpp:66:6:bool BNO080::beginSPI(uint8_t, uint8_t, uint8_t, uint8_t, uint32_t)	0	static
+intertial_sensing.cpp:142:6:bool BNO080::dataAvailable()	0	static
+intertial_sensing.cpp:188:6:void BNO080::parseCommandReport()	0	static
+intertial_sensing.cpp:224:6:void BNO080::parseInputReport()	24	static
+intertial_sensing.cpp:380:9:uint8_t BNO080::getQuatAccuracy()	0	static
+intertial_sensing.cpp:407:9:uint8_t BNO080::getAccelAccuracy()	0	static
+intertial_sensing.cpp:436:9:uint8_t BNO080::getLinAccelAccuracy()	0	static
+intertial_sensing.cpp:463:9:uint8_t BNO080::getGyroAccuracy()	0	static
+intertial_sensing.cpp:490:9:uint8_t BNO080::getMagAccuracy()	0	static
+intertial_sensing.cpp:496:10:uint16_t BNO080::getStepCount()	0	static
+intertial_sensing.cpp:502:9:uint8_t BNO080::getStabilityClassifier()	0	static
+intertial_sensing.cpp:508:9:uint8_t BNO080::getActivityClassifier()	0	static
+intertial_sensing.cpp:514:10:uint32_t BNO080::getTimeStamp()	0	static
+intertial_sensing.cpp:520:9:int16_t BNO080::getRawAccelX()	0	static
+intertial_sensing.cpp:525:9:int16_t BNO080::getRawAccelY()	0	static
+intertial_sensing.cpp:530:9:int16_t BNO080::getRawAccelZ()	0	static
+intertial_sensing.cpp:536:9:int16_t BNO080::getRawGyroX()	0	static
+intertial_sensing.cpp:540:9:int16_t BNO080::getRawGyroY()	0	static
+intertial_sensing.cpp:544:9:int16_t BNO080::getRawGyroZ()	0	static
+intertial_sensing.cpp:550:9:int16_t BNO080::getRawMagX()	0	static
+intertial_sensing.cpp:554:9:int16_t BNO080::getRawMagY()	0	static
+intertial_sensing.cpp:558:9:int16_t BNO080::getRawMagZ()	0	static
+intertial_sensing.cpp:633:6:void BNO080::frsReadRequest(uint16_t, uint16_t, uint16_t)	4	static
+intertial_sensing.cpp:731:9:uint8_t BNO080::resetReason()	0	static
+intertial_sensing.cpp:753:7:float BNO080::qToFloat(int16_t, uint8_t)	24	static
+intertial_sensing.cpp:345:7:float BNO080::getQuatI()	8	static
+intertial_sensing.cpp:352:7:float BNO080::getQuatJ()	8	static
+intertial_sensing.cpp:359:7:float BNO080::getQuatK()	8	static
+intertial_sensing.cpp:366:7:float BNO080::getQuatReal()	8	static
+intertial_sensing.cpp:373:7:float BNO080::getQuatRadianAccuracy()	8	static
+intertial_sensing.cpp:386:7:float BNO080::getAccelX()	8	static
+intertial_sensing.cpp:393:7:float BNO080::getAccelY()	8	static
+intertial_sensing.cpp:400:7:float BNO080::getAccelZ()	8	static
+intertial_sensing.cpp:415:7:float BNO080::getLinAccelX()	8	static
+intertial_sensing.cpp:422:7:float BNO080::getLinAccelY()	8	static
+intertial_sensing.cpp:429:7:float BNO080::getLinAccelZ()	8	static
+intertial_sensing.cpp:442:7:float BNO080::getGyroX()	8	static
+intertial_sensing.cpp:449:7:float BNO080::getGyroY()	8	static
+intertial_sensing.cpp:456:7:float BNO080::getGyroZ()	8	static
+intertial_sensing.cpp:469:7:float BNO080::getMagX()	8	static
+intertial_sensing.cpp:476:7:float BNO080::getMagY()	8	static
+intertial_sensing.cpp:483:7:float BNO080::getMagZ()	8	static
+intertial_sensing.cpp:874:6:bool BNO080::calibrationComplete()	0	static
+intertial_sensing.cpp:889:6:void BNO080::setFeatureCommand(uint8_t, uint16_t, uint32_t)	4	static
+intertial_sensing.cpp:830:6:void BNO080::enableActivityClassifier(uint16_t, uint32_t, uint8_t (&)[9])	8	static
+intertial_sensing.cpp:882:6:void BNO080::setFeatureCommand(uint8_t, uint16_t)	8	static
+intertial_sensing.cpp:761:6:void BNO080::enableRotationVector(uint16_t)	8	static
+intertial_sensing.cpp:767:6:void BNO080::enableGameRotationVector(uint16_t)	8	static
+intertial_sensing.cpp:773:6:void BNO080::enableAccelerometer(uint16_t)	8	static
+intertial_sensing.cpp:779:6:void BNO080::enableLinearAccelerometer(uint16_t)	8	static
+intertial_sensing.cpp:785:6:void BNO080::enableGyro(uint16_t)	8	static
+intertial_sensing.cpp:791:6:void BNO080::enableMagnetometer(uint16_t)	8	static
+intertial_sensing.cpp:797:6:void BNO080::enableStepCounter(uint16_t)	8	static
+intertial_sensing.cpp:803:6:void BNO080::enableStabilityClassifier(uint16_t)	8	static
+intertial_sensing.cpp:810:6:void BNO080::enableRawAccelerometer(uint16_t)	8	static
+intertial_sensing.cpp:817:6:void BNO080::enableRawGyro(uint16_t)	8	static
+intertial_sensing.cpp:824:6:void BNO080::enableRawMagnetometer(uint16_t)	8	static
+intertial_sensing.cpp:918:6:void BNO080::sendCommand(uint8_t)	0	static
+intertial_sensing.cpp:941:6:void BNO080::sendCalibrateCommand(uint8_t)	8	static
+intertial_sensing.cpp:838:6:void BNO080::calibrateAccelerometer()	8	static
+intertial_sensing.cpp:844:6:void BNO080::calibrateGyro()	8	static
+intertial_sensing.cpp:850:6:void BNO080::calibrateMagnetometer()	8	static
+intertial_sensing.cpp:856:6:void BNO080::calibratePlanarAccelerometer()	8	static
+intertial_sensing.cpp:862:6:void BNO080::calibrateAll()	8	static
+intertial_sensing.cpp:867:6:void BNO080::endCalibration()	8	static
+intertial_sensing.cpp:982:6:void BNO080::requestCalibrationStatus()	8	static
+intertial_sensing.cpp:1005:6:void BNO080::saveCalibration()	8	static
+intertial_sensing.cpp:1026:6:bool BNO080::waitForI2C()	0	static
+intertial_sensing.cpp:1043:6:bool BNO080::waitForSPI()	0	static
+intertial_sensing.cpp:1061:6:bool BNO080::receivePacket()	0	static
+intertial_sensing.cpp:651:6:bool BNO080::readFRSdata(uint16_t, uint8_t, uint8_t)	24	static
+intertial_sensing.cpp:623:10:uint32_t BNO080::readFRSword(uint16_t, uint8_t)	8	static
+intertial_sensing.cpp:565:9:int16_t BNO080::getQ1(uint16_t)	8	static
+intertial_sensing.cpp:574:9:int16_t BNO080::getQ2(uint16_t)	8	static
+intertial_sensing.cpp:583:9:int16_t BNO080::getQ3(uint16_t)	8	static
+intertial_sensing.cpp:591:7:float BNO080::getResolution(uint16_t)	16	static
+intertial_sensing.cpp:606:7:float BNO080::getRange(uint16_t)	16	static
+intertial_sensing.cpp:713:6:void BNO080::softReset()	8	static
+intertial_sensing.cpp:1149:6:bool BNO080::getData(uint16_t)	0	static
+intertial_sensing.cpp:1191:6:bool BNO080::sendPacket(uint8_t, uint8_t)	0	static
+intertial_sensing.cpp:1248:6:void BNO080::printPacket()	0	static
+intertial_sensing.cpp:1318:6:void InertialSensingTask()	0	static
+intertial_sensing.cpp:1328:6:void Setup_BNO080()	0	static

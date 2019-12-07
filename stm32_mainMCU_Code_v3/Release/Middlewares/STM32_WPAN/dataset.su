@@ -1,0 +1,3 @@
+dataset.c:33:19:otDatasetIsCommissioned	8	static
+dataset.c:49:22:otDatasetGetActive	16	static
+dataset.c:66:22:otDatasetGetPending	16	static

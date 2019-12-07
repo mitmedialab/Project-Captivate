@@ -1,0 +1,4 @@
+joiner.c:36:22:otJoinerStart	16	static
+joiner.c:63:22:otJoinerStop	8	static
+joiner.c:79:28:otJoinerGetState	8	static
+joiner.c:95:22:otJoinerGetId	8	static

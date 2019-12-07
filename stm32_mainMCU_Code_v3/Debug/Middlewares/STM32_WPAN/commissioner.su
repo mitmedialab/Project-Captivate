@@ -1,0 +1,14 @@
+commissioner.c:40:22:otCommissionerStart	8	static
+commissioner.c:56:22:otCommissionerStop	8	static
+commissioner.c:72:22:otCommissionerAddJoiner	16	static
+commissioner.c:92:22:otCommissionerRemoveJoiner	8	static
+commissioner.c:109:13:otCommissionerGetProvisioningUrl	8	static
+commissioner.c:126:22:otCommissionerSetProvisioningUrl	8	static
+commissioner.c:143:22:otCommissionerAnnounceBegin	16	static
+commissioner.c:165:22:otCommissionerEnergyScan	16	static
+commissioner.c:190:22:otCommissionerPanIdQuery	16	static
+commissioner.c:213:22:otCommissionerSendMgmtGet	16	static
+commissioner.c:231:22:otCommissionerSendMgmtSet	16	static
+commissioner.c:251:23:otCommissionerGetSessionId	8	static
+commissioner.c:267:34:otCommissionerGetState	8	static
+commissioner.c:283:22:otCommissionerGeneratePSKc	16	static

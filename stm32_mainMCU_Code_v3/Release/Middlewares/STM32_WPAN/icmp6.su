@@ -1,0 +1,4 @@
+icmp6.c:36:17:otIcmp6GetEchoMode	8	static
+icmp6.c:52:6:otIcmp6SetEchoMode	16	static
+icmp6.c:68:9:otIcmp6RegisterHandler	8	static
+icmp6.c:86:9:otIcmp6SendEchoRequest	24	static

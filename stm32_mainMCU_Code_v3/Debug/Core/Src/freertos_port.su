@@ -1,0 +1,6 @@
+freertos_port.c:200:13:LpTimerCb	0	static
+freertos_port.c:215:13:LpTimerStart	8	static
+freertos_port.c:294:17:LpGetElapsedTime	16	static
+freertos_port.c:187:13:LpTimerInit	8	static
+freertos_port.c:82:6:vPortSuppressTicksAndSleep	8	static,ignoring_inline_asm
+freertos_port.c:164:6:vPortSetupTimerInterrupt	8	static

@@ -1,0 +1,2 @@
+blink.c:61:6:BlinkTask	32	static
+blink.c:119:6:SetupBlinkSensing	0	static

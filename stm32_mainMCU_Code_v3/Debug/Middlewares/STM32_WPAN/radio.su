@@ -1,0 +1,2 @@
+radio.c:53:9:otPlatRadioGetTransmitPower	8	static
+radio.c:80:9:otPlatRadioSetTransmitPower	8	static

@@ -1,0 +1,3 @@
+app_freertos.c:158:6:StartDefaultTask	8	static
+app_freertos.c:70:13:vPortSuppressTicksAndSleep	0	static
+app_freertos.c:83:6:MX_FREERTOS_Init	160	static

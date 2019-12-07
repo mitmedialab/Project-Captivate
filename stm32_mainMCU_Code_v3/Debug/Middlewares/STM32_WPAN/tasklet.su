@@ -1,0 +1,2 @@
+tasklet.c:30:6:otTaskletsProcess	8	static
+tasklet.c:45:6:otTaskletsArePending	8	static
