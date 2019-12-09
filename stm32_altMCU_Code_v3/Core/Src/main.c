@@ -16,20 +16,15 @@
   *
   ******************************************************************************
   */
-#ifdef __cplusplus
-extern "C" {
-#endif
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "dma.h"
 #include "i2c.h"
 #include "rtc.h"
 #include "spi.h"
-#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -78,7 +73,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-
+  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -101,19 +96,17 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI3_Init();
   MX_ADC1_Init();
-  MX_DMA_Init();
-  MX_TIM2_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+  MX_FREERTOS_Init(); 
 
   /* Start scheduler */
   osKernelStart();
-
+  
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -137,7 +130,7 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks
+  /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -148,7 +141,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks
+  /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -171,9 +164,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-#ifdef __cplusplus
-}
-#endif
+
 /* USER CODE END 4 */
 
 /**

@@ -42,8 +42,7 @@ Core/Src/thermopile.o: ../Core/Src/thermopile.c ../Core/Inc/thermopile.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/tim.h
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 
 ../Core/Inc/thermopile.h:
 
@@ -140,5 +139,3 @@ Core/Src/thermopile.o: ../Core/Src/thermopile.c ../Core/Inc/thermopile.h \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
-
-../Core/Inc/tim.h:

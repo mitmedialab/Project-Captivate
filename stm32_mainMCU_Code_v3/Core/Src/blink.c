@@ -136,10 +136,10 @@ void BlinkTask(void){
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
+//}
 
 volatile uint8_t i = 0;
 void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)

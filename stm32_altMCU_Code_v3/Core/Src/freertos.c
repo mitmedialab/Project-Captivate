@@ -31,6 +31,7 @@
 #include "master_thread.h"
 #include "freertos.h"
 #include "inter_processor_comms.h"
+#include "camera_detector.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,27 +102,36 @@ osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-    const osThreadAttr_t thermopileTask_attributes = {
-    .name = "thermopileTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 256
-  };
-    thermopileTaskHandle = osThreadNew(ThermopileTask, NULL, &thermopileTask_attributes);
+//    const osThreadAttr_t thermopileTask_attributes = {
+//    .name = "thermopileTask",
+//    .priority = (osPriority_t) osPriorityNormal,
+//    .stack_size = 256
+//  };
+//    thermopileTaskHandle = osThreadNew(ThermopileTask, NULL, &thermopileTask_attributes);
+//
+//  const osThreadAttr_t masterThreadTask_attributes = {
+//        .name = "masterThreadTask",
+//        .priority = (osPriority_t) osPriorityNormal,
+//        .stack_size = 256
+//      };
+//  masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
+//
+//  const osThreadAttr_t sendMsgToMainTask_attributes = {
+//          .name = "sendMsgToMainTask",
+//          .priority = (osPriority_t) osPriorityNormal,
+//          .stack_size = 256
+//        };
+//  sendMsgToMainTaskHandle = osThreadNew(SendPacketToMainTask, NULL, &sendMsgToMainTask_attributes);
 
-  const osThreadAttr_t masterThreadTask_attributes = {
-        .name = "masterThreadTask",
-        .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 256
-      };
-  masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
 
-  const osThreadAttr_t sendMsgToMainTask_attributes = {
-          .name = "sendMsgToMainTask",
-          .priority = (osPriority_t) osPriorityNormal,
-          .stack_size = 256
-        };
-  sendMsgToMainTaskHandle = osThreadNew(SendPacketToMainTask, NULL, &sendMsgToMainTask_attributes);
+      const osThreadAttr_t cameraTask_attributes = {
+      .name = "cameraTask",
+      .priority = (osPriority_t) osPriorityNormal,
+      .stack_size = 256
+    };
+      cameraDetectionTaskHandle = osThreadNew(cameraDetectionTask, NULL, &cameraTask_attributes);
 
+//  cameraDetectionQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
   togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
   thermMsgQueueHandle = osMessageQueueNew (10, sizeof(struct thermopileData), NULL);
   sendMsgToMainQueueHandle = osMessageQueueNew (10, sizeof(struct LogPacket), NULL);

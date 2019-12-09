@@ -58,11 +58,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
-extern I2C_HandleTypeDef hi2c1;
 extern SPI_HandleTypeDef hspi3;
-extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
@@ -166,20 +163,6 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 channel1 global interrupt.
-  */
-void DMA1_Channel1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc1);
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 1 */
-}
-
-/**
   * @brief This function handles ADC1 interrupt.
   */
 void ADC1_IRQHandler(void)
@@ -205,34 +188,6 @@ void TIM1_UP_TIM16_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM2 global interrupt.
-  */
-void TIM2_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM2_IRQn 0 */
-
-  /* USER CODE END TIM2_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim2);
-  /* USER CODE BEGIN TIM2_IRQn 1 */
-
-  /* USER CODE END TIM2_IRQn 1 */
-}
-
-/**
-  * @brief This function handles I2C1 event global interrupt / I2C1 wake-up interrupt through EXTI line 23.
-  */
-void I2C1_EV_IRQHandler(void)
-{
-  /* USER CODE BEGIN I2C1_EV_IRQn 0 */
-
-  /* USER CODE END I2C1_EV_IRQn 0 */
-  HAL_I2C_EV_IRQHandler(&hi2c1);
-  /* USER CODE BEGIN I2C1_EV_IRQn 1 */
-
-  /* USER CODE END I2C1_EV_IRQn 1 */
 }
 
 /**

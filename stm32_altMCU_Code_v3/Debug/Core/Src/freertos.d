@@ -47,7 +47,7 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
  ../Core/Inc/config.h ../Core/Inc/master_thread.h ../Core/Inc/config.h \
  ../Core/Inc/thermopile.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/freertos.h \
- ../Core/Inc/inter_processor_comms.h
+ ../Core/Inc/inter_processor_comms.h ../Core/Inc/camera_detector.h
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -152,3 +152,5 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/freertos.h:
 
 ../Core/Inc/inter_processor_comms.h:
+
+../Core/Inc/camera_detector.h:

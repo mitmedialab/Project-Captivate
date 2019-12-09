@@ -58,16 +58,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ANALOG_EXP_CONN_Pin GPIO_PIN_2
-#define ANALOG_EXP_CONN_GPIO_Port GPIOA
-#define ADC_ALERT_Pin GPIO_PIN_3
-#define ADC_ALERT_GPIO_Port GPIOA
+#define DIODE_RIGHT_Pin GPIO_PIN_2
+#define DIODE_RIGHT_GPIO_Port GPIOA
+#define DIODE_LEFT_Pin GPIO_PIN_3
+#define DIODE_LEFT_GPIO_Port GPIOA
 #define EXPANSION_INT_Pin GPIO_PIN_4
 #define EXPANSION_INT_GPIO_Port GPIOA
 #define IMU_INT_Pin GPIO_PIN_5
 #define IMU_INT_GPIO_Port GPIOA
 #define TP_SS_Pin GPIO_PIN_6
 #define TP_SS_GPIO_Port GPIOA
+#define DIODE_CENTER_Pin GPIO_PIN_0
+#define DIODE_CENTER_GPIO_Port GPIOB
 #define TP25_Pin GPIO_PIN_8
 #define TP25_GPIO_Port GPIOA
 #define TP24_Pin GPIO_PIN_9

@@ -14,7 +14,7 @@
 #include "adc.h"
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
-#include "tim.h"
+//#include "tim.h"
 #include "stdint.h"
 #include <string.h>
 
@@ -89,7 +89,7 @@ void ThermopileTask(void *argument){
 			// start timer for ADC to sample at 200Hz
 			osThreadFlagsSet(thermopileTaskHandle, 0x00000008U);
 //			HAL_TIM_Base_Start(&htim2);
-			HAL_TIM_Base_Start_IT(&htim2);
+//			HAL_TIM_Base_Start_IT(&htim2);
 
 //			HAL_TIM_Base_Start(&htim16);
 
@@ -146,7 +146,7 @@ void ThermopileTask(void *argument){
 //					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 //					HAL_TIM_Base_Stop(&htim16);
 //					HAL_TIM_Base_Stop(&htim2);
-					HAL_TIM_Base_Stop_IT(&htim2);
+//					HAL_TIM_Base_Stop_IT(&htim2);
 					osThreadFlagsClear(0x0000000EU);
 					break;
 				}
@@ -155,33 +155,33 @@ void ThermopileTask(void *argument){
 	}
 }
 
-volatile uint8_t i = 0;
-void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
-{
-  i++;
-}
-
-volatile uint8_t complete = 0;
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-	complete++;
-	HAL_ADC_Stop_DMA(&hadc1);
+//volatile uint8_t i = 0;
+//void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
+//{
+//  i++;
+//}
 //
-//	// notify ThermopileTask that conversion is complete
-	osThreadFlagsSet(thermopileTaskHandle, 0x00000004U);
-
-}
-
-volatile uint8_t half = 0;
-void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
-{
-	half++;
-//	memcpy(blinkMsgBuffer_1.data, &(blink_buffer), 100);
-//	blinkMsgBuffer_1.tick_ms = HAL_GetTick();
-//	blink_ptr = &blink_buffer;
-//	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
-
-}
+//volatile uint8_t complete = 0;
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+//{
+//	complete++;
+//	HAL_ADC_Stop_DMA(&hadc1);
+////
+////	// notify ThermopileTask that conversion is complete
+//	osThreadFlagsSet(thermopileTaskHandle, 0x00000004U);
+//
+//}
+//
+//volatile uint8_t half = 0;
+//void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+//{
+//	half++;
+////	memcpy(blinkMsgBuffer_1.data, &(blink_buffer), 100);
+////	blinkMsgBuffer_1.tick_ms = HAL_GetTick();
+////	blink_ptr = &blink_buffer;
+////	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
+//
+//}
 
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //{
