@@ -25,9 +25,7 @@
  *
  * 1 tab == 4 spaces!
  */
-#ifdef __cplusplus
-extern "C" {
-#endif
+
  /* USER CODE END Header */
 
 #ifndef FREERTOS_CONFIG_H
@@ -46,6 +44,9 @@ extern "C" {
  *----------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */   	      
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* Section where include file can be added */
 /* USER CODE END Includes */ 
 
@@ -147,8 +148,9 @@ standard names. */
 
 /* USER CODE BEGIN Defines */   	      
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
-/* USER CODE END Defines */ 
 #ifdef __cplusplus
 }
 #endif
+/* USER CODE END Defines */ 
+
 #endif /* FREERTOS_CONFIG_H */

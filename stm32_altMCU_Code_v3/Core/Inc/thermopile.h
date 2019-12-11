@@ -6,9 +6,10 @@
 #include "cmsis_os2.h"
 
 
-//#ifdef __cplusplus
-// extern "C" {
-// }
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 struct thermopileData{
 	uint16_t			templeData[20];
 	uint32_t			temple_tick_ms;
@@ -32,5 +33,7 @@ void ThermopileTask(void *argument);
 void Setup_LMP91051(void);
 void SwitchTemperatureSensor(sensorChoice sense);
 
-//#endif
+#ifdef __cplusplus
+ }
+#endif
 #endif

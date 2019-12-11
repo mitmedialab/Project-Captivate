@@ -68,6 +68,8 @@ void Error_Handler(void);
 #define IMU_INT_GPIO_Port GPIOA
 #define TP_SS_Pin GPIO_PIN_6
 #define TP_SS_GPIO_Port GPIOA
+#define TP_NOSE_THERMOPILE_Pin GPIO_PIN_0
+#define TP_NOSE_THERMOPILE_GPIO_Port GPIOB
 #define TP25_Pin GPIO_PIN_8
 #define TP25_GPIO_Port GPIOA
 #define TP24_Pin GPIO_PIN_9

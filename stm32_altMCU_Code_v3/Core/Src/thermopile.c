@@ -55,6 +55,7 @@
 
 //uint32_t ADC_Data[600] = {0};
 struct thermopileData tempData = {{0}, 0, {0}, 0};
+volatile uint16_t test = 0;
 
 void ThermopileTask(void *argument){
 
@@ -113,7 +114,7 @@ void ThermopileTask(void *argument){
 
 					// start DMA for nose
 					SwitchTemperatureSensor(nose);
-					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) tempData.noseData, sizeof(tempData.noseData));
+					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) tempData.noseData, 20);
 
 					// wait for data to be received from nose
 					evt = osThreadFlagsWait (0x00000004U, osFlagsWaitAny, osWaitForever);
@@ -121,6 +122,8 @@ void ThermopileTask(void *argument){
 
 					// ensure master thread hasn't told this thread to stop
 					if( (evt & 0x00000002U) == 0x00000002U) break;
+
+					test = tempData.noseData[5];
 
 					// switch thermopile circuitry to nose
 					SwitchTemperatureSensor(temple);
@@ -155,17 +158,11 @@ void ThermopileTask(void *argument){
 	}
 }
 
-volatile uint8_t i = 0;
-void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
-{
-  i++;
-}
-
 volatile uint8_t complete = 0;
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	complete++;
-	HAL_ADC_Stop_DMA(&hadc1);
+	//HAL_ADC_Stop_DMA(&hadc1);
 //
 //	// notify ThermopileTask that conversion is complete
 	osThreadFlagsSet(thermopileTaskHandle, 0x00000004U);
@@ -181,6 +178,12 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 //	blink_ptr = &blink_buffer;
 //	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
+}
+
+volatile uint8_t i = 0;
+void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
+{
+  i++;
 }
 
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
