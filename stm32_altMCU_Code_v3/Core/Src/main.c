@@ -16,9 +16,6 @@
   *
   ******************************************************************************
   */
-#ifdef __cplusplus
-extern "C" {
-#endif
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -34,8 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "thermopile.h"
-#include "FreeRTOS.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,10 +103,6 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
-  // DMA error correction since above, DMA fails at linking to ADC because the attempt is made before DMA is enabled
-  HAL_ADC_MspDeInit(&hadc1);
-  HAL_ADC_MspInit(&hadc1);
-
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -176,9 +168,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-#ifdef __cplusplus
-}
-#endif
+
 /* USER CODE END 4 */
 
 /**
