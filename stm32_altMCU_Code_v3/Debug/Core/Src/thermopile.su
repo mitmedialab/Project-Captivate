@@ -1,3 +1,0 @@
-thermopile.c:194:6:SwitchTemperatureSensor	16	static
-thermopile.c:213:6:Setup_LMP91051	16	static
-thermopile.c:59:6:ThermopileTask	16	static

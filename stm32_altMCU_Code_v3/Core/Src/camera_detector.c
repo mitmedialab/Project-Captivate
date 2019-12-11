@@ -68,6 +68,7 @@ uint8_t right_brightness;
 /* Functions Definition ------------------------------------------------------*/
 void cameraDetectionTask(void *argument){
 
+	//HAL_Delay(100);
 	uint32_t evt = 0;
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
@@ -77,6 +78,27 @@ void cameraDetectionTask(void *argument){
 	while(1){
 //		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
 		evt = 0x00000001U;
+
+		colorSet.color[0] = 0;
+		colorSet.color[1] = 0;
+		colorSet.color[2] = 0;
+		colorSet.color[3] = 0;
+		colorSet.color[4] = 0;
+		colorSet.color[5] = 0;
+		colorSet.color[6] = 0;
+		colorSet.color[7] = 0;
+		colorSet.color[8] = 0;
+		colorSet.color[9] = 0;
+		colorSet.color[10] = 0;
+		colorSet.color[11] = 0;
+		colorSet.color[12] = 0;
+		colorSet.color[13] = 0;
+		colorSet.color[14] = 0;
+		colorSet.color[15] = 0;
+		colorSet.color[13] = 0;
+		colorSet.color[14] = 0;
+		colorSet.color[15] = 0;
+
 		// if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
 			// wait for start flag
@@ -150,31 +172,47 @@ void cameraDetectionTask(void *argument){
 					continue;
 				}
 
-				// calculate brightness
-				if(theta > M_PI_2){
-					left_brightness = MAX_BRIGHTNESS;
-					right_brightness = ((float) MAX_BRIGHTNESS) * sin(theta);
-				}
-
-				// calculate right brightness
-				else{
-					theta = (theta * -1) + M_PI_2; // compensate for arctan negative region
-					right_brightness = MAX_BRIGHTNESS;
-					left_brightness = ((float) MAX_BRIGHTNESS ) * sin(theta);
-				}
-
-				colorSet.loc.left_side_b = left_brightness;
-				colorSet.loc.right_side_b = right_brightness;
-
-//				FrontLightsSet(&colorSet);
+//				// calculate brightness
+//				if(theta > M_PI_2){
+//					left_brightness = MAX_BRIGHTNESS;
+//					right_brightness = ((float) MAX_BRIGHTNESS) * sin(theta);
+//				}
 //
-//				memcpy(led_left_PWM, colorSet.color, 9);
-//				memcpy(led_right_PWM, &(colorSet.color[9]), 9);
+//				// calculate right brightness
+//				else{
+//					theta = (theta * -1) + M_PI_2; // compensate for arctan negative region
+//					right_brightness = MAX_BRIGHTNESS;
+//					left_brightness = ((float) MAX_BRIGHTNESS ) * sin(theta);
+//				}
+//
+//				colorSet.loc.left_side_b = left_brightness;
+//				colorSet.loc.right_side_b = right_brightness;
+//
+////				FrontLightsSet(&colorSet);
+////
+////				memcpy(led_left_PWM, colorSet.color, 9);
+////				memcpy(led_right_PWM, &(colorSet.color[9]), 9);
+//
+//				while(HAL_I2C_Mem_Write(&hi2c1, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT) != HAL_OK);
+//				while(HAL_I2C_Mem_Write(&hi2c1, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT) != HAL_OK);
+
+				if(vec_x > 0){
+					colorSet.loc.left_side_b = 0;
+					colorSet.loc.right_side_b = MAX_BRIGHTNESS;
+				}else{
+					colorSet.loc.left_side_b = MAX_BRIGHTNESS;
+					colorSet.loc.right_side_b = 0;
+				}
+
+				memcpy(led_left_PWM, colorSet.color, 9);
+				memcpy(led_right_PWM, &(colorSet.color[9]), 9);
 
 				while(HAL_I2C_Mem_Write(&hi2c1, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT) != HAL_OK);
 				while(HAL_I2C_Mem_Write(&hi2c1, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT) != HAL_OK);
 
-				osDelay(200);
+				HAL_Delay(1000);
+
+//				HAL_Delay(200);
 
 //				HAL_ADC_Start(&hadc1);
 //				HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
@@ -196,18 +234,18 @@ void cameraDetectionTask(void *argument){
 			}
 
 			// stop timer and put thread in idle if signal was reset
-			evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
-			if( (evt & 0x00000002U) == 0x00000002U){
-
-				HAL_ADC_Stop_DMA(&hadc1);
-//					while(HAL_ADC_Stop(&hadc1) != HAL_OK)
-//					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
-//					HAL_TIM_Base_Stop(&htim16);
-//					HAL_TIM_Base_Stop(&htim2);
-//				HAL_TIM_Base_Stop_IT(&htim2);
-				osThreadFlagsClear(0x0000000EU);
-				break;
-			}
+//			evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
+//			if( (evt & 0x00000002U) == 0x00000002U){
+//
+//				HAL_ADC_Stop_DMA(&hadc1);
+////					while(HAL_ADC_Stop(&hadc1) != HAL_OK)
+////					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+////					HAL_TIM_Base_Stop(&htim16);
+////					HAL_TIM_Base_Stop(&htim2);
+////				HAL_TIM_Base_Stop_IT(&htim2);
+//				osThreadFlagsClear(0x0000000EU);
+//				break;
+//			}
 		}
 	}
 }

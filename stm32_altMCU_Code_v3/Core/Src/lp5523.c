@@ -14,22 +14,22 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 #include "lp5523.h"
 //#include "stm32wbxx_hal_i2c.h"
-#include "stm32f3xx_hal.h"
+#include "stm32wbxx_hal.h"
 #include "i2c.h"
 #include "stdint.h"
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "main.h"
 #include "string.h"
-//#include "config.h"
+#include "config.h"
 
-//#include "system_settings.h"
+#include "system_settings.h"
 /* typedef -----------------------------------------------------------*/
 
 
 /* defines -----------------------------------------------------------*/
 #define I2C_HANDLE_TYPEDEF 	&hi2c1
-#define I2C_TIMEOUT			100
+#define I2C_TIMEOUT			-1
 
 
 /* macros ------------------------------------------------------------*/
@@ -50,8 +50,8 @@ extern "C" {
  *
  *************************************************************/
 
-//uint8_t led_left_PWM[9] = {0};
-//uint8_t led_right_PWM[9] = {0};
+uint8_t led_left_PWM[9] = {0};
+uint8_t led_right_PWM[9] = {0};
 uint8_t led_current[9] = {100, 100, 100, 100, 100, 100, 100, 100, 100};
 
 //uint8_t led_current[9] = {200, 200, 200, 200, 200, 200, 200, 200, 200};
@@ -124,46 +124,46 @@ void setup_LP5523(uint8_t ADDR){
 //}
 
 
-//void FrontLightsSet(union ColorComplex *setColors){
-//	memcpy(led_left_PWM, setColors, 9);
-//	memcpy(led_right_PWM, &(setColors->color[9]), 9);
-//#ifndef DONGLE_CODE
-//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT) != HAL_OK);
-//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT) != HAL_OK);
-//#endif
-//
-//#ifdef DONGLE_CODE
-//	    	if(led_left_PWM[LED_LEFT_TOP_R] > 0)
-//	    	{
-//				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-//
-//	    	}
-//	    	else
-//			{
-//				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-//			}
-//
-//	    	// if 1
-//	    	if (led_left_PWM[LED_LEFT_TOP_B] > 0)
-//	    	{
-//	    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-//			}
-//	    	else
-//			{
-//				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-//			}
-//
-//	    	//if 2
-//	    	if (led_left_PWM[LED_LEFT_TOP_G] > 0)
-//	    	{
-//				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-//			}
-//	    	else
-//	    	{
-//	    		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-//	    	}
-//#endif
-//}
+void FrontLightsSet(union ColorComplex *setColors){
+	memcpy(led_left_PWM, setColors, 9);
+	memcpy(led_right_PWM, &(setColors->color[9]), 9);
+#ifndef DONGLE_CODE
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
+#endif
+
+#ifdef DONGLE_CODE
+	    	if(led_left_PWM[LED_LEFT_TOP_R] > 0)
+	    	{
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+	    	}
+	    	else
+			{
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+			}
+
+	    	// if 1
+	    	if (led_left_PWM[LED_LEFT_TOP_B] > 0)
+	    	{
+	    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+			}
+	    	else
+			{
+				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+			}
+
+	    	//if 2
+	    	if (led_left_PWM[LED_LEFT_TOP_G] > 0)
+	    	{
+				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			}
+	    	else
+	    	{
+	    		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	    	}
+#endif
+}
 
 void ThreadFrontLightsTask(void *argument)
 {
@@ -219,15 +219,15 @@ void ThreadFrontLightsTask(void *argument)
 //		// REMOVE BELOW
 //		lightsSimpleMessageReceived = 0X00005229;
 
-//		for(int i = 0; i<= 8; i++){
-//			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_right_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
+		for(int i = 0; i<= 8; i++){
+			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
+			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
+		}
+
+		for(int i = 0; i<= 8; i++){
+			led_right_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
+			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
+		}
 
 		//while(HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_PWM_REG, 1, led_PWM, 9) != HAL_OK);
 		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
@@ -237,8 +237,8 @@ void ThreadFrontLightsTask(void *argument)
 		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
 		//osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
 
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
+		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
 //		osDelay(1000);
 
 
