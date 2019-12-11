@@ -1,5 +1,6 @@
 "Core/Src/adc.o"
 "Core/Src/camera_detector.o"
+"Core/Src/dma.o"
 "Core/Src/gpio.o"
 "Core/Src/i2c.o"
 "Core/Src/lp5523.o"

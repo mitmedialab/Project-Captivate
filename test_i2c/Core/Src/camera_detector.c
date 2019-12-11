@@ -64,7 +64,7 @@ double theta;
 uint8_t left_brightness;
 uint8_t right_brightness;
 
-
+volatile uint16_t test[10] = {0};
 /* Functions Definition ------------------------------------------------------*/
 void cameraDetectionTask(void *argument){
 
@@ -95,32 +95,33 @@ void cameraDetectionTask(void *argument){
 
 				// grab SAMPLE_CNT number of samples and average it
 				for(int i=0; i<SAMPLE_CNT; i++){
-					HAL_ADC_Start(&hadc1);
-
-					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-					ADCValue[0] = HAL_ADC_GetValue(&hadc1);
-
-					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-					ADCValue[1] = HAL_ADC_GetValue(&hadc1);
-//					ADCValue[1] = 0;
-
-					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-					ADCValue[2] = HAL_ADC_GetValue(&hadc1);
-
-					if(ADCValue[0] >= THRESHOLD){
-						diode_right += ADCValue[0];
-					}
-
-					if(ADCValue[1] >= THRESHOLD){
-						diode_left += ADCValue[1];
-					}
-
-					if(ADCValue[2] >= THRESHOLD){
-						diode_center += ADCValue[2];
-					}
-
-					HAL_ADC_Stop(&hadc1);
-					HAL_Delay(1);
+					HAL_ADC_Start_DMA(&hadc1, (uint32_t *) test, 10);
+//					HAL_ADC_Start(&hadc1);
+//
+//					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+//					ADCValue[0] = HAL_ADC_GetValue(&hadc1);
+//
+//					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+//					ADCValue[1] = HAL_ADC_GetValue(&hadc1);
+////					ADCValue[1] = 0;
+//
+//					HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+//					ADCValue[2] = HAL_ADC_GetValue(&hadc1);
+//
+//					if(ADCValue[0] >= THRESHOLD){
+//						diode_right += ADCValue[0];
+//					}
+//
+//					if(ADCValue[1] >= THRESHOLD){
+//						diode_left += ADCValue[1];
+//					}
+//
+//					if(ADCValue[2] >= THRESHOLD){
+//						diode_center += ADCValue[2];
+//					}
+//
+//					HAL_ADC_Stop(&hadc1);
+					HAL_Delay(10000);
 				}
 
 				// get average
@@ -275,7 +276,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 //	HAL_ADC_Stop_DMA(&hadc1);
 	complete++;
-//	HAL_ADC_Stop_DMA(&hadc1);
+	HAL_ADC_Stop_DMA(&hadc1);
 //
 //	// notify ThermopileTask that conversion is complete
 //	diodeSamplesPtr = &(diodeSamples[HALF_DIODE_SAMPLES]);
