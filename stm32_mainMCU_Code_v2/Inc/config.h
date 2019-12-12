@@ -42,6 +42,9 @@ struct tempData{
 
 #define DISABLE_SENSING				0
 
+// uncomment if programming the STM32 USB dongle
+//#define DONGLE_CODE					1
+
 /* macros ------------------------------------------------------------*/
 
 

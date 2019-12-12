@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "system_settings.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,10 +60,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BLINK_SIG_Pin GPIO_PIN_0
 #define BLINK_SIG_GPIO_Port GPIOA
-#define LH_SIG_Pin GPIO_PIN_1
-#define LH_SIG_GPIO_Port GPIOA
-#define BLINK_SIGA3_Pin GPIO_PIN_3
-#define BLINK_SIGA3_GPIO_Port GPIOA
 #define IMU_INT_Pin GPIO_PIN_5
 #define IMU_INT_GPIO_Port GPIOA
 #define EXPANSION_INT_Pin GPIO_PIN_2

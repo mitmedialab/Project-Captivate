@@ -31,22 +31,16 @@
 #include "app_conf.h"
 #include "stm32_lpm.h"
 #include "cmsis_os.h"
-#include "lp5523.h"
-#include "stm32wbxx_hal.h"
-#include "rtc.h"
-#include "master_thread.h"
-//#include <time.h>
-
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 #include "vcp.h"
 #include "vcp_conf.h"
-
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "main.h"
 #include "stm32wbxx_hal_gpio.h"
+#include "lp5523.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -393,7 +387,7 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
  */
 static void APP_THREAD_DeviceConfig(void)
 {
-  volatile otError error;
+  otError error;
   error = otInstanceErasePersistentInfo(NULL);
   if (error != OT_ERROR_NONE)
   {
@@ -411,24 +405,6 @@ static void APP_THREAD_DeviceConfig(void)
   {
     APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
   }
-
-  error = otThreadSetMasterKey(NULL, &masterKey);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
-  }
-
-  error = otThreadSetNetworkName(NULL, networkName);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
-  }
-  error = otThreadSetExtendedPanId(NULL , &extendedPanId);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
-  }
-
   error = otLinkSetPanId(NULL, C_PANID);
   if (error != OT_ERROR_NONE)
   {
@@ -447,9 +423,22 @@ static void APP_THREAD_DeviceConfig(void)
 
   /* USER CODE BEGIN DEVICECONFIG */
 
-//  otThreadSetMasterKey(NULL, masterKey)
-//  otThreadSetNetworkName(NULL, networkName)
-//  otThreadSetExtendedPanId(NULL , extendedPanId);
+//  error = otThreadSetMasterKey(NULL, &masterKey);
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+//  }
+//
+//  error = otThreadSetNetworkName(NULL, networkName);
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+//  }
+//  error = otThreadSetExtendedPanId(NULL , &extendedPanId);
+//  if (error != OT_ERROR_NONE)
+//  {
+//    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+//  }
 
   error = otCoapStart(NULL, OT_DEFAULT_COAP_PORT);
 //  error = otCoapAddResource(NULL, &OT_Light_Ressource);

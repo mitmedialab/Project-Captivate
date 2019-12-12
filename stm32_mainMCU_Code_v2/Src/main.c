@@ -22,7 +22,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "comp.h"
+#include "dma.h"
 #include "i2c.h"
 #include "rf.h"
 #include "rtc.h"
@@ -81,6 +81,7 @@ static void Reset_BackupDomain( void );
   * @brief  The application entry point.
   * @retval int
   */
+uint8_t temp[2048] = {0};
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -94,42 +95,61 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  Reset_Device();
+//  Reset_Device();
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  Init_Exti(); /**< Configure the system Power Mode */
+//  Init_Exti(); /**< Configure the system Power Mode */
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_RTC_Init();
-  MX_COMP1_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_RF_Init();
   MX_USART1_UART_Init();
+  MX_DMA_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
-  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init(); 
-
-  /* Start scheduler */
-  osKernelStart();
+//  /* Call init function for freertos objects (in freertos.c) */
+//  MX_FREERTOS_Init();
+//
+//  /* Start scheduler */
+//  osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  start_cpp(); //this never gets called because of kernel but leaving here in case we remove FreeRTOS in the future
+
+
+
+
+	// start timer and PWM channel for blink LED
+//	HAL_TIM_Base_Start(&htim2);
+//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+//
+//	// start timer for ADC to sample at 1kHz
+////			while(HAL_ADC_Start(&hadc1) != HAL_OK);
+//	volatile HAL_StatusTypeDef status = 0;
+//	if(HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED) != HAL_OK);
+//	if(HAL_ADC_Start_DMA(&hadc1, (uint32_t*) temp, 2048) != HAL_OK);
+	HAL_TIM_Base_Start(&htim2);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t *) temp, sizeof(temp));
+//  start_cpp(); //this never gets called because of kernel but leaving here in case we remove FreeRTOS in the future
   while (1)
   {
+//	  status = HAL_TIMEOUT;
+//	  status = temp[0];
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -217,6 +237,24 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+volatile uint8_t i = 0;
+
+
+void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
+{
+  i++;
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  i++;
+}
+
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  i++;
+}
+
 static void Reset_Device( void )
 {
 #if ( CFG_HW_RESET_BY_FW == 1 )

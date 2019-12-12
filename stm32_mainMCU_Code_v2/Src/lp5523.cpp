@@ -21,6 +21,7 @@ extern "C" {
 #include "cmsis_os.h"
 #include "main.h"
 #include "string.h"
+#include "config.h"
 
 #include "system_settings.h"
 /* typedef -----------------------------------------------------------*/

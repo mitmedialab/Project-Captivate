@@ -58,7 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t aTxBuffer[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 /* USER CODE END 0 */
 
 /**
@@ -91,20 +91,26 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_DMA_Init();
   MX_ADC1_Init();
+  MX_DMA_Init();
   /* USER CODE BEGIN 2 */
 
   // DMA error correction since above, DMA fails at linking to ADC because
   HAL_ADC_MspDeInit(&hadc1);
   HAL_ADC_MspInit(&hadc1);
-  cameraDetectionTask();
+//  cameraDetectionTask();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(HAL_I2C_Slave_Transmit(&hi2c1, (uint8_t*)aTxBuffer, sizeof(aTxBuffer), 10000)!= HAL_OK)
+	  {
+	    /* Transfer error in transmission process */
+	    Error_Handler();
+	  }
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

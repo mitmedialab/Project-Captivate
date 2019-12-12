@@ -1,4 +1,0 @@
-camera_detector.c:69:6:cameraDetectionTask	48	static
-camera_detector.c:242:6:HAL_ADC_ConvCpltCallback	0	static
-camera_detector.c:255:6:HAL_ADC_ConvHalfCpltCallback	0	static
-camera_detector.c:269:6:HAL_ADC_ErrorCallback	0	static

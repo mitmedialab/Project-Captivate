@@ -100,7 +100,7 @@ int main(void)
   /* Timeout is set to 10S */
 
 
-  cameraDetectionTask();
+//  cameraDetectionTask();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,12 +109,12 @@ int main(void)
 
   while (1)
   {
-//	  if(HAL_I2C_Slave_Transmit(&hi2c1, (uint8_t*)aTxBuffer, sizeof(aTxBuffer), 10000)!= HAL_OK)
-//	  {
-//	    /* Transfer error in transmission process */
-//	    Error_Handler();
-//	  }
-//	  HAL_Delay(1000);
+	  if(HAL_I2C_Slave_Transmit(&hi2c1, (uint8_t*)aTxBuffer, sizeof(aTxBuffer), 10000)!= HAL_OK)
+	  {
+	    /* Transfer error in transmission process */
+	    Error_Handler();
+	  }
+	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 

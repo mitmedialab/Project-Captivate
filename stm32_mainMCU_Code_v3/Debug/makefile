@@ -8,7 +8,6 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include Utilities/subdir.mk
 -include STM32_WPAN/Target/subdir.mk
 -include STM32_WPAN/App/subdir.mk
 -include Middlewares/STM32_WPAN/subdir.mk

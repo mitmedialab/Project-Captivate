@@ -17,8 +17,13 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 #include "stdint.h"
 #include "cmsis_os.h"
-/* typedef -----------------------------------------------------------*/
+#include "stm32wbxx_hal.h"
 
+/* typedef -----------------------------------------------------------*/
+struct blinkData{
+	uint8_t			data[100];
+	uint32_t		tick_ms;
+};
 
 /* defines -----------------------------------------------------------*/
 
@@ -31,7 +36,16 @@ extern "C" {
 
 /* variables -----------------------------------------------*/
 osThreadId_t blinkTaskHandle;
+osMessageQueueId_t	blinkMsgQueueHandle;
 
+//osSemaphoreDef(blinkSemDef);
+//osSemaphoreId (blinkSemaphore);
+
+//osSemaphoreId osSemaphoreCreate (blinkSemDef, 0);
+//
+//osSemaphoreWait(multiplex_id, osWaitForever);
+//        // do something
+//        osSemaphoreRelease(blinkSemaphore);
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -57,11 +71,20 @@ void BlinkTask(void);
  */
 void SetupBlinkSensing(void);
 
+/**
+ * @brief DMA Transfer Complete Callback.
+ * @param  None
+ * @retval None
+ */
+//void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 /*************************************************************
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
 *************************************************************/
+
+
 
 
 

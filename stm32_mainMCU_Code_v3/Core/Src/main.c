@@ -98,22 +98,22 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
-//  MX_DMA_Init();
-//  MX_ADC1_Init();
-//  MX_RTC_Init();
-//  MX_TIM2_Init();
-//  MX_RF_Init();
-//  MX_USART1_UART_Init();
-//  MX_I2C1_Init();
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC1_Init();
+  MX_RTC_Init();
+  MX_TIM2_Init();
+  MX_RF_Init();
+  MX_USART1_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
-  /* Call init function for freertos objects (in freertos.c) */
+//  /* Call init function for freertos objects (in freertos.c) */
 //  MX_FREERTOS_Init();
-
-  /* Start scheduler */
+//
+//  /* Start scheduler */
 //  osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
@@ -124,16 +124,16 @@ int main(void)
 
   while (1)
   {
-//	  while(HAL_I2C_Master_Receive(&hi2c1, (uint16_t)I2C_ADDRESS << 1, (uint8_t *)aRxBuffer, sizeof(aRxBuffer), 10000) != HAL_OK)
-//	  {
-//	    /* Error_Handler() function is called when Timeout error occurs.
-//	       When Acknowledge failure occurs (Slave don't acknowledge it's address)
-//	       Master restarts communication */
-//	    if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-//	    {
-//	      Error_Handler();
-//	    }
-//	  }
+	  while(HAL_I2C_Master_Receive(&hi2c1, (uint16_t)I2C_ADDRESS << 1, (uint8_t *)aRxBuffer, sizeof(aRxBuffer), 10000) != HAL_OK)
+	  {
+	    /* Error_Handler() function is called when Timeout error occurs.
+	       When Acknowledge failure occurs (Slave don't acknowledge it's address)
+	       Master restarts communication */
+	    if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+	    {
+	      Error_Handler();
+	    }
+	  }
 	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */

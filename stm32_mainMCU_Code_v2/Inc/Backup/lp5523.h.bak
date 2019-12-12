@@ -20,8 +20,39 @@
 
 /* typedef -----------------------------------------------------------*/
 
+typedef union ColorComplex
+{
+    struct colors_indiv {
+        uint8_t left_front_b;
+        uint8_t left_front_g;
+        uint8_t left_top_b;
+        uint8_t left_top_g;
+        uint8_t left_side_b;
+        uint8_t left_side_g;
+        uint8_t left_front_r;
+		uint8_t left_top_r;
+		uint8_t left_side_r;
+
+		uint8_t right_front_b;
+		uint8_t right_front_g;
+		uint8_t right_top_b;
+		uint8_t right_top_g;
+		uint8_t right_side_b;
+		uint8_t right_side_g;
+		uint8_t right_front_r;
+		uint8_t right_top_r;
+		uint8_t right_side_r;
+    };
+    uint8_t color[18];
+};
 
 /* defines -----------------------------------------------------------*/
+
+/** FREERTOS QUEUES **/
+#define MAX_LIGHT_SIMPLE_QUEUE_SIZE	5 // 5 entries
+#define NUM_OF_LEDS_PER_DEVICE		9
+
+/** Default Address **/
 #define LIS3DH_DEFAULT_ADDRESS 		0x35
 
 /** LEFT SIDE **/
@@ -103,8 +134,11 @@
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t threadFrontLightsTaskHandle;
+osThreadId_t 		threadFrontLightsTaskHandle;
+osMessageQueueId_t	lightsSimpleQueueHandle;
 
+/* variables that hold received messages */
+uint32_t 			lightsSimpleMessage;
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -118,6 +152,8 @@ osThreadId_t threadFrontLightsTaskHandle;
 void ThreadFrontLightsTask(void *argument);
 
 void setup_LP5523(uint8_t ADDR);
+
+void FrontLightsSet(union ColorComplex *setColors);
 
 //class LP5523
 //{

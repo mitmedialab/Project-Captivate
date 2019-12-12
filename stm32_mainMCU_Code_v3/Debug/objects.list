@@ -103,4 +103,3 @@
 "Middlewares/STM32_WPAN/udp.o"
 "STM32_WPAN/App/app_thread.o"
 "STM32_WPAN/Target/hw_ipcc.o"
-"Utilities/stm32_lpm.o"

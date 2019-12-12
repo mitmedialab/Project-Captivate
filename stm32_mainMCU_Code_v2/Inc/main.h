@@ -58,20 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#ifdef DONGLE_CODE
-#define LD1_Pin GPIO_PIN_4
-#define LD1_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_0
-#define LD2_GPIO_Port GPIOB
-#define LD3_Pin GPIO_PIN_1
-#define LD3_GPIO_Port GPIOB
-#endif
 #define BLINK_SIG_Pin GPIO_PIN_0
 #define BLINK_SIG_GPIO_Port GPIOA
-#define LH_SIG_Pin GPIO_PIN_1
-#define LH_SIG_GPIO_Port GPIOA
-#define BLINK_SIGA3_Pin GPIO_PIN_3
-#define BLINK_SIGA3_GPIO_Port GPIOA
 #define IMU_INT_Pin GPIO_PIN_5
 #define IMU_INT_GPIO_Port GPIOA
 #define EXPANSION_INT_Pin GPIO_PIN_2
@@ -79,6 +67,10 @@ void Error_Handler(void);
 #define BLINK_PWM_Pin GPIO_PIN_3
 #define BLINK_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+
+void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc);
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 
 /* USER CODE END Private defines */
 

@@ -18,6 +18,8 @@
 #include "cmsis_os.h"
 #include "tim.h"
 
+#include "adc.h"
+
 
 /* typedef -----------------------------------------------------------*/
 
@@ -49,10 +51,12 @@
  * @param  None
  * @retval None
  */
-static struct blinkData blinkMsgBuffer_1 = {{0},1};
-static struct blinkData blinkMsgBuffer_2 = {{0},2};
+volatile struct blinkData blinkMsgBuffer_1 = {{0},1};
+volatile struct blinkData blinkMsgBuffer_2 = {{0},2};
 
 static struct blinkData *buffer_pointer;
+
+uint8_t temp[2048];
 
 void BlinkTask(void){
 	uint32_t evt;
@@ -68,6 +72,8 @@ void BlinkTask(void){
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
 			// start timer for ADC to sample at 1kHz
+//			while(HAL_ADC_Start(&hadc1) != HAL_OK);
+			while(HAL_ADC_Start_DMA(&hadc1, (uint32_t*) temp, 2048)  != HAL_OK);
 
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
@@ -83,6 +89,8 @@ void BlinkTask(void){
 				// stop timer and put thread in idle if signal was reset
 				evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
 				if( evt == 0x00000002U){
+					HAL_ADC_Stop_DMA(&hadc1);
+//					while(HAL_ADC_Stop(&hadc1) != HAL_OK)
 					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 					HAL_TIM_Base_Stop(&htim2);
 					break;
@@ -92,7 +100,16 @@ void BlinkTask(void){
 	}
 }
 
-
+//volatile i = 0;
+// Called when buffer is half filled
+//void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc) {
+//	i++;
+//}
+//
+//// Called when buffer is completely filled
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+//	i++;
+//}
 
 /**
  * @brief Setting up blink sensing

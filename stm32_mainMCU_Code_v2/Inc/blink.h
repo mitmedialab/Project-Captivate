@@ -17,6 +17,8 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 #include "stdint.h"
 #include "cmsis_os.h"
+#include "stm32wbxx_hal.h"
+
 /* typedef -----------------------------------------------------------*/
 struct blinkData{
 	uint8_t			data[100];
@@ -69,11 +71,20 @@ void BlinkTask(void);
  */
 void SetupBlinkSensing(void);
 
+/**
+ * @brief DMA Transfer Complete Callback.
+ * @param  None
+ * @retval None
+ */
+//void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 /*************************************************************
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
 *************************************************************/
+
+
 
 
 

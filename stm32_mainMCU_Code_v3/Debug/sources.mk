@@ -23,5 +23,4 @@ Middlewares/FreeRTOS \
 Middlewares/STM32_WPAN \
 STM32_WPAN/App \
 STM32_WPAN/Target \
-Utilities \
 
