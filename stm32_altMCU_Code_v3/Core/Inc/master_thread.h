@@ -21,19 +21,23 @@ extern "C" {
 //#include "blink.h"
 #include "stm32f3xx_hal.h"
 #include "thermopile.h"
+#include "inertial_sensing.h"
 //#include "position.h"
 //#include "inter_processor_comms.h"
 /* typedef -----------------------------------------------------------*/
 
-struct LogPacket
-{
-	struct tempData			temp;
-//	tempData				temp;
-//	inertialData			inertial;
-//	positionData			pos;
-	uint32_t				tick_ms;
-	uint32_t				epoch;
-};
+#define SAMPLE_DISABLE		0
+#define SAMPLE_ENABLE		1
+
+//struct LogPacket
+//{
+//	struct thermopilePackagedData			temp;
+////	tempData				temp;
+////	inertialData			inertial;
+////	positionData			pos;
+//	uint32_t				tick_ms;
+//	uint32_t				epoch;
+//};
 
 struct LogMessage
 {
@@ -45,6 +49,15 @@ struct LogMessage
 	uint8_t		positionEnabled;
 
 };
+
+struct secondaryProcessorData
+{
+	struct thermopilePackagedData	temp;
+	struct inertialData				inertial;
+	uint32_t						tick_ms;
+	uint32_t						epoch;
+};
+
 /* defines -----------------------------------------------------------*/
 
 
@@ -52,8 +65,8 @@ struct LogMessage
 
 
 /* function prototypes -----------------------------------------------*/
-void packetizeData(struct LogPacket *packet,
-		struct thermopileData *temp,
+void packetizeData(struct secondaryProcessorData *packet,
+		struct thermopilePackagedData *temp,
 		struct inertialData *imu);
 
 void MasterThreadTask(void *argument);

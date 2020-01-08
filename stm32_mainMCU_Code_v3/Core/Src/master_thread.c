@@ -33,12 +33,10 @@
 
 
 /* variables -----------------------------------------------*/
-struct LogMessage 		togLogMessageReceived;
-struct LogMessage 		prevLogMessage;
+
 
 struct blinkData	blinkMsgReceived;
-struct LogPacket 		sensorPacket;
-
+struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -65,6 +63,14 @@ void MasterThreadTask(void *argument)
 		//   .... this function waits forever
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
 
+//		togLogMessageReceived.status = 1;
+//		togLogMessageReceived.logStatus = 1;
+//		togLogMessageReceived.blinkEnabled = 0;
+//		togLogMessageReceived.tempEnabled = 1;
+//		togLogMessageReceived.intertialEnabled = 0;
+//		togLogMessageReceived.positionEnabled = 0;
+
+
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
 		if(togLogMessageReceived.logStatus == ENABLE_LOG)
@@ -77,22 +83,17 @@ void MasterThreadTask(void *argument)
 			{
 				osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 			}
-
-//			if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(tempSemaphore);
-//			}
-//
-//			if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(inertialSemaphore);
-//			}
 //
 //			if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
 //			{
 //				osSemaphoreRelease(posSemaphore);
 //			}
 //
+			if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE) || (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE) )
+			{
+				osThreadFlagsSet(interProcessorTaskHandle, 0x00000001U);
+			}
+
 
 			while(1)
 			{
@@ -105,22 +106,17 @@ void MasterThreadTask(void *argument)
 					osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, osWaitForever);
 				}
 
-//				if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
-//
-//				if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
-//
-//				if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
+				//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
+				//						{
+				//
+				//						}
 
-				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, NULL, NULL);
+				if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE) || (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE) )
+				{
+					osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, osWaitForever);
+				}
+
+				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, &secondaryProcessorMsgReceived);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
@@ -143,21 +139,16 @@ void MasterThreadTask(void *argument)
 						{
 							osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
 						}
-
-//						if(prevLogMessage.tempEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
-//
-//						if(prevLogMessage.intertialEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
 //
 //						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
 //						{
 //
 //						}
+
+						if( (prevLogMessage.tempEnabled == SENSOR_ENABLE) || (prevLogMessage.intertialEnabled == SENSOR_ENABLE) )
+						{
+							osThreadFlagsSet(interProcessorTaskHandle, 0x00000002U);
+						}
 
 						// break out of first while loop and wait until told to start logging again
 						break;
@@ -174,9 +165,8 @@ RTC_DateTypeDef RTC_date;
 
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
-		struct tempData *temp,
-		struct inertialData *imu,
-		struct positionData *pos)
+		struct positionData *pos,
+		struct parsedSecondaryProcessorPacket *processorMsg)
 {
 	// get processor tick counts (in terms of ms)
 	packet->tick_ms = HAL_GetTick();
@@ -188,6 +178,7 @@ void packetizeData(struct LogPacket *packet,
 
 	// add sensor data
 	memcpy ( &(packet->blink), blink, sizeof(struct blinkData) );
+	memcpy ( &(packet->procData), processorMsg, sizeof(struct parsedSecondaryProcessorPacket) );
 }
 
 // Convert Date/Time structures to epoch time

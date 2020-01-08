@@ -38,8 +38,9 @@ struct LogMessage 		togLogMessageReceived;
 struct LogMessage 		prevLogMessage;
 
 //struct blinkData	blinkMsgReceived;
-struct LogPacket 		sensorPacket;
-struct thermopileData	thermMsgReceived;
+struct secondaryProcessorData 		sensorPacket;
+struct thermopilePackagedData	thermMsgReceived;
+struct inertialData				inertialMsgReceived;
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -64,14 +65,14 @@ void MasterThreadTask(void *argument)
 	{
 		// check if the queue has a new message (a command to start/stop logging)
 		//   .... this function waits forever
-		//osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
+		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
 
-		togLogMessageReceived.status = 1;
-		togLogMessageReceived.logStatus = 1;
-		togLogMessageReceived.blinkEnabled = 1;
-		togLogMessageReceived.tempEnabled = 1;
-		togLogMessageReceived.intertialEnabled = 1;
-		togLogMessageReceived.positionEnabled = 1;
+//		togLogMessageReceived.status = 1;
+//		togLogMessageReceived.logStatus = 1;
+//		togLogMessageReceived.blinkEnabled = 1;
+//		togLogMessageReceived.tempEnabled = 1;
+//		togLogMessageReceived.intertialEnabled = 1;
+//		togLogMessageReceived.positionEnabled = 1;
 
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
@@ -86,21 +87,10 @@ void MasterThreadTask(void *argument)
 				osThreadFlagsSet(thermopileTaskHandle, 0x00000001U);
 			}
 
-//			if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(tempSemaphore);
-//			}
-//
-//			if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(inertialSemaphore);
-//			}
-//
-//			if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(posSemaphore);
-//			}
-//
+			if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
+			{
+				osThreadFlagsSet(inertialSensingTaskHandle, 0x00000001U);
+			}
 
 			while(1)
 			{
@@ -113,28 +103,21 @@ void MasterThreadTask(void *argument)
 					osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, osWaitForever);
 				}
 
-//				if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
-//
-//				if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
-//
-//				if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
-//				{
-//
-//				}
+				if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
+				{
+					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
+				}
 
-				packetizeData(&sensorPacket, &thermMsgReceived, NULL);
+				packetizeData(&sensorPacket, &thermMsgReceived, &inertialMsgReceived);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO MAIN MCU (STM32WB) .....*/
 				/**********************************************************************************/
 
 				osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
+
+				// assert interrupt pin to notify master a packet is waiting
+				HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_SET);
 
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
@@ -144,6 +127,7 @@ void MasterThreadTask(void *argument)
 				//   otherwise, timeout
 				if(osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, 0) == osOK)
 				{
+
 					// disable threads
 					if(togLogMessageReceived.status == DISABLE_SENSING){
 
@@ -152,20 +136,13 @@ void MasterThreadTask(void *argument)
 							osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
 						}
 
-//						if(prevLogMessage.tempEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
-//
-//						if(prevLogMessage.intertialEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
-//
-//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
+						if(prevLogMessage.intertialEnabled == SENSOR_ENABLE)
+						{
+							osThreadFlagsSet(inertialSensingTaskHandle, 0x00000002U);
+						}
+
+						// empty queues
+						osMessageQueueReset(sendMsgToMainQueueHandle);
 
 						// break out of first while loop and wait until told to start logging again
 						break;
@@ -182,8 +159,8 @@ void MasterThreadTask(void *argument)
 RTC_TimeTypeDef RTC_time;
 RTC_DateTypeDef RTC_date;
 
-void packetizeData(struct LogPacket *packet,
-		struct thermopileData *temp,
+void packetizeData(struct secondaryProcessorData *packet,
+		struct thermopilePackagedData *temp,
 		struct inertialData *imu)
 {
 	// get processor tick counts (in terms of ms)
@@ -195,7 +172,9 @@ void packetizeData(struct LogPacket *packet,
 	packet->epoch = RTC_ToEpoch(&RTC_time, &RTC_date);
 
 	// add sensor data
-	memcpy ( &(packet->temp), temp, sizeof(struct tempData) );
+	memcpy ( &(packet->temp), temp, sizeof(struct thermopilePackagedData) );
+	memcpy ( &(packet->inertial), imu, sizeof(struct inertialData) );
+
 }
 
 // Convert Date/Time structures to epoch time

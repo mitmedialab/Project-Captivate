@@ -1,5 +1,5 @@
-Core/Src/intertial_sensing.o: ../Core/Src/intertial_sensing.cpp \
- ../Core/Inc/intertial_sensing.hpp \
+Core/Src/inertial_sensing.o: ../Core/Src/inertial_sensing.c \
+ ../Core/Inc/inertial_sensing.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
@@ -9,6 +9,7 @@ Core/Src/intertial_sensing.o: ../Core/Src/intertial_sensing.cpp \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
+ ../Core/Inc/driver_BNO080.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h \
  ../Core/Inc/stm32f3xx_hal_conf.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h \
@@ -40,9 +41,11 @@ Core/Src/intertial_sensing.o: ../Core/Src/intertial_sensing.cpp \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h \
- ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h
+ ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
+ ../Core/Inc/driver_BNO080.h ../Core/Inc/main.h \
+ ../Core/Inc/inter_processor_comms.h
 
-../Core/Inc/intertial_sensing.hpp:
+../Core/Inc/inertial_sensing.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 
@@ -61,6 +64,8 @@ Core/Src/intertial_sensing.o: ../Core/Src/intertial_sensing.cpp \
 ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
+
+../Core/Inc/driver_BNO080.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h:
 
@@ -125,3 +130,9 @@ Core/Src/intertial_sensing.o: ../Core/Src/intertial_sensing.cpp \
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h:
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h:
+
+../Core/Inc/driver_BNO080.h:
+
+../Core/Inc/main.h:
+
+../Core/Inc/inter_processor_comms.h:

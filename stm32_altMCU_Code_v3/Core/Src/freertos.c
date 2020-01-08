@@ -108,23 +108,46 @@ osKernelInitialize();
   };
     thermopileTaskHandle = osThreadNew(ThermopileTask, NULL, &thermopileTask_attributes);
 
+	const osThreadAttr_t inertialSensingTask_attributes = {
+			 .name = "inertialSensingTask",
+			 .priority = (osPriority_t) osPriorityNormal,
+			 .stack_size = 128
+		   };
+	inertialSensingTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialSensingTask_attributes);
+//
   const osThreadAttr_t masterThreadTask_attributes = {
         .name = "masterThreadTask",
         .priority = (osPriority_t) osPriorityNormal,
         .stack_size = 256
       };
   masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
-
+//
   const osThreadAttr_t sendMsgToMainTask_attributes = {
           .name = "sendMsgToMainTask",
           .priority = (osPriority_t) osPriorityNormal,
-          .stack_size = 256
+          .stack_size = 128
         };
   sendMsgToMainTaskHandle = osThreadNew(SendPacketToMainTask, NULL, &sendMsgToMainTask_attributes);
 
+//  const osThreadAttr_t receivePacketFromMainTask_attributes = {
+//            .name = "receivePacketFromMainTask",
+//            .priority = (osPriority_t) osPriorityNormal,
+//            .stack_size = 128
+//          };
+//  receivePacketFromMainTaskHandle = osThreadNew(ReceivePacketFromMainTask, NULL, &receivePacketFromMainTask_attributes);
+
+
+  sendMsgToMainQueueHandle = osMessageQueueNew (2, sizeof(struct secondaryProcessorData), NULL);
   togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
-  thermMsgQueueHandle = osMessageQueueNew (10, sizeof(struct thermopileData), NULL);
-  sendMsgToMainQueueHandle = osMessageQueueNew (10, sizeof(struct LogPacket), NULL);
+  thermMsgQueueHandle = osMessageQueueNew (5, sizeof(struct thermopilePackagedData), NULL);
+
+  inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
+  activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
+  rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
+  stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
+  stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
+
+  interprocessMessageLockSem = osSemaphoreNew (1, 1, NULL);
 
   /* USER CODE END RTOS_THREADS */
 

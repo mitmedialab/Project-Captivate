@@ -15,6 +15,9 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
+#include "master_thread.h"
+#include "string.h"
+
 //// CONFIGURATION REGISTER
 //#define LMP91051_CFG_REG      0x0
 //#define TP_NOSE_SEL           0x00
@@ -43,34 +46,128 @@
 ///*
 // * THREADS
 // */
-//void ThermopileThread(void){
-//
-//  Setup_LMP91051();
-//
-//  while(1){
-//    osDelay(1000);
-//
-//  }
+
+struct secondaryProcessorData receivedPacket;
+
+struct parsedSecondaryProcessorPacket parsedPacket;
+
+extern struct LogPacket sensorPacket;
+extern struct LogMessage togLogMessageReceived;
+
+void InterProcessorTask(void *argument){
+	uint32_t evt = 0;
+
+	while(1){
+
+		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
+
+		// if signal was received successfully, start blink task
+		if (evt == 0x00000001U)  {
+
+			// tell secondary processor to start logging (in blocking mode)
+			osThreadFlagsClear(0x0000000FU);
+			while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(togLogMessageReceived)) != HAL_OK);
+			HAL_Delay(100);
+			// message passing until told to stop
+			while(1){
+
+				// grab an event flag if available
+				evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
+
+				// if an interrupt is received indicating a message is waiting to be received
+ 				if( (evt & 0x00000004U) == 0x00000004U){
+
+ 					// clear transmission flag
+ 					osThreadFlagsClear(0x00000010U);
+ 					// send command packet to MCU
+ 					while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(struct LogMessage)) != HAL_OK){
+ 						osDelay(100);
+ 					}
+ 					// wait until transmission is successful
+ 					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
+ 					// ensure I2C is disabled
+// 					HAL_I2C_Master_Abort_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1);
+
+ 					// clear receiving flag
+ 					osThreadFlagsClear(0x00000008U);
+ 					// grab packet from secondary MCU
+ 					while(HAL_I2C_Master_Receive_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &receivedPacket, sizeof(struct secondaryProcessorData)) != HAL_OK){
+ 						osDelay(100);
+ 					}
+					// wait until packet is received
+					evt = osThreadFlagsWait(0x0000000AU, osFlagsWaitAny, osWaitForever);
+					// ensure I2C is disabled
+//					HAL_I2C_Master_Abort_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1);
+
+					// if thread was told to stop, STOP!
+					if( (evt & 0x00000002U) == 0x00000002U ) break;
+
+					// if evt is not a "stop logging" event
+					if( (evt & 0x00000002U) != 0x00000002U){
+
+
+						// package received data into 100ms chunks and put in queue
+						memcpy(&parsedPacket.inferenceInfo, &receivedPacket.inertial.inferenceInfo, sizeof(struct inertialInferenceData));
+						parsedPacket.tick_ms = receivedPacket.tick_ms;
+						parsedPacket.epoch = receivedPacket.epoch;
+
+						for(int i = 0; i < 5; i++)
+						{
+							memcpy(&parsedPacket.temple, &receivedPacket.temp.temple[i], sizeof(struct thermopileData));
+							memcpy(&parsedPacket.nose, &receivedPacket.temp.nose[i], sizeof(struct thermopileData));
+							memcpy(&parsedPacket.rotationMatrix, &receivedPacket.inertial.rotationMatrix[i], sizeof(struct rotationData));
+
+							// pass to master thread to handle
+							osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &parsedPacket, 0U, 0);
+
+						}
+
+						// put packet in queue for master task handling
+//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
+//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
+//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
+//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
+//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
+					}
+				}
+
+				// stop thread and clear queues
+				if( (evt & 0x00000002U) == 0x00000002U){
+
+					/// clear transmission flag
+ 					osThreadFlagsClear(0x00000010U);
+					// tell secondary processor to stop logging (in blocking mode)
+					while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(togLogMessageReceived)) != HAL_OK);
+					// wait until transmit is complete
+					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
+
+					// empty queue
+					osMessageQueueReset(interProcessorMsgQueueHandle);
+
+					break;
+				}
+
+			}
+		}
+	}
+}
+
+
+//void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c){
+//	osThreadFlagsSet(interProcessorTaskHandle, 0x00000008U);
 //}
 
+volatile uint8_t test_1 = 0;
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *I2cHandle)
+{
+	// notify sending thread that message has been sent
+//	osThreadFlagsSet(sendMsgToMainTaskHandle, 0x00000001U);
+	osThreadFlagsSet(interProcessorTaskHandle, 0x00000010U);
+	test_1 = 1;
+}
 
-/*
- * Helper Functions
- */
-
-//void Setup_LMP91051(void){
-//  uint8_t packet[2];
-//  packet[0] = LMP91051_CFG_REG;
-//  packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN;
-//
-//  //todo: add blocking semaphore so no LED conflict
-//
-//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
-//  HAL_SPI_Transmit(&hspi1, packet, 2, 0);
-//  HAL_Delay(2);
-//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
-//}
-//
-
-
-
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *I2cHandle)
+{
+	// notify receiving thread that a message has been received
+	osThreadFlagsSet(interProcessorTaskHandle, 0x00000008U);
+}

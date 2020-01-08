@@ -31,7 +31,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "inertial_sensing.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,12 +101,13 @@ int main(void)
   MX_DMA_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init(); 
+  MX_FREERTOS_Init();
 
   /* Start scheduler */
   osKernelStart();
@@ -115,6 +116,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//  uint8_t test;
+//  InertialSensingTask(&test);
   while (1)
   {
     /* USER CODE END WHILE */

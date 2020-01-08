@@ -33,6 +33,7 @@
 #include "app_entry.h"
 #include "master_thread.h"
 #include "system_settings.h"
+#include "inter_processor_comms.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -133,10 +134,21 @@ osKernelInitialize();
    togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
 
    const osThreadAttr_t masterThreadTask_attributes = {
-         .name = "masterThreadTask",
-         .priority = (osPriority_t) osPriorityNormal,
-         .stack_size = 256
-       };
+           .name = "masterThreadTask",
+           .priority = (osPriority_t) osPriorityNormal,
+           .stack_size = 256
+         };
+    masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
+
+    const osThreadAttr_t interProcessorTask_attributes = {
+               .name = "interProcessorTask",
+               .priority = (osPriority_t) osPriorityNormal,
+               .stack_size = 128
+             };
+    interProcessorTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcessorTask_attributes);
+
+    interProcessorMsgQueueHandle = osMessageQueueNew (15, sizeof(struct parsedSecondaryProcessorPacket), NULL);
+
  //#endif
 
    /* add threads, ... */

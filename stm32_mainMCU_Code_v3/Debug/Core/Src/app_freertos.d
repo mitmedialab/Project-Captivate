@@ -58,7 +58,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.c \
  ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/tim.h \
  ../Core/Inc/lp5523.h ../Core/Inc/blink.h ../Core/Inc/app_entry.h \
  ../Core/Inc/master_thread.h ../Core/Inc/config.h ../Core/Inc/blink.h \
- ../Core/Inc/system_settings.h
+ ../Core/Inc/inter_processor_comms.h ../Core/Inc/system_settings.h \
+ ../Core/Inc/inter_processor_comms.h
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -190,4 +191,8 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/Third_Par
 
 ../Core/Inc/blink.h:
 
+../Core/Inc/inter_processor_comms.h:
+
 ../Core/Inc/system_settings.h:
+
+../Core/Inc/inter_processor_comms.h:

@@ -43,7 +43,10 @@ Core/Src/inter_processor_comms.o: ../Core/Src/inter_processor_comms.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Core/Inc/master_thread.h ../Core/Inc/config.h \
  ../Core/Inc/thermopile.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Core/Inc/inertial_sensing.h ../Core/Inc/i2c.h ../Core/Inc/main.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 
 ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h:
 
@@ -138,3 +141,13 @@ Core/Src/inter_processor_comms.o: ../Core/Src/inter_processor_comms.c \
 ../Core/Inc/thermopile.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+
+../Core/Inc/inertial_sensing.h:
+
+../Core/Inc/i2c.h:
+
+../Core/Inc/main.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
+
+../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:

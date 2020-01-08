@@ -110,7 +110,7 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init(); 
+  MX_FREERTOS_Init();
 
   /* Start scheduler */
   osKernelStart();
@@ -119,8 +119,34 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//  uint8_t test_packet[1000] = {0};
+//  uint8_t test_packet[1000] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+//
+//  for(int i = 0; i<1000; i++){
+//	  test_packet[i] = i;
+//  }
+
   while (1)
   {
+//	  if(HAL_I2C_Master_Transmit_IT(&hi2c1, (0x73 << 1), (uint8_t*)test_packet, 1000)!= HAL_OK)
+//	  	     {
+//	  	       /* Error_Handler() function is called when error occurs. */
+//	  		  HAL_Delay(1000);
+//	  	     }
+//
+//	  	  while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	  	      {
+//	  	      }
+
+//	  if(HAL_I2C_Master_Receive_IT(&hi2c1, (0x73 << 1), (uint8_t*)test_packet, 1000)!= HAL_OK)
+//	  	  	     {
+//	  	  	       /* Error_Handler() function is called when error occurs. */
+//	  	  		  HAL_Delay(1000);
+//	  	  	     }
+//
+//	  	  	  while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	  	  	      {
+//	  	  	      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

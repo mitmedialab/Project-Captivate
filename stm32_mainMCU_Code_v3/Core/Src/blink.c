@@ -103,11 +103,13 @@ void BlinkTask(void){
 
 				if( (evt & 0x00000004U) == 0x00000004U){
 
+					// interpolate timestamps for blink packets
 					if(previousTick_ms == 0){
 						previousTick_ms = HAL_GetTick();
 					}
 					tick_ms_diff = (HAL_GetTick() - previousTick_ms) / ((float) BLINK_ITERATOR_COUNT);
 
+					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
 					for(iterator=0; iterator < BLINK_ITERATOR_COUNT; iterator++){
 
 						memcpy(blinkMsgBuffer_1.data, &(blink_buffer[iterator*BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
@@ -129,6 +131,10 @@ void BlinkTask(void){
 					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 					HAL_TIM_Base_Stop(&htim2);
 					previousTick_ms = 0;
+
+					// empty queue
+					osMessageQueueReset(blinkMsgQueueHandle);
+
 					break;
 				}
 			}
@@ -136,10 +142,10 @@ void BlinkTask(void){
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
+//}
 
 volatile uint8_t i = 0;
 void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)

@@ -54,8 +54,15 @@
 
 
 //uint32_t ADC_Data[600] = {0};
-struct thermopileData tempData = {{0}, 0, {0}, 0};
-volatile uint16_t test = 0;
+struct thermopilePackagedData tempData;
+//volatile uint16_t test = 0;
+
+struct adcThermopileData buffer = {0};
+//volatile uint16_t buffer_2[3] = {0};
+//uint16_t start;
+//uint16_t stop;
+//uint16_t diff;
+
 
 void ThermopileTask(void *argument){
 
@@ -69,90 +76,77 @@ void ThermopileTask(void *argument){
   uint32_t evt = 0;
 
   while(1){
-////	HAL_ADC_Start_IT(&hadc1);
-////	  osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-////	  HAL_ADC_Start_DMA(&hadc1, (uint32_t *) ADC_Data, 600);
-//	  osDelay(4000);
-//	  HAL_ADC_Stop_DMA(&hadc1);
-//	  HAL_ADC_Start_DMA(&hadc1, ADC_Data, 600);
-//
-////    for(int i = 0; i <= 120; i++){
-////    	HAL_ADC_PollForConversion(&hadc1,100);
-////    	temp_ADC_Data[i] = HAL_ADC_GetValue(&hadc1);
-////    }
-//
-//  }
+
+	  	/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
 
-		// if signal was received successfully, start blink task
+	    // if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
 
-			// start timer for ADC to sample at 200Hz
-			osThreadFlagsSet(thermopileTaskHandle, 0x00000008U);
-//			HAL_TIM_Base_Start(&htim2);
-			HAL_TIM_Base_Start_IT(&htim2);
+			// start timer for ADC to sample at 20Hz
+			HAL_TIM_Base_Start(&htim6);
 
-//			HAL_TIM_Base_Start(&htim16);
-
-
-			// message passing until told to stop
-			//      note: DMA triggers callback where buffers are switched and the full one
-			//      is passed by reference via queue to masterThread for packetization
 			while(1){
-				// stop timer and put thread in idle if signal was reset
-	//				osDelay(100); // what I should do is do the queue put calls in the DMA callback and suspend the thread here (the masterThread should resume thread when wanting to stop)
-	//				blinkMsgBuffer_1.tick_ms = (blinkMsgBuffer_1.tick_ms) + 1;
-	//				buffer_pointer = &blinkMsgBuffer_1;
-	//		    	osMessageQueuePut(blinkMsgQueueHandle, &buffer_pointer, 0U, 0U);
-				//osMessageQueuePut(blinkMsgQueueHandle, &blinkMsgBuffer_2, 0U, 0U);
-	//				osMessageQueuePut(blinkMsgQueueHandle, (void *) &blinkMsgBuffer_1, 0U, 0);
+				// start session to grab five samples of nose and temple thermopiles and thermistors
+				//   note: the ADC samples in the following order: [selected thermopile, temple thermistor, nose thermistor
 
-				evt = osThreadFlagsWait (0x0000000AU, osFlagsWaitAny, osWaitForever);
+				for(int i = 0; i < NUM_THERM_SAMPLES; i++){
 
-				// sampling period start
-				if( (evt & 0x00000008U) == 0x00000008U){
-
-					// start DMA for nose
+					/********* START DMA FOR ONE NOSE SAMPLE ************************/
 					SwitchTemperatureSensor(nose);
-					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) tempData.noseData, 20);
+					HAL_Delay(1);
+					while( HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 3) != HAL_OK)
 
 					// wait for data to be received from nose
-					evt = osThreadFlagsWait (0x00000004U, osFlagsWaitAny, osWaitForever);
-					tempData.nose_tick_ms = HAL_GetTick();
+					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
 
-					// ensure master thread hasn't told this thread to stop
+					// break if told to stop by master thread
 					if( (evt & 0x00000002U) == 0x00000002U) break;
 
-					test = tempData.noseData[5];
+					// copy the data from the buffer and continue
+					tempData.nose[i].tick_ms = HAL_GetTick();
+					tempData.nose[i].thermopile = buffer.thermopile;
+					tempData.nose[i].thermistor = buffer.nose_thermistor;
 
-					// switch thermopile circuitry to nose
+					/********* START DMA FOR ONE TEMPLE SAMPLE ************************/
 					SwitchTemperatureSensor(temple);
-
-					// start DMA for temple
-					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) tempData.templeData, sizeof(tempData.templeData));
+					HAL_Delay(1);
+					while( HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 3) != HAL_OK);
 
 					// wait for data to be received from temple
-					evt = osThreadFlagsWait (0x00000004U, osFlagsWaitAny, osWaitForever);
-					tempData.temple_tick_ms = HAL_GetTick();
+					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
 
-					// send data to master thread
-					osMessageQueuePut(thermMsgQueueHandle, (void *) &tempData, 0U, 0);
+					// break if told to stop by master thread
+					if( (evt & 0x00000002U) == 0x00000002U) break;
 
-//					}
+					// copy the data from the buffer and continue
+					tempData.temple[i].tick_ms = HAL_GetTick();
+					tempData.temple[i].thermopile = buffer.thermopile;
+					tempData.temple[i].thermistor = buffer.temple_thermistor;
+
 				}
 
-				// stop timer and put thread in idle if signal was reset
-				else if( (evt & 0x00000002U) == 0x00000002U){
-
-					HAL_ADC_Stop_DMA(&hadc1);
-	//					while(HAL_ADC_Stop(&hadc1) != HAL_OK)
-//					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
-//					HAL_TIM_Base_Stop(&htim16);
-//					HAL_TIM_Base_Stop(&htim2);
-					HAL_TIM_Base_Stop_IT(&htim2);
-					osThreadFlagsClear(0x0000000EU);
+				if( (evt & 0x00000002U) == 0x00000002U){
 					break;
 				}
+				// if not told to shut down sampling
+				else{
+					// send data to master thread
+					osMessageQueuePut(thermMsgQueueHandle, &tempData, 0U, osWaitForever);
+				}
+			}
+
+			// stop timer and put thread in idle if signal was reset
+			if( (evt & 0x00000002U) == 0x00000002U){
+				HAL_ADC_Stop_DMA(&hadc1);
+				HAL_ADC_Stop(&hadc1);
+				HAL_TIM_Base_Stop(&htim6);
+
+				// empty queue
+				osMessageQueueReset(thermMsgQueueHandle);
+
+				// clear any flags
+				osThreadFlagsClear(0x0000000EU);
 			}
 		}
 	}
@@ -162,17 +156,17 @@ volatile uint8_t complete = 0;
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	complete++;
-	//HAL_ADC_Stop_DMA(&hadc1);
-//
-//	// notify ThermopileTask that conversion is complete
+
+	// notify ThermopileTask that conversion is complete
+	while( HAL_ADC_Stop(&hadc1) != HAL_OK);
 	osThreadFlagsSet(thermopileTaskHandle, 0x00000004U);
 
 }
 
-volatile uint8_t half = 0;
+//volatile uint8_t half = 0;
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	half++;
+	//half++;
 //	memcpy(blinkMsgBuffer_1.data, &(blink_buffer), 100);
 //	blinkMsgBuffer_1.tick_ms = HAL_GetTick();
 //	blink_ptr = &blink_buffer;
@@ -201,10 +195,10 @@ void SwitchTemperatureSensor(sensorChoice sense){
 	packet[0] = LMP91051_CFG_REG;
 
 	if(sense == nose){
-		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_250 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 	else if(sense == temple){
-		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_250 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);

@@ -123,7 +123,6 @@ void setup_LP5523(uint8_t ADDR){
 //  return true;
 //}
 
-
 void FrontLightsSet(union ColorComplex *setColors){
 	memcpy(led_left_PWM, setColors, 9);
 	memcpy(led_right_PWM, &(setColors->color[9]), 9);
@@ -165,12 +164,37 @@ void FrontLightsSet(union ColorComplex *setColors){
 #endif
 }
 
+struct test_color {
+        uint8_t left_front_b;
+        uint8_t left_front_g;
+        uint8_t left_top_b;
+        uint8_t left_top_g;
+        uint8_t left_side_b;
+        uint8_t left_side_g;
+        uint8_t left_front_r;
+		uint8_t left_top_r;
+		uint8_t left_side_r;
+
+		uint8_t right_front_b;
+		uint8_t right_front_g;
+		uint8_t right_top_b;
+		uint8_t right_top_g;
+		uint8_t right_side_b;
+		uint8_t right_side_g;
+		uint8_t right_front_r;
+		uint8_t right_top_r;
+		uint8_t right_side_r;
+    };
+
+struct test_color tempComplexLight;
+
 void ThreadFrontLightsTask(void *argument)
 {
 #ifndef DONGLE_CODE
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
 #endif
+
 //	LP5523 ledDriver;
 //	ledDriver.begin();
 	uint8_t index = 0;
@@ -186,6 +210,30 @@ void ThreadFrontLightsTask(void *argument)
 //		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		lightsSimpleMessageReceived = 0;
 
+
+
+//		tempComplexLight.left_front_r = 0;
+//		tempComplexLight.left_side_r = 0;
+//		tempComplexLight.left_top_r = 0;
+//		tempComplexLight.left_front_g = 0;
+//		tempComplexLight.left_side_g = 150;
+//		tempComplexLight.left_top_g = 150;
+//		tempComplexLight.left_front_b = 150;
+//		tempComplexLight.left_side_b = 0;
+//		tempComplexLight.left_top_b = 0;
+//
+//
+//		tempComplexLight.right_front_g = 0;
+//		tempComplexLight.right_side_g = 0;
+//		tempComplexLight.right_top_g = 0;
+//		tempComplexLight.right_front_b = 0;
+//		tempComplexLight.right_side_b = 0;
+//		tempComplexLight.right_top_b = 0;
+//		tempComplexLight.right_front_r = 150;
+//		tempComplexLight.right_side_r = 150;
+//		tempComplexLight.right_top_r = 150;
+//
+//		FrontLightsSet(&tempComplexLight);
 
 		osMessageQueueGet(lightsSimpleQueueHandle, &lightsSimpleMessageReceived, 0U, osWaitForever);
 #ifndef DONGLE_CODE

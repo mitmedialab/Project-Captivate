@@ -78,6 +78,7 @@ STM32_WPAN/App/app_thread.o: ../STM32_WPAN/App/app_thread.c \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Core/Inc/config.h ../Core/Inc/blink.h \
+ ../Core/Inc/inter_processor_comms.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/ST/STM32_WPAN/thread/openthread/core/openthread_api/openthread_api_wb.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/link.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/commissioner.h \
@@ -283,6 +284,8 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/Third_Par
 ../Core/Inc/config.h:
 
 ../Core/Inc/blink.h:
+
+../Core/Inc/inter_processor_comms.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.3.0/Middlewares/ST/STM32_WPAN/thread/openthread/core/openthread_api/openthread_api_wb.h:
 

@@ -1,1 +1,3 @@
-inter_processor_comms.c:35:6:SendPacketToMainTask	8	static
+inter_processor_comms.c:40:6:SendPacketToMainTask	8	static
+inter_processor_comms.c:157:6:HAL_I2C_SlaveTxCpltCallback	8	static
+inter_processor_comms.c:163:6:HAL_I2C_SlaveRxCpltCallback	0	static

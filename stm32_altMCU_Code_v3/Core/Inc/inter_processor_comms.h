@@ -33,10 +33,14 @@ extern "C" {
 /* variables -----------------------------------------------*/
 osMessageQueueId_t 	sendMsgToMainQueueHandle;
 osThreadId_t sendMsgToMainTaskHandle;
+osThreadId_t receivePacketFromMainTaskHandle;
+osSemaphoreId_t interprocessMessageLockSem;
 
 /* Functions Definition ------------------------------------------------------*/
 void SendPacketToMainTask(void *argument);
-
+//void ReceivePacketFromMainTask(void *argument);
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle);
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle);
 
 /*************************************************************
  *

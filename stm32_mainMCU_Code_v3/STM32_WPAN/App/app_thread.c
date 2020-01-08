@@ -76,7 +76,7 @@ struct tm
 /* Private defines -----------------------------------------------------------*/
 #define C_SIZE_CMD_STRING       256U
 #define C_PANID                 0x1234U
-#define C_CHANNEL_NB            26U
+#define C_CHANNEL_NB            23U
 
 /* FreeRtos stacks attributes */
 const osThreadAttr_t ThreadMsgM0ToM4Process_attr = {

@@ -21,17 +21,18 @@ extern "C" {
 #include "blink.h"
 #include "stm32wbxx_hal.h"
 //#include "position.h"
-//#include "inter_processor_comms.h"
+#include "inter_processor_comms.h"
 /* typedef -----------------------------------------------------------*/
 
 struct LogPacket
 {
-	struct blinkData		blink;
-//	tempData				temp;
-//	inertialData			inertial;
-//	positionData			pos;
-	uint32_t				tick_ms;
-	uint32_t				epoch;
+	struct blinkData						blink;
+	struct parsedSecondaryProcessorPacket 	procData;
+//	tempData						temp;
+//	inertialData					inertial;
+//	positionData					pos;
+	uint32_t						tick_ms;
+	uint32_t						epoch;
 };
 
 struct LogMessage
@@ -53,9 +54,8 @@ struct LogMessage
 /* function prototypes -----------------------------------------------*/
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
-		struct tempData *temp,
-		struct inertialData *imu,
-		struct positionData *pos);
+		struct positionData *pos,
+		struct parsedSecondaryProcessorPacket *processorMsg);
 void MasterThreadTask(void *argument);
 
 
@@ -67,7 +67,10 @@ uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 osMessageQueueId_t	togLoggingQueueHandle;
 osThreadId_t masterThreadTaskHandle;
 
+struct LogPacket 		sensorPacket;
 
+struct LogMessage 		togLogMessageReceived;
+struct LogMessage 		prevLogMessage;
 /* Functions Definition ------------------------------------------------------*/
 
 

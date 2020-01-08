@@ -17,11 +17,11 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 
 /* typedef -----------------------------------------------------------*/
-struct inertialData{
-	uint8_t			data[100];
-	uint32_t		tick_ms;
-};
-
+//struct inertialData{
+//	uint8_t			data[100];
+//	uint32_t		tick_ms;
+//};
+//
 struct positionData{
 	uint8_t			data[100];
 	uint32_t		tick_ms;

@@ -5,19 +5,41 @@
 #include "stdint.h"
 #include "cmsis_os2.h"
 
-
 #ifdef __cplusplus
  extern "C" {
 #endif
 
+#define NUM_THERM_SAMPLES	5
+
 struct thermopileData{
-	uint16_t			templeData[20];
-	uint32_t			temple_tick_ms;
-
-	uint16_t			noseData[20];
-	uint32_t			nose_tick_ms;
-
+	uint16_t thermopile;
+	uint16_t thermistor;
+	uint32_t tick_ms;
 };
+
+struct thermopilePackagedData{
+	struct thermopileData temple[5];
+	struct thermopileData nose[5];
+};
+
+//struct thermopileData{
+//	uint16_t thermopile;
+//	uint16_t thermistor;
+//};
+//
+struct adcThermopileData{
+	uint16_t thermopile;
+	uint16_t temple_thermistor;
+	uint16_t nose_thermistor;
+};
+
+//struct thermopilePackagedData{
+//
+//	struct thermopileData temple[5];
+//	struct thermopileData nose[5];
+//
+//	uint32_t			tick_ms;
+//};
 
 typedef enum{
 	temple = 0,
