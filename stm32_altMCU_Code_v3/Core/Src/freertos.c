@@ -141,7 +141,7 @@ void MX_FREERTOS_Init(void) {
 //  stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
 //  stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
 //
-//  interprocessMessageLockSem = osSemaphoreNew (1, 1, NULL);
+//  messageI2C_LockSem = osSemaphoreNew (1, 1, NULL);
 
   /* USER CODE END RTOS_THREADS */
 

@@ -22,6 +22,7 @@ extern "C" {
 #include "stm32wbxx_hal.h"
 //#include "position.h"
 #include "inter_processor_comms.h"
+#include "inertial_sensing.h"
 /* typedef -----------------------------------------------------------*/
 
 struct LogPacket
@@ -67,6 +68,8 @@ uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 //osMessageQueueId_t	lightsSimpleQueueHandle;
 osMessageQueueId_t	togLoggingQueueHandle;
 osThreadId_t masterThreadTaskHandle;
+
+osSemaphoreId_t messageI2C_LockSem;
 
 struct LogPacket 		sensorPacket;
 

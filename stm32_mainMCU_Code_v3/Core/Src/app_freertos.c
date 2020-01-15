@@ -56,7 +56,13 @@
 /* USER CODE BEGIN Variables */
 //uint8_t temp[2048] = {0};
 /* USER CODE END Variables */
+/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -86,7 +92,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
        
   /* USER CODE END Init */
-osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -105,12 +110,7 @@ osKernelInitialize();
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 128
-  };
+  /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */

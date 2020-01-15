@@ -279,4 +279,4 @@ VP_TIM2_VS_ClockSourceINT.Signal=TIM2_VS_ClockSourceINT
 VP_TINY_LPM_VS_TINY_LPM.Mode=TINY_LPM_Enabled
 VP_TINY_LPM_VS_TINY_LPM.Signal=TINY_LPM_VS_TINY_LPM
 board=custom
-isbadioc=true
+isbadioc=false

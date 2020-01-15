@@ -68,9 +68,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- C:/Users/patri/STM32Cube/Repository/Packs/ARM/CMSIS/5.6.0/CMSIS/DSP/Include/arm_math.h \
- C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/CMSIS/Include/cmsis_compiler.h
+ ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h
 
 ../Core/Inc/main.h:
 
@@ -233,7 +231,3 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 ../Core/Inc/usart.h:
 
 ../Core/Inc/gpio.h:
-
-C:/Users/patri/STM32Cube/Repository/Packs/ARM/CMSIS/5.6.0/CMSIS/DSP/Include/arm_math.h:
-
-C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/CMSIS/Include/cmsis_compiler.h:

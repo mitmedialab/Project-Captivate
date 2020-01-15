@@ -54,15 +54,16 @@ Core/Src/master_thread.o: ../Core/Src/master_thread.c \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h \
- ../Core/Inc/inter_processor_comms.h ../Core/Inc/main.h \
- ../STM32_WPAN/App/app_thread.h \
+ ../Core/Inc/inter_processor_comms.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/main.h ../STM32_WPAN/App/app_thread.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/stm32_wpan_common.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/CMSIS/Include/cmsis_compiler.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/core/openthread_api/stm32wbxx_core_interface_def.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_thread_hci.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/core/openthread_api/openthread_api_config_ftd.h \
- ../Core/Inc/rtc.h ../Core/Inc/main.h ../Core/Inc/blink.h
+ ../Core/Inc/rtc.h ../Core/Inc/main.h ../Core/Inc/blink.h \
+ ../Core/Inc/inertial_sensing.h
 
 ../Core/Inc/master_thread.h:
 
@@ -178,6 +179,8 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 
 ../Core/Inc/inter_processor_comms.h:
 
+../Core/Inc/inertial_sensing.h:
+
 ../Core/Inc/main.h:
 
 ../STM32_WPAN/App/app_thread.h:
@@ -199,3 +202,5 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_
 ../Core/Inc/main.h:
 
 ../Core/Inc/blink.h:
+
+../Core/Inc/inertial_sensing.h:

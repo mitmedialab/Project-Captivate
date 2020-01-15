@@ -291,7 +291,7 @@ void ThreadFrontLightsTask(void *argument)
 		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-		osSemaphoreRelease(messageI2C_LockSem, osWaitForever);
+		osSemaphoreRelease(messageI2C_LockSem);
 //		osDelay(1000);
 
 

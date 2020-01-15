@@ -18,6 +18,7 @@
 #include <string.h>
 #include "inertial_sensing.h"
 #include "inter_processor_comms.h"
+#include "master_thread.h"
 
 /* typedef -----------------------------------------------------------*/
 

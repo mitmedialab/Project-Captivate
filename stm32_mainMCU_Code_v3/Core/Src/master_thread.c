@@ -69,7 +69,7 @@ void MasterThreadTask(void *argument)
 //		togLogMessageReceived.logStatus = 1;
 //		togLogMessageReceived.blinkEnabled = 0;
 //		togLogMessageReceived.tempEnabled = 1;
-//		togLogMessageReceived.intertialEnabled = 0;
+		togLogMessageReceived.intertialEnabled = 0;
 //		togLogMessageReceived.positionEnabled = 0;
 
 
@@ -197,7 +197,7 @@ void packetizeData(struct LogPacket *packet,
 	// add sensor data
 	memcpy ( &(packet->blink), blink, sizeof(struct blinkData) );
 	memcpy ( &(packet->procData), processorMsg, sizeof(struct parsedSecondaryProcessorPacket) );
-	memcpy ( &(packet->procData), inertialMsg, sizeof(struct inertialData) );
+	memcpy ( &(packet->inertial), inertialMsg, sizeof(struct inertialData) );
 }
 
 // Convert Date/Time structures to epoch time

@@ -76,8 +76,8 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Core/Inc/config.h ../Core/Inc/blink.h \
- ../Core/Inc/inter_processor_comms.h ../Core/Inc/app_conf.h \
- ../Core/Inc/hw_conf.h ../Core/Inc/stm_logging.h \
+ ../Core/Inc/inter_processor_comms.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/app_conf.h ../Core/Inc/hw_conf.h ../Core/Inc/stm_logging.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Utilities/lpm/tiny_lpm/stm32_lpm.h \
@@ -250,6 +250,8 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Par
 ../Core/Inc/blink.h:
 
 ../Core/Inc/inter_processor_comms.h:
+
+../Core/Inc/inertial_sensing.h:
 
 ../Core/Inc/app_conf.h:
 
