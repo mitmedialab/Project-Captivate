@@ -45,7 +45,7 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
  ../Core/Inc/thermopile.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/config.h ../Core/Inc/master_thread.h ../Core/Inc/config.h \
- ../Core/Inc/thermopile.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/thermopile.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/freertos.h \
  ../Core/Inc/inter_processor_comms.h
 
@@ -148,8 +148,6 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
 ../Core/Inc/config.h:
 
 ../Core/Inc/thermopile.h:
-
-../Core/Inc/inertial_sensing.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/include/freertos.h:
 

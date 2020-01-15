@@ -22,6 +22,7 @@ extern "C" {
 #include "main.h"
 #include "string.h"
 #include "config.h"
+#include "master_thread.h"
 
 #include "system_settings.h"
 /* typedef -----------------------------------------------------------*/
@@ -69,6 +70,7 @@ void setup_LP5523(uint8_t ADDR){
 	uint8_t packet;
 
 	// enable chip
+	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 	packet = LP5525_CHIP_EN;
 	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
 
@@ -86,7 +88,7 @@ void setup_LP5523(uint8_t ADDR){
 	packet = LOG_EN;
 	uint8_t packet_array[9] = {packet,packet,packet,packet,packet,packet,packet,packet,packet};
 	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT) != HAL_OK);
-
+	osSemaphoreRelease(messageI2C_LockSem);
 }
 //LP5523::LP5523(uint16_t DevAddress){
 //	deviceAddress = DevAddress;
@@ -127,8 +129,10 @@ void FrontLightsSet(union ColorComplex *setColors){
 	memcpy(led_left_PWM, setColors, 9);
 	memcpy(led_right_PWM, &(setColors->color[9]), 9);
 #ifndef DONGLE_CODE
+	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
+	osSemaphoreRelease(messageI2C_LockSem);
 #endif
 
 #ifdef DONGLE_CODE
@@ -284,9 +288,10 @@ void ThreadFrontLightsTask(void *argument)
 
 		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
 		//osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-
+		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
+		osSemaphoreRelease(messageI2C_LockSem, osWaitForever);
 //		osDelay(1000);
 
 

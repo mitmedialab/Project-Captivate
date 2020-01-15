@@ -40,7 +40,6 @@ struct LogMessage 		prevLogMessage;
 //struct blinkData	blinkMsgReceived;
 struct secondaryProcessorData 		sensorPacket;
 struct thermopilePackagedData	thermMsgReceived;
-struct inertialData				inertialMsgReceived;
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -87,11 +86,6 @@ void MasterThreadTask(void *argument)
 				osThreadFlagsSet(thermopileTaskHandle, 0x00000001U);
 			}
 
-			if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-			{
-				osThreadFlagsSet(inertialSensingTaskHandle, 0x00000001U);
-			}
-
 			while(1)
 			{
 				/**********************************************************************************/
@@ -103,12 +97,7 @@ void MasterThreadTask(void *argument)
 					osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, osWaitForever);
 				}
 
-				if(togLogMessageReceived.intertialEnabled == SENSOR_ENABLE)
-				{
-					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
-				}
-
-				packetizeData(&sensorPacket, &thermMsgReceived, &inertialMsgReceived);
+				packetizeData(&sensorPacket, &thermMsgReceived);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO MAIN MCU (STM32WB) .....*/
@@ -136,11 +125,6 @@ void MasterThreadTask(void *argument)
 							osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
 						}
 
-						if(prevLogMessage.intertialEnabled == SENSOR_ENABLE)
-						{
-							osThreadFlagsSet(inertialSensingTaskHandle, 0x00000002U);
-						}
-
 						// empty queues
 						osMessageQueueReset(sendMsgToMainQueueHandle);
 
@@ -160,8 +144,7 @@ RTC_TimeTypeDef RTC_time;
 RTC_DateTypeDef RTC_date;
 
 void packetizeData(struct secondaryProcessorData *packet,
-		struct thermopilePackagedData *temp,
-		struct inertialData *imu)
+		struct thermopilePackagedData *temp)
 {
 	// get processor tick counts (in terms of ms)
 	packet->tick_ms = HAL_GetTick();
@@ -173,7 +156,6 @@ void packetizeData(struct secondaryProcessorData *packet,
 
 	// add sensor data
 	memcpy ( &(packet->temp), temp, sizeof(struct thermopilePackagedData) );
-	memcpy ( &(packet->inertial), imu, sizeof(struct inertialData) );
 
 }
 

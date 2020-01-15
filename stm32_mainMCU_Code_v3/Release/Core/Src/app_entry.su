@@ -1,8 +1,0 @@
-app_entry.c:267:13:APPE_SysUserEvtRx	8	static
-app_entry.c:324:13:ShciUserEvtProcess	8	static
-app_entry.c:242:13:APPE_SysStatusNot	0	static
-app_entry.c:111:6:APPE_Init	40	static
-app_entry.c:350:6:shci_notify_asynch_evt	0	static
-app_entry.c:357:6:shci_cmd_resp_release	0	static
-app_entry.c:364:6:shci_cmd_resp_wait	0	static
-app_entry.c:372:6:TL_TRACES_EvtReceived	0	static

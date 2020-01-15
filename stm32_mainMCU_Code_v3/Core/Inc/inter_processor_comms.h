@@ -36,37 +36,37 @@ struct thermopilePackagedData{
 
 /***** IMU SPECIFIC DATATYPES *********************************/
 
-struct rotationData{
-	float quatI;
-	float quatJ;
-	float quatK;
-	float quatReal;
-	float quatRadianAccuracy;
-	uint32_t tick_ms;
-};
+//struct rotationData{
+//	float quatI;
+//	float quatJ;
+//	float quatK;
+//	float quatReal;
+//	float quatRadianAccuracy;
+//	uint32_t tick_ms;
+//};
 
-struct inertialInferenceData{
-	uint8_t activityConfidence[9];
-	uint32_t tick_ms_activity;
+//struct inertialInferenceData{
+//	uint8_t activityConfidence[9];
+//	uint32_t tick_ms_activity;
+//
+//	uint8_t stabilityClass;
+//	uint32_t tick_ms_stability;
+//
+//	uint16_t stepCount;
+//	uint32_t tick_ms_step;
+//};
 
-	uint8_t stabilityClass;
-	uint32_t tick_ms_stability;
-
-	uint16_t stepCount;
-	uint32_t tick_ms_step;
-};
-
-struct inertialData{
-	struct rotationData rotationMatrix[5];
-	struct inertialInferenceData inferenceInfo;
-};
+//struct inertialData{
+//	struct rotationData rotationMatrix[5];
+//	struct inertialInferenceData inferenceInfo;
+//};
 
 /***** COMPILED DATA PACKET FROM SECONDARY MCU *******************/
 
 struct secondaryProcessorData
 {
 	struct thermopilePackagedData	temp;
-	struct inertialData				inertial;
+//	struct inertialData				inertial;
 	uint32_t						tick_ms;
 	uint32_t						epoch;
 };
@@ -76,8 +76,8 @@ struct secondaryProcessorData
 struct parsedSecondaryProcessorPacket{
 	struct thermopileData temple;
 	struct thermopileData nose;
-	struct rotationData rotationMatrix;
-	struct inertialInferenceData inferenceInfo;
+//	struct rotationData rotationMatrix;
+//	struct inertialInferenceData inferenceInfo;
 	uint32_t tick_ms;
 	uint32_t epoch;
 };

@@ -105,13 +105,15 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
-
+  /* Init scheduler */
+  osKernelInitialize();
+ 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-
+  MX_FREERTOS_Init(); 
+ 
   /* Start scheduler */
   osKernelStart();
-  
+ 
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */

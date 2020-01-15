@@ -14,7 +14,6 @@ RM := rm -rf
 -include Middlewares/STM32_WPAN/subdir.mk
 -include Middlewares/FreeRTOS/subdir.mk
 -include Drivers/STM32WBxx_HAL_Driver/subdir.mk
--include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -37,6 +36,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 stm32_mainMCU_Code_v3.list \
 
+OBJCOPY_BIN += \
+stm32_mainMCU_Code_v3.bin \
+
 
 # All Target
 all: stm32_mainMCU_Code_v3.elf secondary-outputs
@@ -57,12 +59,17 @@ stm32_mainMCU_Code_v3.list: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+stm32_mainMCU_Code_v3.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "stm32_mainMCU_Code_v3.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
 	-$(RM) *
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 .PHONY: all clean dependents
 .SECONDARY:

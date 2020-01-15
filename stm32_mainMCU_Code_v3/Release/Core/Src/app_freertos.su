@@ -1,4 +1,0 @@
-app_freertos.c:167:6:StartDefaultTask	8	static
-app_freertos.c:74:13:PreSleepProcessing	0	static
-app_freertos.c:79:13:PostSleepProcessing	0	static
-app_freertos.c:90:6:MX_FREERTOS_Init	160	static

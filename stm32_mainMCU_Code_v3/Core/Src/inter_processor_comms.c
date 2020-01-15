@@ -67,7 +67,7 @@ void InterProcessorTask(void *argument){
 			// tell secondary processor to start logging (in blocking mode)
 			osThreadFlagsClear(0x0000000FU);
 			while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(togLogMessageReceived)) != HAL_OK);
-			HAL_Delay(100);
+			osDelay(100);
 			// message passing until told to stop
 			while(1){
 
@@ -76,58 +76,52 @@ void InterProcessorTask(void *argument){
 
 				// if an interrupt is received indicating a message is waiting to be received
  				if( (evt & 0x00000004U) == 0x00000004U){
-
+ 					osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
  					// clear transmission flag
- 					osThreadFlagsClear(0x00000010U);
+// 					osThreadFlagsClear(0x00000010U);
  					// send command packet to MCU
- 					while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(struct LogMessage)) != HAL_OK){
+ 					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(struct LogMessage), 100) != HAL_OK){
+ 						osSemaphoreRelease(messageI2C_LockSem);
  						osDelay(100);
+ 						osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
  					}
  					// wait until transmission is successful
- 					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
+// 					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
  					// ensure I2C is disabled
 // 					HAL_I2C_Master_Abort_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1);
 
  					// clear receiving flag
- 					osThreadFlagsClear(0x00000008U);
+// 					osThreadFlagsClear(0x00000008U);
  					// grab packet from secondary MCU
- 					while(HAL_I2C_Master_Receive_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &receivedPacket, sizeof(struct secondaryProcessorData)) != HAL_OK){
+ 					while(HAL_I2C_Master_Receive(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &receivedPacket, sizeof(struct secondaryProcessorData), 100) != HAL_OK){
+ 						osSemaphoreRelease(messageI2C_LockSem);
  						osDelay(100);
+ 						osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
  					}
 					// wait until packet is received
-					evt = osThreadFlagsWait(0x0000000AU, osFlagsWaitAny, osWaitForever);
+//					evt = osThreadFlagsWait(0x0000000AU, osFlagsWaitAny, osWaitForever);
 					// ensure I2C is disabled
 //					HAL_I2C_Master_Abort_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1);
 
-					// if thread was told to stop, STOP!
+					osSemaphoreRelease(messageI2C_LockSem);
+
+
+					evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
+					// if thread was told to stop, break from while loop!
 					if( (evt & 0x00000002U) == 0x00000002U ) break;
 
-					// if evt is not a "stop logging" event
-					if( (evt & 0x00000002U) != 0x00000002U){
+					// package received data into 100ms chunks and put in queue
+					parsedPacket.tick_ms = receivedPacket.tick_ms;
+					parsedPacket.epoch = receivedPacket.epoch;
 
+					for(int i = 0; i < 5; i++)
+					{
+						memcpy(&parsedPacket.temple, &receivedPacket.temp.temple[i], sizeof(struct thermopileData));
+						memcpy(&parsedPacket.nose, &receivedPacket.temp.nose[i], sizeof(struct thermopileData));
 
-						// package received data into 100ms chunks and put in queue
-						memcpy(&parsedPacket.inferenceInfo, &receivedPacket.inertial.inferenceInfo, sizeof(struct inertialInferenceData));
-						parsedPacket.tick_ms = receivedPacket.tick_ms;
-						parsedPacket.epoch = receivedPacket.epoch;
+						// pass to master thread to handle
+						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &parsedPacket, 0U, 0);
 
-						for(int i = 0; i < 5; i++)
-						{
-							memcpy(&parsedPacket.temple, &receivedPacket.temp.temple[i], sizeof(struct thermopileData));
-							memcpy(&parsedPacket.nose, &receivedPacket.temp.nose[i], sizeof(struct thermopileData));
-							memcpy(&parsedPacket.rotationMatrix, &receivedPacket.inertial.rotationMatrix[i], sizeof(struct rotationData));
-
-							// pass to master thread to handle
-							osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &parsedPacket, 0U, 0);
-
-						}
-
-						// put packet in queue for master task handling
-//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
-//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
-//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
-//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
-//						osMessageQueuePut(interProcessorMsgQueueHandle, (void *) &receivedPacket, 0U, 0);
 					}
 				}
 
@@ -135,11 +129,11 @@ void InterProcessorTask(void *argument){
 				if( (evt & 0x00000002U) == 0x00000002U){
 
 					/// clear transmission flag
- 					osThreadFlagsClear(0x00000010U);
+// 					osThreadFlagsClear(0x00000010U);
 					// tell secondary processor to stop logging (in blocking mode)
-					while(HAL_I2C_Master_Transmit_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(togLogMessageReceived)) != HAL_OK);
+					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &togLogMessageReceived, sizeof(togLogMessageReceived), 100) != HAL_OK);
 					// wait until transmit is complete
-					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
+//					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
 
 					// empty queue
 					osMessageQueueReset(interProcessorMsgQueueHandle);

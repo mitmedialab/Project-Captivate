@@ -1,3 +1,0 @@
-inter_processor_comms.c:57:6:InterProcessorTask	24	static
-inter_processor_comms.c:161:6:HAL_I2C_MasterTxCpltCallback	8	static
-inter_processor_comms.c:169:6:HAL_I2C_MasterRxCpltCallback	8	static

@@ -21,7 +21,7 @@ extern "C" {
 //#include "blink.h"
 #include "stm32f3xx_hal.h"
 #include "thermopile.h"
-#include "inertial_sensing.h"
+//#include "inertial_sensing.h"
 //#include "position.h"
 //#include "inter_processor_comms.h"
 /* typedef -----------------------------------------------------------*/
@@ -53,7 +53,7 @@ struct LogMessage
 struct secondaryProcessorData
 {
 	struct thermopilePackagedData	temp;
-	struct inertialData				inertial;
+//	struct inertialData				inertial;
 	uint32_t						tick_ms;
 	uint32_t						epoch;
 };
@@ -66,8 +66,7 @@ struct secondaryProcessorData
 
 /* function prototypes -----------------------------------------------*/
 void packetizeData(struct secondaryProcessorData *packet,
-		struct thermopilePackagedData *temp,
-		struct inertialData *imu);
+		struct thermopilePackagedData *temp);
 
 void MasterThreadTask(void *argument);
 
@@ -80,6 +79,7 @@ uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 osMessageQueueId_t	togLoggingQueueHandle;
 osThreadId_t masterThreadTaskHandle;
 
+osSemaphoreId_t messageI2C_LockSem;
 
 
 /* Functions Definition ------------------------------------------------------*/

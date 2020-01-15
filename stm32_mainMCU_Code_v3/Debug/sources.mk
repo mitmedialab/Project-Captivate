@@ -13,11 +13,11 @@ OBJDUMP_LIST :=
 EXECUTABLES := 
 OBJS := 
 C_DEPS := 
+OBJCOPY_BIN := 
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/Src \
-Core/Startup \
 Drivers/STM32WBxx_HAL_Driver \
 Middlewares/FreeRTOS \
 Middlewares/STM32_WPAN \

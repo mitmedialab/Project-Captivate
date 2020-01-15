@@ -29,7 +29,7 @@ struct LogPacket
 	struct blinkData						blink;
 	struct parsedSecondaryProcessorPacket 	procData;
 //	tempData						temp;
-//	inertialData					inertial;
+	struct inertialData						inertial;
 //	positionData					pos;
 	uint32_t						tick_ms;
 	uint32_t						epoch;
@@ -55,7 +55,8 @@ struct LogMessage
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
 		struct positionData *pos,
-		struct parsedSecondaryProcessorPacket *processorMsg);
+		struct parsedSecondaryProcessorPacket *processorMsg,
+		struct inertialData *inertialMsg);
 void MasterThreadTask(void *argument);
 
 

@@ -52,7 +52,13 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
+/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -72,7 +78,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
        
   /* USER CODE END Init */
-osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -91,12 +96,7 @@ osKernelInitialize();
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 128
-  };
+  /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -108,12 +108,6 @@ osKernelInitialize();
   };
     thermopileTaskHandle = osThreadNew(ThermopileTask, NULL, &thermopileTask_attributes);
 
-	const osThreadAttr_t inertialSensingTask_attributes = {
-			 .name = "inertialSensingTask",
-			 .priority = (osPriority_t) osPriorityNormal,
-			 .stack_size = 128
-		   };
-	inertialSensingTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialSensingTask_attributes);
 //
   const osThreadAttr_t masterThreadTask_attributes = {
         .name = "masterThreadTask",
@@ -141,13 +135,13 @@ osKernelInitialize();
   togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
   thermMsgQueueHandle = osMessageQueueNew (5, sizeof(struct thermopilePackagedData), NULL);
 
-  inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
-  activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
-  rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
-  stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
-  stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
-
-  interprocessMessageLockSem = osSemaphoreNew (1, 1, NULL);
+//  inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
+//  activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
+//  rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
+//  stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
+//  stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
+//
+//  interprocessMessageLockSem = osSemaphoreNew (1, 1, NULL);
 
   /* USER CODE END RTOS_THREADS */
 

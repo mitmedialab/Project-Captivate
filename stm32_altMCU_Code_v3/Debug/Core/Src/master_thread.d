@@ -43,9 +43,8 @@ Core/Src/master_thread.o: ../Core/Src/master_thread.c \
  ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
  ../Core/Inc/thermopile.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/inertial_sensing.h ../Core/Inc/main.h \
- ../Core/Inc/thermopile.h ../Core/Inc/rtc.h ../Core/Inc/main.h \
- ../Core/Inc/inter_processor_comms.h
+ ../Core/Inc/main.h ../Core/Inc/thermopile.h ../Core/Inc/rtc.h \
+ ../Core/Inc/main.h ../Core/Inc/inter_processor_comms.h
 
 ../Core/Inc/master_thread.h:
 
@@ -136,8 +135,6 @@ Core/Src/master_thread.o: ../Core/Src/master_thread.c \
 ../Core/Inc/thermopile.h:
 
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
-
-../Core/Inc/inertial_sensing.h:
 
 ../Core/Inc/main.h:
 

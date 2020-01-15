@@ -19,4 +19,5 @@ shci.c:396:18:SHCI_C2_FLASH_EraseData	24	static
 shci.c:416:18:SHCI_C2_RADIO_AllowLowPower	24	static
 shci.c:437:18:SHCI_C2_MAC_802_15_4_Init	24	static
 shci.c:455:18:SHCI_C2_Reinit	24	static
-shci.c:478:18:SHCI_GetWirelessFwInfo	0	static
+shci.c:473:18:SHCI_C2_ExtpaConfig	24	static
+shci.c:502:18:SHCI_GetWirelessFwInfo	0	static

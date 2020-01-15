@@ -20,6 +20,7 @@
 #include "app_thread.h"
 #include "rtc.h"
 #include "blink.h"
+#include "inertial_sensing.h"
 /* typedef -----------------------------------------------------------*/
 
 
@@ -37,6 +38,7 @@
 
 struct blinkData	blinkMsgReceived;
 struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
+struct inertialData inertialMsgReceived;
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -89,9 +91,14 @@ void MasterThreadTask(void *argument)
 //				osSemaphoreRelease(posSemaphore);
 //			}
 //
-			if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE) || (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE) )
+			if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE))
 			{
 				osThreadFlagsSet(interProcessorTaskHandle, 0x00000001U);
+			}
+
+			if( (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE))
+			{
+				osThreadFlagsSet(InertialSensingTask, 0x00000001U);
 			}
 
 
@@ -111,12 +118,17 @@ void MasterThreadTask(void *argument)
 				//
 				//						}
 
-				if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE) || (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE) )
+				if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE))
 				{
 					osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, osWaitForever);
 				}
 
-				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, &secondaryProcessorMsgReceived);
+				if( (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE))
+				{
+					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
+				}
+
+				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, &secondaryProcessorMsgReceived, &inertialMsgReceived);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
@@ -145,9 +157,14 @@ void MasterThreadTask(void *argument)
 //
 //						}
 
-						if( (prevLogMessage.tempEnabled == SENSOR_ENABLE) || (prevLogMessage.intertialEnabled == SENSOR_ENABLE) )
+						if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 						{
 							osThreadFlagsSet(interProcessorTaskHandle, 0x00000002U);
+						}
+
+						if( (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE))
+						{
+							osThreadFlagsSet(InertialSensingTask, 0x00000002U);
 						}
 
 						// break out of first while loop and wait until told to start logging again
@@ -166,7 +183,8 @@ RTC_DateTypeDef RTC_date;
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
 		struct positionData *pos,
-		struct parsedSecondaryProcessorPacket *processorMsg)
+		struct parsedSecondaryProcessorPacket *processorMsg,
+		struct inertialData *inertialMsg)
 {
 	// get processor tick counts (in terms of ms)
 	packet->tick_ms = HAL_GetTick();
@@ -179,6 +197,7 @@ void packetizeData(struct LogPacket *packet,
 	// add sensor data
 	memcpy ( &(packet->blink), blink, sizeof(struct blinkData) );
 	memcpy ( &(packet->procData), processorMsg, sizeof(struct parsedSecondaryProcessorPacket) );
+	memcpy ( &(packet->procData), inertialMsg, sizeof(struct inertialData) );
 }
 
 // Convert Date/Time structures to epoch time

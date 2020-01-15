@@ -68,8 +68,6 @@ void Error_Handler(void);
 #define ADC_ALERT_GPIO_Port GPIOA
 #define EXPANSION_INT_Pin GPIO_PIN_4
 #define EXPANSION_INT_GPIO_Port GPIOA
-#define IMU_INT_Pin GPIO_PIN_5
-#define IMU_INT_GPIO_Port GPIOA
 #define TP_SS_Pin GPIO_PIN_6
 #define TP_SS_GPIO_Port GPIOA
 #define TP_THERMISTOR_Pin GPIO_PIN_0

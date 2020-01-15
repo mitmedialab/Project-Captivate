@@ -34,6 +34,7 @@
 #include "master_thread.h"
 #include "system_settings.h"
 #include "inter_processor_comms.h"
+#include "inertial_sensing.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -140,6 +141,13 @@ osKernelInitialize();
          };
     masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
 
+	const osThreadAttr_t inertialSensingTask_attributes = {
+			 .name = "inertialSensingTask",
+			 .priority = (osPriority_t) osPriorityNormal,
+			 .stack_size = 128
+		   };
+	inertialSensingTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialSensingTask_attributes);
+
     const osThreadAttr_t interProcessorTask_attributes = {
                .name = "interProcessorTask",
                .priority = (osPriority_t) osPriorityNormal,
@@ -148,6 +156,15 @@ osKernelInitialize();
     interProcessorTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcessorTask_attributes);
 
     interProcessorMsgQueueHandle = osMessageQueueNew (15, sizeof(struct parsedSecondaryProcessorPacket), NULL);
+
+    inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
+    activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
+    rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
+//    stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
+//    stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
+
+    messageI2C_LockSem = osSemaphoreNew (1, 1, NULL);
+
 
  //#endif
 

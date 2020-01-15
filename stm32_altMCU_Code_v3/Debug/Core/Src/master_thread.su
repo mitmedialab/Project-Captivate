@@ -1,3 +1,3 @@
-master_thread.c:181:10:RTC_ToEpoch	8	static
-master_thread.c:162:6:packetizeData	32	static
-master_thread.c:62:6:MasterThreadTask	8	static
+master_thread.c:163:10:RTC_ToEpoch	8	static
+master_thread.c:146:6:packetizeData	24	static
+master_thread.c:61:6:MasterThreadTask	8	static
