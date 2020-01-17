@@ -6,7 +6,8 @@ stm32wbxx_it.c:137:6:UsageFault_Handler	0	static
 stm32wbxx_it.c:152:6:DebugMon_Handler	0	static
 stm32wbxx_it.c:172:6:EXTI2_IRQHandler	8	static
 stm32wbxx_it.c:189:6:DMA1_Channel1_IRQHandler	8	static
-stm32wbxx_it.c:203:6:TIM1_UP_TIM16_IRQHandler	8	static
-stm32wbxx_it.c:217:6:I2C1_EV_IRQHandler	8	static
-stm32wbxx_it.c:229:6:IPCC_C1_TX_IRQHandler	8	static
-stm32wbxx_it.c:235:6:IPCC_C1_RX_IRQHandler	8	static
+stm32wbxx_it.c:203:6:EXTI9_5_IRQHandler	8	static
+stm32wbxx_it.c:217:6:TIM1_UP_TIM16_IRQHandler	8	static
+stm32wbxx_it.c:231:6:I2C1_EV_IRQHandler	8	static
+stm32wbxx_it.c:243:6:IPCC_C1_TX_IRQHandler	8	static
+stm32wbxx_it.c:249:6:IPCC_C1_RX_IRQHandler	8	static

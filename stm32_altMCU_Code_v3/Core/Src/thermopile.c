@@ -132,7 +132,7 @@ void ThermopileTask(void *argument){
 				// if not told to shut down sampling
 				else{
 					// send data to master thread
-					osMessageQueuePut(thermMsgQueueHandle, &tempData, 0U, osWaitForever);
+					osMessageQueuePut(thermMsgQueueHandle, &tempData, 0U, 0);
 				}
 			}
 
@@ -147,6 +147,9 @@ void ThermopileTask(void *argument){
 
 				// clear any flags
 				osThreadFlagsClear(0x0000000EU);
+
+				// exit and wait for another start condition
+				break;
 			}
 		}
 	}

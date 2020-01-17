@@ -964,34 +964,7 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader * pHeader,
 
     if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessageComplex, sizeof(lightMessageComplex)) == sizeof(lightMessageComplex))
 	{
-//    	lightMessageComplex = lightMessageComplex & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
-
     	FrontLightsSet(&lightMessageComplex);
-
-    	//if 0
-//    	if(lightMessage == COLOR_RED)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-//
-//    	}
-//
-//    	// if 1
-//    	else if (lightMessage == COLOR_BLUE)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-//		}
-//
-//    	//if 2
-//    	else if (lightMessage == COLOR_GREEN)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-//		}
 	}
 
     tempMessageInfo = pMessageInfo;

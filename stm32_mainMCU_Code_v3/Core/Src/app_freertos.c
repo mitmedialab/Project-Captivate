@@ -132,7 +132,7 @@ void MX_FREERTOS_Init(void) {
    lightsSimpleQueueHandle = osMessageQueueNew (MAX_LIGHT_SIMPLE_QUEUE_SIZE, sizeof(lightsSimpleMessage), NULL);
  //  lightsSimpleQueueHandle = osMessageQueueNew (2, sizeof(LogMessage), NULL);
    blinkMsgQueueHandle = osMessageQueueNew (10, sizeof(struct blinkData), NULL);
-   togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
+   togLoggingQueueHandle = osMessageQueueNew (4, sizeof(struct LogMessage), NULL);
 
    const osThreadAttr_t masterThreadTask_attributes = {
            .name = "masterThreadTask",
@@ -144,7 +144,7 @@ void MX_FREERTOS_Init(void) {
 	const osThreadAttr_t inertialSensingTask_attributes = {
 			 .name = "inertialSensingTask",
 			 .priority = (osPriority_t) osPriorityNormal,
-			 .stack_size = 128
+			 .stack_size = 512
 		   };
 	inertialSensingTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialSensingTask_attributes);
 
@@ -155,9 +155,9 @@ void MX_FREERTOS_Init(void) {
              };
     interProcessorTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcessorTask_attributes);
 
-    interProcessorMsgQueueHandle = osMessageQueueNew (15, sizeof(struct parsedSecondaryProcessorPacket), NULL);
+    interProcessorMsgQueueHandle = osMessageQueueNew (10, sizeof(struct parsedSecondaryProcessorPacket), NULL);
 
-    inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
+    inertialSensingQueueHandle = osMessageQueueNew (10, sizeof(struct inertialData), NULL);
     activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
     rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
 //    stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);

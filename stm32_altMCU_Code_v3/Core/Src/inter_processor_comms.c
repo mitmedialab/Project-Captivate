@@ -75,6 +75,8 @@ void SendPacketToMainTask(void *argument){
 
 			// stop sampling
 			osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, osWaitForever);
+
+			// reset interrupt
 			HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_RESET);
 		}
 
@@ -83,12 +85,15 @@ void SendPacketToMainTask(void *argument){
 		{
 			logTracking = 1;
 
+			// reset interrupt
+			HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_RESET);
+
 			// start sampling
 			osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, osWaitForever);
 		}
 
 		// if logging is already happening and a message is ready
-		else
+		else if(logTracking == 1)
 		{
 			if(osMessageQueueGet(sendMsgToMainQueueHandle, &packetReceived, 0U, 0) == osOK)
 			{
@@ -164,7 +169,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle)
 {
 	//osThreadFlagsSet(sendMsgToMainTaskHandle, 0x00000004U);
 	// notify receiving thread that a message has been received
-//	osThreadFlagsSet(receivePacketFromMainTaskHandle, 0x00000001U);
+	osThreadFlagsSet(sendMsgToMainTaskHandle, 0x00000004U);
 }
 
 /*************************************************************

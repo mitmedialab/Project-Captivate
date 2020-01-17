@@ -59,6 +59,7 @@ void packetizeData(struct LogPacket *packet,
 		struct parsedSecondaryProcessorPacket *processorMsg,
 		struct inertialData *inertialMsg);
 void MasterThreadTask(void *argument);
+void masterExitRoutine(void);
 
 
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);

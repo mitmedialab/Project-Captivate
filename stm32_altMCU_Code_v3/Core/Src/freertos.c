@@ -97,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+//  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -131,9 +131,9 @@ void MX_FREERTOS_Init(void) {
 //  receivePacketFromMainTaskHandle = osThreadNew(ReceivePacketFromMainTask, NULL, &receivePacketFromMainTask_attributes);
 
 
-  sendMsgToMainQueueHandle = osMessageQueueNew (2, sizeof(struct secondaryProcessorData), NULL);
+  sendMsgToMainQueueHandle = osMessageQueueNew (4, sizeof(struct secondaryProcessorData), NULL);
   togLoggingQueueHandle = osMessageQueueNew (2, sizeof(struct LogMessage), NULL);
-  thermMsgQueueHandle = osMessageQueueNew (5, sizeof(struct thermopilePackagedData), NULL);
+  thermMsgQueueHandle = osMessageQueueNew (10, sizeof(struct thermopilePackagedData), NULL);
 
 //  inertialSensingQueueHandle = osMessageQueueNew (3, sizeof(struct inertialData), NULL);
 //  activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);

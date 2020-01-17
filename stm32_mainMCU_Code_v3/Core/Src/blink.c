@@ -124,7 +124,7 @@ void BlinkTask(void){
 				}
 
 				// stop timer and put thread in idle if signal was reset
-				else if( (evt & 0x00000002U) == 0x00000002U){
+				if( (evt & 0x00000002U) == 0x00000002U){
 
 					HAL_ADC_Stop_DMA(&hadc1);
 //					while(HAL_ADC_Stop(&hadc1) != HAL_OK)

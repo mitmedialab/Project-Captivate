@@ -1,4 +1,4 @@
-blink.c:67:6:BlinkTask	24	static
+blink.c:67:6:BlinkTask	32	static
 blink.c:151:6:HAL_ADC_ErrorCallback	0	static
 blink.c:157:6:HAL_ADC_ConvCpltCallback	8	static
 blink.c:167:6:HAL_ADC_ConvHalfCpltCallback	8	static

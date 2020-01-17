@@ -19,6 +19,7 @@
 #include "inertial_sensing.h"
 #include "inter_processor_comms.h"
 #include "master_thread.h"
+#include "task.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -30,7 +31,7 @@
 #define SEQUENCE_NUM	3
 
 /* macros ------------------------------------------------------------*/
-
+volatile uint8_t test = 0;
 
 /* function prototypes -----------------------------------------------*/
 
@@ -73,7 +74,7 @@ uint8_t outPacket[32];
 //private:
 //Variables
 //	TwoWire *_i2cPort;		//The generic connection to user's chosen I2C hardware
-uint8_t _deviceAddress; //Keeps track of I2C address. setI2CAddress changes this.
+uint8_t _deviceAddress = 0x4A << 1; //Keeps track of I2C address. setI2CAddress changes this.
 
 //	Stream *_debugPort;			 //The stream to send debug messages to if enabled. Usually Serial.
 //bool _printDebug = False; //Flag to print debugging variables
@@ -116,12 +117,14 @@ bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef* intPort)
 	//But if they forget, we start the hardware here.
 	//_i2cPort->begin();
 
+
 	//Begin by resetting the IMU
 	IMU_softReset();
 
 	//Check communication with device
 	shtpData[0] = SHTP_REPORT_PRODUCT_ID_REQUEST; //Request the product ID and reset info
 	shtpData[1] = 0;							  //Reserved
+
 
 	//Transmit packet on channel 2, 2 bytes
 	IMU_sendPacket(CHANNEL_CONTROL, 2);
@@ -362,12 +365,12 @@ void IMU_parseInputReport(void)
 		// put rotation sample in queue for message packing
 		rotSample.tick_ms = HAL_GetTick();
 		rotSample.quatI =  IMU_qToFloat(data1, rotationVector_Q1);;
-		rotSample.quatJ =  IMU_qToFloat(data1, rotationVector_Q1);;
-		rotSample.quatK =  IMU_qToFloat(data1, rotationVector_Q1);;
-		rotSample.quatReal = IMU_qToFloat(data1, rotationVector_Q1);
-		rotSample.quatRadianAccuracy = IMU_qToFloat(data1, 12);
+		rotSample.quatJ =  IMU_qToFloat(data2, rotationVector_Q1);;
+		rotSample.quatK =  IMU_qToFloat(data3, rotationVector_Q1);;
+		rotSample.quatReal = IMU_qToFloat(data4, rotationVector_Q1);
+		rotSample.quatRadianAccuracy = IMU_qToFloat(data5, 12);
 
-		osMessageQueuePut(rotationSampleQueueHandle, &rotSample, 0U, osWaitForever);
+		osMessageQueuePut(rotationSampleQueueHandle, &rotSample, 0U, 0);
 
 		quatAccuracy = status;
 		rawQuatI = data1;
@@ -410,8 +413,9 @@ void IMU_parseInputReport(void)
 		// put activity sample in queue for message packing
 		memcpy(activitySample.activityConfidence, _activityConfidences, 9);
 
-		osMessageQueuePut(activitySampleQueueHandle, &activitySample, 0U, osWaitForever);
-
+//		test = osMessageQueueGetCount(activitySampleQueueHandle);
+		osMessageQueuePut(activitySampleQueueHandle, &activitySample, 0U, 0);
+//		test = osMessageQueueGetCount(activitySampleQueueHandle);
 
 
 	}
@@ -831,10 +835,10 @@ void IMU_softReset(void)
 	IMU_sendPacket(CHANNEL_EXECUTABLE, 1); //Transmit packet on channel 1, 1 byte
 
 	//Read all incoming data and flush it
-	HAL_Delay(50);
+	HAL_Delay(200);
 	while (IMU_receivePacket() == true)
 		;
-	HAL_Delay(50);
+	HAL_Delay(200);
 	while (IMU_receivePacket() == true)
 		;
 }
@@ -1178,11 +1182,13 @@ bool IMU_receivePacket(void)
 
 	//Ask for four bytes to find out how much data we need to read
 	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+//	taskENTER_CRITICAL();
 	while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100) != HAL_OK){
 		osSemaphoreRelease(messageI2C_LockSem);
-		HAL_Delay(100);
+		osDelay(100);
 		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 	}
+//	taskEXIT_CRITICAL();
 	osSemaphoreRelease(messageI2C_LockSem);
 
 	//Calculate the number of data bytes in this packet
@@ -1222,11 +1228,13 @@ bool IMU_getData(uint16_t bytesRemaining)
 			numberOfBytesToRead = (I2C_BUFFER_LENGTH - 4);
 
 		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+//		taskENTER_CRITICAL();
 		while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100) != HAL_OK){
 			osSemaphoreRelease(messageI2C_LockSem);
-			HAL_Delay(100);
+			osDelay(100);
 			osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 		}
+//		taskEXIT_CRITICAL();
 		osSemaphoreRelease(messageI2C_LockSem);
 
 
@@ -1270,11 +1278,13 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 
 	/*  *********** SEND TO IMU ********************************** */
 	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
-	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 1000) != HAL_OK){
+//	taskENTER_CRITICAL();
+	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100) != HAL_OK){
 		osSemaphoreRelease(messageI2C_LockSem);
-		HAL_Delay(100);
+		osDelay(100);
 		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 	}
+//	taskEXIT_CRITICAL();
 	osSemaphoreRelease(messageI2C_LockSem);
 
 	return (true);

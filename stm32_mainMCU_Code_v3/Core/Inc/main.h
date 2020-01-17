@@ -60,6 +60,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define IMU_INT_Pin GPIO_PIN_5
 #define IMU_INT_GPIO_Port GPIOA
+#define IMU_INT_EXTI_IRQn EXTI9_5_IRQn
 #define EXPANSION_INT_Pin GPIO_PIN_2
 #define EXPANSION_INT_GPIO_Port GPIOB
 #define EXPANSION_INT_EXTI_IRQn EXTI2_IRQn

@@ -57,7 +57,7 @@ struct thermopilePackagedData	thermMsgReceived;
  * @param  None
  * @retval None
  */
-
+uint8_t logEnabled = 0;
 void MasterThreadTask(void *argument)
 {
 	while(1)
@@ -77,6 +77,8 @@ void MasterThreadTask(void *argument)
 		//    otherwise, skip if statement and wait for an enabling command
 		if(togLogMessageReceived.logStatus == ENABLE_LOG)
 		{
+			uint8_t logEnabled = 0;
+
 			// keep record of this message so new message doesn't overwrite
 			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
 
@@ -125,6 +127,9 @@ void MasterThreadTask(void *argument)
 							osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
 						}
 
+						// give enough time for threads to finish and recognize termination
+						osDelay(500);
+
 						// empty queues
 						osMessageQueueReset(sendMsgToMainQueueHandle);
 
@@ -133,6 +138,22 @@ void MasterThreadTask(void *argument)
 					}
 				}
 			}
+		}
+
+		else if( logEnabled==1 && togLogMessageReceived.logStatus == DISABLE_LOG)
+		{
+			logEnabled = 0;
+
+			if(prevLogMessage.tempEnabled == SENSOR_ENABLE)
+			{
+				osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
+			}
+
+			// give enough time for threads to finish and recognize termination
+			osDelay(500);
+
+			// empty queues
+			osMessageQueueReset(sendMsgToMainQueueHandle);
 		}
 
 	}
