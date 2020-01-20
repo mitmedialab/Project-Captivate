@@ -1183,11 +1183,12 @@ bool IMU_receivePacket(void)
 	//Ask for four bytes to find out how much data we need to read
 	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //	taskENTER_CRITICAL();
-	while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100) != HAL_OK){
-		osSemaphoreRelease(messageI2C_LockSem);
-		osDelay(100);
-		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
-	}
+	HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100);
+//	while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100) != HAL_OK){
+//		osSemaphoreRelease(messageI2C_LockSem);
+//		osDelay(100);
+//		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+//	}
 //	taskEXIT_CRITICAL();
 	osSemaphoreRelease(messageI2C_LockSem);
 
@@ -1229,11 +1230,12 @@ bool IMU_getData(uint16_t bytesRemaining)
 
 		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //		taskENTER_CRITICAL();
-		while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100) != HAL_OK){
-			osSemaphoreRelease(messageI2C_LockSem);
-			osDelay(100);
-			osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
-		}
+		HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100);
+//		while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100) != HAL_OK){
+//			osSemaphoreRelease(messageI2C_LockSem);
+//			osDelay(100);
+//			osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+//		}
 //		taskEXIT_CRITICAL();
 		osSemaphoreRelease(messageI2C_LockSem);
 
@@ -1279,11 +1281,12 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 	/*  *********** SEND TO IMU ********************************** */
 	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //	taskENTER_CRITICAL();
-	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100) != HAL_OK){
-		osSemaphoreRelease(messageI2C_LockSem);
-		osDelay(100);
-		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
-	}
+	HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100);
+//	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100) != HAL_OK){
+//		osSemaphoreRelease(messageI2C_LockSem);
+//		osDelay(100);
+//		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+//	}
 //	taskEXIT_CRITICAL();
 	osSemaphoreRelease(messageI2C_LockSem);
 

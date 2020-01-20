@@ -21,6 +21,7 @@
 #include "rtc.h"
 #include "blink.h"
 #include "inertial_sensing.h"
+#include "input.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -40,7 +41,7 @@
 struct blinkData	blinkMsgReceived;
 struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
 struct inertialData inertialMsgReceived;
-
+struct vive_vars vive_loc;
 
 static const struct blinkData nullBlinkMsg = {0};
 static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = {0};
@@ -75,9 +76,9 @@ void MasterThreadTask(void *argument)
 
 //		togLogMessageReceived.status = 1;
 //		togLogMessageReceived.logStatus = 1;
-//		togLogMessageReceived.blinkEnabled = 1;
+//		togLogMessageReceived.blinkEnabled = 0;
 //		togLogMessageReceived.tempEnabled = 1;
-//		togLogMessageReceived.intertialEnabled = 1;
+//		togLogMessageReceived.intertialEnabled = 0;
 //		togLogMessageReceived.positionEnabled = 0;
 
 
@@ -87,11 +88,16 @@ void MasterThreadTask(void *argument)
 		{
 			logEnabled = 1;
 
+			while(1){
+				get3D_location(&vive_loc);
+				osDelay(1000);
+			}
+
 			// keep record of this message so new message doesn't overwrite
 			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
 
 			// start all sensor subsystems
-			if(togLogMessageReceived.blinkEnabled == SENSOR_ENABLE)
+			if(prevLogMessage.blinkEnabled == SENSOR_ENABLE)
 			{
 				osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 			}
@@ -101,19 +107,21 @@ void MasterThreadTask(void *argument)
 //				osSemaphoreRelease(posSemaphore);
 //			}
 //
-			if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE))
+			if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 			{
 				osThreadFlagsSet(interProcessorTaskHandle, 0x00000001U);
 			}
 
-			if( (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE))
+			if( (prevLogMessage.intertialEnabled == SENSOR_ENABLE))
 			{
 				osThreadFlagsSet(inertialSensingTaskHandle, 0x00000001U);
 			}
 
+			osDelay(500);
 
 			while(1)
 			{
+
 				/**********************************************************************************/
 				/*.... WAIT UNTIL DATA PACKET IS READY.....*/
 				/**********************************************************************************/
@@ -121,34 +129,10 @@ void MasterThreadTask(void *argument)
 				// allow sometime for context switching
 				osDelay(50);
 
-				if(togLogMessageReceived.blinkEnabled == SENSOR_ENABLE)
-				{
-					if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, osWaitForever)){
-						memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
-					}
-				}
+				// grab data from sensor thread queues
+				grabSensorData();
 
-				//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
-				//						{
-				//
-				//						}
-
-				if( (togLogMessageReceived.tempEnabled == SENSOR_ENABLE))
-				{
-//					osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, osWaitForever);
-					if(osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 1000)){
-						memcpy(&secondaryProcessorMsgReceived, &nullSecondaryProcessorMsgReceived, sizeof(struct parsedSecondaryProcessorPacket));
-					}
-				}
-
-				if( (togLogMessageReceived.intertialEnabled == SENSOR_ENABLE))
-				{
-					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
-//					if(osOK != osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, 100)){
-//						memcpy(&inertialMsgReceived, &nullInertialMsgReceived, sizeof(struct inertialData));
-//					}
-				}
-
+				// add all sensor data into a packet
 				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, &secondaryProcessorMsgReceived, &inertialMsgReceived);
 
 				/**********************************************************************************/
@@ -185,6 +169,38 @@ void MasterThreadTask(void *argument)
 
 	}
 }
+
+void grabSensorData(void){
+	if(prevLogMessage.blinkEnabled == SENSOR_ENABLE)
+	{
+		if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, osWaitForever)){
+			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
+		}
+	}
+
+	//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
+	//						{
+	//
+	//						}
+
+	if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
+	{
+//					osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, osWaitForever);
+		if(osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 1000)){
+			memcpy(&secondaryProcessorMsgReceived, &nullSecondaryProcessorMsgReceived, sizeof(struct parsedSecondaryProcessorPacket));
+		}
+	}
+
+	if( (prevLogMessage.intertialEnabled == SENSOR_ENABLE))
+	{
+//					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
+		if(osOK != osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, 0)){
+			memcpy(&inertialMsgReceived, &nullInertialMsgReceived, sizeof(struct inertialData));
+		}
+	}
+}
+
+
 
 void masterExitRoutine(void){
 	if(prevLogMessage.blinkEnabled == SENSOR_ENABLE)

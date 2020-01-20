@@ -1,4 +1,0 @@
-master_thread.c:189:6:masterExitRoutine	8	static
-master_thread.c:215:6:packetizeData	24	static
-master_thread.c:68:6:MasterThreadTask	16	static
-master_thread.c:236:10:RTC_ToEpoch	8	static

@@ -35,6 +35,8 @@
 #include "system_settings.h"
 #include "inter_processor_comms.h"
 #include "inertial_sensing.h"
+#include "input.h"
+#include "pulse_processor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -163,7 +165,17 @@ void MX_FREERTOS_Init(void) {
 //    stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
 //    stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
 
+    // semaphore for locking I2C bus when in use
     messageI2C_LockSem = osSemaphoreNew (1, 1, NULL);
+
+	const osThreadAttr_t pulseHandlerTask_attributes = {
+	  .name = "pulseHandlerTask",
+	  .priority = (osPriority_t) osPriorityAboveNormal,
+	  .stack_size = 1024
+	};
+	pulseHandlerTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseHandlerTask_attributes);
+	pulseQueue = osMessageQueueNew (10, sizeof(Pulse), NULL);
+	viveQueue = osMessageQueueNew(10, sizeof(VIVEVars), NULL);
 
 
  //#endif

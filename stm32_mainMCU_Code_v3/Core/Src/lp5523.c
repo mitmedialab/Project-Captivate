@@ -51,9 +51,11 @@ extern "C" {
  *
  *************************************************************/
 
+#define MAX_BRIGHTNESS 200
+
 uint8_t led_left_PWM[9] = {0};
 uint8_t led_right_PWM[9] = {0};
-uint8_t led_current[9] = {100, 100, 100, 100, 100, 100, 100, 100, 100};
+uint8_t led_current[9] = {MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS, MAX_BRIGHTNESS};
 
 //uint8_t led_current[9] = {200, 200, 200, 200, 200, 200, 200, 200, 200};
 

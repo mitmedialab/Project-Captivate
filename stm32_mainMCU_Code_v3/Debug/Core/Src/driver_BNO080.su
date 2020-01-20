@@ -37,10 +37,10 @@ driver_BNO080.c:586:7:IMU_getMagX	8	static
 driver_BNO080.c:593:7:IMU_getMagY	8	static
 driver_BNO080.c:600:7:IMU_getMagZ	8	static
 driver_BNO080.c:991:6:IMU_calibrationComplete	0	static
-driver_BNO080.c:1215:6:IMU_getData	32	static
-driver_BNO080.c:1178:6:IMU_receivePacket	16	static
+driver_BNO080.c:1216:6:IMU_getData	32	static
+driver_BNO080.c:1178:6:IMU_receivePacket	24	static
 driver_BNO080.c:220:6:IMU_dataAvailable	8	static
-driver_BNO080.c:1266:6:IMU_sendPacket	24	static
+driver_BNO080.c:1268:6:IMU_sendPacket	24	static
 driver_BNO080.c:750:6:IMU_frsReadRequest	8	static
 driver_BNO080.c:768:6:IMU_readFRSdata	24	static
 driver_BNO080.c:740:10:IMU_readFRSword	8	static

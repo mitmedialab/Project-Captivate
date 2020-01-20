@@ -124,10 +124,11 @@ void InertialSensingTask(void *argument){
 //					}
 				// grab packets
 				osDelay(100);
-				osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, osWaitForever);
+				osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 100);
 				osMessageQueueGet(activitySampleQueueHandle, &inertialPacket.activity, 0U, 0);
-				inertialPacket.step.tick_ms += 1;
 				osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U, 0);
+
+				if( HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin) == GPIO_PIN_RESET) IMU_dataAvailable();
 
 //					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 200);
 //					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix[1], 0U, ROT_VEC_PERIOD + WAIT_TOLERANCE);

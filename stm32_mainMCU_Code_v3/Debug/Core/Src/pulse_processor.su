@@ -1,0 +1,12 @@
+pulse_processor.c:35:6:vector_push	4	static
+pulse_processor.c:42:7:vector_pop	16	static
+pulse_processor.c:51:7:vector_get	0	static
+pulse_processor.c:59:6:vector_clear	0	static
+pulse_processor.c:63:6:_PulseProcessor	16	static
+pulse_processor.c:252:6:reset_cycle_long_pulses	16	static
+pulse_processor.c:258:6:reset_unclassified_long_pulses	8	static
+pulse_processor.c:262:6:reset_cycle_short_pulses	8	static
+pulse_processor.c:90:6:process_long_pulse	24	static
+pulse_processor.c:149:6:process_cycle_fix	96	static
+pulse_processor.c:139:6:process_short_pulse	8	static
+pulse_processor.c:77:6:consume_pulse	8	static

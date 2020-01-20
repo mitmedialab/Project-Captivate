@@ -34,7 +34,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "input.h"
+#include "pulse_processor.h"
+#include "circular_buffer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +56,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t timestamp = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,6 +107,7 @@ int main(void)
   MX_RF_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -236,7 +239,23 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	timestamp = __HAL_TIM_GET_COUNTER(&htim16);
 
+	GPIO_PinState pin_state = HAL_GPIO_ReadPin(PC0_GPIO_Port, PC0_Pin);
+	if (pin_state == GPIO_PIN_SET) {
+		//Rising edge
+		input0.rise_time_ = timestamp;
+		input0.rise_valid_ = 1;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
+	}
+	else if (input0.rise_valid_ && pin_state == GPIO_PIN_RESET) {
+		//Falling edge
+		enqueue_pulse(&input0, input0.rise_time_, timestamp - input0.rise_time_);
+		input0.rise_valid_ = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+	}
+}
 /* USER CODE END 4 */
 
 /**
