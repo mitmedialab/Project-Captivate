@@ -41,7 +41,7 @@
 struct blinkData	blinkMsgReceived;
 struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
 struct inertialData inertialMsgReceived;
-struct vive_vars vive_loc;
+struct VIVEVars vive_loc;
 
 static const struct blinkData nullBlinkMsg = {0};
 static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = {0};
@@ -70,6 +70,10 @@ void MasterThreadTask(void *argument)
 {
 	while(1)
 	{
+//		while(1){
+//			get3D_location(&vive_loc);
+//			osDelay(1000);
+//		}
 		// check if the queue has a new message (a command to start/stop logging)
 		//   .... this function waits forever
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
@@ -87,11 +91,6 @@ void MasterThreadTask(void *argument)
 		if(togLogMessageReceived.logStatus == ENABLE_LOG)
 		{
 			logEnabled = 1;
-
-			while(1){
-				get3D_location(&vive_loc);
-				osDelay(1000);
-			}
 
 			// keep record of this message so new message doesn't overwrite
 			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));

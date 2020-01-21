@@ -22,6 +22,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "comp.h"
 #include "dma.h"
 #include "i2c.h"
 #include "rf.h"
@@ -107,6 +108,7 @@ int main(void)
   MX_RF_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
+  MX_COMP1_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
@@ -239,21 +241,22 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp){
 	timestamp = __HAL_TIM_GET_COUNTER(&htim16);
 
-	GPIO_PinState pin_state = HAL_GPIO_ReadPin(PC0_GPIO_Port, PC0_Pin);
-	if (pin_state == GPIO_PIN_SET) {
+//	GPIO_PinState pin_state = HAL_GPIO_ReadPin(LH_SIG_GPIO_Port, LH_SIG_Pin);
+	uint32_t pin_state = HAL_COMP_GetOutputLevel(hcomp);
+	if (pin_state == COMP_OUTPUT_LEVEL_HIGH) {
 		//Rising edge
 		input0.rise_time_ = timestamp;
 		input0.rise_valid_ = 1;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
 	}
-	else if (input0.rise_valid_ && pin_state == GPIO_PIN_RESET) {
+	else if (input0.rise_valid_ && pin_state == COMP_OUTPUT_LEVEL_LOW) {
 		//Falling edge
 		enqueue_pulse(&input0, input0.rise_time_, timestamp - input0.rise_time_);
 		input0.rise_valid_ = 0;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 	}
 }
 /* USER CODE END 4 */

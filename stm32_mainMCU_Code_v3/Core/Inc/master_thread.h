@@ -60,7 +60,6 @@ void packetizeData(struct LogPacket *packet,
 		struct inertialData *inertialMsg);
 void MasterThreadTask(void *argument);
 void masterExitRoutine(void);
-void get3D_location(void);
 void grabSensorData(void);
 
 

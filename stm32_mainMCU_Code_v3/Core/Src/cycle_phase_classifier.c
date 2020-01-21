@@ -1,5 +1,5 @@
 #include "cycle_phase_classifier.h"
-#include "UART_Print.h"
+//#include "UART_Print.h"
 
 enum PhaseFixLevels {  // Unscoped enum because we use it more like set of constants.
     kPhaseFixNone = 0,

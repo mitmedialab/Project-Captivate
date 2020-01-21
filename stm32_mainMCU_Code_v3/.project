@@ -52,6 +52,11 @@
 			<locationURI>$%7BPARENT-3-PROJECT_LOC%7D/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_adc_ex.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_comp.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-3-PROJECT_LOC%7D/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_comp.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_cortex.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-3-PROJECT_LOC%7D/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_cortex.c</locationURI>

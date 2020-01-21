@@ -1,0 +1,6 @@
+geometry.c:14:6:_GeometryBuilder	128	static
+geometry.c:74:6:vec_cross_product	0	static
+geometry.c:80:7:vec_length	16	static
+geometry.c:89:6:calc_ray_vec	112	static
+geometry.c:113:9:intersect_lines	104	static
+geometry.c:27:6:consume_angles	80	static

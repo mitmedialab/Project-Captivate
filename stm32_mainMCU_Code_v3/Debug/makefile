@@ -46,7 +46,7 @@ all: stm32_mainMCU_Code_v3.elf secondary-outputs
 
 # Tool invocations
 stm32_mainMCU_Code_v3.elf: $(OBJS) $(USER_OBJS) C:\dev\attentionDevBoard\stm32_mainMCU_Code_v3\STM32WB55CGUX_FLASH.ld
-	arm-none-eabi-gcc -o "stm32_mainMCU_Code_v3.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\dev\attentionDevBoard\stm32_mainMCU_Code_v3\STM32WB55CGUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm32_mainMCU_Code_v3.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "stm32_mainMCU_Code_v3.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\dev\attentionDevBoard\stm32_mainMCU_Code_v3\STM32WB55CGUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm32_mainMCU_Code_v3.map" -Wl,--gc-sections -static -L"C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

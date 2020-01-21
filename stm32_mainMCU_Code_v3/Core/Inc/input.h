@@ -34,8 +34,9 @@ osThreadId_t masterTaskHandle;
 void _Input(Input *self, uint8_t input_idx);
 void PulseHandlerTask(void *argument);
 void MasterTask(void *argument);
+void get3D_location(VIVEVars *vive_vars);
 void enqueue_pulse(Input *self, uint16_t start_time, uint16_t len);
-void get3D_location(vive_vars *vive_vars);
+
 
 
 

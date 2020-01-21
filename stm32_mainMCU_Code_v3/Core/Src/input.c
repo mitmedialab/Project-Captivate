@@ -5,7 +5,8 @@
  *      Author: giand
  */
 #include "input.h"
-#include "UART_Print.h"
+#include "comp.h"
+//#include "UART_Print.h"
 
 PulseProcessor pulse_processor;
 GeometryBuilder geometry_builder;
@@ -25,7 +26,9 @@ void PulseHandlerTask(void *argument){
 	while(1){
 		osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 		//Start interrupt
-		HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+//		HAL_NVIC_EnableIRQ(COMP_IRQn);
+		HAL_TIM_Base_Start(&htim16);
+		HAL_COMP_Start(&hcomp1);
 		_Input(&input0, 0);
 		while(1){
 			osMessageQueueGet (pulseQueue, (void *) &p, NULL, osWaitForever);
@@ -34,7 +37,9 @@ void PulseHandlerTask(void *argument){
 			evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
 			if((evt & 0x00000002U) == 0x00000002U){
 				//Stop interrupt
-				HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+//				HAL_NVIC_DisableIRQ(COMP_IRQn);
+				HAL_COMP_Stop(&hcomp1);
+				HAL_TIM_Base_Stop(&htim16);
 				osMessageQueueReset(pulseQueue);
 				break;
 			}
@@ -68,13 +73,14 @@ VIVEVars vive_vars;
 //}
 
 
-void get3D_location(vive_vars *vive_vars){
+void get3D_location(VIVEVars *vive_vars){
 	// start VIVE thread
 	osThreadFlagsSet(pulseHandlerTaskHandle, 0x00000001U);
 
 	// grab 3D location estimate
-	osMessageQueueGet(viveQueue, (void *) vive_vars, NULL, osWaitForever);
-
+	for(int i = 0; i<20; i++){
+		osMessageQueueGet(viveQueue, (void *) vive_vars, NULL, osWaitForever);
+	}
 	// TODO : average them and/or error correction
 
 	// turn off 3D localization
