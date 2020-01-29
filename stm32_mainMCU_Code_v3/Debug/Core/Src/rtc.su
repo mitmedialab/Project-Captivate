@@ -1,3 +1,5 @@
+stm32wbxx_ll_rcc.h:2851:22:LL_RCC_EnableRTC	4	static
+stm32wbxx_ll_rcc.h:2861:22:LL_RCC_DisableRTC	4	static
 rtc.c:30:6:MX_RTC_Init	8	static
-rtc.c:46:6:HAL_RTC_MspInit	0	static
-rtc.c:62:6:HAL_RTC_MspDeInit	0	static
+rtc.c:46:6:HAL_RTC_MspInit	16	static
+rtc.c:62:6:HAL_RTC_MspDeInit	16	static

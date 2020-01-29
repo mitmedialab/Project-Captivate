@@ -1,3 +1,6 @@
+stm32wbxx_ll_bus.h:508:22:LL_AHB2_GRP1_EnableClock	24	static
+stm32wbxx_ll_bus.h:894:22:LL_APB1_GRP1_EnableClock	24	static
+stm32wbxx_ll_bus.h:989:22:LL_APB1_GRP1_DisableClock	16	static
 i2c.c:30:6:MX_I2C1_Init	8	static
 i2c.c:61:6:HAL_I2C_MspInit	40	static
-i2c.c:95:6:HAL_I2C_MspDeInit	8	static
+i2c.c:95:6:HAL_I2C_MspDeInit	16	static

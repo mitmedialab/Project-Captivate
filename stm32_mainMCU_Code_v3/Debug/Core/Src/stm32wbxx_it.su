@@ -1,9 +1,9 @@
-stm32wbxx_it.c:83:6:NMI_Handler	0	static
-stm32wbxx_it.c:96:6:HardFault_Handler	0	static
-stm32wbxx_it.c:111:6:MemManage_Handler	0	static
-stm32wbxx_it.c:126:6:BusFault_Handler	0	static
-stm32wbxx_it.c:141:6:UsageFault_Handler	0	static
-stm32wbxx_it.c:156:6:DebugMon_Handler	0	static
+stm32wbxx_it.c:83:6:NMI_Handler	4	static
+stm32wbxx_it.c:96:6:HardFault_Handler	4	static
+stm32wbxx_it.c:111:6:MemManage_Handler	4	static
+stm32wbxx_it.c:126:6:BusFault_Handler	4	static
+stm32wbxx_it.c:141:6:UsageFault_Handler	4	static
+stm32wbxx_it.c:156:6:DebugMon_Handler	4	static
 stm32wbxx_it.c:176:6:EXTI2_IRQHandler	8	static
 stm32wbxx_it.c:193:6:DMA1_Channel1_IRQHandler	8	static
 stm32wbxx_it.c:207:6:COMP_IRQHandler	8	static

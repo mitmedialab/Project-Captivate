@@ -111,7 +111,7 @@ osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = {
   .name = "inertialTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 1024
 };
 /* Definitions for pulseTask */
 osThreadId_t pulseTaskHandle;
@@ -204,6 +204,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 /* Hook prototypes */
 void configureTimerForRunTimeStats(void);
 unsigned long getRunTimeCounterValue(void);
+void vApplicationTickHook(void);
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 void vApplicationMallocFailedHook(void);
 
@@ -220,6 +221,17 @@ __weak unsigned long getRunTimeCounterValue(void)
 return HAL_GetTick();
 }
 /* USER CODE END 1 */
+
+/* USER CODE BEGIN 3 */
+__weak void vApplicationTickHook( void )
+{
+   /* This function will be called by each tick interrupt if
+   configUSE_TICK_HOOK is set to 1 in FreeRTOSConfig.h. User code can be
+   added here, but the tick hook is called from an interrupt context, so
+   code must not attempt to block, and only the interrupt safe FreeRTOS API
+   functions can be used (those that end in FromISR()). */
+}
+/* USER CODE END 3 */
 
 /* USER CODE BEGIN 4 */
 volatile uint8_t test=0;
@@ -278,43 +290,43 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the semaphores(s) */
   /* creation of messageI2C_Lock */
-//  messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
-//
-//  /* USER CODE BEGIN RTOS_SEMAPHORES */
-////  /* add semaphores, ... */
-//  /* USER CODE END RTOS_SEMAPHORES */
-//
-//  /* USER CODE BEGIN RTOS_TIMERS */
-////  /* start timers, add new ones, ... */
-//  /* USER CODE END RTOS_TIMERS */
-//
-//  /* Create the queue(s) */
-//  /* creation of blinkMsgQueue */
-//  blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
-//
-//  /* creation of lightsSimpleQueue */
-//  lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
-//
-//  /* creation of togLoggingQueue */
-//  togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
-//
-//  /* creation of interProcessorMsgQueue */
-//  interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
-//
-//  /* creation of inertialSensingQueue */
-//  inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
-//
-//  /* creation of activitySampleQueue */
-//  activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
-//
-//  /* creation of rotationSampleQueue */
-//  rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
-//
-//  /* creation of pulseQueue */
-//  pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
-//
-//  /* creation of viveQueue */
-//  viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
+  messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+//  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+//  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of blinkMsgQueue */
+  blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
+
+  /* creation of lightsSimpleQueue */
+  lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
+
+  /* creation of togLoggingQueue */
+  togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
+
+  /* creation of interProcessorMsgQueue */
+  interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
+
+  /* creation of inertialSensingQueue */
+  inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
+
+  /* creation of activitySampleQueue */
+  activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
+
+  /* creation of rotationSampleQueue */
+  rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
+
+  /* creation of pulseQueue */
+  pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
+
+  /* creation of viveQueue */
+  viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -324,23 +336,23 @@ void MX_FREERTOS_Init(void) {
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
 
-//  /* creation of frontLightsTask */
-//  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
-//
-//  /* creation of masterTask */
-//  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
-//
-//  /* creation of inertialTask */
-//  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
-//
-//  /* creation of pulseTask */
-//  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
-//
-//  /* creation of interProcTask */
-//  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
-//
-//  /* creation of blinkTask */
-//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+  /* creation of frontLightsTask */
+  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+
+  /* creation of masterTask */
+  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+
+  /* creation of inertialTask */
+  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+
+  /* creation of pulseTask */
+  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+
+  /* creation of interProcTask */
+  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+
+  /* creation of blinkTask */
+  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
 
@@ -406,23 +418,23 @@ void startSensorThreads(void){
 	/* creation of viveQueue */
 	viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
 
-//	/* creation of frontLightsTask */
-//	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
-
 	/* creation of inertialTask */
-	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
-
-	/* creation of pulseTask */
-	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
-
-	/* creation of interProcTask */
-	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+//	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+//
+//	/* creation of pulseTask */
+//	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+//
+//	/* creation of interProcTask */
+//	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
 
 	/* creation of blinkTask */
-	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
-	/* creation of masterTask */
-	masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+//	/* creation of masterTask */
+//	masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+
+	/* creation of frontLightsTask */
+//	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
 }
 /* USER CODE END Application */
 

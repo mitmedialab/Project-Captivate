@@ -460,7 +460,7 @@ static void APP_THREAD_DeviceConfig(void)
 
     // start master thread
 //    osThreadFlagsSet(masterTaskHandle, 0x00000008U);
-    startSensorThreads();
+//    startSensorThreads();
   /* USER CODE END DEVICECONFIG */
 }
 

@@ -11,13 +11,14 @@
 #include <arm_math.h>
 //#include "UART_Print.h"
 
-void _GeometryBuilder(GeometryBuilder *self){
-	BaseStationGeometryDef bs_0 = {{0.682646, 1.712605, 0.298152},
-			  	  	  	  	  	  {0.356806, -0.017381, 0.934017, 0.001791, 0.999838, 0.017922, -0.934177, -0.004722, 0.356779}};
+BaseStationGeometryDef bs_0 = {{0.682646, 1.712605, 0.298152},
+							  {0.356806, -0.017381, 0.934017, 0.001791, 0.999838, 0.017922, -0.934177, -0.004722, 0.356779}};
 
-	BaseStationGeometryDef bs_1 = {{0.780941, 2.300994, -0.204002},
-	  	  	  	  	  	  	  	  {-0.184830, -0.411017, 0.892694, 0.104180, 0.895032, 0.433664, -0.977233, 0.173155, -0.122609}};
-	SensorLocalGeometry s_loc_geo = {0, {0.0, 0.0, 0.0}};
+BaseStationGeometryDef bs_1 = {{0.780941, 2.300994, -0.204002},
+							  {-0.184830, -0.411017, 0.892694, 0.104180, 0.895032, 0.433664, -0.977233, 0.173155, -0.122609}};
+SensorLocalGeometry s_loc_geo = {0, {0.0, 0.0, 0.0}};
+
+void _GeometryBuilder(GeometryBuilder *self){
 
 	self->base_stations_[0] = bs_0;
 	self->base_stations_[1] = bs_1;
@@ -54,8 +55,8 @@ void consume_angles(GeometryBuilder * self, const SensorAnglesFrame * f) {
 
             self->vive_vars_.time_ms = HAL_GetTick();
 
-
-            //UART_Print_float(self->vive_vars_.pos[0]);
+            //Put VIVE measurements in the message queue
+            osMessageQueuePut(viveQueueHandle, (void *) &self->vive_vars_, NULL, 0);
         }
         else {
             // Angles too stale - cannot calculate position anymore.

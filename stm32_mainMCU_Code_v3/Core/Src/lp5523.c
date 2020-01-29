@@ -33,7 +33,7 @@ extern "C" {
 
 /* defines -----------------------------------------------------------*/
 #define I2C_HANDLE_TYPEDEF 	&hi2c1
-#define I2C_TIMEOUT			-1
+#define I2C_TIMEOUT			100
 
 
 /* macros ------------------------------------------------------------*/
@@ -70,11 +70,13 @@ struct LightConfig
 };
 
 const uint8_t packet_array[9] = {LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN};
+uint8_t deviceAddress;
+uint8_t led_PWM[9] = {0};
+uint8_t packet;
 
 void setup_LP5523(uint8_t ADDR){
-	uint8_t deviceAddress = ADDR << 1;
-	uint8_t led_PWM[9] = {0};
-	uint8_t packet;
+
+	deviceAddress = ADDR << 1;
 
 	// enable chip
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
@@ -206,28 +208,18 @@ struct test_color tempComplexLight;
 
 void ThreadFrontLightsTask(void *argument)
 {
-	//osDelay(1); // added delay because it seems that semaphores arent fully initialized and code stalls when releasing semaphore
-#ifndef DONGLE_CODE
+
+//	osDelay(1); // added delay because it seems that semaphores arent fully initialized and code stalls when releasing semaphore
+//#ifndef DONGLE_CODE
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
-#endif
+//#endif
 
-//	LP5523 ledDriver;
-//	ledDriver.begin();
-//	uint8_t index = 0;
-//	uint8_t flip = 0;
 	uint32_t lightsSimpleMessageReceived;
-//	for(int i = 0; i<10; i++){
-//		led_PWM[i] = 255;
-//	}
-//	led_PWM[0] = 255;
+
 	while(1){
-//		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-//		osDelay(1000);
-//		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+
 		lightsSimpleMessageReceived = 0;
-
-
 
 //		tempComplexLight.left_front_r = 0;
 //		tempComplexLight.left_side_r = 0;
@@ -252,37 +244,9 @@ void ThreadFrontLightsTask(void *argument)
 //
 //		FrontLightsSet(&tempComplexLight);
 
+		osDelay(1);
+
 		osMessageQueueGet(lightsSimpleQueueHandle, &lightsSimpleMessageReceived, 0U, osWaitForever);
-#ifndef DONGLE_CODE
-//		for(int i = 0; i<= 9; i++){
-//
-//		}
-
-
-//		if(flip==0) led_PWM[index] += 2;
-//
-//		else led_PWM[index] -= 2;
-//
-//		if( (flip == 1) && (led_PWM[index] == 0)){
-//			flip = 0;
-//			index += 1;
-//			if(index == 9) index = 0;
-//		}
-//		if(led_PWM[index] >= 240){
-//			flip = 1;
-////			led_PWM[index]= 0;
-////			index += 1;
-////			if(index == 9) index = 0;
-//		}
-//
-////		for(int i=0; i<=9; i++) {
-////			led_PWM[i] = i == index? 240 : 0;
-////		}
-////
-////		index = index == 9? 0 : index+1;
-
-//		// REMOVE BELOW
-//		lightsSimpleMessageReceived = 0X00005229;
 
 		for(int i = 0; i<= 8; i++){
 			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
@@ -294,73 +258,11 @@ void ThreadFrontLightsTask(void *argument)
 			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
 		}
 
-		//while(HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_PWM_REG, 1, led_PWM, 9) != HAL_OK);
-		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
-		//osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-
-
-		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
-		//osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
 		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
 		osSemaphoreRelease(messageI2C_LockHandle);
-//		osDelay(1000);
 
-
-//		// REMOVE BELOW
-//		osMessageQueueGet(lightsSimpleQueueHandle, &lightsSimpleMessageReceived, 0U, osWaitForever);
-//		osDelay(2000);
-//
-//		lightsSimpleMessageReceived = 0X000381C0;
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_right_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-//
-//		osDelay(2000);
-//
-//		lightsSimpleMessageReceived = 0X00002C16;
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_right_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-//
-//		osDelay(2000);
-//
-//		lightsSimpleMessageReceived = 0X0003CDCD;
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_left_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//
-//		for(int i = 0; i<= 8; i++){
-//			led_right_PWM[i] = (lightsSimpleMessageReceived & 0x01) * 255;
-//			lightsSimpleMessageReceived = lightsSimpleMessageReceived >> 1;
-//		}
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
-//		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-//
-//		osDelay(2000);
-#endif
 	}
 }
 
