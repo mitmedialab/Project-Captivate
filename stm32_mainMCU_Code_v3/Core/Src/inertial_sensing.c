@@ -16,6 +16,7 @@
 #include "stm32wbxx_hal.h"
 #include "main.h"
 #include "inter_processor_comms.h"
+#include "captivate_config.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -73,102 +74,60 @@ void InertialSensingTask(void *argument){
 	inertialEnabled = 1;
 	IMU_begin(BNO080_ADDRESS, IMU_INT_Pin, IMU_INT_GPIO_Port);
 
-//	IMU_enableAccelerometer(50); //Send data update every 50ms
+	uint32_t evt = 0;
 
-//	while(1){
-//		 if (IMU_dataAvailable() == true)
-//		  {
-////			 x = IMU_getAccelX();
-////			 y = IMU_getAccelY();
-////			 z = IMU_getAccelZ();
-//			quatI = IMU_getQuatI();
-//			quatJ = IMU_getQuatJ();
-//			quatK = IMU_getQuatK();
-//			quatReal = IMU_getQuatReal();
-//			quatRadianAccuracy = IMU_getQuatRadianAccuracy();
-//		  }
-//	}
+	while(1){
 
-	//  sensorChoice sensor = nose;
-	  uint32_t evt = 0;
+		/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
+		osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
+		//evt = 0x00000001U;
 
-	  while(1){
+	//			// configure IMU
+		osDelay(500);
+		IMU_enableRotationVector(ROT_VEC_PERIOD);
+		osDelay(100);
+		IMU_enableActivityClassifier(ACT_CLASS_PERIOD , enableActivities, activityClasses);
 
-		  	/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
-			osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
-		  	//evt = 0x00000001U;
-		    // if signal was received successfully, start blink task
+		// give some time for things to buffer
+		osDelay(400);
 
+		while(1){
 
-//			// configure IMU
-			osDelay(500);
-			IMU_enableRotationVector(ROT_VEC_PERIOD);
+			// grab packets
 			osDelay(100);
-			IMU_enableActivityClassifier(ACT_CLASS_PERIOD , enableActivities, activityClasses);
+			osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 100);
+			osMessageQueueGet(activitySampleQueueHandle, &inertialPacket.activity, 0U, 0);
+			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U, 0);
 
-//				IMU_enableStabilityClassifier(STABILITY_CLASS_PERIOD);
-//				IMU_enableStepCounter(STEP_CNT_PERIOD);
+			if( HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin) == GPIO_PIN_RESET) IMU_dataAvailable();
 
-//				 give IMU some time to get setup
-			//osDelay(5);
-//				uint8_t temp = 0;
+			// check for break condition
+			evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
 
-			// give some time for things to buffer
-			osDelay(400);
+			// stop timer and put thread in idle if signal was reset
+			if( (evt & 0x00000002U) == 0x00000002U){
 
-			while(1){
-//					if(IMU_dataAvailable()){
-//						temp++;
-//					}else{
-//
-//					}
-				// grab packets
-				osDelay(100);
-				osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 100);
-				osMessageQueueGet(activitySampleQueueHandle, &inertialPacket.activity, 0U, 0);
-				osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U, 0);
+				// reset IMU
+				IMU_softReset();
 
-				if( HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin) == GPIO_PIN_RESET) IMU_dataAvailable();
+				// give some time to ensure no interrupts are handled
+				osDelay(500);
 
-//					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 200);
-//					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix[1], 0U, ROT_VEC_PERIOD + WAIT_TOLERANCE);
-//					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix[2], 0U, ROT_VEC_PERIOD + WAIT_TOLERANCE);
-//					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix[3], 0U, ROT_VEC_PERIOD + WAIT_TOLERANCE);
-//					osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix[4], 0U, ROT_VEC_PERIOD + WAIT_TOLERANCE);
-//					osMessageQueueGet(activitySampleQueueHandle, &inertialPacket.activity, 0U, WAIT_TOLERANCE);
-//					osMessageQueueGet(stepSampleQueueHandle, &inertialPacket.stability, 0U, WAIT_TOLERANCE);
-//					osMessageQueueGet(stabilitySampleQueueHandle, &inertialPacket.step, 0U, WAIT_TOLERANCE);
+				inertialEnabled = 0;
 
+				// empty queues
+				osMessageQueueReset(inertialSensingQueueHandle);
+				osMessageQueueReset(activitySampleQueueHandle);
+				osMessageQueueReset(rotationSampleQueueHandle);
 
-				// check for break condition
-				evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
+				// clear any flags
+				osThreadFlagsClear(0x0000000EU);
 
-				// stop timer and put thread in idle if signal was reset
-				if( (evt & 0x00000002U) == 0x00000002U){
-
-					// reset IMU
-					IMU_softReset();
-
-					// give some time to ensure no interrupts are handled
-					osDelay(500);
-
-					inertialEnabled = 0;
-
-					// empty queues
-					osMessageQueueReset(inertialSensingQueueHandle);
-					osMessageQueueReset(activitySampleQueueHandle);
-					osMessageQueueReset(rotationSampleQueueHandle);
-//					osMessageQueueReset(stepSampleQueueHandle);
-//					osMessageQueueReset(stabilitySampleQueueHandle);
-
-					// clear any flags
-					osThreadFlagsClear(0x0000000EU);
-
-					// exit and wait for next start condition
-					break;
-				}
+				// exit and wait for next start condition
+				break;
 			}
 		}
+	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)

@@ -60,8 +60,9 @@ typedef struct VIVEVars{
 	float pos[3];
 	float pos_delta;
 	uint32_t time_ms;
+	uint32_t epoch;
 } VIVEVars;
 
 
-osMessageQueueId_t pulseQueue;
-osMessageQueueId_t viveQueue;
+osMessageQueueId_t pulseQueueHandle;
+osMessageQueueId_t viveQueueHandle;

@@ -56,8 +56,10 @@ Core/Src/lp5523.o: ../Core/Src/lp5523.c ../Core/Inc/lp5523.h \
  ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/main.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/config.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/core/openthread_api/openthread_api_config_ftd.h \
- ../Core/Inc/master_thread.h ../Core/Inc/config.h ../Core/Inc/blink.h \
- ../Core/Inc/inter_processor_comms.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/master_thread.h ../Core/Inc/captivate_config.h \
+ ../Core/Inc/blink.h ../Core/Inc/inter_processor_comms.h \
+ ../Core/Inc/inertial_sensing.h ../Core/Inc/messages.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/system_settings.h
 
 ../Core/Inc/lp5523.h:
@@ -182,12 +184,16 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_
 
 ../Core/Inc/master_thread.h:
 
-../Core/Inc/config.h:
+../Core/Inc/captivate_config.h:
 
 ../Core/Inc/blink.h:
 
 ../Core/Inc/inter_processor_comms.h:
 
 ../Core/Inc/inertial_sensing.h:
+
+../Core/Inc/messages.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
 ../Core/Inc/system_settings.h:

@@ -55,8 +55,10 @@ Core/Src/inter_processor_comms.o: ../Core/Src/inter_processor_comms.c \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h \
  ../Core/Inc/gpio.h ../Core/Inc/main.h ../Core/Inc/i2c.h \
- ../Core/Inc/master_thread.h ../Core/Inc/config.h ../Core/Inc/blink.h \
- ../Core/Inc/inter_processor_comms.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/master_thread.h ../Core/Inc/captivate_config.h \
+ ../Core/Inc/blink.h ../Core/Inc/inter_processor_comms.h \
+ ../Core/Inc/inertial_sensing.h ../Core/Inc/messages.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 
@@ -178,13 +180,17 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 
 ../Core/Inc/master_thread.h:
 
-../Core/Inc/config.h:
+../Core/Inc/captivate_config.h:
 
 ../Core/Inc/blink.h:
 
 ../Core/Inc/inter_processor_comms.h:
 
 ../Core/Inc/inertial_sensing.h:
+
+../Core/Inc/messages.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 

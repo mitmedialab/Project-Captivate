@@ -23,6 +23,10 @@
 #include "inertial_sensing.h"
 #include "input.h"
 
+#include "app_entry.h"
+#include "task.h"
+
+#include "captivate_config.h"
 /* typedef -----------------------------------------------------------*/
 
 
@@ -46,6 +50,7 @@ struct VIVEVars vive_loc;
 static const struct blinkData nullBlinkMsg = {0};
 static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = {0};
 static const struct inertialData nullInertialMsgReceived = {0};
+static const struct VIVEVars nullViveMsgReceived = {0};
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -68,8 +73,19 @@ uint8_t logEnabled = 0;
 
 void MasterThreadTask(void *argument)
 {
+
+//	taskENTER_CRITICAL();
+
+//	taskEXIT_CRITICAL();
+
+	// wait for STM32_WPAN to initialize
+//	osThreadFlagsWait (0x00000008U, osFlagsWaitAny, osWaitForever);
+
+//	startSensorThreads();
+
 	while(1)
 	{
+//		osDelay(1);
 //		while(1){
 //			get3D_location(&vive_loc);
 //			osDelay(1000);
@@ -78,12 +94,12 @@ void MasterThreadTask(void *argument)
 		//   .... this function waits forever
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
 
-//		togLogMessageReceived.status = 1;
-//		togLogMessageReceived.logStatus = 1;
-//		togLogMessageReceived.blinkEnabled = 0;
-//		togLogMessageReceived.tempEnabled = 1;
-//		togLogMessageReceived.intertialEnabled = 0;
-//		togLogMessageReceived.positionEnabled = 0;
+//		togLogMessageReceived.status = 0;
+//		togLogMessageReceived.logStatus = 0;
+		togLogMessageReceived.blinkEnabled = 1;
+		togLogMessageReceived.tempEnabled = 1;
+		togLogMessageReceived.intertialEnabled = 1;
+		togLogMessageReceived.positionEnabled = 0;
 
 
 		// if the received command enables logging
@@ -100,20 +116,20 @@ void MasterThreadTask(void *argument)
 			{
 				osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 			}
-//
-//			if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
-//			{
-//				osSemaphoreRelease(posSemaphore);
-//			}
-//
+
+			if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
+			{
+				// start timer for 3D position sample to be taken
+			}
+
 			if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 			{
-				osThreadFlagsSet(interProcessorTaskHandle, 0x00000001U);
+				osThreadFlagsSet(interProcTaskHandle, 0x00000001U);
 			}
 
 			if( (prevLogMessage.intertialEnabled == SENSOR_ENABLE))
 			{
-				osThreadFlagsSet(inertialSensingTaskHandle, 0x00000001U);
+				osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
 			}
 
 			osDelay(500);
@@ -132,7 +148,7 @@ void MasterThreadTask(void *argument)
 				grabSensorData();
 
 				// add all sensor data into a packet
-				packetizeData(&sensorPacket, &blinkMsgReceived, NULL, &secondaryProcessorMsgReceived, &inertialMsgReceived);
+				packetizeData(&sensorPacket, &blinkMsgReceived, &secondaryProcessorMsgReceived, &inertialMsgReceived, &vive_loc);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
@@ -172,27 +188,27 @@ void MasterThreadTask(void *argument)
 void grabSensorData(void){
 	if(prevLogMessage.blinkEnabled == SENSOR_ENABLE)
 	{
-		if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, osWaitForever)){
+		if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, 1000)){
 			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
 		}
 	}
 
-	//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
-	//						{
-	//
-	//						}
-
 	if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 	{
-//					osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, osWaitForever);
 		if(osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 1000)){
 			memcpy(&secondaryProcessorMsgReceived, &nullSecondaryProcessorMsgReceived, sizeof(struct parsedSecondaryProcessorPacket));
 		}
 	}
 
+	if( (prevLogMessage.positionEnabled == SENSOR_ENABLE))
+		{
+		if(osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 1000)){
+				memcpy(&vive_loc, &nullViveMsgReceived, sizeof(VIVEVars));
+			}
+		}
+
 	if( (prevLogMessage.intertialEnabled == SENSOR_ENABLE))
 	{
-//					osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, osWaitForever);
 		if(osOK != osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, 0)){
 			memcpy(&inertialMsgReceived, &nullInertialMsgReceived, sizeof(struct inertialData));
 		}
@@ -206,20 +222,21 @@ void masterExitRoutine(void){
 	{
 		osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
 	}
-//
-//						if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
-//						{
-//
-//						}
+
+	if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
+	{
+		// stop timer for 3D position sensing
+
+	}
 
 	if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 	{
-		osThreadFlagsSet(interProcessorTaskHandle, 0x00000002U);
+		osThreadFlagsSet(interProcTaskHandle, 0x00000002U);
 	}
 
 	if( (prevLogMessage.intertialEnabled == SENSOR_ENABLE))
 	{
-		osThreadFlagsSet(inertialSensingTaskHandle, 0x00000002U);
+		osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
 	}
 
 }
@@ -229,9 +246,9 @@ RTC_DateTypeDef RTC_date;
 
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
-		struct positionData *pos,
 		struct parsedSecondaryProcessorPacket *processorMsg,
-		struct inertialData *inertialMsg)
+		struct inertialData *inertialMsg,
+		VIVEVars *posMsg)
 {
 	// get processor tick counts (in terms of ms)
 	packet->tick_ms = HAL_GetTick();
@@ -245,6 +262,7 @@ void packetizeData(struct LogPacket *packet,
 	memcpy ( &(packet->blink), blink, sizeof(struct blinkData) );
 	memcpy ( &(packet->procData), processorMsg, sizeof(struct parsedSecondaryProcessorPacket) );
 	memcpy ( &(packet->inertial), inertialMsg, sizeof(struct inertialData) );
+	memcpy ( &(packet->pos), posMsg, sizeof(struct VIVEVars) );
 }
 
 // Convert Date/Time structures to epoch time

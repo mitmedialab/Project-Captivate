@@ -49,7 +49,7 @@ typedef union ColorComplex
 /* defines -----------------------------------------------------------*/
 
 /** FREERTOS QUEUES **/
-#define MAX_LIGHT_SIMPLE_QUEUE_SIZE	5 // 5 entries
+#define MAX_LIGHT_SIMPLE_QUEUE_SIZE	3 // 5 entries
 #define NUM_OF_LEDS_PER_DEVICE		9
 
 /** Default Address **/
@@ -134,8 +134,7 @@ typedef union ColorComplex
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t 		threadFrontLightsTaskHandle;
-osMessageQueueId_t	lightsSimpleQueueHandle;
+
 
 /* variables that hold received messages */
 uint32_t 			lightsSimpleMessage;

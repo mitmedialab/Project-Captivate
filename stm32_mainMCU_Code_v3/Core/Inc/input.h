@@ -28,8 +28,6 @@ typedef struct Input{
 } Input;
 
 Input input0;
-osThreadId_t pulseHandlerTaskHandle;
-osThreadId_t masterTaskHandle;
 
 void _Input(Input *self, uint8_t input_idx);
 void PulseHandlerTask(void *argument);

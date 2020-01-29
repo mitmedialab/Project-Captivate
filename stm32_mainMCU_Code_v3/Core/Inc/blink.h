@@ -36,8 +36,7 @@ struct blinkData{
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t blinkTaskHandle;
-osMessageQueueId_t	blinkMsgQueueHandle;
+
 
 //osSemaphoreDef(blinkSemDef);
 //osSemaphoreId (blinkSemaphore);
@@ -63,7 +62,7 @@ osMessageQueueId_t	blinkMsgQueueHandle;
  * @param  None
  * @retval None
  */
-void BlinkTask(void);
+void BlinkTask(void *argument);
 
 /**
  * @brief blink setup.

@@ -76,8 +76,10 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
- ../Core/Inc/config.h ../Core/Inc/blink.h \
+ ../Core/Inc/captivate_config.h ../Core/Inc/blink.h \
  ../Core/Inc/inter_processor_comms.h ../Core/Inc/inertial_sensing.h \
+ ../Core/Inc/messages.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/app_conf.h ../Core/Inc/hw_conf.h ../Core/Inc/stm_logging.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
@@ -248,13 +250,17 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Par
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
 
-../Core/Inc/config.h:
+../Core/Inc/captivate_config.h:
 
 ../Core/Inc/blink.h:
 
 ../Core/Inc/inter_processor_comms.h:
 
 ../Core/Inc/inertial_sensing.h:
+
+../Core/Inc/messages.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 
 ../Core/Inc/app_conf.h:
 

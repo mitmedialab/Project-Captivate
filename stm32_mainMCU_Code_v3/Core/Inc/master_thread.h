@@ -17,21 +17,21 @@ extern "C" {
 /* includes -----------------------------------------------------------*/
 #include "stdint.h"
 #include "cmsis_os.h"
-#include "config.h"
+#include <captivate_config.h>
 #include "blink.h"
 #include "stm32wbxx_hal.h"
 //#include "position.h"
 #include "inter_processor_comms.h"
 #include "inertial_sensing.h"
+#include "messages.h"
 /* typedef -----------------------------------------------------------*/
 
 struct LogPacket
 {
 	struct blinkData						blink;
 	struct parsedSecondaryProcessorPacket 	procData;
-//	tempData						temp;
 	struct inertialData						inertial;
-//	positionData					pos;
+	VIVEVars					pos;
 	uint32_t						tick_ms;
 	uint32_t						epoch;
 };
@@ -55,9 +55,9 @@ struct LogMessage
 /* function prototypes -----------------------------------------------*/
 void packetizeData(struct LogPacket *packet,
 		struct blinkData *blink,
-		struct positionData *pos,
 		struct parsedSecondaryProcessorPacket *processorMsg,
-		struct inertialData *inertialMsg);
+		struct inertialData *inertialMsg,
+		VIVEVars *posMsg);
 void MasterThreadTask(void *argument);
 void masterExitRoutine(void);
 void grabSensorData(void);
@@ -65,13 +65,8 @@ void grabSensorData(void);
 
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
 
-/* variables -----------------------------------------------*/
-//osThreadId_t 		threadFrontLightsTaskHandle;
-//osMessageQueueId_t	lightsSimpleQueueHandle;
-osMessageQueueId_t	togLoggingQueueHandle;
-osThreadId_t masterThreadTaskHandle;
 
-osSemaphoreId_t messageI2C_LockSem;
+/* variables -----------------------------------------------*/
 
 struct LogPacket 		sensorPacket;
 

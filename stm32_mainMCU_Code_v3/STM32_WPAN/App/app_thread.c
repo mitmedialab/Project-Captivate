@@ -41,6 +41,8 @@
 #include "main.h"
 #include "stm32wbxx_hal_gpio.h"
 #include "lp5523.h"
+
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -456,6 +458,9 @@ static void APP_THREAD_DeviceConfig(void)
     error = otCoapAddResource(NULL, &OT_Border_Time_Ressource);
     error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
 
+    // start master thread
+//    osThreadFlagsSet(masterTaskHandle, 0x00000008U);
+    startSensorThreads();
   /* USER CODE END DEVICECONFIG */
 }
 

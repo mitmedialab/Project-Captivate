@@ -21,6 +21,8 @@
 #include "master_thread.h"
 #include "task.h"
 
+#include "captivate_config.h"
+
 /* typedef -----------------------------------------------------------*/
 
 
@@ -31,7 +33,6 @@
 #define SEQUENCE_NUM	3
 
 /* macros ------------------------------------------------------------*/
-volatile uint8_t test = 0;
 
 /* function prototypes -----------------------------------------------*/
 
@@ -1181,7 +1182,7 @@ bool IMU_receivePacket(void)
 		return (false);
 
 	//Ask for four bytes to find out how much data we need to read
-	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //	taskENTER_CRITICAL();
 	HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100);
 //	while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100) != HAL_OK){
@@ -1190,7 +1191,7 @@ bool IMU_receivePacket(void)
 //		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //	}
 //	taskEXIT_CRITICAL();
-	osSemaphoreRelease(messageI2C_LockSem);
+	osSemaphoreRelease(messageI2C_LockHandle);
 
 	//Calculate the number of data bytes in this packet
 	int16_t dataLength = ( ((uint16_t)shtpHeader[PACKET_MSB] << 8) | shtpHeader[PACKET_LSB]);
@@ -1228,7 +1229,7 @@ bool IMU_getData(uint16_t bytesRemaining)
 		if (numberOfBytesToRead > (I2C_BUFFER_LENGTH - 4))
 			numberOfBytesToRead = (I2C_BUFFER_LENGTH - 4);
 
-		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //		taskENTER_CRITICAL();
 		HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100);
 //		while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100) != HAL_OK){
@@ -1237,7 +1238,7 @@ bool IMU_getData(uint16_t bytesRemaining)
 //			osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //		}
 //		taskEXIT_CRITICAL();
-		osSemaphoreRelease(messageI2C_LockSem);
+		osSemaphoreRelease(messageI2C_LockHandle);
 
 
 //		_i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)(numberOfBytesToRead + 4));
@@ -1279,7 +1280,7 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 	memcpy(&(outPacket[4]), shtpData, dataLength);
 
 	/*  *********** SEND TO IMU ********************************** */
-	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //	taskENTER_CRITICAL();
 	HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100);
 //	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100) != HAL_OK){
@@ -1288,7 +1289,7 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 //		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
 //	}
 //	taskEXIT_CRITICAL();
-	osSemaphoreRelease(messageI2C_LockSem);
+	osSemaphoreRelease(messageI2C_LockHandle);
 
 	return (true);
 }

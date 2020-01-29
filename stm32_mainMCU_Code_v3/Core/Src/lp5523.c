@@ -25,6 +25,9 @@ extern "C" {
 #include "master_thread.h"
 
 #include "system_settings.h"
+
+#include "captivate_config.h"
+
 /* typedef -----------------------------------------------------------*/
 
 
@@ -66,31 +69,38 @@ struct LightConfig
    uint8_t intensity[9];
 };
 
+const uint8_t packet_array[9] = {LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN,LOG_EN};
+
 void setup_LP5523(uint8_t ADDR){
 	uint8_t deviceAddress = ADDR << 1;
 	uint8_t led_PWM[9] = {0};
 	uint8_t packet;
 
 	// enable chip
-	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 	packet = LP5525_CHIP_EN;
-	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
+//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_EN_CNTRL1_REG, 1, &packet, 1, I2C_TIMEOUT);
 
 	// put charge-pump in auto-mode, serial auto increment, internal clock
 	packet = CP_MODE_AUTO | EN_AUTO_INC | INT_CLK_EN;
-	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_MISC_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
+//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_MISC_REG, 1, &packet, 1, I2C_TIMEOUT) != HAL_OK);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_MISC_REG, 1, &packet, 1, I2C_TIMEOUT);
 
 	// set PWM level (0 to 255)
-	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_PWM_REG, 1, led_PWM, 9, I2C_TIMEOUT) != HAL_OK);
+//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_PWM_REG, 1, led_PWM, 9, I2C_TIMEOUT) != HAL_OK);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_PWM_REG, 1, led_PWM, 9, I2C_TIMEOUT);
 
 	// set current control (0 to 25.5 mA) - step size is 100uA
-	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CURRENT_CTRL_REG, 1, led_current, 9, I2C_TIMEOUT) != HAL_OK);
+//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CURRENT_CTRL_REG, 1, led_current, 9, I2C_TIMEOUT) != HAL_OK);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CURRENT_CTRL_REG, 1, led_current, 9, I2C_TIMEOUT);
 
 	// enable logarithmic dimming
-	packet = LOG_EN;
-	uint8_t packet_array[9] = {packet,packet,packet,packet,packet,packet,packet,packet,packet};
-	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT) != HAL_OK);
-	osSemaphoreRelease(messageI2C_LockSem);
+//	packet = LOG_EN;
+//	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT) != HAL_OK);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT);
+
+	osSemaphoreRelease(messageI2C_LockHandle);
 }
 //LP5523::LP5523(uint16_t DevAddress){
 //	deviceAddress = DevAddress;
@@ -131,10 +141,10 @@ void FrontLightsSet(union ColorComplex *setColors){
 	memcpy(led_left_PWM, setColors, 9);
 	memcpy(led_right_PWM, &(setColors->color[9]), 9);
 #ifndef DONGLE_CODE
-	osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-	osSemaphoreRelease(messageI2C_LockSem);
+	osSemaphoreRelease(messageI2C_LockHandle);
 #endif
 
 #ifdef DONGLE_CODE
@@ -196,6 +206,7 @@ struct test_color tempComplexLight;
 
 void ThreadFrontLightsTask(void *argument)
 {
+	//osDelay(1); // added delay because it seems that semaphores arent fully initialized and code stalls when releasing semaphore
 #ifndef DONGLE_CODE
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
@@ -203,8 +214,8 @@ void ThreadFrontLightsTask(void *argument)
 
 //	LP5523 ledDriver;
 //	ledDriver.begin();
-	uint8_t index = 0;
-	uint8_t flip = 0;
+//	uint8_t index = 0;
+//	uint8_t flip = 0;
 	uint32_t lightsSimpleMessageReceived;
 //	for(int i = 0; i<10; i++){
 //		led_PWM[i] = 255;
@@ -290,10 +301,10 @@ void ThreadFrontLightsTask(void *argument)
 
 		//HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_PWM, 9);
 		//osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-		osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, I2C_TIMEOUT);
 		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1, LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
-		osSemaphoreRelease(messageI2C_LockSem);
+		osSemaphoreRelease(messageI2C_LockHandle);
 //		osDelay(1000);
 
 

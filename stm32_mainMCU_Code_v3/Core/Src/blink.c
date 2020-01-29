@@ -21,6 +21,8 @@
 #include "adc.h"
 #include "string.h"
 
+#include "captivate_config.h"
+
 
 /* typedef -----------------------------------------------------------*/
 
@@ -64,15 +66,17 @@ uint8_t *blink_ptr;
 #define BLINK_PACKET_SIZE		100
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
 
-void BlinkTask(void){
+/* GLOBAL DEFINES */
+
+uint32_t payload_ID = 0;
+uint32_t iterator = 0;
+
+float previousTick_ms = 0;
+float tick_ms_diff = 0;
+
+void BlinkTask(void *argument){
+
 	uint32_t evt;
-
-	uint32_t payload_ID = 0;
-	uint32_t iterator = 0;
-
-	float previousTick_ms = 0;
-	float tick_ms_diff = 0;
-
 
 	while(1){
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
@@ -168,7 +172,7 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
 //	memcpy(blinkMsgBuffer_1.data, &(blink_buffer), 100);
 //	blinkMsgBuffer_1.tick_ms = HAL_GetTick();
-	blink_ptr = &blink_buffer;
+	blink_ptr = blink_buffer;
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
 }

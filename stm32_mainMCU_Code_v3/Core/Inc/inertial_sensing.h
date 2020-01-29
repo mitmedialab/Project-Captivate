@@ -49,8 +49,8 @@ struct stepData{
 struct inertialData{
 	struct rotationData rotationMatrix;
 	struct activityData activity;
-	struct stabilityData stability;
-	struct stepData	step;
+//	struct stabilityData stability;
+//	struct stepData	step;
 
 };
 
@@ -65,13 +65,7 @@ struct inertialData{
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t inertialSensingTaskHandle;
-osMessageQueueId_t inertialSensingQueueHandle;
 
-osMessageQueueId_t activitySampleQueueHandle;
-osMessageQueueId_t rotationSampleQueueHandle;
-osMessageQueueId_t stepSampleQueueHandle;
-osMessageQueueId_t stabilitySampleQueueHandle;
 
 /* Functions Definition ------------------------------------------------------*/
 void InertialSensingTask(void *argument);

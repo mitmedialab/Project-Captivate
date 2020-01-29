@@ -83,7 +83,7 @@ void ThermopileTask(void *argument){
 	    // if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
 
-			// start timer for ADC to sample at 20Hz
+			// start timer for ADC to sample at 20Hz (10Hz each channel)
 			HAL_TIM_Base_Start(&htim6);
 
 			while(1){
@@ -198,10 +198,14 @@ void SwitchTemperatureSensor(sensorChoice sense){
 	packet[0] = LMP91051_CFG_REG;
 
 	if(sense == nose){
-		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32| GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+
+//		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_16 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 	else if(sense == temple){
-		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+
+//		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_16 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
@@ -213,8 +217,14 @@ void SwitchTemperatureSensor(sensorChoice sense){
 void Setup_LMP91051(void){
   uint8_t packet[2];
   packet[0] = LMP91051_CFG_REG;
-  packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_8 | GAIN1_250 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+  packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(&hspi3, packet, 2, 1);
+  HAL_Delay(2);
+  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 
+  packet[0] = LMP91051_DAC_REG;
+  packet[1] = 140; // shift signal down by -33.8mV (159 - 128) during 2nd stage amp
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi3, packet, 2, 1);
   HAL_Delay(2);

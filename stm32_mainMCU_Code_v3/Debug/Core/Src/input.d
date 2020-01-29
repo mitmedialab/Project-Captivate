@@ -48,7 +48,7 @@ Core/Src/input.o: ../Core/Src/input.c ../Core/Inc/input.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/cycle_phase_classifier.h ../Core/Inc/geometry.h \
  ../Core/Inc/circular_buffer.h ../Core/Inc/tim.h ../Core/Inc/main.h \
- ../Core/Inc/comp.h
+ ../Core/Inc/comp.h ../Core/Inc/captivate_config.h
 
 ../Core/Inc/input.h:
 
@@ -159,3 +159,5 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Par
 ../Core/Inc/main.h:
 
 ../Core/Inc/comp.h:
+
+../Core/Inc/captivate_config.h:

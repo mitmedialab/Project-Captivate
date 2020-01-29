@@ -6,6 +6,8 @@
  */
 #include "input.h"
 #include "comp.h"
+
+#include "captivate_config.h"
 //#include "UART_Print.h"
 
 PulseProcessor pulse_processor;
@@ -31,7 +33,7 @@ void PulseHandlerTask(void *argument){
 		HAL_COMP_Start(&hcomp1);
 		_Input(&input0, 0);
 		while(1){
-			osMessageQueueGet (pulseQueue, (void *) &p, NULL, osWaitForever);
+			osMessageQueueGet (pulseQueueHandle, (void *) &p, NULL, osWaitForever);
 			consume_pulse(input0.next, &p);
 
 			evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
@@ -40,7 +42,7 @@ void PulseHandlerTask(void *argument){
 //				HAL_NVIC_DisableIRQ(COMP_IRQn);
 				HAL_COMP_Stop(&hcomp1);
 				HAL_TIM_Base_Stop(&htim16);
-				osMessageQueueReset(pulseQueue);
+				osMessageQueueReset(pulseQueueHandle);
 				break;
 			}
 			//VIVEVars v;
@@ -75,21 +77,21 @@ VIVEVars vive_vars;
 
 void get3D_location(VIVEVars *vive_vars){
 	// start VIVE thread
-	osThreadFlagsSet(pulseHandlerTaskHandle, 0x00000001U);
+	osThreadFlagsSet(pulseTaskHandle, 0x00000001U);
 
 	// grab 3D location estimate
 	for(int i = 0; i<20; i++){
-		osMessageQueueGet(viveQueue, (void *) vive_vars, NULL, osWaitForever);
+		osMessageQueueGet(viveQueueHandle, (void *) vive_vars, NULL, osWaitForever);
 	}
 	// TODO : average them and/or error correction
 
 	// turn off 3D localization
-	osThreadFlagsSet(pulseHandlerTaskHandle, 0x00000002U);
+	osThreadFlagsSet(pulseTaskHandle, 0x00000002U);
 }
 
 
 void enqueue_pulse(Input *self, uint16_t start_time, uint16_t len){
 	Pulse p_in = {self->input_idx_, start_time, len};
-	osMessageQueuePut(pulseQueue, (const void *) &p_in, NULL, 0);
-	count = osMessageQueueGetCount(pulseQueue);
+	osMessageQueuePut(pulseQueueHandle, (const void *) &p_in, NULL, 0);
+	count = osMessageQueueGetCount(pulseQueueHandle);
 }

@@ -37,6 +37,8 @@
 #include "inertial_sensing.h"
 #include "input.h"
 #include "pulse_processor.h"
+#include "messages.h"
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,6 +58,31 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+
+//osThreadId_t blinkTaskHandle;
+////osMessageQueueId_t	blinkMsgQueueHandle;
+//
+//osThreadId_t 		frontLightsTaskHandle;
+//osMessageQueueId_t	lightsSimpleQueueHandle;
+//
+//osMessageQueueId_t	togLoggingQueueHandle;
+//osThreadId_t masterTaskHandle;
+//
+//osSemaphoreId_t messageI2C_LockSem;
+//
+//osThreadId_t inertialTaskHandle;
+//osMessageQueueId_t inertialSensingQueueHandle;
+//
+//osMessageQueueId_t activitySampleQueueHandle;
+//osMessageQueueId_t rotationSampleQueueHandle;
+//
+//osThreadId_t interProcTaskHandle;
+//osMessageQueueId_t	 interProcessorMsgQueueHandle;
+//
+//osThreadId_t pulseTaskHandle;
+
+
+
 //uint8_t temp[2048] = {0};
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -63,18 +90,166 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128
+  .stack_size = 512
+};
+/* Definitions for frontLightsTask */
+osThreadId_t frontLightsTaskHandle;
+const osThreadAttr_t frontLightsTask_attributes = {
+  .name = "frontLightsTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for masterTask */
+osThreadId_t masterTaskHandle;
+const osThreadAttr_t masterTask_attributes = {
+  .name = "masterTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for inertialTask */
+osThreadId_t inertialTaskHandle;
+const osThreadAttr_t inertialTask_attributes = {
+  .name = "inertialTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for pulseTask */
+osThreadId_t pulseTaskHandle;
+const osThreadAttr_t pulseTask_attributes = {
+  .name = "pulseTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for interProcTask */
+osThreadId_t interProcTaskHandle;
+const osThreadAttr_t interProcTask_attributes = {
+  .name = "interProcTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for blinkTask */
+osThreadId_t blinkTaskHandle;
+const osThreadAttr_t blinkTask_attributes = {
+  .name = "blinkTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512
+};
+/* Definitions for blinkMsgQueue */
+osMessageQueueId_t blinkMsgQueueHandle;
+const osMessageQueueAttr_t blinkMsgQueue_attributes = {
+  .name = "blinkMsgQueue"
+};
+/* Definitions for lightsSimpleQueue */
+osMessageQueueId_t lightsSimpleQueueHandle;
+const osMessageQueueAttr_t lightsSimpleQueue_attributes = {
+  .name = "lightsSimpleQueue"
+};
+/* Definitions for togLoggingQueue */
+osMessageQueueId_t togLoggingQueueHandle;
+const osMessageQueueAttr_t togLoggingQueue_attributes = {
+  .name = "togLoggingQueue"
+};
+/* Definitions for interProcessorMsgQueue */
+osMessageQueueId_t interProcessorMsgQueueHandle;
+const osMessageQueueAttr_t interProcessorMsgQueue_attributes = {
+  .name = "interProcessorMsgQueue"
+};
+/* Definitions for inertialSensingQueue */
+osMessageQueueId_t inertialSensingQueueHandle;
+const osMessageQueueAttr_t inertialSensingQueue_attributes = {
+  .name = "inertialSensingQueue"
+};
+/* Definitions for activitySampleQueue */
+osMessageQueueId_t activitySampleQueueHandle;
+const osMessageQueueAttr_t activitySampleQueue_attributes = {
+  .name = "activitySampleQueue"
+};
+/* Definitions for rotationSampleQueue */
+osMessageQueueId_t rotationSampleQueueHandle;
+const osMessageQueueAttr_t rotationSampleQueue_attributes = {
+  .name = "rotationSampleQueue"
+};
+/* Definitions for pulseQueue */
+osMessageQueueId_t pulseQueueHandle;
+const osMessageQueueAttr_t pulseQueue_attributes = {
+  .name = "pulseQueue"
+};
+/* Definitions for viveQueue */
+osMessageQueueId_t viveQueueHandle;
+const osMessageQueueAttr_t viveQueue_attributes = {
+  .name = "viveQueue"
+};
+/* Definitions for messageI2C_Lock */
+osSemaphoreId_t messageI2C_LockHandle;
+const osSemaphoreAttr_t messageI2C_Lock_attributes = {
+  .name = "messageI2C_Lock"
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void *argument);
+void DefaultTask(void *argument);
+extern void ThreadFrontLightsTask(void *argument);
+extern void MasterThreadTask(void *argument);
+extern void InertialSensingTask(void *argument);
+extern void PulseHandlerTask(void *argument);
+extern void InterProcessorTask(void *argument);
+extern void BlinkTask(void *argument);
 
 extern void MX_STM32_WPAN_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* Hook prototypes */
+void configureTimerForRunTimeStats(void);
+unsigned long getRunTimeCounterValue(void);
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
+void vApplicationMallocFailedHook(void);
+
+/* USER CODE BEGIN 1 */
+/* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+volatile unsigned long ulHighFrequencyTimerTicks;
+__weak void configureTimerForRunTimeStats(void)
+{
+
+}
+
+__weak unsigned long getRunTimeCounterValue(void)
+{
+return HAL_GetTick();
+}
+/* USER CODE END 1 */
+
+/* USER CODE BEGIN 4 */
+volatile uint8_t test=0;
+__weak void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+	test += 1;
+}
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN 5 */
+__weak void vApplicationMallocFailedHook(void)
+{
+   /* vApplicationMallocFailedHook() will only be called if
+   configUSE_MALLOC_FAILED_HOOK is set to 1 in FreeRTOSConfig.h. It is a hook
+   function that will get called if a call to pvPortMalloc() fails.
+   pvPortMalloc() is called internally by the kernel whenever a task, queue,
+   timer or semaphore is created. It is also called by various parts of the
+   demo application. If heap_1.c or heap_2.c are used, then the size of the
+   heap available to pvPortMalloc() is defined by configTOTAL_HEAP_SIZE in
+   FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
+   to query the size of free heap space that remains (although it does not
+   provide information on how the remaining heap might be fragmented). */
+	test += 1;
+
+}
+/* USER CODE END 5 */
 
 /* USER CODE BEGIN VPORT_SUPPORT_TICKS_AND_SLEEP */
 __weak void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
@@ -92,20 +267,54 @@ __weak void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-       
+
+
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
+  /* Create the semaphores(s) */
+  /* creation of messageI2C_Lock */
+//  messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
+//
+//  /* USER CODE BEGIN RTOS_SEMAPHORES */
+////  /* add semaphores, ... */
+//  /* USER CODE END RTOS_SEMAPHORES */
+//
+//  /* USER CODE BEGIN RTOS_TIMERS */
+////  /* start timers, add new ones, ... */
+//  /* USER CODE END RTOS_TIMERS */
+//
+//  /* Create the queue(s) */
+//  /* creation of blinkMsgQueue */
+//  blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
+//
+//  /* creation of lightsSimpleQueue */
+//  lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
+//
+//  /* creation of togLoggingQueue */
+//  togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
+//
+//  /* creation of interProcessorMsgQueue */
+//  interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
+//
+//  /* creation of inertialSensingQueue */
+//  inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
+//
+//  /* creation of activitySampleQueue */
+//  activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
+//
+//  /* creation of rotationSampleQueue */
+//  rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
+//
+//  /* creation of pulseQueue */
+//  pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
+//
+//  /* creation of viveQueue */
+//  viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -113,105 +322,108 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
+
+//  /* creation of frontLightsTask */
+//  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+//
+//  /* creation of masterTask */
+//  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+//
+//  /* creation of inertialTask */
+//  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+//
+//  /* creation of pulseTask */
+//  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+//
+//  /* creation of interProcTask */
+//  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+//
+//  /* creation of blinkTask */
+//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  const osThreadAttr_t threadFrontLightsTask_attributes = {
-         .name = "threadFrontLightsTask",
-         .priority = (osPriority_t) osPriorityNormal,
-         .stack_size = 256
-       };
-   threadFrontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &threadFrontLightsTask_attributes);
-
- //#ifndef DONGLE_CODE
-   const osThreadAttr_t blinkTask_attributes = {
-         .name = "blinkTask",
-         .priority = (osPriority_t) osPriorityNormal,
-         .stack_size = 256
-       };
-   blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-
-   lightsSimpleQueueHandle = osMessageQueueNew (MAX_LIGHT_SIMPLE_QUEUE_SIZE, sizeof(lightsSimpleMessage), NULL);
- //  lightsSimpleQueueHandle = osMessageQueueNew (2, sizeof(LogMessage), NULL);
-   blinkMsgQueueHandle = osMessageQueueNew (10, sizeof(struct blinkData), NULL);
-   togLoggingQueueHandle = osMessageQueueNew (4, sizeof(struct LogMessage), NULL);
-
-   const osThreadAttr_t masterThreadTask_attributes = {
-           .name = "masterThreadTask",
-           .priority = (osPriority_t) osPriorityNormal,
-           .stack_size = 256
-         };
-    masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
-
-	const osThreadAttr_t inertialSensingTask_attributes = {
-			 .name = "inertialSensingTask",
-			 .priority = (osPriority_t) osPriorityNormal,
-			 .stack_size = 512
-		   };
-	inertialSensingTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialSensingTask_attributes);
-
-    const osThreadAttr_t interProcessorTask_attributes = {
-               .name = "interProcessorTask",
-               .priority = (osPriority_t) osPriorityNormal,
-               .stack_size = 128
-             };
-    interProcessorTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcessorTask_attributes);
-
-    interProcessorMsgQueueHandle = osMessageQueueNew (10, sizeof(struct parsedSecondaryProcessorPacket), NULL);
-
-    inertialSensingQueueHandle = osMessageQueueNew (10, sizeof(struct inertialData), NULL);
-    activitySampleQueueHandle = osMessageQueueNew (10, sizeof(struct activityData), NULL);
-    rotationSampleQueueHandle = osMessageQueueNew (3, sizeof(struct rotationData), NULL);
-//    stepSampleQueueHandle = osMessageQueueNew (3, sizeof(struct stepData), NULL);
-//    stabilitySampleQueueHandle = osMessageQueueNew (3, sizeof(struct stabilityData), NULL);
-
-    // semaphore for locking I2C bus when in use
-    messageI2C_LockSem = osSemaphoreNew (1, 1, NULL);
-
-	const osThreadAttr_t pulseHandlerTask_attributes = {
-	  .name = "pulseHandlerTask",
-	  .priority = (osPriority_t) osPriorityAboveNormal,
-	  .stack_size = 1024
-	};
-	pulseHandlerTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseHandlerTask_attributes);
-	pulseQueue = osMessageQueueNew (10, sizeof(Pulse), NULL);
-	viveQueue = osMessageQueueNew(10, sizeof(VIVEVars), NULL);
-
-
- //#endif
 
    /* add threads, ... */
 
- 	/* Init code for STM32_WPAN */
-   APPE_Init();
+
+	/* Init code for STM32_WPAN */
+	APPE_Init();
+
+
   /* USER CODE END RTOS_THREADS */
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_DefaultTask */
 /**
   * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_DefaultTask */
+__weak void DefaultTask(void *argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
-//  HAL_TIM_Base_Start(&htim2);
-//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-//  HAL_ADC_Start_DMA(&hadc1, (uint32_t *) temp, sizeof(temp));
+  /* USER CODE BEGIN DefaultTask */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END DefaultTask */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+void startSensorThreads(void){
+	/* creation of messageI2C_Lock */
+	messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
+
+	/* creation of blinkMsgQueue */
+	blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
+
+	/* creation of lightsSimpleQueue */
+	lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
+
+	/* creation of togLoggingQueue */
+	togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
+
+	/* creation of interProcessorMsgQueue */
+	interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
+
+	/* creation of inertialSensingQueue */
+	inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
+
+	/* creation of activitySampleQueue */
+	activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
+
+	/* creation of rotationSampleQueue */
+	rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
+
+	/* creation of pulseQueue */
+	pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
+
+	/* creation of viveQueue */
+	viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
+
+//	/* creation of frontLightsTask */
+//	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+
+	/* creation of inertialTask */
+	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+
+	/* creation of pulseTask */
+	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+
+	/* creation of interProcTask */
+	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+
+	/* creation of blinkTask */
+	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+	/* creation of masterTask */
+	masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

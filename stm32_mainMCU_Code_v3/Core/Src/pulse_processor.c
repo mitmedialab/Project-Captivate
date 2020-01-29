@@ -237,7 +237,7 @@ void process_cycle_fix(PulseProcessor *self) {
         consume_angles(self->next, &self->angles_frame_);
 
         //Put VIVE measurements in the message queue
-        osMessageQueuePut(viveQueue, (void *) &self->next->vive_vars_, NULL, 0);
+        osMessageQueuePut(viveQueueHandle, (void *) &self->next->vive_vars_, NULL, 0);
     }
 
     // Prepare for the next cycle.

@@ -95,10 +95,6 @@ struct parsedSecondaryProcessorPacket{
 
 
 /* variables -----------------------------------------------*/
-osThreadId_t interProcessorTaskHandle;
-osMessageQueueId_t	 interProcessorMsgQueueHandle;
-
-osSemaphoreId_t	interProcessorInterruptSemHandle;
 
 
 /* Functions Definition ------------------------------------------------------*/

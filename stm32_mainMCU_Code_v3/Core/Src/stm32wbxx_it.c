@@ -26,9 +26,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lp5523.h"
-//#include "hw.h"
+#include "hw.h"
 #include "cmsis_os.h"
 #include "inter_processor_comms.h"
+
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -181,7 +183,7 @@ void EXTI2_IRQHandler(void)
 
   // received message from secondary MCU that a message is ready
 //  osSemaphoreRelease(interProcessorInterruptSemHandle);
-  osThreadFlagsSet(interProcessorTaskHandle, 0x00000004U);
+  osThreadFlagsSet(interProcTaskHandle, 0x00000004U);
   /* USER CODE END EXTI2_IRQn 1 */
 }
 
