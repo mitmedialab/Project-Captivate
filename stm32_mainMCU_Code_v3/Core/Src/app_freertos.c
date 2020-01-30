@@ -39,6 +39,7 @@
 #include "pulse_processor.h"
 #include "messages.h"
 #include "captivate_config.h"
+#include "input.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,7 +112,7 @@ osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = {
   .name = "inertialTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 1024
+  .stack_size = 512
 };
 /* Definitions for pulseTask */
 osThreadId_t pulseTaskHandle;
@@ -179,10 +180,30 @@ osMessageQueueId_t viveQueueHandle;
 const osMessageQueueAttr_t viveQueue_attributes = {
   .name = "viveQueue"
 };
+/* Definitions for statusQueue */
+osMessageQueueId_t statusQueueHandle;
+const osMessageQueueAttr_t statusQueue_attributes = {
+  .name = "statusQueue"
+};
+/* Definitions for viveTimer */
+osTimerId_t viveTimerHandle;
+const osTimerAttr_t viveTimer_attributes = {
+  .name = "viveTimer"
+};
 /* Definitions for messageI2C_Lock */
 osSemaphoreId_t messageI2C_LockHandle;
 const osSemaphoreAttr_t messageI2C_Lock_attributes = {
   .name = "messageI2C_Lock"
+};
+/* Definitions for locNotify */
+osSemaphoreId_t locNotifyHandle;
+const osSemaphoreAttr_t locNotify_attributes = {
+  .name = "locNotify"
+};
+/* Definitions for locComplete */
+osSemaphoreId_t locCompleteHandle;
+const osSemaphoreAttr_t locComplete_attributes = {
+  .name = "locComplete"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -197,6 +218,7 @@ extern void InertialSensingTask(void *argument);
 extern void PulseHandlerTask(void *argument);
 extern void InterProcessorTask(void *argument);
 extern void BlinkTask(void *argument);
+extern void get3D_location(void *argument);
 
 extern void MX_STM32_WPAN_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -292,9 +314,19 @@ void MX_FREERTOS_Init(void) {
   /* creation of messageI2C_Lock */
   messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
 
+  /* creation of locNotify */
+  locNotifyHandle = osSemaphoreNew(1, 1, &locNotify_attributes);
+
+  /* creation of locComplete */
+  locCompleteHandle = osSemaphoreNew(1, 1, &locComplete_attributes);
+
   /* USER CODE BEGIN RTOS_SEMAPHORES */
 //  /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
+
+  /* Create the timer(s) */
+  /* creation of viveTimer */
+  viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, NULL, &viveTimer_attributes);
 
   /* USER CODE BEGIN RTOS_TIMERS */
 //  /* start timers, add new ones, ... */
@@ -328,6 +360,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of viveQueue */
   viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
 
+  /* creation of statusQueue */
+  statusQueueHandle = osMessageQueueNew (1, sizeof(uint32_t), &statusQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -355,6 +390,10 @@ void MX_FREERTOS_Init(void) {
   blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+
+  // ensure binary notification semaphores are initially empty
+  osSemaphoreAcquire(locNotifyHandle, 0);
+  osSemaphoreAcquire(locCompleteHandle, 0);
 
    /* add threads, ... */
 
@@ -387,55 +426,55 @@ __weak void DefaultTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-void startSensorThreads(void){
-	/* creation of messageI2C_Lock */
-	messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
-
-	/* creation of blinkMsgQueue */
-	blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
-
-	/* creation of lightsSimpleQueue */
-	lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
-
-	/* creation of togLoggingQueue */
-	togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
-
-	/* creation of interProcessorMsgQueue */
-	interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
-
-	/* creation of inertialSensingQueue */
-	inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
-
-	/* creation of activitySampleQueue */
-	activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
-
-	/* creation of rotationSampleQueue */
-	rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
-
-	/* creation of pulseQueue */
-	pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
-
-	/* creation of viveQueue */
-	viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
-
-	/* creation of inertialTask */
-//	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+//void startSensorThreads(void){
+//	/* creation of messageI2C_Lock */
+//	messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
 //
-//	/* creation of pulseTask */
-//	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+//	/* creation of blinkMsgQueue */
+//	blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
 //
-//	/* creation of interProcTask */
-//	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
-
-	/* creation of blinkTask */
-//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-
-//	/* creation of masterTask */
-//	masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
-
-	/* creation of frontLightsTask */
-//	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
-}
+//	/* creation of lightsSimpleQueue */
+//	lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
+//
+//	/* creation of togLoggingQueue */
+//	togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
+//
+//	/* creation of interProcessorMsgQueue */
+//	interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
+//
+//	/* creation of inertialSensingQueue */
+//	inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
+//
+//	/* creation of activitySampleQueue */
+//	activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
+//
+//	/* creation of rotationSampleQueue */
+//	rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
+//
+//	/* creation of pulseQueue */
+//	pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
+//
+//	/* creation of viveQueue */
+//	viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
+//
+//	/* creation of inertialTask */
+////	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+////
+////	/* creation of pulseTask */
+////	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+////
+////	/* creation of interProcTask */
+////	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+//
+//	/* creation of blinkTask */
+////	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+//
+////	/* creation of masterTask */
+////	masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+//
+//	/* creation of frontLightsTask */
+////	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+//}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

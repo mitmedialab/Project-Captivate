@@ -46,7 +46,9 @@ struct blinkData	blinkMsgReceived;
 struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
 struct inertialData inertialMsgReceived;
 struct VIVEVars vive_loc;
+struct LogMessage statusMessage;
 
+static const struct LogMessage nullStatusMessage = {0};
 static const struct blinkData nullBlinkMsg = {0};
 static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = {0};
 static const struct inertialData nullInertialMsgReceived = {0};
@@ -70,6 +72,7 @@ static const struct VIVEVars nullViveMsgReceived = {0};
  */
 
 uint8_t logEnabled = 0;
+struct SystemStatus systemStatus = {0};
 
 void MasterThreadTask(void *argument)
 {
@@ -83,6 +86,7 @@ void MasterThreadTask(void *argument)
 
 //	startSensorThreads();
 
+	uint8_t test = sizeof(struct SystemStatus);
 	while(1)
 	{
 //		osDelay(1);
@@ -99,8 +103,11 @@ void MasterThreadTask(void *argument)
 		togLogMessageReceived.blinkEnabled = 1;
 		togLogMessageReceived.tempEnabled = 1;
 		togLogMessageReceived.intertialEnabled = 1;
-		togLogMessageReceived.positionEnabled = 0;
+		togLogMessageReceived.positionEnabled = 1;
 
+		// pass variable to share system state
+		osMessageQueueReset(statusQueueHandle);
+		osMessageQueuePut(statusQueueHandle, (void *) &nullStatusMessage, 0U, 0);
 
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
@@ -119,7 +126,13 @@ void MasterThreadTask(void *argument)
 
 			if(togLogMessageReceived.positionEnabled == SENSOR_ENABLE)
 			{
+				// update status queue to notify other threads position is active
+				osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+				statusMessage.positionEnabled = 1;
+				osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
+
 				// start timer for 3D position sample to be taken
+				osTimerStart(viveTimerHandle, VIVE_SAMPLE_PERIOD);
 			}
 
 			if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
@@ -226,7 +239,7 @@ void masterExitRoutine(void){
 	if(prevLogMessage.positionEnabled == SENSOR_ENABLE)
 	{
 		// stop timer for 3D position sensing
-
+		osTimerStop(viveTimerHandle);
 	}
 
 	if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))

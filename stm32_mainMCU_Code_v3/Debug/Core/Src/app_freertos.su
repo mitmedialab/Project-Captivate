@@ -1,9 +1,8 @@
-app_freertos.c:214:13:configureTimerForRunTimeStats	4	static
-app_freertos.c:219:22:getRunTimeCounterValue	8	static
-app_freertos.c:226:13:vApplicationTickHook	4	static
-app_freertos.c:238:13:vApplicationStackOverflowHook	16	static
-app_freertos.c:249:13:vApplicationMallocFailedHook	4	static
-app_freertos.c:267:13:vPortSuppressTicksAndSleep	16	static
-app_freertos.c:280:6:MX_FREERTOS_Init	8	static
-app_freertos.c:377:13:DefaultTask	16	static
-app_freertos.c:390:6:startSensorThreads	8	static
+app_freertos.c:236:13:configureTimerForRunTimeStats	4	static
+app_freertos.c:241:22:getRunTimeCounterValue	8	static
+app_freertos.c:248:13:vApplicationTickHook	4	static
+app_freertos.c:260:13:vApplicationStackOverflowHook	16	static
+app_freertos.c:271:13:vApplicationMallocFailedHook	4	static
+app_freertos.c:289:13:vPortSuppressTicksAndSleep	16	static
+app_freertos.c:302:6:MX_FREERTOS_Init	8	static
+app_freertos.c:416:13:DefaultTask	16	static

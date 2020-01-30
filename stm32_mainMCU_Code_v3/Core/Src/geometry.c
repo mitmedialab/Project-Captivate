@@ -9,6 +9,7 @@
 #include <math.h>
 #include <assert.h>
 #include <arm_math.h>
+#include "captivate_config.h"
 //#include "UART_Print.h"
 
 BaseStationGeometryDef bs_0 = {{0.682646, 1.712605, 0.298152},
@@ -57,6 +58,8 @@ void consume_angles(GeometryBuilder * self, const SensorAnglesFrame * f) {
 
             //Put VIVE measurements in the message queue
             osMessageQueuePut(viveQueueHandle, (void *) &self->vive_vars_, NULL, 0);
+            // tell timer function that localization is complete
+			osSemaphoreRelease(locCompleteHandle);
         }
         else {
             // Angles too stale - cannot calculate position anymore.

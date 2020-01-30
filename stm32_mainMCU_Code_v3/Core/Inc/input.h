@@ -32,7 +32,7 @@ Input input0;
 void _Input(Input *self, uint8_t input_idx);
 void PulseHandlerTask(void *argument);
 void MasterTask(void *argument);
-void get3D_location(VIVEVars *vive_vars);
+void get3D_location(void *argument);
 void enqueue_pulse(Input *self, uint16_t start_time, uint16_t len);
 
 

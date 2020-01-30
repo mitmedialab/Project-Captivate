@@ -38,6 +38,8 @@ struct tempData{
 
 #define DISABLE_SENSING				0
 
+#define VIVE_SAMPLE_PERIOD			5000
+
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1
 
@@ -70,10 +72,23 @@ extern osMessageQueueId_t	 interProcessorMsgQueueHandle;
 
 extern osThreadId_t pulseTaskHandle;
 
+extern osTimerId_t viveTimerHandle;
+
+extern osMessageQueueId_t statusQueueHandle;
+
+extern osSemaphoreId_t locNotifyHandle;
+
+extern osSemaphoreId_t locCompleteHandle;
+
 extern void startSensorThreads(void);
 
 /* variables -----------------------------------------------*/
-
+struct SystemStatus{
+	int blinkThread : 1;
+	int inertialThread : 1;
+	int interProcThread : 1;
+	int frontLightsThread : 1;
+};
 
 /* Functions Definition ------------------------------------------------------*/
 

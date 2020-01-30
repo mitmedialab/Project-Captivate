@@ -7,6 +7,8 @@
 #include "input.h"
 #include "comp.h"
 
+#include "master_thread.h"
+
 #include "captivate_config.h"
 //#include "UART_Print.h"
 
@@ -74,19 +76,53 @@ VIVEVars vive_vars;
 //	}
 //}
 
+struct LogMessage statusMessage;
 
-void get3D_location(VIVEVars *vive_vars){
-	// start VIVE thread
+
+void get3D_location(void *arguments){
+
+	uint8_t blinkActive	= 0;
+
+	osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+	if(statusMessage.blinkEnabled == 1){
+		blinkActive = 1;
+
+		// disable blink if active
+		osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
+
+		// wait for blink thread to turn off
+		//TODO: make safer by making a break condition
+		osSemaphoreAcquire(locNotifyHandle, osWaitForever);
+	}
+	osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
+
+	// stop blink code if running and hold I2C bus from being used
+	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+
+	// turn on 3D localization
 	osThreadFlagsSet(pulseTaskHandle, 0x00000001U);
 
-	// grab 3D location estimate
-	for(int i = 0; i<20; i++){
-		osMessageQueueGet(viveQueueHandle, (void *) vive_vars, NULL, osWaitForever);
-	}
-	// TODO : average them and/or error correction
+	// wait for completion
+	osSemaphoreAcquire (locCompleteHandle, osWaitForever);
+
+	// release I2C handle
+	osSemaphoreRelease(messageI2C_LockHandle);
 
 	// turn off 3D localization
 	osThreadFlagsSet(pulseTaskHandle, 0x00000002U);
+
+	// empty queue
+	osMessageQueueReset(viveQueueHandle);
+
+	if(blinkActive){
+		// enable blink thread
+		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
+
+		// wait for blink thread to turn off
+		//TODO: make safer by making a break condition
+		osSemaphoreAcquire(locNotifyHandle, osWaitForever);
+	}
+
 }
 
 

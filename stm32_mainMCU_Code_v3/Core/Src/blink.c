@@ -21,6 +21,8 @@
 #include "adc.h"
 #include "string.h"
 
+#include "master_thread.h"
+
 #include "captivate_config.h"
 
 
@@ -74,6 +76,8 @@ uint32_t iterator = 0;
 float previousTick_ms = 0;
 float tick_ms_diff = 0;
 
+struct LogMessage statusMessage;
+
 void BlinkTask(void *argument){
 
 	uint32_t evt;
@@ -83,6 +87,11 @@ void BlinkTask(void *argument){
 
 		// if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
+
+			// tell other threads that blink has been activated
+			osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+			statusMessage.blinkEnabled = 1;
+			osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
 
 			// start timer and PWM channel for blink LED
 			HAL_TIM_Base_Start(&htim2);
@@ -135,6 +144,13 @@ void BlinkTask(void *argument){
 					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 					HAL_TIM_Base_Stop(&htim2);
 					previousTick_ms = 0;
+
+					/* tell threads that blink is disabled */
+					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+					statusMessage.blinkEnabled = 0;
+					// notify 3D localization thread that blink is deactivating if active
+					if(statusMessage.positionEnabled == 1) osSemaphoreRelease(locNotifyHandle);
+					osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
 
 					// empty queue
 					osMessageQueueReset(blinkMsgQueueHandle);
