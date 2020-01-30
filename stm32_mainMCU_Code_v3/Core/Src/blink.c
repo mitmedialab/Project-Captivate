@@ -149,7 +149,9 @@ void BlinkTask(void *argument){
 					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
 					statusMessage.blinkEnabled = 0;
 					// notify 3D localization thread that blink is deactivating if active
-					if(statusMessage.positionEnabled == 1) osSemaphoreRelease(locNotifyHandle);
+					if(statusMessage.positionEnabled == 1){
+						osSemaphoreRelease(locNotifyHandle);
+					}
 					osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
 
 					// empty queue

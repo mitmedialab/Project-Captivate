@@ -74,6 +74,8 @@ static const struct VIVEVars nullViveMsgReceived = {0};
 uint8_t logEnabled = 0;
 struct SystemStatus systemStatus = {0};
 
+uint32_t startTime = 0;
+
 void MasterThreadTask(void *argument)
 {
 
@@ -149,13 +151,11 @@ void MasterThreadTask(void *argument)
 
 			while(1)
 			{
+				startTime = HAL_GetTick();
 
 				/**********************************************************************************/
 				/*.... WAIT UNTIL DATA PACKET IS READY.....*/
 				/**********************************************************************************/
-
-				// allow sometime for context switching
-				osDelay(50);
 
 				// grab data from sensor thread queues
 				grabSensorData();
@@ -186,6 +186,10 @@ void MasterThreadTask(void *argument)
 						break;
 					}
 				}
+
+				// add delay to wait for next transmission period
+				osDelay(PACKET_SEND_PERIOD - (HAL_GetTick() - startTime));
+
 			}
 		}
 		else if( logEnabled==1 && togLogMessageReceived.logStatus == DISABLE_LOG)
@@ -201,21 +205,21 @@ void MasterThreadTask(void *argument)
 void grabSensorData(void){
 	if(prevLogMessage.blinkEnabled == SENSOR_ENABLE)
 	{
-		if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, 1000)){
+		if(osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, 0)){
 			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
 		}
 	}
 
 	if( (prevLogMessage.tempEnabled == SENSOR_ENABLE))
 	{
-		if(osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 1000)){
+		if(osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 0)){
 			memcpy(&secondaryProcessorMsgReceived, &nullSecondaryProcessorMsgReceived, sizeof(struct parsedSecondaryProcessorPacket));
 		}
 	}
 
 	if( (prevLogMessage.positionEnabled == SENSOR_ENABLE))
 		{
-		if(osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 1000)){
+		if(osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 0)){
 				memcpy(&vive_loc, &nullViveMsgReceived, sizeof(VIVEVars));
 			}
 		}

@@ -1,4 +1,4 @@
 input.c:18:6:_Input	16	static
 input.c:28:6:PulseHandlerTask	24	static
 input.c:82:6:get3D_location	24	static
-input.c:129:6:enqueue_pulse	24	static
+input.c:141:6:enqueue_pulse	24	static

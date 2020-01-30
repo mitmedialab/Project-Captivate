@@ -40,6 +40,10 @@ struct tempData{
 
 #define VIVE_SAMPLE_PERIOD			5000
 
+#define	GET_3D_LOC_TIMEOUT			1000
+
+#define PACKET_SEND_PERIOD			100
+
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1
 

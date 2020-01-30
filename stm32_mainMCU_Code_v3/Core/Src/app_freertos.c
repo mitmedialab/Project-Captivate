@@ -104,7 +104,7 @@ const osThreadAttr_t frontLightsTask_attributes = {
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = {
   .name = "masterTask",
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal,
   .stack_size = 512
 };
 /* Definitions for inertialTask */
@@ -112,7 +112,7 @@ osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = {
   .name = "inertialTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 1024
 };
 /* Definitions for pulseTask */
 osThreadId_t pulseTaskHandle;

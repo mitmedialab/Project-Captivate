@@ -82,9 +82,17 @@ struct LogMessage statusMessage;
 void get3D_location(void *arguments){
 
 	uint8_t blinkActive	= 0;
+//	uint32_t startTime = HAL_GetTick();
+//	volatile uint32_t deltaTime;
+
+	// ensures semaphores are clear
+	osSemaphoreAcquire(locCompleteHandle, 0);
+	osSemaphoreAcquire(locNotifyHandle, 0);
 
 	osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
 	if(statusMessage.blinkEnabled == 1){
+		osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
+
 		blinkActive = 1;
 
 		// disable blink if active
@@ -94,16 +102,20 @@ void get3D_location(void *arguments){
 		//TODO: make safer by making a break condition
 		osSemaphoreAcquire(locNotifyHandle, osWaitForever);
 	}
-	osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
+	else{
+		osMessageQueuePut(statusQueueHandle, (void *) &statusMessage, 0U, 0);
+	}
 
 	// stop blink code if running and hold I2C bus from being used
+	// 		the timeout is to ensure to turn off the thread if no signal is seen
+	//TODO: optimize the timeout
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 
 	// turn on 3D localization
 	osThreadFlagsSet(pulseTaskHandle, 0x00000001U);
 
 	// wait for completion
-	osSemaphoreAcquire (locCompleteHandle, osWaitForever);
+	osSemaphoreAcquire (locCompleteHandle, GET_3D_LOC_TIMEOUT);
 
 	// release I2C handle
 	osSemaphoreRelease(messageI2C_LockHandle);
@@ -115,12 +127,12 @@ void get3D_location(void *arguments){
 	osMessageQueueReset(viveQueueHandle);
 
 	if(blinkActive){
+//		// wait for blink thread to turn off
+//		//TODO: make safer by making a break condition
+//		osSemaphoreAcquire(locNotifyHandle, osWaitForever);
+
 		// enable blink thread
 		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
-
-		// wait for blink thread to turn off
-		//TODO: make safer by making a break condition
-		osSemaphoreAcquire(locNotifyHandle, osWaitForever);
 	}
 
 }
