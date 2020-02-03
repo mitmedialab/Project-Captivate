@@ -1,0 +1,2 @@
+touch_detector.c:3:6:process_touches	64	static
+touch_detector.c:96:6:debounce	24	static

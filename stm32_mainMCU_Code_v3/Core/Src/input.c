@@ -118,7 +118,7 @@ void get3D_location(void *arguments){
 //	osSemaphoreAcquire (locCompleteHandle, osWaitForever);
 	osSemaphoreAcquire (locCompleteHandle, GET_3D_LOC_TIMEOUT);
 
-//	osDelay(osWaitForever);
+	osDelay(osWaitForever);
 
 	// release I2C handle
 	osSemaphoreRelease(messageI2C_LockHandle);

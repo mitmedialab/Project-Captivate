@@ -34,7 +34,7 @@ app_thread.c:1599:13:RxCpltCallback	8	static
 app_thread.c:1666:13:Send_CLI_To_M0	8	static
 app_thread.c:1687:13:Send_CLI_Ack_For_OT	8	static
 app_thread.c:1699:6:APP_THREAD_Init_UART_CLI	8	static
-app_thread.c:1719:6:APP_THREAD_TL_THREAD_INIT	8	static
-app_thread.c:1734:6:TL_THREAD_CliNotReceived	24	static
-app_thread.c:1761:6:HostTxCb	8	static
-app_thread.c:1771:6:APP_THREAD_ProcessMsgM0ToM4	8	static
+app_thread.c:1718:6:APP_THREAD_TL_THREAD_INIT	8	static
+app_thread.c:1733:6:TL_THREAD_CliNotReceived	24	static
+app_thread.c:1760:6:HostTxCb	8	static
+app_thread.c:1770:6:APP_THREAD_ProcessMsgM0ToM4	8	static

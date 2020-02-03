@@ -30,7 +30,6 @@
 #include "app_entry.h"
 #include "app_common.h"
 #include "tim.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -38,6 +37,9 @@
 #include "input.h"
 #include "pulse_processor.h"
 #include "circular_buffer.h"
+#include "tsc.h"
+#include "touch_detector.h"
+#include "touchsensing.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +49,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define TSCx_TS1_MINTHRESHOLD			0
+#define TSCx_TS1_MAXTHRESHOLD			3100
+#define TSCx_TS2_MINTHRESHOLD			0
+#define TSCx_TS2_MAXTHRESHOLD			6150
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,6 +64,11 @@
 
 /* USER CODE BEGIN PV */
 uint16_t timestamp = 0;
+
+uint8_t cap_sensor = 0;
+TSC_IOConfigTypeDef IoConfig;
+Debouncer dbs[2] = {{0,0,0}, {0,0,0}};
+volatile TouchDetector touch_detector;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,54 +117,48 @@ int main(void)
   MX_RTC_Init();
   MX_TIM2_Init();
   MX_RF_Init();
-  MX_USART1_UART_Init();
   MX_I2C1_Init();
   MX_COMP1_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
+  MX_TSC_Init();
+
+//  IoConfig.ChannelIOs  = TSC_GROUP2_IO3; /* Start with the first channel */
+//  IoConfig.SamplingIOs = TSC_GROUP2_IO1;
+//  IoConfig.ShieldIOs = 0;
+
+//  if (HAL_TSC_IOConfig(&htsc, &IoConfig) != HAL_OK)
+//  {
+//    /* Initialization Error */
+//    Error_Handler();
+//  }
+//
+//  HAL_TSC_IODischarge(&htsc, ENABLE);
+//  HAL_Delay(5); /* 1 ms is more than enough to discharge all capacitors */
+//  if (HAL_TSC_Start_IT(&htsc) != HAL_OK)
+//	{
+//		/* Acquisition Error */
+//		Error_Handler();
+//	}
 
   /* USER CODE END 2 */
   /* Init scheduler */
   osKernelInitialize();
- 
+
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init(); 
- 
+  MX_FREERTOS_Init();
+
   /* Start scheduler */
   osKernelStart();
- 
+
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//  uint8_t test_packet[1000] = {0};
-//  uint8_t test_packet[1000] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-//
-//  for(int i = 0; i<1000; i++){
-//	  test_packet[i] = i;
-//  }
 
   while (1)
   {
-//	  if(HAL_I2C_Master_Transmit_IT(&hi2c1, (0x73 << 1), (uint8_t*)test_packet, 1000)!= HAL_OK)
-//	  	     {
-//	  	       /* Error_Handler() function is called when error occurs. */
-//	  		  HAL_Delay(1000);
-//	  	     }
-//
-//	  	  while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	  	      {
-//	  	      }
 
-//	  if(HAL_I2C_Master_Receive_IT(&hi2c1, (0x73 << 1), (uint8_t*)test_packet, 1000)!= HAL_OK)
-//	  	  	     {
-//	  	  	       /* Error_Handler() function is called when error occurs. */
-//	  	  		  HAL_Delay(1000);
-//	  	  	     }
-//
-//	  	  	  while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	  	  	      {
-//	  	  	      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -216,14 +221,13 @@ void SystemClock_Config(void)
   /** Initializes the peripherals clocks 
   */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP
-                              |RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC;
+                              |RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_ADC;
   PeriphClkInitStruct.PLLSAI1.PLLN = 6;
   PeriphClkInitStruct.PLLSAI1.PLLP = RCC_PLLP_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLQ = RCC_PLLQ_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLR = RCC_PLLR_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADCCLK;
-  PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
@@ -258,6 +262,59 @@ void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp){
 		input0.rise_valid_ = 0;
 //		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 	}
+}
+
+void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef* htsc){
+	  /*##-5- Discharge the touch-sensing IOs ####################################*/
+	  HAL_TSC_IODischarge(htsc, ENABLE);
+	  /* Note: a delay can be added here */
+
+	  uint32_t uhTSCAcquisitionValue;
+	  TSC_GroupStatusTypeDef status = HAL_TSC_GroupGetStatus(htsc, TSC_GROUP2_IDX);
+	  uint32_t cur_time;
+	  /*##-6- Check if the acquisition is correct (no max count) #################*/
+	  if (status == TSC_GROUP_COMPLETED)
+	  {
+	    /*##-7- Read the acquisition value #######################################*/
+	    uhTSCAcquisitionValue = HAL_TSC_GroupGetValue(htsc, TSC_GROUP2_IDX);
+	    uint8_t touch;
+	    if(cap_sensor == 0){
+	    	touch = (uhTSCAcquisitionValue >= TSCx_TS1_MINTHRESHOLD) && (uhTSCAcquisitionValue <= TSCx_TS1_MAXTHRESHOLD);
+	    }
+	    else{
+	    	touch = (uhTSCAcquisitionValue >= TSCx_TS2_MINTHRESHOLD) && (uhTSCAcquisitionValue <= TSCx_TS2_MAXTHRESHOLD);
+	    }
+
+	    cur_time = HAL_GetTick();
+	    debounce(&dbs[cap_sensor], touch, cur_time);
+	    process_touches(&touch_detector, dbs, cur_time);
+	  }
+
+	  //Switches between the two channels to be acquired
+	  if (cap_sensor == 0)
+	  {
+	    IoConfig.ChannelIOs = TSC_GROUP2_IO4; /* TS4 touchkey */
+	    cap_sensor = 1;
+	  }
+	  else
+	  {
+	    IoConfig.ChannelIOs = TSC_GROUP2_IO3; /* TS3 touchkey */
+	    cap_sensor = 0;
+	  }
+
+
+	  if (HAL_TSC_IOConfig(htsc, &IoConfig) != HAL_OK)
+	  {
+	    /* Initialization Error */
+	    Error_Handler();
+	  }
+
+	  /*##-9- Re-start the acquisition process ###################################*/
+	  if (HAL_TSC_Start_IT(htsc) != HAL_OK)
+	  {
+	    /* Acquisition Error */
+	    Error_Handler();
+	  }
 }
 /* USER CODE END 4 */
 

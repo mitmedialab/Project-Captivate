@@ -12,3 +12,4 @@ stm32wbxx_it.c:235:6:TIM1_UP_TIM16_IRQHandler	8	static
 stm32wbxx_it.c:250:6:I2C1_EV_IRQHandler	8	static
 stm32wbxx_it.c:262:6:IPCC_C1_TX_IRQHandler	8	static
 stm32wbxx_it.c:268:6:IPCC_C1_RX_IRQHandler	8	static
+stm32wbxx_it.c:277:6:TSC_IRQHandler	8	static

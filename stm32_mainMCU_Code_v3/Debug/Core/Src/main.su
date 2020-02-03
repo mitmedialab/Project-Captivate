@@ -1,6 +1,7 @@
 stm32wbxx_ll_rcc.h:1665:22:LL_RCC_LSE_SetDriveCapability	16	static
-main.c:79:5:main	8	static
-main.c:168:6:SystemClock_Config	192	static
-main.c:244:6:HAL_COMP_TriggerCallback	24	static
-main.c:272:6:HAL_TIM_PeriodElapsedCallback	16	static
-main.c:289:6:Error_Handler	4	static
+main.c:90:5:main	8	static
+main.c:198:6:SystemClock_Config	192	static
+main.c:273:6:HAL_COMP_TriggerCallback	24	static
+main.c:292:6:HAL_TSC_ConvCpltCallback	32	static
+main.c:354:6:HAL_TIM_PeriodElapsedCallback	16	static
+main.c:371:6:Error_Handler	4	static

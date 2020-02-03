@@ -67,7 +67,7 @@
  */
 #define CFG_DEBUG_TRACE_UART    
 #define CFG_CONSOLE_MENU      
-#define CFG_CLI_UART    hw_uart1
+#define CFG_CLI_UART    
 /******************************************************************************
  * USB interface
  ******************************************************************************/

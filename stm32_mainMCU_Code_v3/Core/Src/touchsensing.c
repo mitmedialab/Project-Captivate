@@ -1,12 +1,12 @@
 /**
-  ******************************************************************************
-  * File Name          : USART.h
+ ******************************************************************************
+  * File Name          : touchsensing.c
   * Description        : This file provides code for the configuration
-  *                      of the USART instances.
+  *                      of the touchsensing instances.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -16,41 +16,41 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __usart_H
-#define __usart_H
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "touchsensing.h"
 
-/* USER CODE BEGIN Includes */
+/* USER CODE BEGIN 0 */
+/* USER CODE END 0 */
 
-/* USER CODE END Includes */
+/* USER CODE BEGIN 1 */
+/* USER CODE END 1 */
 
-extern UART_HandleTypeDef huart1;
+/* Global variables ---------------------------------------------------------*/
 
-/* USER CODE BEGIN Private defines */
+/* USER CODE BEGIN 2 */
+/* USER CODE END 2 */
 
-/* USER CODE END Private defines */
+/* TOUCHSENSING init function */
+void MX_TOUCHSENSING_Init(void)
+{
+   /** 
+  */
 
-void MX_USART1_UART_Init(void);
+  tsl_user_Init();
 
-/* USER CODE BEGIN Prototypes */
+  /* USER CODE BEGIN 3 */
+  /* USER CODE END 3 */
 
-/* USER CODE END Prototypes */
-
-#ifdef __cplusplus
 }
-#endif
-#endif /*__ usart_H */
+
+/* USER CODE BEGIN 4 */
+/* USER CODE END 4 */
 
 /**
   * @}
   */
-
+ 
 /**
   * @}
   */

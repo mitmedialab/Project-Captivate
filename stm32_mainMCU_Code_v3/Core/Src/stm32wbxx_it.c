@@ -71,7 +71,7 @@ extern TIM_HandleTypeDef htim16;
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN EV */
-
+extern TSC_HandleTypeDef htsc;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -269,6 +269,20 @@ void IPCC_C1_RX_IRQHandler(void)
 {
   HW_IPCC_Rx_Handler();
   return;
+}
+
+/**
+  * @brief This function handles TSC global interrupt.
+  */
+void TSC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TSC_IRQn 0 */
+
+  /* USER CODE END TSC_IRQn 0 */
+  HAL_TSC_IRQHandler(&htsc);
+  /* USER CODE BEGIN TSC_IRQn 1 */
+
+  /* USER CODE END TSC_IRQn 1 */
 }
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
