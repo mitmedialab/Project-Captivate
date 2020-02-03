@@ -26,6 +26,15 @@ enum FixLevel {
     kFullFix        = 1000,  // Position fix is valid and fresh.
 };
 
+//enum FixLevel {
+//    kNoSignals      =    0,  // No signals visible at all.
+//    kCycleSyncing   =  2,  // Base station sync pulses are visible and we're syncing to them.
+//    kCycleSynced    =  4,  // We're synced to the base station sync pulses.
+//    kPartialVis     =  8,  // Some sensors/base stations don't have visibility and angles are stale. Position is invalid.
+//    kStaleFix       =  10,  // Position fix is valid, but uses angles from previous 1-2 cycles.
+//    kFullFix        = 12,  // Position fix is valid and fresh.
+//};
+
 typedef struct SensorAngles {
     float angles[NUM_CYCLE_PHASES]; // Angles of base stations to sensor, -1/3 Pi to 1/3 Pi
     uint32_t updated_cycles[NUM_CYCLE_PHASES]; // Cycle id when this angle was last updated.

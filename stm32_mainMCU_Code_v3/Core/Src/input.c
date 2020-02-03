@@ -115,7 +115,10 @@ void get3D_location(void *arguments){
 	osThreadFlagsSet(pulseTaskHandle, 0x00000001U);
 
 	// wait for completion
+//	osSemaphoreAcquire (locCompleteHandle, osWaitForever);
 	osSemaphoreAcquire (locCompleteHandle, GET_3D_LOC_TIMEOUT);
+
+//	osDelay(osWaitForever);
 
 	// release I2C handle
 	osSemaphoreRelease(messageI2C_LockHandle);
@@ -123,8 +126,8 @@ void get3D_location(void *arguments){
 	// turn off 3D localization
 	osThreadFlagsSet(pulseTaskHandle, 0x00000002U);
 
-	// empty queue
-	osMessageQueueReset(viveQueueHandle);
+//	// empty queue
+//	osMessageQueueReset(viveQueueHandle);
 
 	if(blinkActive){
 //		// wait for blink thread to turn off

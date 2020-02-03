@@ -31,7 +31,7 @@ void MX_COMP1_Init(void)
 {
 
   hcomp1.Instance = COMP1;
-  hcomp1.Init.InputMinus = COMP_INPUT_MINUS_3_4VREFINT;
+  hcomp1.Init.InputMinus = COMP_INPUT_MINUS_1_2VREFINT;
   hcomp1.Init.InputPlus = COMP_INPUT_PLUS_IO3;
   hcomp1.Init.OutputPol = COMP_OUTPUTPOL_NONINVERTED;
   hcomp1.Init.Hysteresis = COMP_HYSTERESIS_NONE;

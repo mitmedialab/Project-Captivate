@@ -100,11 +100,11 @@ void MasterThreadTask(void *argument)
 		//   .... this function waits forever
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
 
-//		togLogMessageReceived.status = 0;
-//		togLogMessageReceived.logStatus = 0;
-		togLogMessageReceived.blinkEnabled = 1;
-		togLogMessageReceived.tempEnabled = 1;
-		togLogMessageReceived.intertialEnabled = 1;
+//		togLogMessageReceived.status = 1;
+//		togLogMessageReceived.logStatus = 1;
+		togLogMessageReceived.blinkEnabled = 0;
+		togLogMessageReceived.tempEnabled = 0;
+		togLogMessageReceived.intertialEnabled = 0;
 		togLogMessageReceived.positionEnabled = 1;
 
 		// pass variable to share system state
