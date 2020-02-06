@@ -36,6 +36,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include "master_thread.h"
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -80,16 +81,6 @@ typedef enum
   } ErrAppliIdEnum_t;
 /* USER CODE BEGIN ET */
 
-#define C_LIGHT_RESSOURCE						"light"
-
-#define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
-#define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
-#define C_BORER_TIME_RESSOURCE					"borderTime"
-#define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
-
-#define ENABLE_LOG								1
-#define DISABLE_LOG								0
-#define SENSOR_ENABLE							1
 
 struct SystemCal
 {
@@ -124,6 +115,7 @@ void APP_THREAD_Init_UART_CLI(void);
 void APP_THREAD_TL_THREAD_INIT(void);
 /* USER CODE BEGIN EF */
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket);
+void APP_THREAD_SendBorderMessage(void *packet, uint8_t len);
 
 /* USER CODE END EF */
 

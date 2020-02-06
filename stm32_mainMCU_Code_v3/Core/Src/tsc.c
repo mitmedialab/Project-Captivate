@@ -50,8 +50,8 @@ void MX_TSC_Init(void)
 	htsc.Init.SpreadSpectrumDeviation = 1;
 	htsc.Init.SpreadSpectrumPrescaler = TSC_SS_PRESC_DIV1;
 	htsc.Init.PulseGeneratorPrescaler = TSC_PG_PRESC_DIV4;
-	htsc.Init.MaxCountValue = TSC_MCV_8191;
-//	htsc.Init.MaxCountValue = TSC_MCV_16383;
+//	htsc.Init.MaxCountValue = TSC_MCV_8191;
+	htsc.Init.MaxCountValue = TSC_MCV_16383;
 	htsc.Init.IODefaultMode = TSC_IODEF_OUT_PP_LOW;
 	htsc.Init.SynchroPinPolarity = TSC_SYNC_POLARITY_FALLING;
 	htsc.Init.AcquisitionMode = TSC_ACQ_MODE_NORMAL;

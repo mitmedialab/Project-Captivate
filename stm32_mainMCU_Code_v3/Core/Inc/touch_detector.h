@@ -1,3 +1,6 @@
+#ifndef TOUCH_DETECTOR_H
+#define TOUCH_DETECTOR_H
+
 #pragma once
 #include "stm32wbxx_hal.h"
 
@@ -44,4 +47,9 @@ typedef struct Debouncer{
 
 void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time);
 void debounce(Debouncer *self, uint8_t noisy_in, uint32_t cur_time);
+void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef* htsc);
+void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp);
+void touchSensingStart(void);
+void touchSensingStart(void);
 
+#endif

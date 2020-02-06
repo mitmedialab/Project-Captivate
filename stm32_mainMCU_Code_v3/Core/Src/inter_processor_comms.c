@@ -22,43 +22,15 @@
 
 #include "captivate_config.h"
 
-//// CONFIGURATION REGISTER
-//#define LMP91051_CFG_REG      0x0
-//#define TP_NOSE_SEL           0x00
-//#define TP_TEMPLE_SEL         0x80
-//#define PGA1_EN               0x40
-//#define PGA2_EN               0x20
-//#define EXT_FILT_EN           0x10
-//#define CMN_MODE_2_59         0x08
-//#define CMN_MODE_1_15         0x00
-//#define GAIN2_4               0x00
-//#define GAIN2_8               0x02
-//#define GAIN2_16              0x04
-//#define GAIN2_32              0x06
-//#define GAIN1_250             0x00
-//#define GAIN1_42              0x01
-//
-//// DAC REGISTER
-////   The output DC level will shift according to the formula Vout_shift = -33.8mV * (NDAC - 128)
-//#define LMP91051_DAC_REG      0x1
-//
-////SDIO ENABLE REGISTER
-////  To enter SDIO Mode, write the successive sequence 0xFE and 0xED.
-////  Write anything other than this sequence to get out of mode.
-//#define LMP91051_SDIO_EN_REG  0xF
-
 ///*
 // * THREADS
 // */
 
 struct secondaryProcessorData receivedPacket;
-
 struct parsedSecondaryProcessorPacket parsedPacket;
-
 extern struct LogPacket sensorPacket;
 extern struct LogMessage togLogMessageReceived;
 static const struct LogMessage nullMessage = {0};
-
 struct LogMessage commandToSend;
 
 void InterProcessorTask(void *argument){
@@ -84,6 +56,7 @@ void InterProcessorTask(void *argument){
 			while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK);
 			osDelay(100);
 			osSemaphoreRelease(messageI2C_LockHandle);
+
 			// message passing until told to stop
 			while(1){
 
@@ -92,10 +65,9 @@ void InterProcessorTask(void *argument){
 
 				// if an interrupt is received indicating a message is waiting to be received
  				if( (evt & 0x00000004U) == 0x00000004U){
+
  					osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
-// 					taskENTER_CRITICAL();
- 					// clear transmission flag
-// 					osThreadFlagsClear(0x00000010U);
+
  					// send command packet to MCU
  					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(struct LogMessage), 100) != HAL_OK){
 // 						osSemaphoreRelease(messageI2C_LockSem);

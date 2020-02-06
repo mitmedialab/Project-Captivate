@@ -31,8 +31,6 @@
 
 
 /* variables -----------------------------------------------*/
-//BNO080 inertialSensor;
-
 float quatI;
 float quatJ;
 float quatK;
@@ -58,12 +56,6 @@ float z;
  * @retval None
  */
 
-#define ROT_VEC_PERIOD				100
-#define ACT_CLASS_PERIOD			500
-#define STEP_CNT_PERIOD				500
-#define STABILITY_CLASS_PERIOD		500
-
-
 uint8_t activityClasses[9];
 uint32_t enableActivities = 0x1F; //Enable all 9 possible activities including Unknown
 uint8_t inertialEnabled = 0;
@@ -80,15 +72,15 @@ void InertialSensingTask(void *argument){
 
 		/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
 		osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
-		//evt = 0x00000001U;
 
-	//			// configure IMU
+		// configure IMU
 		osDelay(500);
 		IMU_enableRotationVector(ROT_VEC_PERIOD);
 		osDelay(100);
 		IMU_enableActivityClassifier(ACT_CLASS_PERIOD , enableActivities, activityClasses);
 
 		// give some time for things to buffer
+		// TODO: remove this to see if it still works fine
 		osDelay(400);
 
 		while(1){

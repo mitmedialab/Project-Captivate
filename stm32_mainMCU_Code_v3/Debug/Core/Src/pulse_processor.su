@@ -3,10 +3,10 @@ pulse_processor.c:42:7:vector_pop	24	static
 pulse_processor.c:51:7:vector_get	24	static
 pulse_processor.c:59:6:vector_clear	16	static
 pulse_processor.c:63:6:_PulseProcessor	24	static
-pulse_processor.c:77:6:consume_pulse	16	static
-pulse_processor.c:90:6:process_long_pulse	40	static
-pulse_processor.c:139:6:process_short_pulse	16	static
-pulse_processor.c:149:6:process_cycle_fix	144	static
-pulse_processor.c:250:6:reset_cycle_long_pulses	24	static
-pulse_processor.c:256:6:reset_unclassified_long_pulses	16	static
-pulse_processor.c:260:6:reset_cycle_short_pulses	16	static
+pulse_processor.c:78:6:consume_pulse	16	static
+pulse_processor.c:96:6:process_long_pulse	40	static
+pulse_processor.c:145:6:process_short_pulse	16	static
+pulse_processor.c:155:6:process_cycle_fix	144	static
+pulse_processor.c:256:6:reset_cycle_long_pulses	24	static
+pulse_processor.c:262:6:reset_unclassified_long_pulses	16	static
+pulse_processor.c:266:6:reset_cycle_short_pulses	16	static

@@ -152,12 +152,12 @@ static void APP_THREAD_DummyReqHandler(void * p_context,
                   otMessage * pMessage,
                   const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_SendNextBuffer(void);
+//static void APP_THREAD_SendNextBuffer(void);
 //static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type);
 //static void APP_THREAD_SendCoapUnicastRequest(char* message, char* ipv6_addr  , char* resource);
 static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_length, char* ipv6_addr  , char* resource);
 
-static void APP_THREAD_SendCoapUnicastMsg(struct LogPacket *message,
+static void APP_THREAD_SendCoapUnicastMsg(void *message,
 											uint8_t msgSize,
 											char* ipv6_addr,
 											char* resource,
@@ -232,13 +232,14 @@ otMessageInfo OT_MessageInfo = {0};
 otCoapHeader  OT_Header = {0};
 const char borderSyncResource[15] = "borderSync";
 const char borderPacket[15] = "borderLog";
+const char borderTouch[15] = "capTouch";
 
-static uint8_t OT_Command = 0;
-static uint16_t OT_BufferIdRead = 1U;
-static uint16_t OT_BufferIdSend = 1U;
+//static uint8_t OT_Command = 0;
+//static uint16_t OT_BufferIdRead = 1U;
+//static uint16_t OT_BufferIdSend = 1U;
 
 static otMessage   * pOT_Message = NULL;
-static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
+//static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
 
 const otMasterKey masterKey = {0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44,
 		0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44};
@@ -652,10 +653,22 @@ void APP_THREAD_GetBorderRouterIP(){
 }
 
 
+//struct sendIP_struct{
+//	char msgSendMyIP[5];
+//	uint32_t uid;
+//} msgSendMyIP = {.msgSendMyIP = "cal"};
+
 char msgSendMyIP[5] = "cal";
+
 void APP_THREAD_SendMyIP(){
+//	msgSendMyIP.uid = DBGMCU->IDCODE;
 	APP_THREAD_SendCoapUnicastRequest(msgSendMyIP, sizeof(msgSendMyIP), borderRouter.ipv6, borderSyncResource);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
+}
+
+void APP_THREAD_SendBorderMessage(void *packet, uint8_t len){
+//	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
+	APP_THREAD_SendCoapUnicastMsg(packet, len, borderRouter.ipv6  , borderPacket, 1U);
 }
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket){
@@ -1334,7 +1347,7 @@ static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_len
 
 }
 
-static void APP_THREAD_SendCoapUnicastMsg(struct LogPacket *message, uint8_t msgSize, char* ipv6_addr  , char* resource, uint8_t msgID)
+static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* ipv6_addr  , char* resource, uint8_t msgID)
 {
   //otError   error = OT_ERROR_NONE;
 

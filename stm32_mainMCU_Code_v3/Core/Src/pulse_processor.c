@@ -74,16 +74,22 @@ void _PulseProcessor(PulseProcessor *self, uint32_t num_inputs){
 	self->time_from_last_long_pulse_ = 0;
 }
 
+uint8_t prev_pulse_short = 0;
 void consume_pulse(PulseProcessor *self, Pulse* p){
 	//vector_push(&debug_ar, p);
 	if(p->pulse_len >= MAX_LONG_PULSE_LEN){
 		//Ignore very long pulses
+		prev_pulse_short = 0;
 	}
 	else if(p->pulse_len >= MIN_LONG_PULSE_LEN){ // Long pulse - likely sync pulse
+		prev_pulse_short = 0;
 		process_long_pulse(self, p);
 	}
 	else{	//Short pulse -likely laser sweep
-		process_short_pulse(self, p);
+		if(prev_pulse_short != 1){ // check to make sure this isnt a duplicate pulse (if it is, ignore!)
+			process_short_pulse(self, p);
+			prev_pulse_short = 1;
+		}
 	}
 }
 

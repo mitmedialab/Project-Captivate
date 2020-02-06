@@ -40,6 +40,7 @@
 #include "tsc.h"
 #include "touch_detector.h"
 #include "touchsensing.h"
+#include "captivate_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,10 +50,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TSCx_TS1_MINTHRESHOLD			0
-#define TSCx_TS1_MAXTHRESHOLD			3100
-#define TSCx_TS2_MINTHRESHOLD			0
-#define TSCx_TS2_MAXTHRESHOLD			6150
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,12 +61,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t timestamp = 0;
 
-uint8_t cap_sensor = 0;
-TSC_IOConfigTypeDef IoConfig;
-Debouncer dbs[2] = {{0,0,0}, {0,0,0}};
-volatile TouchDetector touch_detector;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -123,23 +116,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
 
-//  IoConfig.ChannelIOs  = TSC_GROUP2_IO3; /* Start with the first channel */
-//  IoConfig.SamplingIOs = TSC_GROUP2_IO1;
-//  IoConfig.ShieldIOs = 0;
 
-//  if (HAL_TSC_IOConfig(&htsc, &IoConfig) != HAL_OK)
-//  {
-//    /* Initialization Error */
-//    Error_Handler();
-//  }
-//
-//  HAL_TSC_IODischarge(&htsc, ENABLE);
-//  HAL_Delay(5); /* 1 ms is more than enough to discharge all capacitors */
-//  if (HAL_TSC_Start_IT(&htsc) != HAL_OK)
-//	{
-//		/* Acquisition Error */
-//		Error_Handler();
-//	}
 
   /* USER CODE END 2 */
   /* Init scheduler */
@@ -245,77 +222,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp){
-	timestamp = __HAL_TIM_GET_COUNTER(&htim16);
-
-//	GPIO_PinState pin_state = HAL_GPIO_ReadPin(LH_SIG_GPIO_Port, LH_SIG_Pin);
-	uint32_t pin_state = HAL_COMP_GetOutputLevel(hcomp);
-	if (pin_state == COMP_OUTPUT_LEVEL_HIGH) {
-		//Rising edge
-		input0.rise_time_ = timestamp;
-		input0.rise_valid_ = 1;
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
-	}
-	else if (input0.rise_valid_ && pin_state == COMP_OUTPUT_LEVEL_LOW) {
-		//Falling edge
-		enqueue_pulse(&input0, input0.rise_time_, timestamp - input0.rise_time_);
-		input0.rise_valid_ = 0;
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
-	}
-}
-
-void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef* htsc){
-	  /*##-5- Discharge the touch-sensing IOs ####################################*/
-	  HAL_TSC_IODischarge(htsc, ENABLE);
-	  /* Note: a delay can be added here */
-
-	  uint32_t uhTSCAcquisitionValue;
-	  TSC_GroupStatusTypeDef status = HAL_TSC_GroupGetStatus(htsc, TSC_GROUP2_IDX);
-	  uint32_t cur_time;
-	  /*##-6- Check if the acquisition is correct (no max count) #################*/
-	  if (status == TSC_GROUP_COMPLETED)
-	  {
-	    /*##-7- Read the acquisition value #######################################*/
-	    uhTSCAcquisitionValue = HAL_TSC_GroupGetValue(htsc, TSC_GROUP2_IDX);
-	    uint8_t touch;
-	    if(cap_sensor == 0){
-	    	touch = (uhTSCAcquisitionValue >= TSCx_TS1_MINTHRESHOLD) && (uhTSCAcquisitionValue <= TSCx_TS1_MAXTHRESHOLD);
-	    }
-	    else{
-	    	touch = (uhTSCAcquisitionValue >= TSCx_TS2_MINTHRESHOLD) && (uhTSCAcquisitionValue <= TSCx_TS2_MAXTHRESHOLD);
-	    }
-
-	    cur_time = HAL_GetTick();
-	    debounce(&dbs[cap_sensor], touch, cur_time);
-	    process_touches(&touch_detector, dbs, cur_time);
-	  }
-
-	  //Switches between the two channels to be acquired
-	  if (cap_sensor == 0)
-	  {
-	    IoConfig.ChannelIOs = TSC_GROUP2_IO4; /* TS4 touchkey */
-	    cap_sensor = 1;
-	  }
-	  else
-	  {
-	    IoConfig.ChannelIOs = TSC_GROUP2_IO3; /* TS3 touchkey */
-	    cap_sensor = 0;
-	  }
 
 
-	  if (HAL_TSC_IOConfig(htsc, &IoConfig) != HAL_OK)
-	  {
-	    /* Initialization Error */
-	    Error_Handler();
-	  }
 
-	  /*##-9- Re-start the acquisition process ###################################*/
-	  if (HAL_TSC_Start_IT(htsc) != HAL_OK)
-	  {
-	    /* Acquisition Error */
-	    Error_Handler();
-	  }
-}
 /* USER CODE END 4 */
 
 /**

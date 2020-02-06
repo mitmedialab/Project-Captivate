@@ -73,7 +73,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/cycle_phase_classifier.h ../Core/Inc/geometry.h \
  ../Core/Inc/circular_buffer.h ../Core/Inc/tim.h ../Core/Inc/tsc.h \
- ../Core/Inc/touch_detector.h ../Core/Inc/touchsensing.h
+ ../Core/Inc/touch_detector.h ../Core/Inc/touchsensing.h \
+ ../Core/Inc/captivate_config.h
 
 ../Core/Inc/main.h:
 
@@ -258,3 +259,5 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Par
 ../Core/Inc/touch_detector.h:
 
 ../Core/Inc/touchsensing.h:
+
+../Core/Inc/captivate_config.h:

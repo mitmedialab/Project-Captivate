@@ -1,6 +1,6 @@
-geometry.c:22:6:_GeometryBuilder	24	static
-geometry.c:29:6:consume_angles	104	static
-geometry.c:78:6:vec_cross_product	24	static
-geometry.c:84:7:vec_length	32	static
-geometry.c:93:6:calc_ray_vec	112	static
-geometry.c:117:9:intersect_lines	104	static
+geometry.c:25:6:_GeometryBuilder	24	static
+geometry.c:32:6:consume_angles	104	static
+geometry.c:81:6:vec_cross_product	24	static
+geometry.c:87:7:vec_length	32	static
+geometry.c:96:6:calc_ray_vec	112	static
+geometry.c:120:9:intersect_lines	104	static

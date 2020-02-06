@@ -15,33 +15,58 @@ extern "C" {
 #endif
 
 /* includes -----------------------------------------------------------*/
+#include "cmsis_os2.h"
 
 /* typedef -----------------------------------------------------------*/
-//struct inertialData{
-//	uint8_t			data[100];
-//	uint32_t		tick_ms;
-//};
-//
-
-struct tempData{
-	uint8_t			data[100];
-	uint32_t		tick_ms;
-};
 
 /* defines -----------------------------------------------------------*/
 
-// enable sensing subsystems
-#define BLINK_SENSING_ENABLE		1
-#define TEMP_SENSING_ENABLE			0
-#define POS_SENSING_ENABLE			0
-#define	INERTIA_SENSING_ENABLE		0
-
+//// enable sensing subsystems
+//#define BLINK_SENSING_ENABLE		1
+//#define TEMP_SENSING_ENABLE			0
+//#define POS_SENSING_ENABLE			0
+//#define	INERTIA_SENSING_ENABLE		0
 #define DISABLE_SENSING				0
 
+/* SYSTEM GLOBAL CONFIGURATION */
+#define PACKET_SEND_PERIOD			100
+
+#define C_LIGHT_RESSOURCE						"light"
+#define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
+#define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
+#define C_BORER_TIME_RESSOURCE					"borderTime"
+#define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
+
+#define ENABLE_LOG								1
+#define DISABLE_LOG								0
+#define SENSOR_ENABLE							1
+
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+/* VIVE SPECIFIC CONFIGURATION */
 #define VIVE_SAMPLE_PERIOD			5000
 #define	GET_3D_LOC_TIMEOUT			500
+//#define VIVE_THREAD_INFINITE_TIMEOUT	1
 
-#define PACKET_SEND_PERIOD			100
+/* TOUCH SPECIFIC CONFIGURATION */
+#define TSCx_TS1_MINTHRESHOLD			0
+#define TSCx_TS1_MAXTHRESHOLD			7300
+#define TSCx_TS2_MINTHRESHOLD			0
+#define TSCx_TS2_MAXTHRESHOLD			9000
+
+/* IMU SPECIFIC CONFIGURATION */
+#define ROT_VEC_PERIOD				100
+#define ACT_CLASS_PERIOD			500
+#define STEP_CNT_PERIOD				500
+#define STABILITY_CLASS_PERIOD		500
+
+/* BLINK SPECIFIC CONFIGURATION */
+#define BLINK_HALF_BUFFER_SIZE	1000
+#define BLINK_PACKET_SIZE		100
+#define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
 
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1

@@ -6,11 +6,8 @@
  */
 #include "input.h"
 #include "comp.h"
-
 #include "master_thread.h"
-
 #include "captivate_config.h"
-//#include "UART_Print.h"
 
 PulseProcessor pulse_processor;
 GeometryBuilder geometry_builder;
@@ -47,43 +44,17 @@ void PulseHandlerTask(void *argument){
 				osMessageQueueReset(pulseQueueHandle);
 				break;
 			}
-			//VIVEVars v;
-			//v.pos[0] = 4.0;
-			//v.pos[1] = 2.0;
-			//v.pos[3] = 0.0;
-			//osMessageQueuePut(viveQueue, (void *) &v, NULL, 0);
 		}
 	}
 
 }
 
 VIVEVars vive_vars;
-//void MasterTask(void *argument){
-//	while(1){
-//		osThreadFlagsSet(pulseHandlerTaskHandle, 0x00000001U);
-//		uint32_t m_count = 0;
-//		while(1){
-//			osMessageQueueGet(viveQueue, (void *) &vive_vars, NULL, osWaitForever);
-//
-//			if(m_count == 5){
-//				UART_Print_3DCoords(vive_vars.pos);
-//				osThreadFlagsSet(pulseHandlerTaskHandle, 0x00000002U);
-//				osDelay(10);
-//				break;
-//			}
-//			m_count += 1;
-//		}
-//	}
-//}
-
 struct LogMessage statusMessage;
-
 
 void get3D_location(void *arguments){
 
 	uint8_t blinkActive	= 0;
-//	uint32_t startTime = HAL_GetTick();
-//	volatile uint32_t deltaTime;
 
 	// ensures semaphores are clear
 	osSemaphoreAcquire(locCompleteHandle, 0);
@@ -115,19 +86,17 @@ void get3D_location(void *arguments){
 	osThreadFlagsSet(pulseTaskHandle, 0x00000001U);
 
 	// wait for completion
-//	osSemaphoreAcquire (locCompleteHandle, osWaitForever);
 	osSemaphoreAcquire (locCompleteHandle, GET_3D_LOC_TIMEOUT);
 
+#ifdef VIVE_THREAD_INFINITE_TIMEOUT
 	osDelay(osWaitForever);
+#endif
 
 	// release I2C handle
 	osSemaphoreRelease(messageI2C_LockHandle);
 
 	// turn off 3D localization
 	osThreadFlagsSet(pulseTaskHandle, 0x00000002U);
-
-//	// empty queue
-//	osMessageQueueReset(viveQueueHandle);
 
 	if(blinkActive){
 //		// wait for blink thread to turn off
@@ -144,5 +113,5 @@ void get3D_location(void *arguments){
 void enqueue_pulse(Input *self, uint16_t start_time, uint16_t len){
 	Pulse p_in = {self->input_idx_, start_time, len};
 	osMessageQueuePut(pulseQueueHandle, (const void *) &p_in, NULL, 0);
-	count = osMessageQueueGetCount(pulseQueueHandle);
+//	count = osMessageQueueGetCount(pulseQueueHandle);
 }

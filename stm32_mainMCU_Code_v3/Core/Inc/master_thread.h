@@ -20,7 +20,6 @@ extern "C" {
 #include <captivate_config.h>
 #include "blink.h"
 #include "stm32wbxx_hal.h"
-//#include "position.h"
 #include "inter_processor_comms.h"
 #include "inertial_sensing.h"
 #include "messages.h"
@@ -61,6 +60,7 @@ void packetizeData(struct LogPacket *packet,
 void MasterThreadTask(void *argument);
 void masterExitRoutine(void);
 void grabSensorData(void);
+void masterEnterRoutine(void);
 
 
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);
