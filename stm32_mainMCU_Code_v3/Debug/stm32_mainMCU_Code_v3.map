@@ -7778,7 +7778,7 @@ OUTPUT(stm32_mainMCU_Code_v3.elf elf32-littlearm)
  .debug_ranges  0x0000000000003480       0x10 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_dot_prod_f32.o)
  .debug_ranges  0x0000000000003490       0x10 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_add_f32.o)
 
-.debug_line     0x0000000000000000    0x25586
+.debug_line     0x0000000000000000    0x25584
  .debug_line    0x0000000000000000      0x458 Core/Src/adc.o
  .debug_line    0x0000000000000458      0x97f Core/Src/app_entry.o
  .debug_line    0x0000000000000dd7      0x881 Core/Src/app_freertos.o
@@ -7807,57 +7807,57 @@ OUTPUT(stm32_mainMCU_Code_v3.elf elf32-littlearm)
  .debug_line    0x0000000000009a47      0x526 Core/Src/stm_logging.o
  .debug_line    0x0000000000009f6d      0x399 Core/Src/system_stm32wbxx.o
  .debug_line    0x000000000000a306      0x4b8 Core/Src/tim.o
- .debug_line    0x000000000000a7be      0x7de Core/Src/touch_detector.o
- .debug_line    0x000000000000af9c      0x44b Core/Src/tsc.o
- .debug_line    0x000000000000b3e7       0x91 Core/Startup/startup_stm32wb55cgux.o
- .debug_line    0x000000000000b478      0xa0c Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.o
- .debug_line    0x000000000000be84     0x1032 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_adc.o
- .debug_line    0x000000000000ceb6      0x628 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_comp.o
- .debug_line    0x000000000000d4de      0x6d3 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_cortex.o
- .debug_line    0x000000000000dbb1      0x639 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_dma.o
- .debug_line    0x000000000000e1ea      0x551 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_gpio.o
- .debug_line    0x000000000000e73b     0x175c Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c.o
- .debug_line    0x000000000000fe97      0x51a Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c_ex.o
- .debug_line    0x00000000000103b1      0x5d4 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_pwr.o
- .debug_line    0x0000000000010985      0xaaa Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_pwr_ex.o
- .debug_line    0x000000000001142f      0xd32 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rcc.o
- .debug_line    0x0000000000012161     0x1071 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rcc_ex.o
- .debug_line    0x00000000000131d2      0x75f Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rtc.o
- .debug_line    0x0000000000013931     0x1744 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim.o
- .debug_line    0x0000000000015075      0xb05 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim_ex.o
- .debug_line    0x0000000000015b7a      0x621 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tsc.o
- .debug_line    0x000000000001619b     0x1cb6 Middlewares/FreeRTOS/cmsis_os2.o
- .debug_line    0x0000000000017e51      0x5c4 Middlewares/FreeRTOS/heap_4.o
- .debug_line    0x0000000000018415      0x55b Middlewares/FreeRTOS/list.o
- .debug_line    0x0000000000018970      0x4f5 Middlewares/FreeRTOS/port.o
- .debug_line    0x0000000000018e65      0xfc2 Middlewares/FreeRTOS/queue.o
- .debug_line    0x0000000000019e27     0x138f Middlewares/FreeRTOS/tasks.o
- .debug_line    0x000000000001b1b6      0x920 Middlewares/FreeRTOS/timers.o
- .debug_line    0x000000000001bad6      0x8d3 Middlewares/STM32_WPAN/coap.o
- .debug_line    0x000000000001c3a9      0x7a8 Middlewares/STM32_WPAN/instance.o
- .debug_line    0x000000000001cb51      0x8ba Middlewares/STM32_WPAN/ip6.o
- .debug_line    0x000000000001d40b      0xa84 Middlewares/STM32_WPAN/link.o
- .debug_line    0x000000000001de8f      0x7e1 Middlewares/STM32_WPAN/message.o
- .debug_line    0x000000000001e670      0x884 Middlewares/STM32_WPAN/openthread_api_wb.o
- .debug_line    0x000000000001eef4      0x638 Middlewares/STM32_WPAN/radio.o
- .debug_line    0x000000000001f52c      0x7f2 Middlewares/STM32_WPAN/shci.o
- .debug_line    0x000000000001fd1e      0x524 Middlewares/STM32_WPAN/shci_tl.o
- .debug_line    0x0000000000020242      0x3f3 Middlewares/STM32_WPAN/shci_tl_if.o
- .debug_line    0x0000000000020635      0x7ca Middlewares/STM32_WPAN/stm_list.o
- .debug_line    0x0000000000020dff      0xb0d Middlewares/STM32_WPAN/thread.o
- .debug_line    0x000000000002190c      0x69b Middlewares/STM32_WPAN/tl_mbox.o
- .debug_line    0x0000000000021fa7      0xd7b STM32_WPAN/App/app_thread.o
- .debug_line    0x0000000000022d22      0x9cf STM32_WPAN/Target/hw_ipcc.o
- .debug_line    0x00000000000236f1      0x46c Utilities/stm32_lpm.o
- .debug_line    0x0000000000023b5d      0x318 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_power_f32.o)
- .debug_line    0x0000000000023e75      0x39a C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_mat_mult_f32.o)
- .debug_line    0x000000000002420f      0x2d0 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_line    0x00000000000244df      0x2d3 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_cos_f32.o)
- .debug_line    0x00000000000247b2      0x2df C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_sub_f32.o)
- .debug_line    0x0000000000024a91      0x2dd C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_scale_f32.o)
- .debug_line    0x0000000000024d6e      0x2f6 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_dot_prod_f32.o)
- .debug_line    0x0000000000025064      0x2df C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_add_f32.o)
- .debug_line    0x0000000000025343      0x243 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_common_tables.o)
+ .debug_line    0x000000000000a7be      0x7dc Core/Src/touch_detector.o
+ .debug_line    0x000000000000af9a      0x44b Core/Src/tsc.o
+ .debug_line    0x000000000000b3e5       0x91 Core/Startup/startup_stm32wb55cgux.o
+ .debug_line    0x000000000000b476      0xa0c Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.o
+ .debug_line    0x000000000000be82     0x1032 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_adc.o
+ .debug_line    0x000000000000ceb4      0x628 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_comp.o
+ .debug_line    0x000000000000d4dc      0x6d3 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_cortex.o
+ .debug_line    0x000000000000dbaf      0x639 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_dma.o
+ .debug_line    0x000000000000e1e8      0x551 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_gpio.o
+ .debug_line    0x000000000000e739     0x175c Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c.o
+ .debug_line    0x000000000000fe95      0x51a Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c_ex.o
+ .debug_line    0x00000000000103af      0x5d4 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_pwr.o
+ .debug_line    0x0000000000010983      0xaaa Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_pwr_ex.o
+ .debug_line    0x000000000001142d      0xd32 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rcc.o
+ .debug_line    0x000000000001215f     0x1071 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rcc_ex.o
+ .debug_line    0x00000000000131d0      0x75f Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_rtc.o
+ .debug_line    0x000000000001392f     0x1744 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim.o
+ .debug_line    0x0000000000015073      0xb05 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim_ex.o
+ .debug_line    0x0000000000015b78      0x621 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tsc.o
+ .debug_line    0x0000000000016199     0x1cb6 Middlewares/FreeRTOS/cmsis_os2.o
+ .debug_line    0x0000000000017e4f      0x5c4 Middlewares/FreeRTOS/heap_4.o
+ .debug_line    0x0000000000018413      0x55b Middlewares/FreeRTOS/list.o
+ .debug_line    0x000000000001896e      0x4f5 Middlewares/FreeRTOS/port.o
+ .debug_line    0x0000000000018e63      0xfc2 Middlewares/FreeRTOS/queue.o
+ .debug_line    0x0000000000019e25     0x138f Middlewares/FreeRTOS/tasks.o
+ .debug_line    0x000000000001b1b4      0x920 Middlewares/FreeRTOS/timers.o
+ .debug_line    0x000000000001bad4      0x8d3 Middlewares/STM32_WPAN/coap.o
+ .debug_line    0x000000000001c3a7      0x7a8 Middlewares/STM32_WPAN/instance.o
+ .debug_line    0x000000000001cb4f      0x8ba Middlewares/STM32_WPAN/ip6.o
+ .debug_line    0x000000000001d409      0xa84 Middlewares/STM32_WPAN/link.o
+ .debug_line    0x000000000001de8d      0x7e1 Middlewares/STM32_WPAN/message.o
+ .debug_line    0x000000000001e66e      0x884 Middlewares/STM32_WPAN/openthread_api_wb.o
+ .debug_line    0x000000000001eef2      0x638 Middlewares/STM32_WPAN/radio.o
+ .debug_line    0x000000000001f52a      0x7f2 Middlewares/STM32_WPAN/shci.o
+ .debug_line    0x000000000001fd1c      0x524 Middlewares/STM32_WPAN/shci_tl.o
+ .debug_line    0x0000000000020240      0x3f3 Middlewares/STM32_WPAN/shci_tl_if.o
+ .debug_line    0x0000000000020633      0x7ca Middlewares/STM32_WPAN/stm_list.o
+ .debug_line    0x0000000000020dfd      0xb0d Middlewares/STM32_WPAN/thread.o
+ .debug_line    0x000000000002190a      0x69b Middlewares/STM32_WPAN/tl_mbox.o
+ .debug_line    0x0000000000021fa5      0xd7b STM32_WPAN/App/app_thread.o
+ .debug_line    0x0000000000022d20      0x9cf STM32_WPAN/Target/hw_ipcc.o
+ .debug_line    0x00000000000236ef      0x46c Utilities/stm32_lpm.o
+ .debug_line    0x0000000000023b5b      0x318 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_power_f32.o)
+ .debug_line    0x0000000000023e73      0x39a C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_mat_mult_f32.o)
+ .debug_line    0x000000000002420d      0x2d0 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_line    0x00000000000244dd      0x2d3 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_line    0x00000000000247b0      0x2df C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_sub_f32.o)
+ .debug_line    0x0000000000024a8f      0x2dd C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_scale_f32.o)
+ .debug_line    0x0000000000024d6c      0x2f6 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_dot_prod_f32.o)
+ .debug_line    0x0000000000025062      0x2df C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_add_f32.o)
+ .debug_line    0x0000000000025341      0x243 C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC\libarm_cortexM4lf_math.a(arm_common_tables.o)
 
 .debug_str      0x0000000000000000    0x17b67
  .debug_str     0x0000000000000000      0x99f Core/Src/adc.o

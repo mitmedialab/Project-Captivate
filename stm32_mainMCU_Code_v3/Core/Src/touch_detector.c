@@ -275,8 +275,6 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 	}
 
-
-
 	if(prev_msg != lightsSimpleMessageReceivedTouch ){
 		prev_msg = lightsSimpleMessageReceivedTouch;
 

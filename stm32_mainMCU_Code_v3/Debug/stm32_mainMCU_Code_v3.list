@@ -41,15 +41,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  18 .debug_ranges 000034a0  00000000  00000000  000a0130  2**3
                   CONTENTS, READONLY, DEBUGGING
- 19 .debug_line   00025586  00000000  00000000  000a35d0  2**0
+ 19 .debug_line   00025584  00000000  00000000  000a35d0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 20 .debug_str    00017b67  00000000  00000000  000c8b56  2**0
+ 20 .debug_str    00017b67  00000000  00000000  000c8b54  2**0
                   CONTENTS, READONLY, DEBUGGING
- 21 .comment      000000f0  00000000  00000000  000e06bd  2**0
+ 21 .comment      000000f0  00000000  00000000  000e06bb  2**0
                   CONTENTS, READONLY
- 22 .debug_frame  0000ec48  00000000  00000000  000e07b0  2**2
+ 22 .debug_frame  0000ec48  00000000  00000000  000e07ac  2**2
                   CONTENTS, READONLY, DEBUGGING
- 23 .debug_loc    0000131b  00000000  00000000  000ef3f8  2**0
+ 23 .debug_loc    0000131b  00000000  00000000  000ef3f4  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -13665,7 +13665,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b2e:	781b      	ldrb	r3, [r3, #0]
  8005b30:	2b00      	cmp	r3, #0
  8005b32:	d107      	bne.n	8005b44 <process_touches+0x29c>
-		lightsSimpleMessageReceivedTouch = 0x00;
+		lightsSimpleMessageReceivedTouch = 0x00; // off
  8005b34:	4b02      	ldr	r3, [pc, #8]	; (8005b40 <process_touches+0x298>)
  8005b36:	2200      	movs	r2, #0
  8005b38:	601a      	str	r2, [r3, #0]
@@ -13677,7 +13677,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b46:	781b      	ldrb	r3, [r3, #0]
  8005b48:	2b01      	cmp	r3, #1
  8005b4a:	d103      	bne.n	8005b54 <process_touches+0x2ac>
-		lightsSimpleMessageReceivedTouch = 0x03;
+		lightsSimpleMessageReceivedTouch = 0x03; // cyan (green + blue)
  8005b4c:	4b28      	ldr	r3, [pc, #160]	; (8005bf0 <process_touches+0x348>)
  8005b4e:	2203      	movs	r2, #3
  8005b50:	601a      	str	r2, [r3, #0]
@@ -13687,7 +13687,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b56:	781b      	ldrb	r3, [r3, #0]
  8005b58:	2b02      	cmp	r3, #2
  8005b5a:	d103      	bne.n	8005b64 <process_touches+0x2bc>
-		lightsSimpleMessageReceivedTouch = (0x01 << 6) | 0x01;
+		lightsSimpleMessageReceivedTouch = (0x01 << 6) | 0x01; // orange (green + red)
  8005b5c:	4b24      	ldr	r3, [pc, #144]	; (8005bf0 <process_touches+0x348>)
  8005b5e:	2241      	movs	r2, #65	; 0x41
  8005b60:	601a      	str	r2, [r3, #0]
@@ -13697,7 +13697,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b66:	781b      	ldrb	r3, [r3, #0]
  8005b68:	2b03      	cmp	r3, #3
  8005b6a:	d103      	bne.n	8005b74 <process_touches+0x2cc>
-		lightsSimpleMessageReceivedTouch = 0x00;
+		lightsSimpleMessageReceivedTouch = 0x00; // off
  8005b6c:	4b20      	ldr	r3, [pc, #128]	; (8005bf0 <process_touches+0x348>)
  8005b6e:	2200      	movs	r2, #0
  8005b70:	601a      	str	r2, [r3, #0]
@@ -13707,7 +13707,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b76:	781b      	ldrb	r3, [r3, #0]
  8005b78:	2b04      	cmp	r3, #4
  8005b7a:	d103      	bne.n	8005b84 <process_touches+0x2dc>
-		lightsSimpleMessageReceivedTouch = 0x00;
+		lightsSimpleMessageReceivedTouch = 0x00; // off
  8005b7c:	4b1c      	ldr	r3, [pc, #112]	; (8005bf0 <process_touches+0x348>)
  8005b7e:	2200      	movs	r2, #0
  8005b80:	601a      	str	r2, [r3, #0]
@@ -13717,7 +13717,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b86:	781b      	ldrb	r3, [r3, #0]
  8005b88:	2b05      	cmp	r3, #5
  8005b8a:	d103      	bne.n	8005b94 <process_touches+0x2ec>
-		lightsSimpleMessageReceivedTouch = 0x01;
+		lightsSimpleMessageReceivedTouch = 0x01; // green
  8005b8c:	4b18      	ldr	r3, [pc, #96]	; (8005bf0 <process_touches+0x348>)
  8005b8e:	2201      	movs	r2, #1
  8005b90:	601a      	str	r2, [r3, #0]
@@ -13727,7 +13727,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005b96:	781b      	ldrb	r3, [r3, #0]
  8005b98:	2b06      	cmp	r3, #6
  8005b9a:	d103      	bne.n	8005ba4 <process_touches+0x2fc>
-		lightsSimpleMessageReceivedTouch = 0x02;
+		lightsSimpleMessageReceivedTouch = 0x02; // blue
  8005b9c:	4b14      	ldr	r3, [pc, #80]	; (8005bf0 <process_touches+0x348>)
  8005b9e:	2202      	movs	r2, #2
  8005ba0:	601a      	str	r2, [r3, #0]
@@ -13737,7 +13737,7 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005ba6:	781b      	ldrb	r3, [r3, #0]
  8005ba8:	2b07      	cmp	r3, #7
  8005baa:	d103      	bne.n	8005bb4 <process_touches+0x30c>
-		lightsSimpleMessageReceivedTouch = 0x01 << 6;
+		lightsSimpleMessageReceivedTouch = 0x01 << 6; // red
  8005bac:	4b10      	ldr	r3, [pc, #64]	; (8005bf0 <process_touches+0x348>)
  8005bae:	2240      	movs	r2, #64	; 0x40
  8005bb0:	601a      	str	r2, [r3, #0]
@@ -13747,13 +13747,11 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005bb6:	781b      	ldrb	r3, [r3, #0]
  8005bb8:	2b08      	cmp	r3, #8
  8005bba:	d102      	bne.n	8005bc2 <process_touches+0x31a>
-		lightsSimpleMessageReceivedTouch = 0x00;
+		lightsSimpleMessageReceivedTouch = 0x00; // off
  8005bbc:	4b0c      	ldr	r3, [pc, #48]	; (8005bf0 <process_touches+0x348>)
  8005bbe:	2200      	movs	r2, #0
  8005bc0:	601a      	str	r2, [r3, #0]
 	}
-
-
 
 	if(prev_msg != lightsSimpleMessageReceivedTouch ){
  8005bc2:	4b0c      	ldr	r3, [pc, #48]	; (8005bf4 <process_touches+0x34c>)
@@ -13768,10 +13766,6 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005bd2:	4a08      	ldr	r2, [pc, #32]	; (8005bf4 <process_touches+0x34c>)
  8005bd4:	6013      	str	r3, [r2, #0]
 
-//		lightsSimpleMessageReceivedTouch = 0x01; // green
-//		lightsSimpleMessageReceivedTouch = 0x01 << 1; // blue
-//		lightsSimpleMessageReceivedTouch = 0x01 << 6; // red
-
 		osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageReceivedTouch, 0U, 0);
  8005bd6:	4b08      	ldr	r3, [pc, #32]	; (8005bf8 <process_touches+0x350>)
  8005bd8:	6818      	ldr	r0, [r3, #0]
@@ -13779,10 +13773,8 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
  8005bdc:	2200      	movs	r2, #0
  8005bde:	4904      	ldr	r1, [pc, #16]	; (8005bf0 <process_touches+0x348>)
  8005be0:	f008 fbac 	bl	800e33c <osMessageQueuePut>
-////	lightMessageComplexTouch.color[17] = 255; // red
-//
-//
-//	FrontLightsSet(&lightMessageComplexTouch);
+
+	}
 
 }
  8005be4:	bf00      	nop

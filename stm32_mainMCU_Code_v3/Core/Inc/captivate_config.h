@@ -60,10 +60,10 @@ extern "C" {
 #define CALIBRATION_SAMPLES 100 // how many samples to take before starting sensing
 #define THRESHOLD_TOLERANCE	60 // how much below the dynamic threshold before classifying as a "touch"
 
-#define TSCx_TS1_MINTHRESHOLD			0
-#define TSCx_TS1_MAXTHRESHOLD			7400
-#define TSCx_TS2_MINTHRESHOLD			0
-#define TSCx_TS2_MAXTHRESHOLD			8800
+//#define TSCx_TS1_MINTHRESHOLD			0
+//#define TSCx_TS1_MAXTHRESHOLD			7400
+//#define TSCx_TS2_MINTHRESHOLD			0
+//#define TSCx_TS2_MAXTHRESHOLD			8800
 
 /* IMU SPECIFIC CONFIGURATION */
 #define ROT_VEC_PERIOD				100
