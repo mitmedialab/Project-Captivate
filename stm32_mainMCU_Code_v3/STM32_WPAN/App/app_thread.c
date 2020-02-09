@@ -41,8 +41,8 @@
 #include "main.h"
 #include "stm32wbxx_hal_gpio.h"
 #include "lp5523.h"
-
 #include "captivate_config.h"
+#include "child_supervision.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -428,6 +428,16 @@ static void APP_THREAD_DeviceConfig(void)
   {
     APP_THREAD_Error(ERR_THREAD_START,error);
   }
+
+  error = otPlatRadioSetTransmitPower(NULL, TRANSMIT_POWER);
+      if (error != OT_ERROR_NONE)
+      {
+        APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
+      }
+
+//   otChildSupervisionSetCheckTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
+//   otChildSupervisionSetInterval(NULL, CHILD_SUPERVISION_INTERVAL);
+
 
     error = otThreadSetMasterKey(NULL, &masterKey);
     if (error != OT_ERROR_NONE)

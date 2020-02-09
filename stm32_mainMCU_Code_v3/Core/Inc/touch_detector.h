@@ -16,7 +16,12 @@ enum TouchType{
 	None = 0,
 	SwipeForward = 1,
 	SwipeBackward = 2,
-	Tap = 3
+	FrontRelease = 3,
+	BackRelease = 4,
+	FrontHold = 5,
+	BackHold = 6,
+	BothHold = 7,
+	BothRelease = 8
 };
 
 enum TouchState{
@@ -50,6 +55,6 @@ void debounce(Debouncer *self, uint8_t noisy_in, uint32_t cur_time);
 void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef* htsc);
 void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp);
 void touchSensingStart(void);
-void touchSensingStart(void);
+void touchSensingStop(void);
 
 #endif

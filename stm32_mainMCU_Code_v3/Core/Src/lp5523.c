@@ -139,7 +139,9 @@ void setup_LP5523(uint8_t ADDR){
 //  return true;
 //}
 
+
 void FrontLightsSet(union ColorComplex *setColors){
+
 	memcpy(led_left_PWM, setColors, 9);
 	memcpy(led_right_PWM, &(setColors->color[9]), 9);
 #ifndef DONGLE_CODE

@@ -70,9 +70,9 @@ void InterProcessorTask(void *argument){
 
  					// send command packet to MCU
  					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(struct LogMessage), 100) != HAL_OK){
-// 						osSemaphoreRelease(messageI2C_LockSem);
-// 						osDelay(100);
-// 						osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+ 						osSemaphoreRelease(messageI2C_LockHandle);
+ 						osDelay(100);
+ 						osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
  					}
  					// wait until transmission is successful
 // 					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
@@ -83,9 +83,9 @@ void InterProcessorTask(void *argument){
  					osThreadFlagsClear(0x00000008U);
  					// grab packet from secondary MCU
  					while(HAL_I2C_Master_Receive_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &receivedPacket, sizeof(struct secondaryProcessorData)) != HAL_OK){
-// 						osSemaphoreRelease(messageI2C_LockSem);
-// 						osDelay(100);
-// 						osSemaphoreAcquire(messageI2C_LockSem, osWaitForever);
+ 						osSemaphoreRelease(messageI2C_LockHandle);
+ 						osDelay(100);
+ 						osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
  					}
 // 					taskEXIT_CRITICAL();
 					// wait until packet is received

@@ -66,6 +66,9 @@ uint8_t logEnabled = 0;
 uint32_t startTime = 0;
 
 void MasterThreadTask(void *argument) {
+
+	touchSensingStart();
+
 	while (1) {
 		// check if the queue has a new message (a command to start/stop logging)
 		//   .... this function waits forever
@@ -78,7 +81,7 @@ void MasterThreadTask(void *argument) {
 		togLogMessageReceived.blinkEnabled = 1;
 		togLogMessageReceived.tempEnabled = 1;
 		togLogMessageReceived.intertialEnabled = 1;
-		togLogMessageReceived.positionEnabled = 0;
+		togLogMessageReceived.positionEnabled = 1;
 
 		// pass variable to share system state
 		osMessageQueueReset(statusQueueHandle);

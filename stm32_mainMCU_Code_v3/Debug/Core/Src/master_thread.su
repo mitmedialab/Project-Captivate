@@ -1,6 +1,6 @@
 master_thread.c:68:6:MasterThreadTask	32	static
-master_thread.c:150:6:grabSensorData	16	static
-master_thread.c:177:6:masterEnterRoutine	8	static
-master_thread.c:201:6:masterExitRoutine	8	static
-master_thread.c:224:6:packetizeData	24	static
-master_thread.c:242:10:RTC_ToEpoch	32	static
+master_thread.c:153:6:grabSensorData	16	static
+master_thread.c:180:6:masterEnterRoutine	8	static
+master_thread.c:204:6:masterExitRoutine	8	static
+master_thread.c:227:6:packetizeData	24	static
+master_thread.c:245:10:RTC_ToEpoch	32	static

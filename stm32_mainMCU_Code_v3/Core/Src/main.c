@@ -116,8 +116,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
 
-
-
   /* USER CODE END 2 */
   /* Init scheduler */
   osKernelInitialize();

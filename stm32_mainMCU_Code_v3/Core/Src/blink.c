@@ -65,7 +65,7 @@ void BlinkTask(void *argument) {
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 
 		// if signal was received successfully, start blink task
-		if ((evt & 0x00000002U) == 0x00000002U) {
+		if ((evt & 0x00000001U) == 0x00000001U) {
 
 			// tell other threads that blink has been activated
 			osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);

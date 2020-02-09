@@ -41,21 +41,29 @@ extern "C" {
 #define DISABLE_LOG								0
 #define SENSOR_ENABLE							1
 
+/* RADIO SPECIFIC */
+#define TRANSMIT_POWER							6 //in dbm
+#define CHILD_SUPERVISION_INTERVAL				2 // default is 129 (how often a router broadcasts to its child to ensure its alive)
+#define CHILD_SUPERVISION_TIMEOUT				3	// default is 190 (when child trying to find a new router)
 
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* ************************************************************************** */
 
 /* VIVE SPECIFIC CONFIGURATION */
-#define VIVE_SAMPLE_PERIOD			5000
-#define	GET_3D_LOC_TIMEOUT			500
+#define VIVE_SAMPLE_PERIOD			2000
+#define	GET_3D_LOC_TIMEOUT			1500
 //#define VIVE_THREAD_INFINITE_TIMEOUT	1
 
 /* TOUCH SPECIFIC CONFIGURATION */
+#define ALPHA_WEIGHT 	0.01    // updated_va = new_val * (ALPHA_WEIGHT) + old_val * (1-ALPHA_WEIGHT)
+#define CALIBRATION_SAMPLES 100 // how many samples to take before starting sensing
+#define THRESHOLD_TOLERANCE	60 // how much below the dynamic threshold before classifying as a "touch"
+
 #define TSCx_TS1_MINTHRESHOLD			0
-#define TSCx_TS1_MAXTHRESHOLD			7300
+#define TSCx_TS1_MAXTHRESHOLD			7400
 #define TSCx_TS2_MINTHRESHOLD			0
-#define TSCx_TS2_MAXTHRESHOLD			9000
+#define TSCx_TS2_MAXTHRESHOLD			8800
 
 /* IMU SPECIFIC CONFIGURATION */
 #define ROT_VEC_PERIOD				100
@@ -73,18 +81,17 @@ extern "C" {
 
 /* macros ------------------------------------------------------------*/
 
-
 /* function prototypes -----------------------------------------------*/
 
 /* freertos types  -----------------------------------------------*/
 
 extern osThreadId_t blinkTaskHandle;
-extern osMessageQueueId_t	blinkMsgQueueHandle;
+extern osMessageQueueId_t blinkMsgQueueHandle;
 
-extern osThreadId_t 		frontLightsTaskHandle;
-extern osMessageQueueId_t	lightsSimpleQueueHandle;
+extern osThreadId_t frontLightsTaskHandle;
+extern osMessageQueueId_t lightsSimpleQueueHandle;
 
-extern osMessageQueueId_t	togLoggingQueueHandle;
+extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;
 
 extern osSemaphoreId_t messageI2C_LockHandle;
@@ -96,7 +103,7 @@ extern osMessageQueueId_t activitySampleQueueHandle;
 extern osMessageQueueId_t rotationSampleQueueHandle;
 
 extern osThreadId_t interProcTaskHandle;
-extern osMessageQueueId_t	 interProcessorMsgQueueHandle;
+extern osMessageQueueId_t interProcessorMsgQueueHandle;
 
 extern osThreadId_t pulseTaskHandle;
 
@@ -111,16 +118,14 @@ extern osSemaphoreId_t locCompleteHandle;
 extern void startSensorThreads(void);
 
 /* variables -----------------------------------------------*/
-struct SystemStatus{
-	int blinkThread : 1;
-	int inertialThread : 1;
-	int interProcThread : 1;
-	int frontLightsThread : 1;
+struct SystemStatus {
+	int blinkThread :1;
+	int inertialThread :1;
+	int interProcThread :1;
+	int frontLightsThread :1;
 };
 
 /* Functions Definition ------------------------------------------------------*/
-
-
 
 /*************************************************************
  *
@@ -138,11 +143,7 @@ struct SystemStatus{
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-
-
-
-
+ *************************************************************/
 
 #ifdef __cplusplus
 } /* extern "C" */
