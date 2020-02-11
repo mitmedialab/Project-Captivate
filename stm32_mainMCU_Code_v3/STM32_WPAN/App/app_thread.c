@@ -43,6 +43,7 @@
 #include "lp5523.h"
 #include "captivate_config.h"
 #include "child_supervision.h"
+#include "ip6.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -159,7 +160,7 @@ static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_len
 
 static void APP_THREAD_SendCoapUnicastMsg(void *message,
 											uint8_t msgSize,
-											char* ipv6_addr,
+											otIp6Address* ipv6_addr,
 											char* resource,
 											uint8_t msgID);
 
@@ -233,6 +234,7 @@ otCoapHeader  OT_Header = {0};
 const char borderSyncResource[15] = "borderSync";
 const char borderPacket[15] = "borderLog";
 const char borderTouch[15] = "capTouch";
+otIp6Address multicastAddr;
 
 //static uint8_t OT_Command = 0;
 //static uint16_t OT_BufferIdRead = 1U;
@@ -270,7 +272,7 @@ struct LogMessage logMessage;
 ColorCode lightMessage;
 union ColorComplex lightMessageComplex;
 
-struct SystemCal borderRouter = {{0},0};
+struct SystemCal borderRouter = {0};
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -429,15 +431,24 @@ static void APP_THREAD_DeviceConfig(void)
     APP_THREAD_Error(ERR_THREAD_START,error);
   }
 
+  error = otIp6SetEnabled(NULL, false);
+  if (error != OT_ERROR_NONE)
+  {
+    APP_THREAD_Error(ERR_THREAD_IPV6_ENABLE,error);
+  }
+
   error = otPlatRadioSetTransmitPower(NULL, TRANSMIT_POWER);
       if (error != OT_ERROR_NONE)
       {
         APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
       }
 
-//   otChildSupervisionSetCheckTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
-//   otChildSupervisionSetInterval(NULL, CHILD_SUPERVISION_INTERVAL);
+   otChildSupervisionSetCheckTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
+   otChildSupervisionSetInterval(NULL, CHILD_SUPERVISION_INTERVAL);
 
+
+//   error = otIp6AddressFromString("ff12::1", &multicastAddr);
+//   error = otIp6SubscribeMulticastAddress(NULL, &multicastAddr);
 
     error = otThreadSetMasterKey(NULL, &masterKey);
     if (error != OT_ERROR_NONE)
@@ -456,6 +467,12 @@ static void APP_THREAD_DeviceConfig(void)
       APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
     }
 
+    error = otIp6SetEnabled(NULL, true);
+    if (error != OT_ERROR_NONE)
+    {
+      APP_THREAD_Error(ERR_THREAD_IPV6_ENABLE,error);
+    }
+
     error = otThreadSetEnabled(NULL, true);
     if (error != OT_ERROR_NONE)
     {
@@ -468,6 +485,9 @@ static void APP_THREAD_DeviceConfig(void)
     error = otCoapAddResource(NULL, &OT_Lights_Simple_Ressource);
     error = otCoapAddResource(NULL, &OT_Border_Time_Ressource);
     error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
+
+    // set default multicast address for border router
+    otIp6AddressFromString("ff03::1", &borderRouter.ipv6);
 
     // start master thread
 //    osThreadFlagsSet(masterTaskHandle, 0x00000008U);
@@ -669,21 +689,42 @@ void APP_THREAD_GetBorderRouterIP(){
 //} msgSendMyIP = {.msgSendMyIP = "cal"};
 
 char msgSendMyIP[5] = "cal";
+////otIp6Address* test_ip;
+//otNeighborInfo test_info_neighbor;
+//otNeighborInfoIterator test_neighbor_iterator;
+//otError error;
+//
+//volatile uint8_t random_var = 0;
+//volatile bool state = 1;
+//volatile otNetifMulticastAddress *test_addr;
+//volatile otExtAddress *test_ext_addr;
+//volatile otExtAddress test_1;
+//volatile otExtAddress test_2;
 
 void APP_THREAD_SendMyIP(){
 //	msgSendMyIP.uid = DBGMCU->IDCODE;
-	APP_THREAD_SendCoapUnicastRequest(msgSendMyIP, sizeof(msgSendMyIP), borderRouter.ipv6, borderSyncResource);
+//	const otIp6Address *test_ip = otThreadGetLinkLocalIp6Address(NULL);
+//	if(test_ip) random_var++;
+//	state = otIp6IsMulticastPromiscuousEnabled(NULL);
+//	test_addr = otIp6GetMulticastAddresses(NULL);
+//	test_ext_addr = otLinkGetExtendedAddress(NULL);
+//	memcpy(&test_1, test_ext_addr, sizeof(otExtAddress));
+////	test_1 = test_ext_addr[0];
+////	test_2 = &test_ext_addr;
+//
+//	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
+	APP_THREAD_SendCoapUnicastMsg(msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, borderSyncResource, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
 
 void APP_THREAD_SendBorderMessage(void *packet, uint8_t len){
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapUnicastMsg(packet, len, borderRouter.ipv6  , borderPacket, 1U);
+	APP_THREAD_SendCoapUnicastMsg(packet, len, &borderRouter.ipv6  , borderPacket, 1U);
 }
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket){
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapUnicastMsg(sensorPacket, sizeof(struct LogPacket), borderRouter.ipv6  , borderPacket, 1U);
+	APP_THREAD_SendCoapUnicastMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6  , borderPacket, 1U);
 
 }
 
@@ -843,7 +884,7 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
 {
   do
   {
-
+	  //TODO: otMessasgeRead can overwrite the border router IP so probably good to change to a temp variable and then checking if correct before overwritting
 	if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &borderRouter, sizeof(borderRouter)) == sizeof(borderRouter))
 	{
     	APP_THREAD_SendMyIP();
@@ -1288,8 +1329,8 @@ static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_len
 
 
 	do{
-			  myRloc16 = otThreadGetRloc16(NULL);
-			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+//			  myRloc16 = otThreadGetRloc16(NULL);
+//			  isEnabledIpv6 = otIp6IsEnabled(NULL);
 //			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
 //			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
 //			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
@@ -1357,7 +1398,7 @@ static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_len
 
 }
 
-static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* ipv6_addr  , char* resource, uint8_t msgID)
+static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, otIp6Address* ipv6_addr  , char* resource, uint8_t msgID)
 {
   //otError   error = OT_ERROR_NONE;
 
@@ -1399,16 +1440,25 @@ static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* 
 			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
 
 			  // set border IP address
-			   error = otIp6AddressFromString(ipv6_addr , &OT_MessageInfo.mPeerAddr);
 
-			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
 
-			   // error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
-			  //error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
+//			  otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
+//			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
+
+			  otIp6AddressFromString("fd11:22::c55e:6732:c8cd:9443", &OT_MessageInfo.mPeerAddr);
+//			  otIp6AddressFromString("fd11:1111:1122:0:7be1:2f12:9534:72d5", &OT_MessageInfo.mPeerAddr);
+
+//			  			  otIp6AddressFromString("fd11:1111:1122:0:4faa:fd9:da06:9100", &OT_MessageInfo.mPeerAddr);
+//			  			  otIp6AddressFromString("fd11:22:0:0:c34c:7994:19f2:4b82", &OT_MessageInfo.mPeerAddr);
+
+//			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+//			  otIp6AddressFromString("fd11:22::c34c:7994:19f2:4b82", &OT_MessageInfo.mSockAddr);
+			  otIp6AddressFromString("fd11:22::c34c:7994:cccc:4b82", &OT_MessageInfo.mSockAddr);
 
 			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+//			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_HOST;
 			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
-			  //OT_MessageInfo.mHopLimit = 20;
+			  OT_MessageInfo.mHopLimit = 64;
 
 			  /************** CREATE NEW MESSAGE ********************ifco*/
 
@@ -1420,7 +1470,8 @@ static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* 
 			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
 
 			  // the name of the resource
-			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
+//			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
+			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, "borderTest");
 
 			  // need this so the coap server doesnt try to parse as 'utf-8' and error out
 			  otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
@@ -1432,8 +1483,6 @@ static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* 
 			  pOT_Message = otCoapNewMessage(NULL, &OT_Header);
 			  if (pOT_Message == NULL) while(1);
 			  // Append bytes to a message (this is where the payload gets added)
-
-
 
 			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
 			  error = otMessageAppend(pOT_Message, message, msgSize);
@@ -1452,7 +1501,6 @@ static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, char* 
 				otMessageFree(pOT_Message);
 			  }
 
-			  //HAL_Delay(10000);
 			}while(false);
 
 }

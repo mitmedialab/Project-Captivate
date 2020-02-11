@@ -37,6 +37,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "master_thread.h"
 #include "captivate_config.h"
+#include "ip6.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -84,8 +85,8 @@ typedef enum
 
 struct SystemCal
 {
-	char 	ipv6[50];
-	time_t 	epoch;
+	otIp6Address 	ipv6;
+	time_t 			epoch;
 };
 
 

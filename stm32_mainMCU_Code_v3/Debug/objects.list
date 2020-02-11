@@ -31,6 +31,7 @@
 "Core/Src/syscalls.o"
 "Core/Src/sysmem.o"
 "Core/Src/system_stm32wbxx.o"
+"Core/Src/thread_helper.o"
 "Core/Src/tim.o"
 "Core/Src/tiny_lpm.o"
 "Core/Src/touch_detector.o"
