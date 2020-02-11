@@ -44,10 +44,21 @@
 #include "captivate_config.h"
 #include "child_supervision.h"
 #include "ip6.h"
+#include "rtc.h"
+
+#include "task.h"
+
+// TODO: fix the below include call to be relative
+#include <C:\ST\STM32CubeIDE_1.2.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610\tools\arm-none-eabi\include\stdio.h>
+#include <C:\ST\STM32CubeIDE_1.2.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610\tools\arm-none-eabi\include\time.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#define REQUEST_ACK	1
+#define NO_ACK		0
+
 typedef enum
 {
   COLOR_RED		= 0,
@@ -55,24 +66,24 @@ typedef enum
   COLOR_GREEN	= 2
   } ColorCode;
 
-struct tm
-{
-	int	tm_sec;
-    int	tm_min;
-    int	tm_hour;
-    int	tm_mday;
-    int	tm_mon;
-    int	tm_year;
-    int	tm_wday;
-    int	tm_yday;
-    int	tm_isdst;
-  #ifdef __TM_GMTOFF
-    long	__TM_GMTOFF;
-  #endif
-  #ifdef __TM_ZONE
-    const char *__TM_ZONE;
-  #endif
-};
+//struct tm
+//{
+//	int	tm_sec;
+//    int	tm_min;
+//    int	tm_hour;
+//    int	tm_mday;
+//    int	tm_mon;
+//    int	tm_year;
+//    int	tm_wday;
+//    int	tm_yday;
+//    int	tm_isdst;
+//  #ifdef __TM_GMTOFF
+//    long	__TM_GMTOFF;
+//  #endif
+//  #ifdef __TM_ZONE
+//    const char *__TM_ZONE;
+//  #endif
+//};
 
 /* USER CODE END PTD */
 
@@ -158,10 +169,12 @@ static void APP_THREAD_DummyReqHandler(void * p_context,
 //static void APP_THREAD_SendCoapUnicastRequest(char* message, char* ipv6_addr  , char* resource);
 static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_length, char* ipv6_addr  , char* resource);
 
-static void APP_THREAD_SendCoapUnicastMsg(void *message,
+static void APP_THREAD_SendCoapMsg(void *message,
 											uint8_t msgSize,
 											otIp6Address* ipv6_addr,
 											char* resource,
+											uint8_t request_ack,
+											otCoapCode coapCode,
 											uint8_t msgID);
 
 //static void APP_THREAD_CoapRequestHandler(otCoapHeader        * pHeader,
@@ -233,7 +246,9 @@ otMessageInfo OT_MessageInfo = {0};
 otCoapHeader  OT_Header = {0};
 const char borderSyncResource[15] = "borderSync";
 const char borderPacket[15] = "borderLog";
-const char borderTouch[15] = "capTouch";
+const char capTouch[15] = "capTouch";
+const char capLoc[15] = "capLoc";
+
 otIp6Address multicastAddr;
 
 //static uint8_t OT_Command = 0;
@@ -273,6 +288,7 @@ ColorCode lightMessage;
 union ColorComplex lightMessageComplex;
 
 struct SystemCal borderRouter = {0};
+struct SystemCal receivedSystemCal = {0};
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -489,9 +505,6 @@ static void APP_THREAD_DeviceConfig(void)
     // set default multicast address for border router
     otIp6AddressFromString("ff03::1", &borderRouter.ipv6);
 
-    // start master thread
-//    osThreadFlagsSet(masterTaskHandle, 0x00000008U);
-//    startSensorThreads();
   /* USER CODE END DEVICECONFIG */
 }
 
@@ -517,7 +530,7 @@ static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext)
     {
     case OT_DEVICE_ROLE_DISABLED:
       /* USER CODE BEGIN OT_DEVICE_ROLE_DISABLED */
-
+    	borderRouter.epoch = 0;
       /* USER CODE END OT_DEVICE_ROLE_DISABLED */
       break;
     case OT_DEVICE_ROLE_DETACHED:
@@ -713,48 +726,20 @@ void APP_THREAD_SendMyIP(){
 ////	test_2 = &test_ext_addr;
 //
 //	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
-	APP_THREAD_SendCoapUnicastMsg(msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, borderSyncResource, 1U);
+	APP_THREAD_SendCoapMsg(msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, borderSyncResource, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
 
 void APP_THREAD_SendBorderMessage(void *packet, uint8_t len){
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapUnicastMsg(packet, len, &borderRouter.ipv6  , borderPacket, 1U);
+	APP_THREAD_SendCoapMsg(packet, len, &borderRouter.ipv6  , borderPacket, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
 }
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket){
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapUnicastMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6  , borderPacket, 1U);
+	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6  , borderPacket, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
 
 }
-
-///**
-// * @brief Task associated to the push button.
-// * @param  None
-// * @retval None
-// */
-//static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type)
-//{
-//  APP_DBG("********* STEP 1: Send a CoAP NON-CONFIRMABLE PUT Request *********");
-//  /* Send a NON-CONFIRMABLE PUT Request */
-//  if(otCoapType == )
-//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
-//
-////  /* Insert Delay here using Hw timer server */
-////  /* Start the timer */
-////  HW_TS_Start(TimerID, (uint32_t)WAIT_TIMEOUT);
-////  UTIL_SEQ_WaitEvt(EVENT_TIMER);
-//
-//  APP_DBG("********* STEP 2: Send a CoAP CONFIRMABLE PUT Request *********");
-//  /* Send a CONFIRMABLE PUT Request */
-//  APP_THREAD_CoapSendRequest(&OT_Ressource, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT, MULICAST_FTD_MED, PayloadWrite, sizeof(PayloadWrite));
-//}
-//
-//static void APP_THREAD_TimingElapsed(void)
-//{
-//  APP_DBG("--- APP_THREAD_TimingElapsed ---");
-//  UTIL_SEQ_SetEvt(EVENT_TIMER);
-//}
 
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
@@ -819,6 +804,7 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader * pHeader,
   } while (false);
 }
 
+// request handler for when receiving a message directed at the data logging resource
 static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
                                   const otMessageInfo  * pMessageInfo)
@@ -878,6 +864,8 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader * pHeader,
 
 volatile char temp_var[100];
 volatile uint8_t temp_num = 0;
+
+// request handler for when receiving a message directed at the border router synchronizing resource
 static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
                                   otMessage            * pMessage,
                                   const otMessageInfo  * pMessageInfo)
@@ -885,43 +873,17 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
   do
   {
 	  //TODO: otMessasgeRead can overwrite the border router IP so probably good to change to a temp variable and then checking if correct before overwritting
-	if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &borderRouter, sizeof(borderRouter)) == sizeof(borderRouter))
+	if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal)) == sizeof(receivedSystemCal))
 	{
+		// if the message was a put request, copy message over to border router info struct
+		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT){
+			memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
+
+			// update the onboard RTC unix time
+			updateRTC(borderRouter.epoch);
+		}
+
     	APP_THREAD_SendMyIP();
-
-//    	updateRTC(borderRouter.epoch);
-
-//    	border_ipv6 = ;
-
-//    	APP_THREAD_SendCoapUnicastRequest();
-
-//    	lightMessage = lightMessage & 0x0F; //remove first 4 bits since they are part of the message overhead (?)
-//
-//
-//    	//if 0
-//    	if(lightMessage == COLOR_RED)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-//
-//    	}
-//
-//    	// if 1
-//    	else if (lightMessage == COLOR_BLUE)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-//		}
-//
-//    	//if 2
-//    	else if (lightMessage == COLOR_GREEN)
-//    	{
-////    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-////			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-////			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-//		}
 	}
 
     receivedMessage = (otMessageInfo *) pMessage;
@@ -929,28 +891,27 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
     if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
 	{
       APP_THREAD_SendDataResponse(pHeader, pMessageInfo);
+	}
+
+    if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_NON_CONFIRMABLE)
+    {
+    }
+
+    if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET)
+	{
+      APP_THREAD_SendCoapMsg(&borderRouter, sizeof(borderRouter), &(pMessageInfo->mPeerAddr), borderSyncResource, NO_ACK, OT_COAP_CODE_PUT, 1U);
 	  break;
 	}
 
-    if (otCoapHeaderGetType(pHeader) != OT_COAP_TYPE_NON_CONFIRMABLE)
-    {
-      break;
-    }
+//    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
+//    {
+//      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+//    }
 
-    if (otCoapHeaderGetCode(pHeader) != OT_COAP_CODE_PUT)
-    {
-      break;
-    }
-
-    if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U)
-    {
-      //APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
-    }
-
-    if (OT_ReceivedCommand == 1U)
-    {
-      //BSP_LED_Toggle(LED1);
-    }
+//    if (OT_ReceivedCommand == 1U)
+//    {
+//      //BSP_LED_Toggle(LED1);
+//    }
 
   } while (false);
 }
@@ -958,36 +919,40 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
 void updateRTC(time_t now)
 {
 
-//	RTC_TimeTypeDef sTime;
-//	RTC_DateTypeDef sDate;
-//
-//	struct tm time_tm;
-//	time_tm = *(localtime(&now));
-//
-//	sTime.Hours = (uint8_t)time_tm.tm_hour;
-//	sTime.Minutes = (uint8_t)time_tm.tm_min;
-//	sTime.Seconds = (uint8_t)time_tm.tm_sec;
-//	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-//	{
-//	_Error_Handler(__FILE__, __LINE__);
-//	}
-//
-//	if (time_tm.tm_wday == 0) { time_tm.tm_wday = 7; } // the chip goes mon tue wed thu fri sat sun
-//	sDate.WeekDay = (uint8_t)time_tm.tm_wday;
-//	sDate.Month = (uint8_t)time_tm.tm_mon+1; //momth 1- This is why date math is frustrating.
-//	sDate.Date = (uint8_t)time_tm.tm_mday;
-//	sDate.Year = (uint16_t)(time_tm.tm_year+1900-2000); // time.h is years since 1900, chip is years since 2000
-//
-//	/*
-//	* update the RTC
-//	*/
-//	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-//	{
-//	_Error_Handler(__FILE__, __LINE__);
-//	}
-//
-//	HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR0,0x32F2); // lock it in with the backup registers
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
 
+//	struct tm *time_tm = gmtime(register const time_t *timer);
+	// https://www.st.com/content/ccc/resource/technical/document/application_note/2a/c2/6f/74/fa/0d/46/3a/CD00015424.pdf/files/CD00015424.pdf/jcr:content/translations/en.CD00015424.pdf
+	struct tm *time_tm;
+//	taskENTER_CRITICAL();
+//	localtime_r(&now, time_tm);
+//	taskEXIT_CRITICAL();
+//	time_tm = *(localtime(&now));
+
+	RTC_FromEpoch(now, &sTime, &sDate);
+
+//	sTime.Hours = (uint8_t)time_tm->tm_hour;
+//	sTime.Minutes = (uint8_t)time_tm->tm_min;
+//	sTime.Seconds = (uint8_t)time_tm->tm_sec;
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+	{
+	}
+
+//	if (time_tm->tm_wday == 0) { time_tm->tm_wday = 7; } // the chip goes mon tue wed thu fri sat sun
+//	sDate.WeekDay = (uint8_t)time_tm->tm_wday;
+//	sDate.Month = (uint8_t)time_tm->tm_mon+1; //momth 1- This is why date math is frustrating.
+//	sDate.Date = (uint8_t)time_tm->tm_mday;
+//	sDate.Year = (uint16_t)(time_tm->tm_year+1900-2000); // time.h is years since 1900, chip is years since 2000
+
+	/*
+	* update the RTC
+	*/
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+	{
+	}
+
+	HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR0,0x32F2); // lock it in with the backup registers
 }
 
 /**
@@ -1398,37 +1363,74 @@ static void APP_THREAD_SendCoapUnicastRequest(char* message, uint8_t message_len
 
 }
 
-static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, otIp6Address* ipv6_addr  , char* resource, uint8_t msgID)
-{
-  //otError   error = OT_ERROR_NONE;
-
-//  if (error != OT_ERROR_NONE)
-//  {
-//    APP_THREAD_Error(ERR_APEND_URI,error);
-//  }
-//  if (pOT_Message == NULL)
-//  {
-//    APP_THREAD_Error(ERR_ALLOC_MSG,error);
-//  }
-  //error = otMessageAppend(pOT_Message, &OT_BufferSend, sizeof(OT_BufferSend));
-//  if (error != OT_ERROR_NONE)
-//  {
-//    APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
-//  }
-
-//  memcpy(&OT_MessageInfo.mPeerAddr, &OT_PeerAddress, sizeof(OT_MessageInfo.mPeerAddr));
-//  error = otCoapSendRequest(NULL,
+//static void APP_THREAD_CoapSendRequest(otCoapResource* pCoapRessource,
+//    otCoapType CoapType,
+//    otCoapCode CoapCode,
+//    const char *Address,
+//    uint8_t* Payload,
+//    uint16_t Size)
+//{
+//  otError error = OT_ERROR_NONE;
+//
+//  do{
+//    otCoapHeaderInit(&OT_Header, CoapType, CoapCode);
+//    otCoapHeaderAppendUriPathOptions(&OT_Header, pCoapRessource->mUriPath);
+//    otCoapHeaderSetPayloadMarker(&OT_Header);
+//
+//    pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+//    if (pOT_Message == NULL)
+//    {
+//      APP_THREAD_Error(ERR_THREAD_COAP_NEW_MSG,error);
+//      break;
+//    }
+//
+//    error = otMessageAppend(pOT_Message, Payload, Size);
+//    if (error != OT_ERROR_NONE)
+//    {
+//      APP_THREAD_Error(ERR_THREAD_COAP_APPEND,error);
+//      break;
+//    }
+//
+//    memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
+//    OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+//    OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
+//    otIp6AddressFromString(Address, &OT_MessageInfo.mPeerAddr);
+//
+//    APP_DBG(" otCoapSendRequest, Payload = 0x%x ", Payload[0]);
+//    if(CoapType == OT_COAP_TYPE_NON_CONFIRMABLE)
+//    {
+//      APP_DBG("CoapType == OT_COAP_TYPE_NON_CONFIRMABLE");
+//      error = otCoapSendRequest(NULL,
 //          pOT_Message,
 //          &OT_MessageInfo,
-//          &APP_THREAD_DummyRespHandler,
-//          (void*)&APP_THREAD_DataRespHandler);
+//          NULL,
+//          NULL);
+//    }
+//    if(CoapType == OT_COAP_TYPE_CONFIRMABLE)
+//    {
+//      APP_DBG("CoapType == OT_COAP_TYPE_CONFIRMABLE");
+//      error = otCoapSendRequest(NULL,
+//          pOT_Message,
+//          &OT_MessageInfo,
+//          &APP_THREAD_CoapDummyRespHandler,
+//          (void*)&APP_THREAD_CoapDataRespHandler);
+//    }
+//
+//  }while(false);
+//  if (error != OT_ERROR_NONE && pOT_Message != NULL)
+//  {
+//    otMessageFree(pOT_Message);
+//    APP_THREAD_Error(ERR_THREAD_COAP_SEND_REQUEST,error);
+//  }
+//}
 
+static void APP_THREAD_SendCoapMsg(void *message, uint8_t msgSize, otIp6Address* ipv6_addr  , char* resource, uint8_t request_ack, otCoapCode coapCode, uint8_t msgID)
+{
   /************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
   // https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
 
-
-
 	do{
+			// REMOVE BELOW CALLS (ONLY FOR DEBUGGING)
 //			  myRloc16 = otThreadGetRloc16(NULL);
 //			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
 //			  isEnabledIpv6 = otIp6IsEnabled(NULL);
@@ -1439,39 +1441,44 @@ static void APP_THREAD_SendCoapUnicastMsg(void *message, uint8_t msgSize, otIp6A
 			  // clear info
 			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
 
-			  // set border IP address
+			  // add destination IPv6 address to header
+			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
+
+			  // add source mesh-local IPv6 address to header
+			  // TODO: ST is supposed to address the issue in FW v1.5 but currently, the IP lookup function returns a null pointer
+			  // memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
 
 
-//			  otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
-//			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
-
-			  otIp6AddressFromString("fd11:22::c55e:6732:c8cd:9443", &OT_MessageInfo.mPeerAddr);
+			  // REMOVE BELOW CALLS (ONLY FOR DEBUGGING)
+			  //			  otIp6AddressFromString("fd11:22::c55e:6732:c8cd:9443", &OT_MessageInfo.mPeerAddr);
 //			  otIp6AddressFromString("fd11:1111:1122:0:7be1:2f12:9534:72d5", &OT_MessageInfo.mPeerAddr);
-
 //			  			  otIp6AddressFromString("fd11:1111:1122:0:4faa:fd9:da06:9100", &OT_MessageInfo.mPeerAddr);
 //			  			  otIp6AddressFromString("fd11:22:0:0:c34c:7994:19f2:4b82", &OT_MessageInfo.mPeerAddr);
-
 //			   memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
 //			  otIp6AddressFromString("fd11:22::c34c:7994:19f2:4b82", &OT_MessageInfo.mSockAddr);
 			  otIp6AddressFromString("fd11:22::c34c:7994:cccc:4b82", &OT_MessageInfo.mSockAddr);
 
+			  // populate message information
 			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
-//			  OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_HOST;
 			  OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
 			  OT_MessageInfo.mHopLimit = 64;
 
 			  /************** CREATE NEW MESSAGE ********************ifco*/
 
 			  // create header
-			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
-//			  otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+			  if(request_ack && (coapCode == OT_COAP_CODE_PUT) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+			  else if(request_ack && (coapCode == OT_COAP_CODE_GET) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
+			  else if(request_ack && (coapCode == OT_COAP_CODE_POST) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
+			  else if(!request_ack && (coapCode == OT_COAP_CODE_PUT) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+			  else if(!request_ack && (coapCode == OT_COAP_CODE_GET) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_GET);
+			  else if(!request_ack && (coapCode == OT_COAP_CODE_POST) ) otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST);
+			  else return // this return should never happen
 
 //			  otCoapHeaderSetMessageId(&OT_Header, msgID); `//may not need since sendRequest should set to 0
 			  otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
 
-			  // the name of the resource
-//			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
-			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, "borderTest");
+			  // add the name of the resource
+			  error = otCoapHeaderAppendUriPathOptions(&OT_Header, resource);
 
 			  // need this so the coap server doesnt try to parse as 'utf-8' and error out
 			  otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);

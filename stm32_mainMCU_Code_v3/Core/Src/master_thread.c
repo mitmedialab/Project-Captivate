@@ -26,7 +26,6 @@
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
-#define JULIAN_DATE_BASE     2440588   // Unix epoch time in Julian calendar (UnixTime = 00:00:00 01.01.1970 => JDN = 2440588)
 
 /* macros ------------------------------------------------------------*/
 
@@ -45,6 +44,10 @@ static const struct blinkData nullBlinkMsg = { 0 };
 static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = { 0 };
 static const struct inertialData nullInertialMsgReceived = { 0 };
 static const struct VIVEVars nullViveMsgReceived = { 0 };
+
+// variables for storing epoch time
+RTC_TimeTypeDef RTC_time;
+RTC_DateTypeDef RTC_date;
 
 //static const uint16_t week_day[] = { 0x4263, 0xA8BD, 0x42BF, 0x4370, 0xABBF, 0xA8BF, 0x43B2 };
 /* Functions Definition ------------------------------------------------------*/
@@ -221,8 +224,7 @@ void masterExitRoutine(void) {
 
 }
 
-RTC_TimeTypeDef RTC_time;
-RTC_DateTypeDef RTC_date;
+
 
 void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 		struct parsedSecondaryProcessorPacket *processorMsg, struct inertialData *inertialMsg, VIVEVars *posMsg) {
@@ -230,9 +232,9 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 	packet->tick_ms = HAL_GetTick();
 
 	// get epoch time from RTC
-//	HAL_RTC_GetTime(&hrtc, &RTC_time, RTC_FORMAT_BIN);
-//	HAL_RTC_GetDate(&hrtc, &RTC_date, RTC_FORMAT_BIN);
-//	packet->epoch = RTC_ToEpoch(&RTC_time, &RTC_date);
+	HAL_RTC_GetTime(&hrtc, &RTC_time, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &RTC_date, RTC_FORMAT_BIN);
+	packet->epoch = RTC_ToEpoch(&RTC_time, &RTC_date);
 
 	// add sensor data
 	memcpy(&(packet->blink), blink, sizeof(struct blinkData));
@@ -242,35 +244,35 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 }
 
 // Convert Date/Time structures to epoch time
-uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
-	uint8_t a;
-	uint16_t y;
-	uint8_t m;
-	uint32_t JDN;
-
-	// These hardcore math's are taken from http://en.wikipedia.org/wiki/Julian_day
-
-	// Calculate some coefficients
-	a = (14 - date->Month) / 12;
-	y = (date->Year + 2000) + 4800 - a; // years since 1 March, 4801 BC
-	m = date->Month + (12 * a) - 3; // since 1 March, 4801 BC
-
-	// Gregorian calendar date compute
-	JDN = date->Date;
-	JDN += (153 * m + 2) / 5;
-	JDN += 365 * y;
-	JDN += y / 4;
-	JDN += -y / 100;
-	JDN += y / 400;
-	JDN = JDN - 32045;
-	JDN = JDN - JULIAN_DATE_BASE;    // Calculate from base date
-	JDN *= 86400;                     // Days to seconds
-	JDN += time->Hours * 3600;    // ... and today seconds
-	JDN += time->Minutes * 60;
-	JDN += time->Seconds;
-
-	return JDN;
-}
+//uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
+//	uint8_t a;
+//	uint16_t y;
+//	uint8_t m;
+//	uint32_t JDN;
+//
+//	// These hardcore math's are taken from http://en.wikipedia.org/wiki/Julian_day
+//
+//	// Calculate some coefficients
+//	a = (14 - date->Month) / 12;
+//	y = (date->Year + 2000) + 4800 - a; // years since 1 March, 4801 BC
+//	m = date->Month + (12 * a) - 3; // since 1 March, 4801 BC
+//
+//	// Gregorian calendar date compute
+//	JDN = date->Date;
+//	JDN += (153 * m + 2) / 5;
+//	JDN += 365 * y;
+//	JDN += y / 4;
+//	JDN += -y / 100;
+//	JDN += y / 400;
+//	JDN = JDN - 32045;
+//	JDN = JDN - JULIAN_DATE_BASE;    // Calculate from base date
+//	JDN *= 86400;                     // Days to seconds
+//	JDN += time->Hours * 3600;    // ... and today seconds
+//	JDN += time->Minutes * 60;
+//	JDN += time->Seconds;
+//
+//	return JDN;
+//}
 //
 //// Convert epoch time to Date/Time structures
 //void RTC_FromEpoch(uint32_t epoch, RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
