@@ -20,6 +20,8 @@ extern "C" {
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
+#define NODE_TYPE				"captivates"  // max 11 bytes
+#define NODE_DESCRIPTION  		"glass_1"	  // max 11 bytes
 
 //// enable sensing subsystems
 //#define BLINK_SENSING_ENABLE		1

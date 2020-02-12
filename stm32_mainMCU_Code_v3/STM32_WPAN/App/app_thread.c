@@ -199,7 +199,9 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader        * pHeade
 
 void APP_THREAD_GetBorderRouterIP(void);
 void updateRTC(time_t now);
-void APP_THREAD_SendMyIP(void);
+void APP_THREAD_SendMyInfo(void);
+void APP_THREAD_UpdateBorderRouter(void);
+void APP_THREAD_SyncWithBorderRouter(void);
 /* USER CODE END PFP */
 
 /* Private variables -----------------------------------------------*/
@@ -289,6 +291,8 @@ union ColorComplex lightMessageComplex;
 
 struct SystemCal borderRouter = {0};
 struct SystemCal receivedSystemCal = {0};
+
+otIp6Address multicastAddr;
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -503,8 +507,9 @@ static void APP_THREAD_DeviceConfig(void)
     error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
 
     // set default multicast address for border router
-    otIp6AddressFromString("ff03::1", &borderRouter.ipv6);
-
+//    otIp6AddressFromString("ff03::1", &borderRouter.ipv6);
+    otIp6AddressFromString("ff03::1", &multicastAddr);
+    memcpy(&borderRouter.ipv6, &multicastAddr, sizeof(multicastAddr));
   /* USER CODE END DEVICECONFIG */
 }
 
@@ -540,22 +545,22 @@ static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext)
       break;
     case OT_DEVICE_ROLE_CHILD:
       /* USER CODE BEGIN OT_DEVICE_ROLE_CHILD */
-    	APP_THREAD_SendMyIP();
+    	APP_THREAD_UpdateBorderRouter();
       /* USER CODE END OT_DEVICE_ROLE_CHILD */
       break;
     case OT_DEVICE_ROLE_ROUTER :
       /* USER CODE BEGIN OT_DEVICE_ROLE_ROUTER */
-    	APP_THREAD_SendMyIP();
+    	APP_THREAD_UpdateBorderRouter();
       /* USER CODE END OT_DEVICE_ROLE_ROUTER */
       break;
     case OT_DEVICE_ROLE_LEADER :
       /* USER CODE BEGIN OT_DEVICE_ROLE_LEADER */
-    	APP_THREAD_SendMyIP();
+    	APP_THREAD_UpdateBorderRouter();
       /* USER CODE END OT_DEVICE_ROLE_LEADER */
       break;
     default:
       /* USER CODE BEGIN DEFAULT */
-    	APP_THREAD_SendMyIP();
+    	APP_THREAD_UpdateBorderRouter();
       /* USER CODE END DEFAULT */
       break;
     }
@@ -691,17 +696,18 @@ static void APP_THREAD_DummyReqHandler(void            * p_context,
     receivedMessage = (otMessageInfo *) pMessage;
 }
 
-void APP_THREAD_GetBorderRouterIP(){
-	APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_BORDER_ROUTER, borderSyncResource);
-}
+//void APP_THREAD_GetBorderRouterIP(){
+//	APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_BORDER_ROUTER, borderSyncResource);
+//}
 
 
-//struct sendIP_struct{
-//	char msgSendMyIP[5];
-//	uint32_t uid;
-//} msgSendMyIP = {.msgSendMyIP = "cal"};
+struct sendIP_struct{
+	char node_type[12];
+	char description[12];
+	uint32_t uid;
+} msgSendMyIP = {.node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .uid = 0};
 
-char msgSendMyIP[5] = "cal";
+//char msgSendMyIP[5] = "cal";
 ////otIp6Address* test_ip;
 //otNeighborInfo test_info_neighbor;
 //otNeighborInfoIterator test_neighbor_iterator;
@@ -714,8 +720,24 @@ char msgSendMyIP[5] = "cal";
 //volatile otExtAddress test_1;
 //volatile otExtAddress test_2;
 
-void APP_THREAD_SendMyIP(){
-//	msgSendMyIP.uid = DBGMCU->IDCODE;
+void APP_THREAD_UpdateBorderRouter(){
+
+	// if border router IP is still multicast (ff03::1), attempt to sync
+	if(otIp6IsAddressEqual(&multicastAddr, &borderRouter.ipv6)){
+		APP_THREAD_SyncWithBorderRouter();
+	}
+
+	// send IP to border router
+	APP_THREAD_SendMyInfo();
+}
+
+// send a GET request to border router via multicast
+void APP_THREAD_SyncWithBorderRouter(){
+	APP_THREAD_SendCoapMsg(NULL, 0, &multicastAddr, borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
+}
+
+void APP_THREAD_SendMyInfo(){
+	msgSendMyIP.uid = DBGMCU->IDCODE;
 //	const otIp6Address *test_ip = otThreadGetLinkLocalIp6Address(NULL);
 //	if(test_ip) random_var++;
 //	state = otIp6IsMulticastPromiscuousEnabled(NULL);
@@ -726,7 +748,8 @@ void APP_THREAD_SendMyIP(){
 ////	test_2 = &test_ext_addr;
 //
 //	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
-	APP_THREAD_SendCoapMsg(msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, borderSyncResource, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
+	// TODO: does this need an ACK
+	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, borderSyncResource, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
 
@@ -883,7 +906,7 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
 			updateRTC(borderRouter.epoch);
 		}
 
-    	APP_THREAD_SendMyIP();
+//    	APP_THREAD_SendMyInfo();
 	}
 
     receivedMessage = (otMessageInfo *) pMessage;
@@ -899,7 +922,7 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader * pHeader,
 
     if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET)
 	{
-      APP_THREAD_SendCoapMsg(&borderRouter, sizeof(borderRouter), &(pMessageInfo->mPeerAddr), borderSyncResource, NO_ACK, OT_COAP_CODE_PUT, 1U);
+      APP_THREAD_SendMyInfo();
 	  break;
 	}
 
@@ -1442,7 +1465,9 @@ static void APP_THREAD_SendCoapMsg(void *message, uint8_t msgSize, otIp6Address*
 			  memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
 
 			  // add destination IPv6 address to header
-			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
+			  // TODO : swap the below statements once ST has their shit fixed
+			  memcpy(&OT_MessageInfo.mPeerAddr, multicastAddr, sizeof(otIp6Address));
+//			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
 
 			  // add source mesh-local IPv6 address to header
 			  // TODO: ST is supposed to address the issue in FW v1.5 but currently, the IP lookup function returns a null pointer
@@ -1491,8 +1516,10 @@ static void APP_THREAD_SendCoapMsg(void *message, uint8_t msgSize, otIp6Address*
 			  if (pOT_Message == NULL) while(1);
 			  // Append bytes to a message (this is where the payload gets added)
 
-			  //error = otMessageAppend(pOT_Message, OT_BufferSend, sizeof(OT_BufferSend));
-			  error = otMessageAppend(pOT_Message, message, msgSize);
+			  // append message if there was one given
+			  if(message > 0){
+				  error = otMessageAppend(pOT_Message, message, msgSize);
+			  }
 
 			  if (error != OT_ERROR_NONE) while(1);
 
