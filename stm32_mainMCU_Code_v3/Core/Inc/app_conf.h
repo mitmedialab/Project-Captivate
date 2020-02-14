@@ -257,6 +257,29 @@ typedef enum
 
 /* USER CODE BEGIN Defines */
 
+/******************************************************************************
+ * FUOTA
+ ******************************************************************************/
+
+/**
+ * Define the start address where the application shall be located
+ */
+#define CFG_APP_START_SECTOR_INDEX          (0x10)
+
+/**
+ * Define list of reboot reason
+ */
+#define CFG_REBOOT_ON_FW_APP          (0x00)
+#define CFG_REBOOT_ON_THREAD_OTA_APP  (0x01)
+#define CFG_REBOOT_ON_CPU2_UPGRADE    (0x02)
+
+typedef enum
+{
+    CFG_SCH_PRIO_0,
+    CFG_SCH_PRIO_1,
+    CFG_PRIO_NBR,
+} CFG_SCH_Prio_Id_t;
+
 /* USER CODE END Defines */
 
 /******************************************************************************

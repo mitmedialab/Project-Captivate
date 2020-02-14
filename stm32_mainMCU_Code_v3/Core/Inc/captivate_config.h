@@ -22,6 +22,7 @@ extern "C" {
 /* defines -----------------------------------------------------------*/
 // uncomment if programming the STM32 USB dongle
 #define DONGLE_CODE					1
+#define OTA_ENABLED					1
 
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes
@@ -48,6 +49,15 @@ extern "C" {
 #define C_BORER_TIME_RESSOURCE					"borderTime"
 #define C_NODE_INFO_RESSOURCE					"nodeInfo"
 #define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
+
+#ifdef OTA_ENABLED
+#define C_RESSOURCE_FUOTA_PROVISIONING     "FUOTA_PROVISIONING"
+#define C_RESSOURCE_FUOTA_PARAMETERS       "FUOTA_PARAMETERS"
+#define C_RESSOURCE_FUOTA_SEND             "FUOTA_SEND"
+
+#define FUOTA_NUMBER_WORDS_64BITS                50
+#define FUOTA_PAYLOAD_SIZE                FUOTA_NUMBER_WORDS_64BITS * 8
+#endif
 
 #define ENABLE_LOG								1
 #define DISABLE_LOG								0

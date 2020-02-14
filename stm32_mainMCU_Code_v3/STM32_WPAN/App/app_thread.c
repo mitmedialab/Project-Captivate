@@ -56,6 +56,16 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+/**
+  * @brief  APP_THREAD Status structures definition
+  */
+typedef enum
+{
+  APP_THREAD_OK       = 0x00,
+  APP_THREAD_ERROR    = 0x01,
+} APP_THREAD_StatusTypeDef;
+
+
 #define REQUEST_ACK	1
 #define NO_ACK		0
 
@@ -143,6 +153,39 @@ static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument);
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN PFP */
+
+#ifdef OTA_ENABLED
+static void Delete_Sectors( void );
+
+static void APP_THREAD_DummyReqHandler(void                * p_context,
+    otCoapHeader        * pHeader,
+    otMessage           * pMessage,
+    const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapReqHandlerFuotaProvisioning(otCoapHeader        * pHeader,
+    otMessage           * pMessage,
+    const otMessageInfo * pMessageInfo);
+static void APP_THREAD_ProvisioningRespSend(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapReqHandlerFuota(otCoapHeader        * pHeader,
+    otMessage           * pMessage,
+    const otMessageInfo * pMessageInfo);
+static void APP_THREAD_CoapSendDataResponseFuota(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo);
+
+static void APP_THREAD_CoapReqHandlerFuotaParameters(otCoapHeader * pHeader,
+    otMessage            * pMessage,
+    const otMessageInfo  * pMessageInfo);
+static void APP_THREAD_CoapSendRespFuotaParameters(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo,
+    uint8_t * pData);
+static void APP_THREAD_PerformReset(void);
+static void APP_THREAD_TimingElapsed(void);
+static APP_THREAD_StatusTypeDef APP_THREAD_CheckDeviceCapabilities(void);
+#endif
+
+
 void stm32UID(uint8_t* uid) ;
 
 static void APP_THREAD_SendDataResponse(otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo, void *message,
@@ -295,13 +338,39 @@ struct SystemCal borderRouter = { 0 };
 struct SystemCal receivedSystemCal = { 0 };
 
 otIp6Address multicastAddr;
+
+#ifdef OTA_ENABLED
+static otCoapResource OT_RessourceFuotaProvisioning = {C_RESSOURCE_FUOTA_PROVISIONING, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapReqHandlerFuotaProvisioning, NULL};
+static otCoapResource OT_RessourceFuotaParameters = {C_RESSOURCE_FUOTA_PARAMETERS, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapReqHandlerFuotaParameters, NULL};
+static otCoapResource OT_RessourceFuotaSend = {C_RESSOURCE_FUOTA_SEND, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapReqHandlerFuota, NULL};
+
+static uint8_t OT_Command = 0;
+//static otMessageInfo OT_MessageInfo = {0};
+//static otCoapHeader  OT_Header = {0};
+//static otMessage* pOT_Message = NULL;
+
+static uint8_t TimerID;
+static uint32_t FuotaBinData_index = 0;
+static uint64_t FuotaTransferArray[FUOTA_NUMBER_WORDS_64BITS] = {0};
+static APP_THREAD_OtaContext_t OtaContext;
+static uint32_t flash_current_offset = 0;
+#endif
 /* USER CODE END PV */
 
 /* Functions Definition ------------------------------------------------------*/
 
 void APP_THREAD_Init(void) {
 	/* USER CODE BEGIN APP_THREAD_INIT_1 */
+#ifdef OTA_ENABLED
+	  /**
+	   * This is a safe clear in case the engi bytes are not all written
+	   * The error flag should be cleared before moving forward
+	   */
+	  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 
+	  APP_DBG("Delete_Sectors");
+	  Delete_Sectors();
+#endif
 	/* USER CODE END APP_THREAD_INIT_1 */
 
 	SHCI_CmdStatus_t ThreadInitStatus;
@@ -488,6 +557,11 @@ static void APP_THREAD_DeviceConfig(void) {
 	error = otCoapAddResource(NULL, &OT_Lights_Simple_Ressource);
 	error = otCoapAddResource(NULL, &OT_Border_Time_Ressource);
 	error = otCoapAddResource(NULL, &OT_Node_Info_Ressource);
+#ifdef OTA_ENABLED
+	  error = otCoapAddResource(NULL, &OT_RessourceFuotaProvisioning);
+	  error = otCoapAddResource(NULL, &OT_RessourceFuotaParameters);
+	  error = otCoapAddResource(NULL, &OT_RessourceFuotaSend);
+#endif
 #ifndef DONGLE_CODE
     error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
 #endif
@@ -669,6 +743,53 @@ void stm32UID(uint8_t* uid) {
 /* USER CODE END FREERTOS_WRAPPER_FUNCTIONS */
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
+
+#ifdef OTA_ENABLED
+static void Delete_Sectors( void )
+{
+  /**
+   * The number of sectors to erase is read from SRAM1.
+   * It shall be checked whether the number of sectors to erase does not overlap on the secured Flash
+   * The limit can be read from the SFSA option byte which provides the first secured sector address.
+   */
+
+  uint32_t page_error;
+  FLASH_EraseInitTypeDef p_erase_init;
+  uint32_t first_secure_sector_idx;
+
+  first_secure_sector_idx = (READ_BIT(FLASH->SFR, FLASH_SFR_SFSA) >> FLASH_SFR_SFSA_Pos);
+
+  p_erase_init.TypeErase = FLASH_TYPEERASE_PAGES;
+  p_erase_init.Page = *((uint8_t*) SRAM1_BASE + 1);
+  if(p_erase_init.Page < (CFG_APP_START_SECTOR_INDEX - 1))
+  {
+    /**
+     * Something has been wrong as there is no case we should delete the BLE_Ota application
+     * Reboot on the firmware application
+     */
+    *(uint8_t*)SRAM1_BASE = CFG_REBOOT_ON_FW_APP;
+    NVIC_SystemReset();
+  }
+  p_erase_init.NbPages = *((uint8_t*) SRAM1_BASE + 2);
+
+  if ((p_erase_init.Page + p_erase_init.NbPages) > first_secure_sector_idx)
+  {
+    p_erase_init.NbPages = first_secure_sector_idx - p_erase_init.Page;
+  }
+
+  APP_DBG("SFSA Option Bytes set to sector = %d (0x080%x)", first_secure_sector_idx, first_secure_sector_idx*4096);
+  APP_DBG("Erase FLASH Memory from sector %d (0x080%x) to sector %d (0x080%x)", p_erase_init.Page, p_erase_init.Page*4096, p_erase_init.NbPages+p_erase_init.Page, (p_erase_init.NbPages+p_erase_init.Page)*4096);
+
+  HAL_FLASH_Unlock();
+
+  HAL_FLASHEx_Erase(&p_erase_init, &page_error);
+
+  HAL_FLASH_Lock();
+
+  return;
+}
+#endif
+
 static void APP_THREAD_DummyRespHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo, otError Result) {
 	/* Prevent unused argument(s) compilation warning */
@@ -704,6 +825,402 @@ static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, o
 	tempMessageInfo = pMessageInfo;
 	receivedMessage = (otMessageInfo*) pMessage;
 }
+
+#ifdef OTA_ENABLED
+/**
+ * @brief Handler called when the server receives a COAP request.
+ *
+ * @param pHeader : Header
+ * @param pMessage : Message
+ * @param pMessageInfo : Message information
+ * @retval None
+ */
+static void APP_THREAD_CoapReqHandlerFuotaProvisioning(otCoapHeader * pHeader,
+    otMessage            * pMessage,
+    const otMessageInfo  * pMessageInfo)
+{
+  APP_DBG(" Received CoAP request on FUOTA_PROVISIONING ressource");
+
+  if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_NON_CONFIRMABLE &&
+      otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET)
+  {
+    OT_MessageInfo = *pMessageInfo;
+    memset(&OT_MessageInfo.mSockAddr, 0, sizeof(OT_MessageInfo.mSockAddr));
+    APP_THREAD_ProvisioningRespSend(pHeader, pMessageInfo);
+  }
+}
+
+/**
+ * @brief This function acknowledges the data reception by sending an ACK
+ *    back to the sender.
+ * @param  pRequestHeader coap header
+ * @param  pMessageInfo message info pointer
+ * @retval None
+ */
+static void APP_THREAD_ProvisioningRespSend(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo)
+{
+  otError  error = OT_ERROR_NONE;
+
+  do{
+    APP_DBG("Provisiong: Send CoAP response");
+    otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
+    otCoapHeaderSetToken(&OT_Header,
+        otCoapHeaderGetToken(pRequestHeader),
+        otCoapHeaderGetTokenLength(pRequestHeader));
+    otCoapHeaderSetPayloadMarker(&OT_Header);
+
+    pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+    if (pOT_Message == NULL)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+      break;
+    }
+
+    error = otMessageAppend(pOT_Message, &OT_Command, sizeof(OT_Command));
+    if (error != OT_ERROR_NONE)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+    }
+
+    error = otMessageAppend(pOT_Message, otThreadGetMeshLocalEid(NULL), sizeof(otIp6Address));
+    if (error != OT_ERROR_NONE)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+      break;
+    }
+
+    error = otCoapSendResponse(NULL, pOT_Message, pMessageInfo);
+    if (error != OT_ERROR_NONE && pOT_Message != NULL)
+    {
+      otMessageFree(pOT_Message);
+      APP_THREAD_Error(ERR_THREAD_COAP_DATA_RESPONSE,error);
+    }
+  }while(false);
+}
+
+/**
+ * @brief Handler called when the server receives a COAP request.
+ *
+ * @param pHeader : Header
+ * @param pMessage : Message
+ * @param pMessageInfo : Message information
+ * @retval None
+ */
+static void APP_THREAD_CoapReqHandlerFuotaParameters(otCoapHeader * pHeader,
+    otMessage            * pMessage,
+    const otMessageInfo  * pMessageInfo)
+{
+  if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OtaContext, sizeof(OtaContext)) != sizeof(OtaContext))
+  {
+    APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+  }
+
+  /* Display Ota_Context values */
+  if(OtaContext.file_type == APP_THREAD_OTA_FILE_TYPE_FW_APP)
+  {
+    APP_DBG("FUOTA_PARAMETERS: File Type set to : FW_APP");
+  }
+  else  if (OtaContext.file_type == APP_THREAD_OTA_FILE_TYPE_FW_COPRO_WIRELESS)
+  {
+    APP_DBG("FUOTA_PARAMETERS: File Type set to : FW_COPRO_WIRELESS");
+  }
+  else
+  {
+    APP_DBG("FUOTA_PARAMETERS: File Type not recognized");
+    APP_THREAD_Error(ERR_THREAD_FUOTA_FILE_TYPE_NOT_RECOGNIZED, 0);
+  }
+
+  APP_DBG("FUOTA_PARAMETERS: Binary Size = 0x%x", OtaContext.binary_size);
+  APP_DBG("FUOTA_PARAMETERS: Address = 0x%x", OtaContext.base_address);
+  APP_DBG("FUOTA_PARAMETERS: Magic Keyword = 0x%x", OtaContext.magic_keyword);
+
+  /* Check if Device can be updated with Fuota Server request */
+  if (APP_THREAD_CheckDeviceCapabilities() == APP_THREAD_OK)
+  {
+    OT_Command = APP_THREAD_OK;
+    // TODO : add LED toggling here
+//    HW_TS_Start(TimerID, (uint32_t)LED_TOGGLE_TIMING);
+  }
+  else
+  {
+    OT_Command = APP_THREAD_ERROR;
+    APP_DBG("WARNING: Current Device capabilities cannot handle FUOTA. Check memory size available!");
+  }
+  /* If Message is Confirmable, send response */
+  if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
+  {
+    APP_THREAD_CoapSendRespFuotaParameters(pHeader, pMessageInfo, &OT_Command);
+  }
+}
+
+static APP_THREAD_StatusTypeDef APP_THREAD_CheckDeviceCapabilities(void)
+{
+  APP_THREAD_StatusTypeDef status = APP_THREAD_OK;
+
+  /* Get Flash memory size available to copy binary from Server */
+  uint32_t first_sector_idx;
+  uint32_t first_secure_sector_idx;
+  uint32_t free_sectors;
+  uint32_t free_size;
+
+  APP_DBG("Check Device capabilities");
+
+  first_secure_sector_idx = (READ_BIT(FLASH->SFR, FLASH_SFR_SFSA) >> FLASH_SFR_SFSA_Pos);
+  APP_DBG("SFSA Option Bytes set to sector = %d (0x080%x)", first_secure_sector_idx, first_secure_sector_idx*4096);
+
+  first_sector_idx = *((uint8_t*) SRAM1_BASE + 1);
+  if (first_sector_idx == 0)
+  {
+    APP_DBG("ERROR : SRAM1_BASE + 1 == 0");
+    first_sector_idx = CFG_APP_START_SECTOR_INDEX;
+  }
+  APP_DBG("First available sector = %d (0x080%x)", first_sector_idx, first_sector_idx*4096);
+
+  free_sectors = first_secure_sector_idx - first_sector_idx;
+  free_size = free_sectors*4096;
+
+  APP_DBG("free_sectors = %d , -> %d bytes of FLASH Free", free_sectors, free_size);
+
+  APP_DBG("Server requests    : %d bytes", OtaContext.binary_size);
+  APP_DBG("Client Free memory : %d bytes", free_size);
+
+  if (free_size < OtaContext.binary_size)
+  {
+    status = APP_THREAD_ERROR;
+    APP_DBG("WARNING: Not enough Free Flash Memory available to download binary from Server!");
+  }
+  else
+  {
+    APP_DBG("Device contains enough Flash Memory to download binary");
+  }
+
+  return status;
+}
+
+/**
+ * @brief Handler called when the server receives a COAP request.
+ *
+ * @param pHeader : Header
+ * @param pMessage : Message
+ * @param pMessageInfo : Message information
+ * @retval None
+ */
+static void APP_THREAD_CoapReqHandlerFuota(otCoapHeader * pHeader,
+    otMessage            * pMessage,
+    const otMessageInfo  * pMessageInfo)
+{
+  bool l_end_full_bin_transfer = FALSE;
+  uint32_t flash_index = 0;
+  uint64_t l_read64 = 0;
+
+  if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &FuotaTransferArray, FUOTA_PAYLOAD_SIZE) != FUOTA_PAYLOAD_SIZE)
+  {
+    APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
+  }
+
+  /* Test if magic Keyword is in FuotaBinData */
+  for (int index = 0; index < FUOTA_NUMBER_WORDS_64BITS; ++index) {
+    if((FuotaTransferArray[index] & 0x00000000FFFFFFFF) == OtaContext.magic_keyword)
+    {
+      APP_DBG("1 - FUOTA_MAGIC_KEYWORD found at flash_current_offset = %d", (FuotaBinData_index + index)*8);
+      l_end_full_bin_transfer = TRUE;
+    }
+    else
+    if (((FuotaTransferArray[index] & 0xFFFFFFFF00000000) >> 32) == OtaContext.magic_keyword)
+    {
+      APP_DBG("2 - FUOTA_MAGIC_KEYWORD found at flash_current_offset = %d", (FuotaBinData_index + index)*8);
+      l_end_full_bin_transfer = TRUE;
+    }
+  }
+
+  FuotaBinData_index += FUOTA_NUMBER_WORDS_64BITS;
+
+  /* Write to Flash Memory */
+  for(flash_index = 0; flash_index < FUOTA_NUMBER_WORDS_64BITS; flash_index++)
+  {
+    while( LL_HSEM_1StepLock( HSEM, CFG_HW_FLASH_SEMID ) );
+    HAL_FLASH_Unlock();
+    while(LL_FLASH_IsActiveFlag_OperationSuspended());
+
+    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD,
+        OtaContext.base_address + flash_current_offset,
+        FuotaTransferArray[flash_index]) == HAL_OK)
+    {
+      /* Read back value for verification */
+      l_read64 = *(uint64_t*)(OtaContext.base_address + flash_current_offset);
+      if(l_read64 != FuotaTransferArray[flash_index])
+      {
+        APP_DBG("FLASH: Comparison failed l_read64 = 0x%jx / ram_array = 0x%jx", l_read64, FuotaTransferArray[flash_index])
+                  APP_THREAD_Error(ERR_THREAD_MSG_COMPARE_FAILED,0);
+      }
+    }
+    else
+    {
+      APP_DBG("HAL_FLASH_Program FAILED at flash_index = %d", flash_index)
+      APP_THREAD_Error(ERR_THREAD_FLASH_PROGRAM,0);
+    }
+
+    HAL_FLASH_Lock();
+    LL_HSEM_ReleaseLock( HSEM, CFG_HW_FLASH_SEMID, 0 );
+
+    flash_current_offset += 8;
+  }
+
+  /* If Message is Confirmable, send response */
+  if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE)
+  {
+    APP_THREAD_CoapSendDataResponseFuota(pHeader, pMessageInfo);
+  }
+
+  if(l_end_full_bin_transfer == TRUE)
+  {
+	  // TODO : add FREERTOS task flag enable here
+
+	  APP_THREAD_PerformReset();
+
+//    UTIL_SEQ_SetTask(TASK_FUOTA_RESET, CFG_SCH_PRIO_0);
+  }
+}
+
+/**
+ * @brief This function acknowledges the data reception by sending an ACK
+ *    back to the sender.
+ * @param  pRequestHeader coap header
+ * @param  pMessageInfo message info pointer
+ * @retval None
+ */
+static void APP_THREAD_CoapSendDataResponseFuota(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo)
+{
+  otError  error = OT_ERROR_NONE;
+  static otCoapHeader  OT_Header = {0};
+
+  do{
+    otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_ACKNOWLEDGMENT, OT_COAP_CODE_CHANGED);
+    otCoapHeaderSetMessageId(&OT_Header, otCoapHeaderGetMessageId(pRequestHeader));
+    otCoapHeaderSetToken(&OT_Header,
+        otCoapHeaderGetToken(pRequestHeader),
+        otCoapHeaderGetTokenLength(pRequestHeader));
+
+    pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+    if (pOT_Message == NULL)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+      break;
+    }
+
+    error = otCoapSendResponse(NULL, pOT_Message, pMessageInfo);
+    if (error != OT_ERROR_NONE && pOT_Message != NULL)
+    {
+      otMessageFree(pOT_Message);
+      APP_THREAD_Error(ERR_THREAD_COAP_DATA_RESPONSE,error);
+    }
+  }while(false);
+}
+
+/**
+ * @brief This function acknowledges the data reception by sending an ACK
+ *    back to the sender.
+ * @param  pRequestHeader coap header
+ * @param  pMessageInfo message info pointer
+ * @param  pMessage     message pointer
+ * @retval None
+ */
+static void APP_THREAD_CoapSendRespFuotaParameters(otCoapHeader    * pRequestHeader,
+    const otMessageInfo * pMessageInfo,
+    uint8_t * pData)
+{
+  otError  error = OT_ERROR_NONE;
+  static otCoapHeader  OT_Header = {0};
+  uint8_t data = *pData;
+  APP_DBG("APP_THREAD_CoapSendRespFuotaParameters data = %d", data);
+
+  do{
+    APP_DBG("FUOTA: Send CoAP response for Fuota Parameters");
+    otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
+    otCoapHeaderSetToken(&OT_Header,
+        otCoapHeaderGetToken(pRequestHeader),
+        otCoapHeaderGetTokenLength(pRequestHeader));
+    otCoapHeaderSetPayloadMarker(&OT_Header);
+
+    pOT_Message = otCoapNewMessage(NULL, &OT_Header);
+    if (pOT_Message == NULL)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+      break;
+    }
+
+    error = otMessageAppend(pOT_Message, &data, sizeof(data));
+    if (error != OT_ERROR_NONE)
+    {
+      APP_THREAD_Error(ERR_THREAD_COAP_APPEND_MSG, error);
+    }
+
+    error = otCoapSendResponse(NULL, pOT_Message, pMessageInfo);
+    if (error != OT_ERROR_NONE && pOT_Message != NULL)
+    {
+      otMessageFree(pOT_Message);
+      APP_THREAD_Error(ERR_THREAD_COAP_DATA_RESPONSE,error);
+    }
+  }while(false);
+}
+
+/**
+ * @brief Task responsible for the reset at the end of OTA transfer.
+ * @param  None
+ * @retval None
+ */
+static void APP_THREAD_PerformReset(void)
+{
+  APP_DBG("*******************************************************");
+  APP_DBG(" FUOTA_CLIENT : END OF TRANSFER COMPLETED");
+  /* Stop Toggling of the LED */
+//  HW_TS_Stop(TimerID);
+//  BSP_LED_On(LED1);
+
+  /* Insert delay to make sure CoAP response has been sent */
+  HAL_Delay(200);
+
+  if(OtaContext.file_type == APP_THREAD_OTA_FILE_TYPE_FW_APP)
+  {
+    APP_DBG("  --> Request to reboot on FW Application");
+    APP_DBG("*******************************************************");
+    /**
+     * Reboot on FW Application
+     */
+    *(uint8_t*)SRAM1_BASE = CFG_REBOOT_ON_FW_APP;
+    NVIC_SystemReset();
+  }
+  else if(OtaContext.file_type == APP_THREAD_OTA_FILE_TYPE_FW_COPRO_WIRELESS)
+  {
+    APP_DBG("  --> Request to reboot on FUS");
+    APP_DBG("*******************************************************");
+    /**
+     * Wireless firmware update is requested
+     * Request CPU2 to reboot on FUS by sending two FUS command
+     */
+    SHCI_C2_FUS_GetState( NULL );
+    SHCI_C2_FUS_GetState( NULL );
+    while(1)
+    {
+      HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+    }
+  }
+  else
+  {
+    APP_DBG("APP_THREAD_PerformReset: OtaContext.file_type not recognized");
+    APP_THREAD_Error(ERR_THREAD_FUOTA_FILE_TYPE_NOT_RECOGNIZED,0);
+  }
+
+}
+
+static void APP_THREAD_TimingElapsed(void)
+{
+  BSP_LED_Toggle(LED1);
+}
+
+#endif
 
 //void APP_THREAD_GetBorderRouterIP(){
 //	APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_BORDER_ROUTER, borderSyncResource);
