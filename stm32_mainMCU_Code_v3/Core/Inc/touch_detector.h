@@ -3,6 +3,7 @@
 
 #pragma once
 #include "stm32wbxx_hal.h"
+#include "tsc.h"
 
 #define TOUCH_TIMEOUT	1000
 #define TAP_MAX_THRESHOLD	200

@@ -40,6 +40,7 @@
 #include "messages.h"
 #include "captivate_config.h"
 #include "input.h"
+#include "iwdg.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -190,6 +191,11 @@ osTimerId_t viveTimerHandle;
 const osTimerAttr_t viveTimer_attributes = {
   .name = "viveTimer"
 };
+/* Definitions for watchDogTimer */
+osTimerId_t watchDogTimerHandle;
+const osTimerAttr_t watchDogTimer_attributes = {
+  .name = "watchDogTimer"
+};
 /* Definitions for messageI2C_Lock */
 osSemaphoreId_t messageI2C_LockHandle;
 const osSemaphoreAttr_t messageI2C_Lock_attributes = {
@@ -219,6 +225,7 @@ extern void PulseHandlerTask(void *argument);
 extern void InterProcessorTask(void *argument);
 extern void BlinkTask(void *argument);
 extern void get3D_location(void *argument);
+void watchDogReset(void *argument);
 
 extern void MX_STM32_WPAN_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -328,8 +335,13 @@ void MX_FREERTOS_Init(void) {
   /* creation of viveTimer */
   viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, NULL, &viveTimer_attributes);
 
+  /* creation of watchDogTimer */
+  watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL, &watchDogTimer_attributes);
+
   /* USER CODE BEGIN RTOS_TIMERS */
 //  /* start timers, add new ones, ... */
+  osTimerStart(watchDogTimerHandle, WATCHDOG_PERIOD);
+
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the queue(s) */
@@ -422,6 +434,14 @@ __weak void DefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END DefaultTask */
+}
+
+/* watchDogReset function */
+void watchDogReset(void *argument)
+{
+  /* USER CODE BEGIN watchDogReset */
+	 HAL_IWDG_Refresh(&hiwdg);
+  /* USER CODE END watchDogReset */
 }
 
 /* Private application code --------------------------------------------------*/

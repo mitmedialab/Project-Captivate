@@ -29,6 +29,8 @@
 #include "hw.h"
 #include "cmsis_os.h"
 #include "inter_processor_comms.h"
+#include "tsc.h"
+#include "stm32wbxx_hal_tsc.h"
 
 #include "captivate_config.h"
 /* USER CODE END Includes */

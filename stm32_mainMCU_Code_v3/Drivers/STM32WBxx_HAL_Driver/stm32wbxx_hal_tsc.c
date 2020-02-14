@@ -432,7 +432,7 @@ HAL_StatusTypeDef HAL_TSC_RegisterCallback(TSC_HandleTypeDef *htsc, HAL_TSC_Call
   HAL_StatusTypeDef status = HAL_OK;
 
   if (pCallback == NULL)
-  {HAL_TSC_Init
+  {
     /* Update the error code */
     htsc->ErrorCode |= HAL_TSC_ERROR_INVALID_CALLBACK;
 

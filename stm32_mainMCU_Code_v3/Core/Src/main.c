@@ -25,6 +25,7 @@
 #include "comp.h"
 #include "dma.h"
 #include "i2c.h"
+#include "iwdg.h"
 #include "rf.h"
 #include "rtc.h"
 #include "app_entry.h"
@@ -113,19 +114,22 @@ int main(void)
   MX_I2C1_Init();
   MX_COMP1_Init();
   MX_TIM16_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
+
+  HAL_IWDG_Refresh(&hiwdg);
 
   /* USER CODE END 2 */
   /* Init scheduler */
   osKernelInitialize();
-
+ 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-
+  MX_FREERTOS_Init(); 
+ 
   /* Start scheduler */
   osKernelStart();
-
+ 
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
