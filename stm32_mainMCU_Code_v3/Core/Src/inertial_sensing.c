@@ -64,7 +64,9 @@ struct inertialData inertialPacket;
 
 void InertialSensingTask(void *argument){
 	inertialEnabled = 1;
+#ifndef DONGLE_CODE
 	IMU_begin(BNO080_ADDRESS, IMU_INT_Pin, IMU_INT_GPIO_Port);
+#endif
 
 	uint32_t evt = 0;
 

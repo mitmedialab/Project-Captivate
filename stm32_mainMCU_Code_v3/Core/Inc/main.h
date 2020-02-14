@@ -67,7 +67,12 @@ void Error_Handler(void);
 #define EXPANSION_INT_GPIO_Port GPIOB
 #define EXPANSION_INT_EXTI_IRQn EXTI2_IRQn
 /* USER CODE BEGIN Private defines */
-
+#define LED1_GPIO_Port	GPIOA
+#define LED2_GPIO_Port	GPIOB
+#define LED3_GPIO_Port	GPIOB
+#define LED1_Pin	GPIO_PIN_4
+#define LED2_Pin	GPIO_PIN_0
+#define LED3_Pin	GPIO_PIN_1
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

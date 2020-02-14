@@ -117,8 +117,8 @@ STM32_WPAN/App/app_thread.o: ../STM32_WPAN/App/app_thread.c \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/mbox_def.h \
  ../Core/Inc/stm_logging.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Utilities/lpm/tiny_lpm/stm32_lpm.h \
- ../Core/Inc/main.h ../Core/Inc/lp5523.h ../Core/Inc/rtc.h \
- ../Core/Inc/main.h \
+ ../Core/Inc/main.h ../Core/Inc/lp5523.h ../Core/Inc/captivate_config.h \
+ ../Core/Inc/main.h ../Core/Inc/rtc.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  C:\ST\STM32CubeIDE_1.2.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610\tools\arm-none-eabi\include\stdio.h \
@@ -377,9 +377,11 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Utilities/lpm/tiny_lp
 
 ../Core/Inc/lp5523.h:
 
-../Core/Inc/rtc.h:
+../Core/Inc/captivate_config.h:
 
 ../Core/Inc/main.h:
+
+../Core/Inc/rtc.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 

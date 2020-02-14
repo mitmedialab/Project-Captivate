@@ -20,14 +20,23 @@ extern "C" {
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
+// uncomment if programming the STM32 USB dongle
+#define DONGLE_CODE					1
+
+#ifdef DONGLE_CODE
+#define NODE_TYPE				"dongle"  // max 11 bytes
+#define NODE_DESCRIPTION  		"don_1"	  // max 11 bytes
+#else
 #define NODE_TYPE				"captivates"  // max 11 bytes
-#define NODE_DESCRIPTION  		"glass_1"	  // max 11 bytes
+#define NODE_DESCRIPTION  		"cap_1"	  // max 11 bytes
+#endif
 
 //// enable sensing subsystems
-//#define BLINK_SENSING_ENABLE		1
-//#define TEMP_SENSING_ENABLE			0
-//#define POS_SENSING_ENABLE			0
-//#define	INERTIA_SENSING_ENABLE		0
+#define BLINK_SENSING_ENABLE		1
+#define TEMP_SENSING_ENABLE			1
+#define POS_SENSING_ENABLE			1
+#define	INERTIA_SENSING_ENABLE		1
+
 #define DISABLE_SENSING				0
 
 /* SYSTEM GLOBAL CONFIGURATION */
@@ -37,6 +46,7 @@ extern "C" {
 #define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
 #define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
 #define C_BORER_TIME_RESSOURCE					"borderTime"
+#define C_NODE_INFO_RESSOURCE					"nodeInfo"
 #define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
 
 #define ENABLE_LOG								1
@@ -78,8 +88,7 @@ extern "C" {
 #define BLINK_PACKET_SIZE		100
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
 
-// uncomment if programming the STM32 USB dongle
-//#define DONGLE_CODE					1
+
 
 /* macros ------------------------------------------------------------*/
 

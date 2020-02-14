@@ -1,3 +1,9 @@
-lp5523.c:77:6:setup_LP5523	32	static
-lp5523.c:143:6:FrontLightsSet	32	static
-lp5523.c:211:6:ThreadFrontLightsTask	48	static
+stm32wbxx_ll_bus.h:508:22:LL_AHB2_GRP1_EnableClock	24	static
+lp5523.c:80:6:setup_LP5523	16	static
+lp5523.c:152:6:FrontLightsSet	16	static
+lp5523.c:220:6:ThreadFrontLightsTask	48	static
+lp5523.c:288:6:BSP_LED_Init	40	static
+lp5523.c:314:6:BSP_LED_DeInit	40	static
+lp5523.c:332:6:BSP_LED_On	16	static
+lp5523.c:344:6:BSP_LED_Off	16	static
+lp5523.c:356:6:BSP_LED_Toggle	16	static

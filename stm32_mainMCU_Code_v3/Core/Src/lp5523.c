@@ -19,7 +19,7 @@ extern "C" {
 #include "stdint.h"
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
-#include "main.h"
+//#include "main.h"
 #include "string.h"
 #include "config.h"
 #include "master_thread.h"
@@ -43,7 +43,10 @@ extern "C" {
 
 
 /* variables -----------------------------------------------*/
-
+#ifdef DONGLE_CODE
+GPIO_TypeDef* GPIO_PORT_DONGLE[3] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port};
+const uint16_t GPIO_PIN_DONGLE[3] = {LED1_Pin, LED2_Pin, LED3_Pin};
+#endif
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -76,6 +79,7 @@ uint8_t packet;
 
 void setup_LP5523(uint8_t ADDR){
 
+#ifndef DONGLE_CODE
 	deviceAddress = ADDR << 1;
 
 	// enable chip
@@ -103,6 +107,11 @@ void setup_LP5523(uint8_t ADDR){
 	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT);
 
 	osSemaphoreRelease(messageI2C_LockHandle);
+#else
+	BSP_LED_Init(LED_BLUE);
+	BSP_LED_Init(LED_GREEN);
+	BSP_LED_Init(LED_RED);
+#endif
 }
 //LP5523::LP5523(uint16_t DevAddress){
 //	deviceAddress = DevAddress;
@@ -154,32 +163,32 @@ void FrontLightsSet(union ColorComplex *setColors){
 #ifdef DONGLE_CODE
 	    	if(led_left_PWM[LED_LEFT_TOP_R] > 0)
 	    	{
-				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
 	    	}
 	    	else
 			{
-				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
 			}
 
 	    	// if 1
 	    	if (led_left_PWM[LED_LEFT_TOP_B] > 0)
 	    	{
-	    		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+	    		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 			}
 	    	else
 			{
-				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 			}
 
 	    	//if 2
 	    	if (led_left_PWM[LED_LEFT_TOP_G] > 0)
 	    	{
-				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
 			}
 	    	else
 	    	{
-	    		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	    		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
 	    	}
 #endif
 }
@@ -267,6 +276,88 @@ void ThreadFrontLightsTask(void *argument)
 
 	}
 }
+
+#ifdef DONGLE_CODE
+/**
+  * @brief  Configures LED GPIO.
+  * @param  Led: LED to be configured.
+  *          This parameter can be one of the following values:
+  *     @arg LED2
+  * @retval None
+  */
+void BSP_LED_Init(Led_TypeDef Led)
+{
+  GPIO_InitTypeDef  gpioinitstruct = {0};
+
+  /* Enable the GPIO_LED Clock */
+  LEDx_GPIO_CLK_ENABLE(Led);
+
+  /* Configure the GPIO_LED pin */
+  gpioinitstruct.Pin = GPIO_PIN_DONGLE[Led];
+  gpioinitstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioinitstruct.Pull = GPIO_NOPULL;
+  gpioinitstruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+  HAL_GPIO_Init(GPIO_PORT_DONGLE[Led], &gpioinitstruct);
+
+  HAL_GPIO_WritePin(GPIO_PORT_DONGLE[Led], GPIO_PIN_DONGLE[Led], GPIO_PIN_RESET);
+}
+
+/**
+  * @brief  DeInit LEDs.
+  * @param  Led: LED to be de-init.
+  *   This parameter can be one of the following values:
+  *     @arg  LED2
+  * @note Led DeInit does not disable the GPIO clock nor disable the Mfx
+  * @retval None
+  */
+void BSP_LED_DeInit(Led_TypeDef Led)
+{
+  GPIO_InitTypeDef  gpio_init_structure;
+
+  /* Turn off LED */
+  HAL_GPIO_WritePin(GPIO_PORT_DONGLE[Led], GPIO_PIN_DONGLE[Led], GPIO_PIN_RESET);
+  /* DeInit the GPIO_LED pin */
+  gpio_init_structure.Pin = GPIO_PIN_DONGLE[Led];
+  HAL_GPIO_DeInit(GPIO_PORT_DONGLE[Led], gpio_init_structure.Pin);
+}
+
+/**
+  * @brief  Turns selected LED On.
+  * @param  Led: Specifies the Led to be set on.
+  *   This parameter can be one of following parameters:
+  *     @arg LED2
+  * @retval None
+  */
+void BSP_LED_On(Led_TypeDef Led)
+{
+  HAL_GPIO_WritePin(GPIO_PORT_DONGLE[Led], GPIO_PIN_DONGLE[Led], GPIO_PIN_SET);
+}
+
+/**
+  * @brief  Turns selected LED Off.
+  * @param  Led: Specifies the Led to be set off.
+  *   This parameter can be one of following parameters:
+  *     @arg LED2
+  * @retval None
+  */
+void BSP_LED_Off(Led_TypeDef Led)
+{
+  HAL_GPIO_WritePin(GPIO_PORT_DONGLE[Led], GPIO_PIN_DONGLE[Led], GPIO_PIN_RESET);
+}
+
+/**
+  * @brief  Toggles the selected LED.
+  * @param  Led: Specifies the Led to be toggled.
+  *   This parameter can be one of following parameters:
+  *     @arg LED2
+  * @retval None
+  */
+void BSP_LED_Toggle(Led_TypeDef Led)
+{
+  HAL_GPIO_TogglePin(GPIO_PORT_DONGLE[Led], GPIO_PIN_DONGLE[Led]);
+}
+#endif
 
 #ifdef __cplusplus
 }

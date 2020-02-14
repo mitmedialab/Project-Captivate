@@ -257,20 +257,36 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 
 	if( action == None){
 		lightsSimpleMessageReceivedTouch = 0x00; // off
+
 	}else if(action == SwipeForward){
 		lightsSimpleMessageReceivedTouch = 0x03; // cyan (green + blue)
+
+//		lightsSimpleMessageReceivedTouch |= 0x03 << 2;
+//		lightsSimpleMessageReceivedTouch |= 0x03 << 4;
 	}else if(action == SwipeBackward){
 		lightsSimpleMessageReceivedTouch = (0x01 << 6) | 0x01; // orange (green + red)
+
+//		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 2;
+//		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 4;
 	}else if(action == FrontRelease){
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 	}else if(action == BackRelease){
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 	}else if(action == FrontHold){
 		lightsSimpleMessageReceivedTouch = 0x01; // green
+
+//		lightsSimpleMessageReceivedTouch |= 0x01 << 2;
+//		lightsSimpleMessageReceivedTouch |= 0x01 << 4;
 	}else if(action == BackHold){
 		lightsSimpleMessageReceivedTouch = 0x02; // blue
+
+//		lightsSimpleMessageReceivedTouch |= 0x02 << 2;
+//		lightsSimpleMessageReceivedTouch |= 0x02 << 4;
 	}else if(action == BothHold){
 		lightsSimpleMessageReceivedTouch = 0x01 << 6; // red
+
+//		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 2;
+//		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 4;
 	}else if(action == BothRelease){
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 	}

@@ -35,13 +35,13 @@ struct LogMessage commandToSend;
 
 void InterProcessorTask(void *argument){
 	uint32_t evt = 0;
-
+#ifndef DONGLE_CODE
 	// ensure secondary processor is not active, trying to send data
 	// 		note: this should only happen when debugging and resetting the main processor while secondary is logging
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 	while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &nullMessage, sizeof(togLogMessageReceived), 100) != HAL_OK);
 	osSemaphoreRelease(messageI2C_LockHandle);
-
+#endif
 	while(1){
 
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);

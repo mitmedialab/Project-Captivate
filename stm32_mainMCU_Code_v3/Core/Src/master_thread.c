@@ -70,7 +70,9 @@ uint32_t startTime = 0;
 
 void MasterThreadTask(void *argument) {
 
+#ifndef DONGLE_CODE
 	touchSensingStart();
+#endif
 
 	while (1) {
 		// check if the queue has a new message (a command to start/stop logging)
@@ -81,10 +83,23 @@ void MasterThreadTask(void *argument) {
 		// this below togLogMessageReceived manipulation is for debugging
 //		togLogMessageReceived.status = 1;
 //		togLogMessageReceived.logStatus = 1;
-		togLogMessageReceived.blinkEnabled = 1;
-		togLogMessageReceived.tempEnabled = 1;
-		togLogMessageReceived.intertialEnabled = 1;
-		togLogMessageReceived.positionEnabled = 1;
+#ifndef BLINK_SENSING_ENABLE
+		togLogMessageReceived.blinkEnabled = 0;
+#endif
+
+#ifndef TEMP_SENSING_ENABLE
+		togLogMessageReceived.tempEnabled = 0;
+#endif
+
+#ifndef POS_SENSING_ENABLE
+		togLogMessageReceived.positionEnabled = 0;
+#endif
+
+#ifndef INERTIA_SENSING_ENABLE
+		togLogMessageReceived.intertialEnabled = 0;
+#endif
+
+
 
 		// pass variable to share system state
 		osMessageQueueReset(statusQueueHandle);
