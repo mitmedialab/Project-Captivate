@@ -68,6 +68,7 @@ uint8_t logEnabled = 0;
 uint8_t lightLabDemoEnabled = 0;
 //struct SystemStatus systemStatus = { 0 };
 uint32_t startTime = 0;
+uint32_t viveStateVar = 0;
 
 void MasterThreadTask(void *argument) {
 
@@ -108,7 +109,7 @@ void MasterThreadTask(void *argument) {
 
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
-		if (togLogMessageReceived.logStatus == ENABLE_LOG) {
+		if (logEnabled == 0 && togLogMessageReceived.logStatus == ENABLE_LOG) {
 			logEnabled = 1;
 
 			// keep record of this message so new message doesn't overwrite
@@ -166,19 +167,44 @@ void MasterThreadTask(void *argument) {
 			logEnabled = 0;
 			masterExitRoutine();
 		}
-		else if (togLogMessageReceived.status == LIGHT_LAB_DEMO){
+		else if (lightLabDemoEnabled == 0 && togLogMessageReceived.status == LIGHT_LAB_DEMO){
+			// keep record of this message so new message doesn't overwrite
+			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
+
 			// if requesting another feature to be enabled but the logging is still enabled
 			if(logEnabled == 1){
 				logEnabled = 0;
 				masterExitRoutine();
 			}
 
-			lightLabDemoEnabled = 1;
+			lightLabDemoEnabled = LIGHT_LAB_DEMO;
 
+			// enable functionality
+			osSemaphoreAcquire(lightingLabDemoEndHandle, 0);
+			viveStateVar = lightLabDemoEnabled;
 
+			// start all sensor subsystems
+			masterEnterRoutine();
+
+			// add a delay to ensure all threads are given enough time to collect initial samples
+			osDelay(500);
+
+			while(1){
+				if (osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever) == osOK) {
+					// disable threads
+					if (togLogMessageReceived.status == DISABLE_SENSING) {
+
+						masterExitRoutine();
+
+						// break out of first while loop and wait until told to start logging again
+						break;
+					}
+				}
+			}
 		}
-		else if (lightLabDemoEnabled = 1 && togLogMessageReceived.status == DISABLE_LOG){
+		else if ((lightLabDemoEnabled == LIGHT_LAB_DEMO) && (togLogMessageReceived.status == DISABLE_LOG)){
 
+			osSemaphoreRelease(lightingLabDemoEndHandle);
 
 
 			lightLabDemoEnabled = 0;
@@ -206,6 +232,7 @@ void grabSensorData(void) {
 	if ((prevLogMessage.positionEnabled == SENSOR_ENABLE)) {
 		if (osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 0)) {
 			memcpy(&vive_loc, &nullViveMsgReceived, sizeof(VIVEVars));
+
 		}
 	}
 
@@ -221,7 +248,7 @@ void masterEnterRoutine(void) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 	}
 
-	if (togLogMessageReceived.positionEnabled == SENSOR_ENABLE) {
+	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
 		// update status queue to notify other threads position is active
 		osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
 		statusMessage.positionEnabled = 1;
@@ -248,6 +275,7 @@ void masterExitRoutine(void) {
 	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
 		// stop timer for 3D position sensing
 		osTimerStop(viveTimerHandle);
+		viveStateVar = 0;
 	}
 
 	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {

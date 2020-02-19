@@ -1,5 +1,4 @@
-Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tsc.o: \
- ../Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tsc.c \
+Core/Src/stm32wbxx_hal_tsc.o: ../Core/Src/stm32wbxx_hal_tsc.c \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../Core/Inc/stm32wbxx_hal_conf.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h \

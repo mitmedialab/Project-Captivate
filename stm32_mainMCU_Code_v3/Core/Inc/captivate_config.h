@@ -141,6 +141,8 @@ extern osSemaphoreId_t locNotifyHandle;
 
 extern osSemaphoreId_t locCompleteHandle;
 
+extern osSemaphoreId_t lightingLabDemoEndHandle;
+
 extern void startSensorThreads(void);
 
 /* variables -----------------------------------------------*/

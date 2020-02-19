@@ -61,6 +61,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
+
 //osThreadId_t blinkTaskHandle;
 ////osMessageQueueId_t	blinkMsgQueueHandle;
 //
@@ -211,6 +212,11 @@ osSemaphoreId_t locCompleteHandle;
 const osSemaphoreAttr_t locComplete_attributes = {
   .name = "locComplete"
 };
+/* Definitions for lightingLabDemoEnd */
+osSemaphoreId_t lightingLabDemoEndHandle;
+const osSemaphoreAttr_t lightingLabDemoEnd_attributes = {
+  .name = "lightingLabDemoEnd"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -327,13 +333,16 @@ void MX_FREERTOS_Init(void) {
   /* creation of locComplete */
   locCompleteHandle = osSemaphoreNew(1, 1, &locComplete_attributes);
 
+  /* creation of lightingLabDemoEnd */
+  lightingLabDemoEndHandle = osSemaphoreNew(1, 1, &lightingLabDemoEnd_attributes);
+
   /* USER CODE BEGIN RTOS_SEMAPHORES */
 //  /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* Create the timer(s) */
   /* creation of viveTimer */
-  viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, NULL, &viveTimer_attributes);
+  viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, (void*) &viveStateVar, &viveTimer_attributes);
 
   /* creation of watchDogTimer */
   watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL, &watchDogTimer_attributes);
@@ -440,7 +449,7 @@ __weak void DefaultTask(void *argument)
 void watchDogReset(void *argument)
 {
   /* USER CODE BEGIN watchDogReset */
-	 HAL_IWDG_Refresh(&hiwdg);
+//	 HAL_IWDG_Refresh(&hiwdg);
   /* USER CODE END watchDogReset */
 }
 

@@ -53,7 +53,9 @@ void InterProcessorTask(void *argument){
 			memcpy(&commandToSend, &togLogMessageReceived, sizeof(struct LogMessage));
 //			osThreadFlagsClear(0x0000000FU);
 			osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
-			while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK);
+			//while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK);
+			HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100);
+
 			osDelay(100);
 			osSemaphoreRelease(messageI2C_LockHandle);
 

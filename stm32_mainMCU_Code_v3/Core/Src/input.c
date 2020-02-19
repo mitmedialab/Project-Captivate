@@ -9,6 +9,8 @@
 #include "master_thread.h"
 #include "captivate_config.h"
 
+#include "string.h"
+
 PulseProcessor pulse_processor;
 GeometryBuilder geometry_builder;
 
@@ -51,10 +53,14 @@ void PulseHandlerTask(void *argument){
 
 VIVEVars vive_vars;
 struct LogMessage statusMessage;
+struct VIVEVars vive_loc_demo;
 
 void get3D_location(void *arguments){
 
 	uint8_t blinkActive	= 0;
+	uint32_t blinkState;
+
+	memcpy(&blinkState, arguments, sizeof(blinkState));
 
 	// ensures semaphores are clear
 	osSemaphoreAcquire(locCompleteHandle, 0);
@@ -91,6 +97,18 @@ void get3D_location(void *arguments){
 #ifdef VIVE_THREAD_INFINITE_TIMEOUT
 	osDelay(osWaitForever);
 #endif
+
+	if(blinkState == LIGHT_LAB_DEMO){
+		while(osOK != osSemaphoreAcquire(lightingLabDemoEndHandle, 0)){
+			if(osOK == osMessageQueueGet(viveQueueHandle, &vive_loc_demo, 0U, 1000)){
+				APP_THREAD_SendBorderMessage(&vive_loc_demo, sizeof(VIVEVars), "capLoc");
+			}
+//			else{
+//				vive_loc_demo.pos[2] = 100;
+//				APP_THREAD_SendBorderMessage(&vive_loc_demo, sizeof(VIVEVars), "capLoc");
+//			}
+		}
+	}
 
 	// release I2C handle
 	osSemaphoreRelease(messageI2C_LockHandle);

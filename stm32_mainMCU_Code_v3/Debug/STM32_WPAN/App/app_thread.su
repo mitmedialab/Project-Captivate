@@ -13,7 +13,7 @@ app_thread.c:857:13:APP_THREAD_DummyReqHandler	24	static
 app_thread.c:1277:6:APP_THREAD_UpdateBorderRouter	8	static
 app_thread.c:1290:6:APP_THREAD_SyncWithBorderRouter	24	static
 app_thread.c:1294:6:APP_THREAD_SendMyInfo	24	static
-app_thread.c:1312:6:APP_THREAD_SendBorderMessage	32	static
+app_thread.c:1312:6:APP_THREAD_SendBorderMessage	40	static
 app_thread.c:1317:6:APP_THREAD_SendBorderPacket	32	static
 app_thread.c:1324:13:APP_THREAD_CoapLightsSimpleRequestHandler	24	static
 app_thread.c:1363:13:APP_THREAD_CoapToggleLoggingRequestHandler	24	static

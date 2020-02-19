@@ -1309,9 +1309,9 @@ void APP_THREAD_SendMyInfo() {
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
 
-void APP_THREAD_SendBorderMessage(void *packet, uint8_t len) {
+void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource) {
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapMsg(packet, len, &borderRouter.ipv6, borderPacket, REQUEST_ACK, OT_COAP_CODE_PUT, 1U);
+	APP_THREAD_SendCoapMsg(packet, len, &borderRouter.ipv6, resource, NO_ACK, OT_COAP_CODE_PUT, 1U);
 }
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket) {
@@ -2023,8 +2023,8 @@ static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address
 
 		// creates new message with headers but with empty payload
 		pOT_Message = otCoapNewMessage(NULL, &OT_Header);
-		if (pOT_Message == NULL)
-			while (1);
+//		if (pOT_Message == NULL)
+//			while (1);
 
 		// Append bytes to a message (this is where the payload gets added)
 
@@ -2035,7 +2035,7 @@ static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address
 			error = otMessageAppend(pOT_Message, empty_message, 10);
 		}
 
-			  if (error != OT_ERROR_NONE) while(1);
+//			  if (error != OT_ERROR_NONE) while(1);
 
 		// TODO: the response function should only be used for the border update event (I think only if message is embedded in ACK)?
 
@@ -2144,7 +2144,7 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 //			error = otMessageAppend(pOT_Message, empty_message, 10);
 //		}
 
-			  if (error != OT_ERROR_NONE) while(1);
+			 // if (error != OT_ERROR_NONE) while(1);
 
 		// TODO: the response function should only be used for the border update event (I think only if message is embedded in ACK)?
 

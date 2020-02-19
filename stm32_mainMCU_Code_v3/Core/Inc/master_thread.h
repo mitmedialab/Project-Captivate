@@ -72,6 +72,8 @@ struct LogPacket 		sensorPacket;
 
 struct LogMessage 		togLogMessageReceived;
 struct LogMessage 		prevLogMessage;
+
+extern uint32_t viveStateVar;
 /* Functions Definition ------------------------------------------------------*/
 
 

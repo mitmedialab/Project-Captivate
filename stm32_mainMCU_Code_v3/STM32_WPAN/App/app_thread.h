@@ -157,7 +157,7 @@ void APP_THREAD_Init_UART_CLI(void);
 void APP_THREAD_TL_THREAD_INIT(void);
 /* USER CODE BEGIN EF */
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket);
-void APP_THREAD_SendBorderMessage(void *packet, uint8_t len);
+void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource);
 
 /* USER CODE END EF */
 
