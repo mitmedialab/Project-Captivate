@@ -21,8 +21,8 @@ extern "C" {
 
 /* defines -----------------------------------------------------------*/
 // uncomment if programming the STM32 USB dongle
-#define DONGLE_CODE					1
-#define OTA_ENABLED					1
+//#define DONGLE_CODE					1
+//#define OTA_ENABLED					1
 
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes
@@ -62,6 +62,7 @@ extern "C" {
 #define ENABLE_LOG								1
 #define DISABLE_LOG								0
 #define SENSOR_ENABLE							1
+#define LIGHT_LAB_DEMO							2
 
 /* RADIO SPECIFIC */
 #define TRANSMIT_POWER							6 //in dbm

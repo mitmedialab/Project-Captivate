@@ -65,6 +65,7 @@ RTC_DateTypeDef RTC_date;
  */
 
 uint8_t logEnabled = 0;
+uint8_t lightLabDemoEnabled = 0;
 //struct SystemStatus systemStatus = { 0 };
 uint32_t startTime = 0;
 
@@ -160,9 +161,29 @@ void MasterThreadTask(void *argument) {
 				osDelay(PACKET_SEND_PERIOD - (HAL_GetTick() - startTime));
 
 			}
-		} else if (logEnabled == 1 && togLogMessageReceived.logStatus == DISABLE_LOG) {
+		}
+		else if (logEnabled == 1 && togLogMessageReceived.logStatus == DISABLE_LOG) {
 			logEnabled = 0;
 			masterExitRoutine();
+		}
+		else if (togLogMessageReceived.status == LIGHT_LAB_DEMO){
+			// if requesting another feature to be enabled but the logging is still enabled
+			if(logEnabled == 1){
+				logEnabled = 0;
+				masterExitRoutine();
+			}
+
+			lightLabDemoEnabled = 1;
+
+
+		}
+		else if (lightLabDemoEnabled = 1 && togLogMessageReceived.status == DISABLE_LOG){
+
+
+
+			lightLabDemoEnabled = 0;
+
+
 		}
 
 	}

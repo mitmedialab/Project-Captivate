@@ -198,8 +198,7 @@ static APP_THREAD_StatusTypeDef APP_THREAD_CheckDeviceCapabilities(void);
 
 void stm32UID(uint8_t* uid) ;
 
-static void APP_THREAD_SendDataResponse(otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo, void *message,
-		uint16_t msgSize);
+static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo);
 
 static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo);
@@ -305,7 +304,7 @@ struct sendIP_struct {
 	char node_type[12];
 	char description[12];
 	uint8_t uid[8];
-} msgSendMyIP = { .node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .uid = 0 };
+};
 
 //static uint8_t OT_Command = 0;
 //static uint16_t OT_BufferIdRead = 1U;
@@ -345,6 +344,8 @@ union ColorComplex lightMessageComplex;
 
 struct SystemCal borderRouter = { 0 };
 struct SystemCal receivedSystemCal = { 0 };
+
+struct sendIP_struct msgSendMyIP = { .node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .uid = 0 };
 
 otIp6Address multicastAddr;
 
@@ -828,8 +829,13 @@ static void APP_THREAD_DummyRespHandler(void *p_context, otCoapHeader *pHeader, 
 	UNUSED(Result);
 }
 
+volatile uint16_t test_num;
 static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo, otError Result) {
+
+//	taskENTER_CRITICAL();
+//	test_num = otMessageGetLength(pMessage);
+//	test_num = otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal));
 
 	if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal))
 			== sizeof(receivedSystemCal)) {
@@ -840,7 +846,7 @@ static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
 			// update the onboard RTC unix time
 			updateRTC(borderRouter.epoch);
 	}
-
+//	taskEXIT_CRITICAL();
 }
 
 /**
@@ -1273,15 +1279,16 @@ void APP_THREAD_UpdateBorderRouter() {
 	// if border router IP is still multicast (ff03::1), attempt to sync
 	if (otIp6IsAddressEqual(&multicastAddr, &borderRouter.ipv6)) {
 		APP_THREAD_SyncWithBorderRouter();
+		APP_THREAD_SendMyInfo();
 	}
 
 	// send IP to border router
-	APP_THREAD_SendMyInfo();
+	//APP_THREAD_SendMyInfo();
 }
 
 // send a GET request to border router via multicast
 void APP_THREAD_SyncWithBorderRouter() {
-	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr, borderSyncResource, REQUEST_ACK, OT_COAP_CODE_GET, 1U);
+	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr, borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
 }
 
 void APP_THREAD_SendMyInfo() {
@@ -1351,18 +1358,20 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otM
 	} while (false);
 }
 
+#ifndef DONGLE_CODE
 // request handler for when receiving a message directed at the data logging resource
 static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo) {
 	do {
 		// if get, send response with current log message
-		if (otCoapHeaderGetType(pHeader) == OT_COAP_CODE_GET) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &logMessage, sizeof(logMessage));
+		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
+			APP_THREAD_SendDataResponse(&logMessage, sizeof(logMessage), pHeader, pMessageInfo);
 			break;
 		}
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage))
-				== sizeof(logMessage)) {
+		// TODO : this will overwrite log message so maybe add a safer method
+		if ( otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage)) == sizeof(logMessage)){
+//			otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage));
 			// if post or put, add to queue for masterthread processing
 			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
 					|| (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_POST)) {
@@ -1370,27 +1379,17 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, ot
 			}
 		}
 
-		tempMessageInfo = pMessageInfo;
-		receivedMessage = (otMessageInfo*) pMessage;
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, NULL, 0);
+			APP_THREAD_SendDataResponse(NULL, 0, pHeader, pMessageInfo);
 			break;
-		}
-
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U) {
-			//APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
-		}
-
-		if (OT_ReceivedCommand == 1U) {
-			//BSP_LED_Toggle(LED1);
 		}
 
 	} while (false);
 }
 
-volatile char temp_var[100];
-volatile uint8_t temp_num = 0;
+#endif
+
 
 // request handler for when receiving a message directed at the border router synchronizing resource
 static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
@@ -1417,13 +1416,12 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMes
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
 
 			//TODO: this is where you would put the return if you wanted a node to transmit BR info to other nodes
-			//APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &borderRouter, sizeof(borderRouter));
-
+//			APP_THREAD_SendDataResponse(&borderRouter, sizeof(borderRouter), pHeader, pMessageInfo);
 			break;
 		}
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, NULL, 0);
+			APP_THREAD_SendDataResponse(NULL, 0 , pHeader, pMessageInfo);
 			break;
 		}
 
@@ -1440,32 +1438,32 @@ static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader, otMessa
 		BSP_LED_Toggle(LED_RED);
 #endif
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &tempVar, sizeof(tempVar))
-				== sizeof(tempVar)) {
-			// if the message was a put request, copy message over to border router info struct
-//			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
-//					|| (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_POST)) {
-//
-//				memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
-//
-//				// update the onboard RTC unix time
-//				updateRTC(borderRouter.epoch);
-//			}
-		}
+//		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &tempVar, sizeof(tempVar))
+//				== sizeof(tempVar)) {
+//			// if the message was a put request, copy message over to border router info struct
+////			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
+////					|| (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_POST)) {
+////
+////				memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
+////
+////				// update the onboard RTC unix time
+////				updateRTC(borderRouter.epoch);
+////			}
+//		}
 
-		receivedMessage = (otMessageInfo*) pMessage;
+//		receivedMessage = (otMessageInfo*) pMessage;
 
 		// send info if requested
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
-//			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &msgSendMyIP, sizeof(msgSendMyIP));
+//			APP_THREAD_SendDataResponse(&borderRouter, sizeof(borderRouter), pHeader, pMessageInfo);
+//			APP_THREAD_SendDataResponse(&msgSendMyIP, sizeof(msgSendMyIP), pHeader, pMessageInfo);
 			APP_THREAD_SendMyInfo();
-//			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &tempVar, sizeof(tempVar));
 
-//			break;
+			break;
 		}
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, NULL, 0);
+			APP_THREAD_SendDataResponse(NULL, 0, pHeader, pMessageInfo);
 		}
 
 	} while (false);
@@ -1477,7 +1475,7 @@ void updateRTC(time_t now) {
 	RTC_DateTypeDef sDate;
 
 	// https://www.st.com/content/ccc/resource/technical/document/application_note/2a/c2/6f/74/fa/0d/46/3a/CD00015424.pdf/files/CD00015424.pdf/jcr:content/translations/en.CD00015424.pdf
-	struct tm *time_tm;
+//	struct tm *time_tm;
 
 	RTC_FromEpoch(now, &sTime, &sDate);
 
@@ -1943,7 +1941,7 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 //  }
 //}
 
-static char empty_message[10] = "empty";
+static char empty_message[10] = "";
 static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_addr, char *resource,
 		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID) {
 	/************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
@@ -2021,7 +2019,7 @@ static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
-		otCoapHeaderSetPayloadMarker(&OT_Header);
+		otCoapHeaderSetPayloadMarker(&OT_Header); //TODO: if no msg, dont set marker and remove empty message below
 
 		// creates new message with headers but with empty payload
 		pOT_Message = otCoapNewMessage(NULL, &OT_Header);
@@ -2126,25 +2124,25 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// need this so the coap server doesnt try to parse as 'utf-8' and error out
-		otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
+//		otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
-		otCoapHeaderSetPayloadMarker(&OT_Header);
+//		otCoapHeaderSetPayloadMarker(&OT_Header);
 
 		// creates new message with headers but with empty payload
 		pOT_Message = otCoapNewMessage(NULL, &OT_Header);
-		if (pOT_Message == NULL)
-			while (1);
+//		if (pOT_Message == NULL)
+//			while (1);
 
 		// Append bytes to a message (this is where the payload gets added)
 
 		// append message if there was one given
-		if (msgSize > 0) {
-			error = otMessageAppend(pOT_Message, message, msgSize);
-		}else{
-			error = otMessageAppend(pOT_Message, empty_message, 10);
-		}
+//		if (msgSize > 0) {
+//			error = otMessageAppend(pOT_Message, message, msgSize);
+//		}else{
+//			error = otMessageAppend(pOT_Message, empty_message, 10);
+//		}
 
 			  if (error != OT_ERROR_NONE) while(1);
 
@@ -2179,14 +2177,22 @@ response and original request MUST match.  In a separate
 response, just the tokens of the response and original request
 MUST match.*/
 
-static void APP_THREAD_SendDataResponse(otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo, void *message,
-		uint16_t msgSize) {
+static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo) {
 	otError error = OT_ERROR_NONE;
 
 	//APP_DBG(" ********* APP_THREAD_SendDataResponse \r\n");
 	otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_ACKNOWLEDGMENT, OT_COAP_CODE_CHANGED);
 	otCoapHeaderSetMessageId(&OT_Header, otCoapHeaderGetMessageId(pRequestHeader));
 	otCoapHeaderSetToken(&OT_Header, otCoapHeaderGetToken(pRequestHeader), otCoapHeaderGetTokenLength(pRequestHeader));
+
+	if (msgSize > 0){
+		// need this so the coap server doesnt try to parse as 'utf-8' and error out
+		otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
+//			  if (error != OT_ERROR_NONE) while(1);
+
+		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
+		otCoapHeaderSetPayloadMarker(&OT_Header); //TODO: if no msg, dont set marker and remove empty message below
+	}
 
 	pOT_Message = otCoapNewMessage(NULL, &OT_Header);
 	if (pOT_Message == NULL) {

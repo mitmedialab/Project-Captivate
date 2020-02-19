@@ -118,7 +118,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
 
-  HAL_IWDG_Refresh(&hiwdg);
+//  HAL_IWDG_Refresh(&hiwdg);
 
   /* USER CODE END 2 */
   /* Init scheduler */
