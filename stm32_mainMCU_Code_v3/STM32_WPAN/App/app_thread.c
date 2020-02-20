@@ -1304,7 +1304,7 @@ void APP_THREAD_SendMyInfo() {
 //
 //	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
 	// TODO: does this need an ACK
-	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, nodeInfoResource, REQUEST_ACK,
+	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, nodeInfoResource, NO_ACK,
 			OT_COAP_CODE_PUT, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }

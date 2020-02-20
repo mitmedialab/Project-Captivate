@@ -69,6 +69,7 @@ uint8_t lightLabDemoEnabled = 0;
 //struct SystemStatus systemStatus = { 0 };
 uint32_t startTime = 0;
 uint32_t viveStateVar = 0;
+uint64_t waitTime = 0;
 
 void MasterThreadTask(void *argument) {
 
@@ -159,7 +160,14 @@ void MasterThreadTask(void *argument) {
 				}
 
 				// add delay to wait for next transmission period
-				osDelay(PACKET_SEND_PERIOD - (HAL_GetTick() - startTime));
+				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
+				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
+				if(waitTime <= 0){
+					waitTime = 0; //set to zero (i.e. dont wait)
+				}
+				else{
+					osDelay(waitTime);
+				}
 
 			}
 		}
@@ -194,6 +202,7 @@ void MasterThreadTask(void *argument) {
 					// disable threads
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
 
+						osSemaphoreRelease(lightingLabDemoEndHandle);
 						masterExitRoutine();
 
 						// break out of first while loop and wait until told to start logging again
