@@ -2019,7 +2019,9 @@ static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
-		otCoapHeaderSetPayloadMarker(&OT_Header); //TODO: if no msg, dont set marker and remove empty message below
+		if (msgSize > 0) {
+			otCoapHeaderSetPayloadMarker(&OT_Header); //TODO: if no msg, dont set marker and remove empty message below
+		}
 
 		// creates new message with headers but with empty payload
 		pOT_Message = otCoapNewMessage(NULL, &OT_Header);
@@ -2031,9 +2033,10 @@ static void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address
 		// append message if there was one given
 		if (msgSize > 0) {
 			error = otMessageAppend(pOT_Message, message, msgSize);
-		}else{
-			error = otMessageAppend(pOT_Message, empty_message, 10);
 		}
+//		else{
+//			error = otMessageAppend(pOT_Message, empty_message, 10);
+//		}
 
 //			  if (error != OT_ERROR_NONE) while(1);
 

@@ -1,3 +1,3 @@
 blink.c:60:6:BlinkTask	24	static
-blink.c:151:6:HAL_ADC_ConvCpltCallback	16	static
-blink.c:157:6:HAL_ADC_ConvHalfCpltCallback	16	static
+blink.c:154:6:HAL_ADC_ConvCpltCallback	16	static
+blink.c:160:6:HAL_ADC_ConvHalfCpltCallback	16	static

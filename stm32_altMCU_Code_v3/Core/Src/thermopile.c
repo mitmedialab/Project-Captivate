@@ -109,7 +109,8 @@ void ThermopileTask(void *argument){
 					tempData.nose[i].thermistor = buffer.nose_thermistor;
 
 					/********* START DMA FOR ONE TEMPLE SAMPLE ************************/
-					SwitchTemperatureSensor(temple);
+					SwitchTemperature
+					Sensor(temple);
 					HAL_Delay(1);
 					while( HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 3) != HAL_OK);
 

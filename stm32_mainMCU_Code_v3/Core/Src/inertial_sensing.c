@@ -124,6 +124,35 @@ void InertialSensingTask(void *argument){
 	}
 }
 
+//struct LogMessage calLogMessage;
+//void calibrate_tare(void){
+//
+//	calLogMessage.blinkEnabled = 0;
+//	calLogMessage.intertialEnabled = 0;
+//	calLogMessage.positionEnabled = 0;
+//	calLogMessage.tempEnabled = 0;
+//	calLogMessage.status = 0;
+//	calLogMessage.logStatus = 0;
+//
+//	// first calibrate all sensors
+//	IMU_calibrateAll();
+//
+//	// start sending data to server for calibration validation
+//	calLogMessage.status = 1;
+//	calLogMessage.logStatus = 1;
+//	calLogMessage.intertialEnabled = 1;
+//
+//	osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, 0U);
+//
+//	// wait 30 seconds
+//	osDelay(30000);
+//
+//	// end calibration
+//	IMU_endCalibration();
+//
+//
+//}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     // if interrupt is triggered, sample!

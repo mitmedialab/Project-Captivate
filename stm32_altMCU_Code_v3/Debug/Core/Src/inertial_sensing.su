@@ -1,3 +1,0 @@
-inertial_sensing.c:72:6:InertialSensingTask	8	static
-inertial_sensing.c:164:6:HAL_GPIO_EXTI_Callback	8	static
-inertial_sensing.c:177:6:Setup_BNO080	0	static

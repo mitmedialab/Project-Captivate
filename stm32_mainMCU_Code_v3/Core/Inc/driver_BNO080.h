@@ -183,6 +183,9 @@ int16_t IMU_getRawMagX();
 int16_t IMU_getRawMagY();
 int16_t IMU_getRawMagZ();
 
+void IMU_sendTareNow(void);
+void IMU_sendPersistTare(void);
+
 void IMU_setFeatureCommand_2(uint8_t reportID, uint16_t timeBetweenReports);
 void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports, uint32_t specificConfig);
 void IMU_sendCommand(uint8_t command);

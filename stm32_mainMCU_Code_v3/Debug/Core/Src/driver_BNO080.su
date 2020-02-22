@@ -70,9 +70,11 @@ driver_BNO080.c:992:6:IMU_calibrationComplete	4	static
 driver_BNO080.c:1000:6:IMU_setFeatureCommand_2	16	static
 driver_BNO080.c:1007:6:IMU_setFeatureCommand_3	24	static
 driver_BNO080.c:1036:6:IMU_sendCommand	16	static
-driver_BNO080.c:1059:6:IMU_sendCalibrateCommand	24	static
-driver_BNO080.c:1100:6:IMU_requestCalibrationStatus	16	static
-driver_BNO080.c:1123:6:IMU_saveCalibration	16	static
-driver_BNO080.c:1179:6:IMU_receivePacket	24	static
-driver_BNO080.c:1217:6:IMU_getData	32	static
-driver_BNO080.c:1269:6:IMU_sendPacket	32	static
+driver_BNO080.c:1057:6:IMU_sendTareNow	8	static
+driver_BNO080.c:1079:6:IMU_sendPersistTare	8	static
+driver_BNO080.c:1103:6:IMU_sendCalibrateCommand	24	static
+driver_BNO080.c:1144:6:IMU_requestCalibrationStatus	16	static
+driver_BNO080.c:1167:6:IMU_saveCalibration	16	static
+driver_BNO080.c:1223:6:IMU_receivePacket	24	static
+driver_BNO080.c:1261:6:IMU_getData	32	static
+driver_BNO080.c:1313:6:IMU_sendPacket	32	static

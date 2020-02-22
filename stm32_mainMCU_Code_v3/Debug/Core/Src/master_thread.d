@@ -78,7 +78,8 @@ Core/Src/master_thread.o: ../Core/Src/master_thread.c \
  ../Core/Inc/geometry.h ../Core/Inc/circular_buffer.h ../Core/Inc/tim.h \
  ../Core/Inc/app_entry.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
- C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
+ ../Core/Inc/driver_BNO080.h ../Core/Inc/driver_BNO080.h
 
 ../Core/Inc/master_thread.h:
 
@@ -257,3 +258,7 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
+
+../Core/Inc/driver_BNO080.h:
+
+../Core/Inc/driver_BNO080.h:

@@ -63,6 +63,7 @@ extern "C" {
 #define DISABLE_LOG								0
 #define SENSOR_ENABLE							1
 #define LIGHT_LAB_DEMO							2
+#define TARE_NOW								3
 
 /* RADIO SPECIFIC */
 #define TRANSMIT_POWER							6 //in dbm
@@ -97,6 +98,7 @@ extern "C" {
 #define ACT_CLASS_PERIOD			500
 #define STEP_CNT_PERIOD				500
 #define STABILITY_CLASS_PERIOD		500
+#define IMU_CALIBRATION				1
 
 /* BLINK SPECIFIC CONFIGURATION */
 #define BLINK_HALF_BUFFER_SIZE	1000

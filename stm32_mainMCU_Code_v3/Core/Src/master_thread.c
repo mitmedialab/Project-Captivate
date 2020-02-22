@@ -23,6 +23,7 @@
 #include "app_entry.h"
 #include "task.h"
 #include "captivate_config.h"
+#include "driver_BNO080.h"
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
@@ -70,11 +71,12 @@ uint8_t lightLabDemoEnabled = 0;
 uint32_t startTime = 0;
 uint32_t viveStateVar = 0;
 uint64_t waitTime = 0;
+uint32_t lightsSimpleMessageAck = 0;
 
 void MasterThreadTask(void *argument) {
 
 #ifndef DONGLE_CODE
-	touchSensingStart();
+	//touchSensingStart();
 #endif
 
 	while (1) {
@@ -153,16 +155,33 @@ void MasterThreadTask(void *argument) {
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
 
 						masterExitRoutine();
-
+						logEnabled = 0;
 						// break out of first while loop and wait until told to start logging again
 						break;
+					}
+
+					else if (togLogMessageReceived.status == TARE_NOW){
+						lightsSimpleMessageAck = 0x03; // cyan (green + blue)
+						osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageAck, 0U, 0);
+
+						IMU_sendTareNow();
+
+						osDelay(100);
+
+						IMU_sendPersistTare();
+
+						osDelay(100);
+
+						lightsSimpleMessageAck = 0;
+						osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageAck, 0U, 0);
 					}
 				}
 
 				// add delay to wait for next transmission period
 				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
 				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
-				if(waitTime <= 0){
+				// or greater than the allotted PACKET_SEND_PERIOD
+				if( (waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)){
 					waitTime = 0; //set to zero (i.e. dont wait)
 				}
 				else{
@@ -204,7 +223,7 @@ void MasterThreadTask(void *argument) {
 
 						osSemaphoreRelease(lightingLabDemoEndHandle);
 						masterExitRoutine();
-
+						lightLabDemoEnabled = 0;
 						// break out of first while loop and wait until told to start logging again
 						break;
 					}

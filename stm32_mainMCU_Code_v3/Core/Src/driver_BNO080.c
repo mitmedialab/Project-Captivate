@@ -490,7 +490,7 @@ float IMU_getQuatReal()
 //Return the rotation vector accuracy
 float IMU_getQuatRadianAccuracy()
 {
-	float quat = IMU_qToFloat(rawQuatRadianAccuracy, rotationVector_Q1);
+	float quat = IMU_qToFloat(rawQuatRadianAccuracy, 12);
 	return (quat);
 }
 
@@ -1049,6 +1049,50 @@ void IMU_sendCommand(uint8_t command)
 	shtpData[9] = 0;
 	shtpData[10] = 0;
 	shtpData[11] = 0;*/
+
+	//Transmit packet on channel 2, 12 bytes
+	IMU_sendPacket(CHANNEL_CONTROL, 12);
+}
+
+void IMU_sendTareNow(void)
+{
+	shtpData[0] = SHTP_REPORT_COMMAND_REQUEST; //Command Request
+	shtpData[1] = commandSequenceNumber++;	 //Increments automatically each function call
+	shtpData[2] = 0x03;					   // TareCommand
+	shtpData[3] = 0; // Tare Now
+	shtpData[4] = 0x07; // All 3 axes
+	shtpData[5] = 0; // Rotation Vector
+
+
+	// RESERVED
+	shtpData[6] = 0;
+	shtpData[7] = 0;
+	shtpData[8] = 0;
+	shtpData[9] = 0;
+	shtpData[10] = 0;
+	shtpData[11] = 0;
+
+	//Transmit packet on channel 2, 12 bytes
+	IMU_sendPacket(CHANNEL_CONTROL, 12);
+}
+
+void IMU_sendPersistTare(void)
+{
+	shtpData[0] = SHTP_REPORT_COMMAND_REQUEST; //Command Request
+	shtpData[1] = commandSequenceNumber++;	 //Increments automatically each function call
+	shtpData[2] = 0x03;					   // TareCommand
+	shtpData[3] = 0x01; // Persist Tare
+
+
+	// RESERVED
+	shtpData[4] = 0;
+	shtpData[5] = 0;
+	shtpData[6] = 0;
+	shtpData[7] = 0;
+	shtpData[8] = 0;
+	shtpData[9] = 0;
+	shtpData[10] = 0;
+	shtpData[11] = 0;
 
 	//Transmit packet on channel 2, 12 bytes
 	IMU_sendPacket(CHANNEL_CONTROL, 12);

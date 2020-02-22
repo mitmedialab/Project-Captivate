@@ -131,6 +131,9 @@ void BlinkTask(void *argument) {
 					// empty queue
 					osMessageQueueReset(blinkMsgQueueHandle);
 
+					// clear any flags
+					osThreadFlagsClear(0x0000000EU);
+
 					break;
 				}
 			}

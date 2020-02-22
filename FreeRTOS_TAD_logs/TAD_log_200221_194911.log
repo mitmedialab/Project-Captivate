@@ -1,0 +1,18 @@
+"FreeRTOS Task Aware Debugger for GDB" version 1.0.2 (201704260904)
+(c) 2016 NXP Semiconductors, Inc.
+==================================
+18:32:28.54 INFO: [TadState] TAD state changed:  NONE -> DEBUG_INIT_0 (RESUMED, USER_REQUEST)
+18:32:28.69 INFO: [TadState] TAD state changed:  DEBUG_INIT_0 -> DEBUG_INIT_1 (SUSPENDED, SIGNAL)
+18:32:32.130 INFO: [TadState] TAD state changed:  DEBUG_INIT_1 -> DEBUG_SUSPENDED (RESUMED, USER_REQUEST)
+18:32:32.240 INFO: [TadState] TAD state changed:  DEBUG_SUSPENDED -> DEBUG_SUSPENDED (SUSPENDED, BREAKPOINT)
+18:33:40.521 INFO: [TadState] TAD state changed:  DEBUG_SUSPENDED -> DEBUG_RESUMED (RESUMED, USER_REQUEST)
+18:39:30.681 INFO: [TadState] TAD state changed:  DEBUG_RESUMED -> READY (SUSPENDED, SIGNAL)
+18:39:34.118 INFO: [Benchmark] Loading data for "Task List" has started.
+18:39:35.923 INFO: [Benchmark] Loading data for "Task List" took 1805 ms.
+18:39:35.923 INFO: [Benchmark] Loading data for "Queue List" has started.
+18:39:35.923 INFO: [Benchmark] Loaded data for "Queue List" from cache.
+18:39:39.727 INFO: [Benchmark] Loading data for "Task List" has started.
+18:39:39.727 INFO: [Benchmark] Loaded data for "Task List" from cache.
+18:39:46.401 INFO: [TadState] TAD state changed:  READY -> DEBUG_RESUMED (RESUMED, USER_REQUEST)
+19:49:11.855 INFO: [TadModel] DSF session ID 38 has started.
+19:49:11.961 INFO: [TadModel] DSF session ID 37 has ended.
