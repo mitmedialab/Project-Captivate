@@ -1,3 +1,0 @@
-tsc.c:30:6:MX_TSC_Init	8	static
-tsc.c:57:6:HAL_TSC_MspInit	48	static
-tsc.c:99:6:HAL_TSC_MspDeInit	8	static

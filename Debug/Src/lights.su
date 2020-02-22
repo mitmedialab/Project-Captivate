@@ -1,9 +1,0 @@
-lights.c:65:6:TransmitShiftRegLight	8	static
-lights.c:23:6:ShiftRegLightThread	16	static
-lights.c:71:6:RGB_TurnOn_Red	0	static
-lights.c:75:6:RGB_TurnOn_Blue	0	static
-lights.c:79:6:RGB_TurnOn_Green	0	static
-lights.c:83:6:RGB_TurnOff_Red	0	static
-lights.c:87:6:RGB_TurnOff_Blue	0	static
-lights.c:91:6:RGB_TurnOff_Green	0	static
-lights.c:41:6:RGB_LightThread	8	static
