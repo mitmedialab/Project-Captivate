@@ -33,6 +33,9 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_iwdg.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_usb.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_pwr.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr_ex.h \
@@ -87,6 +90,8 @@ Core/Src/app_entry.o: ../Core/Src/app_entry.c ../Core/Inc/app_common.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/platform/toolchain.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/platform/logging.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/platform/radio.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/coap.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/ip6.h \
  ../Core/Inc/app_conf.h ../Core/Inc/hw_conf.h ../Core/Inc/stm_logging.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl.h \
@@ -168,6 +173,12 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_iwdg.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_usb.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd_ex.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h:
 
@@ -282,6 +293,10 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/platform/logging.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/platform/radio.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/coap.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_WPAN/thread/openthread/stack/include/openthread/ip6.h:
 
 ../Core/Inc/app_conf.h:
 

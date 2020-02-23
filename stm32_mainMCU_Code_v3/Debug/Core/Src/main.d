@@ -30,6 +30,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_iwdg.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_usb.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd_ex.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_pwr.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr_ex.h \
@@ -70,13 +73,21 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_hsem.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_gpio.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_rtc.h \
- ../Core/Inc/tim.h ../Core/Inc/gpio.h ../Core/Inc/input.h \
+ ../Core/Inc/tim.h ../USB_Device/App/usb_device.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
+ ../USB_Device/Target/usbd_conf.h ../Core/Inc/gpio.h ../Core/Inc/input.h \
  ../Core/Inc/pulse_processor.h ../Core/Inc/messages.h \
  C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/cycle_phase_classifier.h ../Core/Inc/geometry.h \
  ../Core/Inc/circular_buffer.h ../Core/Inc/tim.h ../Core/Inc/tsc.h \
  ../Core/Inc/touch_detector.h ../Core/Inc/tsc.h \
- ../Core/Inc/touchsensing.h ../Core/Inc/captivate_config.h
+ ../Core/Inc/touchsensing.h ../Core/Inc/captivate_config.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
+ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 
 ../Core/Inc/main.h:
 
@@ -141,6 +152,12 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_iwdg.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_usb.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pcd_ex.h:
 
 C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h:
 
@@ -242,6 +259,12 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Drivers/STM32WBxx_HAL
 
 ../Core/Inc/tim.h:
 
+../USB_Device/App/usb_device.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
+
+../USB_Device/Target/usbd_conf.h:
+
 ../Core/Inc/gpio.h:
 
 ../Core/Inc/input.h:
@@ -269,3 +292,15 @@ C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/Third_Par
 ../Core/Inc/touchsensing.h:
 
 ../Core/Inc/captivate_config.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
+
+C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.4.0/Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:

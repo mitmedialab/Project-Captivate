@@ -21,8 +21,10 @@ extern "C" {
 
 /* defines -----------------------------------------------------------*/
 // uncomment if programming the STM32 USB dongle
-//#define DONGLE_CODE					1
+#define DONGLE_CODE					1
 //#define OTA_ENABLED					1
+#define BORDER_ROUTER_NODE			1
+//#define BORDER_ROUTER_NODE_TRANSMITTER	1
 
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes
@@ -30,6 +32,12 @@ extern "C" {
 #else
 #define NODE_TYPE				"captivates"  // max 11 bytes
 #define NODE_DESCRIPTION  		"cap_1"	  // max 11 bytes
+#endif
+
+#ifdef BORDER_ROUTER_NODE
+#define SEND_TOGLOG_START		1
+#define SEND_TOGLOG_STOP		2
+#define SET_BLINK_ON  		    2
 #endif
 
 //// enable sensing subsystems
@@ -47,6 +55,7 @@ extern "C" {
 #define C_LIGHTS_SIMPLE_RESSOURCE				"lightS"
 #define C_LIGHTS_COMPLEX_RESSOURCE				"lightC"
 #define C_BORER_TIME_RESSOURCE					"borderTime"
+#define C_BORDER_PACKET_RESSOURCE				"borderLog"
 #define C_NODE_INFO_RESSOURCE					"nodeInfo"
 #define C_TOGGLE_LOGGING_RESSOURCE				"togLog"
 
@@ -133,6 +142,9 @@ extern osMessageQueueId_t rotationSampleQueueHandle;
 extern osThreadId_t interProcTaskHandle;
 extern osMessageQueueId_t interProcessorMsgQueueHandle;
 
+extern osThreadId_t msgPassingUSB_THandle;
+extern osMessageQueueId_t msgPasssingUSB_QueueHandle;
+
 extern osThreadId_t pulseTaskHandle;
 
 extern osTimerId_t viveTimerHandle;
@@ -153,6 +165,11 @@ struct SystemStatus {
 	int inertialThread :1;
 	int interProcThread :1;
 	int frontLightsThread :1;
+};
+
+struct USB_msgPass {
+	uint8_t len;
+	uint8_t buf[10];
 };
 
 /* Functions Definition ------------------------------------------------------*/
