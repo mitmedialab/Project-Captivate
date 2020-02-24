@@ -25,7 +25,6 @@
 #include "comp.h"
 #include "dma.h"
 #include "i2c.h"
-#include "iwdg.h"
 #include "rf.h"
 #include "rtc.h"
 #include "app_entry.h"
@@ -117,7 +116,6 @@ int main(void)
   MX_I2C1_Init();
   MX_COMP1_Init();
   MX_TIM16_Init();
-//  MX_IWDG_Init();
   MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
@@ -142,6 +140,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 
   while (1)
   {
@@ -253,7 +252,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+#ifdef DONGLE_CODE
+//  if (htim->Instance == TIM2) {
+////	  HAL_GPIO_WritePin(DONGLE_DEBUG_PIN_GPIO_Port, DONGLE_DEBUG_PIN_Pin, GPIO_PIN_SET);
+//	  HAL_GPIO_TogglePin(DONGLE_DEBUG_PIN_GPIO_Port, DONGLE_DEBUG_PIN_Pin);
+//  }
+#endif
 
+//void HAL_TIM_PeriodElapsedHalfCpltCallback(TIM_HandleTypeDef *htim){
+//#ifdef DONGLE_CODE
+// if (htim->Instance == TIM2) {
+//	 HAL_GPIO_WritePin(DONGLE_DEBUG_PIN_GPIO_Port, DONGLE_DEBUG_PIN_Pin, GPIO_PIN_RESET);
+//  }
+//#endif
+//}
   /* USER CODE END Callback 1 */
 }
 

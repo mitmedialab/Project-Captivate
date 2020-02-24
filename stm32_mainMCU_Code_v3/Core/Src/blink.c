@@ -43,6 +43,8 @@
 /* GLOBAL DEFINES */
 struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
 uint8_t blink_buffer[2000] = { 0 };
+//uint8_t blink_buffer_neg[2000] = { 0 };
+
 uint8_t *blink_ptr;
 
 uint32_t payload_ID = 0;
@@ -72,19 +74,24 @@ void BlinkTask(void *argument) {
 			statusMessage.blinkEnabled = 1;
 			osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
 
-			// start timer and PWM channel for blink LED
-			HAL_TIM_Base_Start(&htim2);
-			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-
 			// start timer for ADC to sample at 1kHz
 			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer, sizeof(blink_buffer));
+
+			// start  PWM channel for blink LED
+			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+
+			// start timer
+			HAL_TIM_Base_Start_IT(&htim2);
 
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
 			//      is passed by reference via queue to masterThread for packetization
+
 			while (1) {
+
 				// wait for data ready flag and/or stop task flasg
 				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny, osWaitForever);
+
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
 
@@ -110,6 +117,8 @@ void BlinkTask(void *argument) {
 						osMessageQueuePut(blinkMsgQueueHandle, (void*) &blinkMsgBuffer_1, 0U, 0);
 					}
 				}
+
+
 
 				// stop timer and put thread in idle if signal was reset
 				if ((evt & 0x00000002U) == 0x00000002U) {
@@ -151,8 +160,30 @@ void BlinkTask(void *argument) {
 //	i++;
 //}
 
+volatile uint32_t start_time = 0;
+volatile uint32_t end_time = 0;
+
+volatile uint32_t pwm_tracker_s = 0;
+volatile uint32_t pwm_tracker_diff = 0;
+
+volatile uint32_t pwm_tracker = 0;
+
+volatile uint8_t low_adc_sample = 0;
+volatile uint8_t random_sample = 0;
+
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+	end_time = HAL_GetTick() - start_time;
+	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
+	start_time = HAL_GetTick();
+	pwm_tracker_s = pwm_tracker;
+//	if(low_adc_sample){
+//		HAL_ADC_Stop(&hadc1);
+//		low_adc_sample = 0;
+//		return;
+//	}
 	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
+	random_sample = blink_buffer[80];
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
 }
@@ -161,6 +192,17 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
 	blink_ptr = blink_buffer;
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
+}
+
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
+//	if(htim->Instance == TIM2){
+//		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+//		HAL_ADC_Start(&hadc1);
+//	}
+	pwm_tracker++;
+
+//	low_adc_sample = 1;
+//	HAL_ADC_Start(&hadc1);
 }
 
 /**

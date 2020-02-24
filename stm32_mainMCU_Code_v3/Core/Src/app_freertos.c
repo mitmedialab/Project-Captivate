@@ -40,7 +40,7 @@
 #include "messages.h"
 #include "captivate_config.h"
 #include "input.h"
-#include "iwdg.h"
+//#include "iwdg.h"
 #include "usbd_cdc_if.h"
 #include "coap.h"
 #include "app_thread.h"

@@ -16,8 +16,8 @@ app_thread.c:1305:6:APP_THREAD_SendMyInfo	24	static
 app_thread.c:1323:6:APP_THREAD_SendBorderMessage	40	static
 app_thread.c:1328:6:APP_THREAD_SendBorderPacket	32	static
 app_thread.c:1335:13:APP_THREAD_CoapLightsSimpleRequestHandler	24	static
+app_thread.c:1374:13:APP_THREAD_CoapToggleLoggingRequestHandler	24	static
 app_thread.c:1406:13:APP_THREAD_CoapBorderTimeRequestHandler	32	static
-app_thread.c:1456:13:APP_THREAD_CoapBorderPacketRequestHandler	24	static
 app_thread.c:1500:13:APP_THREAD_CoapNodeInfoRequestHandler	24	static
 app_thread.c:1538:6:updateRTC	40	static
 app_thread.c:1560:13:APP_THREAD_CoapLightsComplexRequestHandler	24	static

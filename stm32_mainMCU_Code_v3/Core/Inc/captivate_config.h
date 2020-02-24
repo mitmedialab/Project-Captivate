@@ -21,9 +21,9 @@ extern "C" {
 
 /* defines -----------------------------------------------------------*/
 // uncomment if programming the STM32 USB dongle
-#define DONGLE_CODE					1
+//#define DONGLE_CODE					1
 //#define OTA_ENABLED					1
-#define BORDER_ROUTER_NODE			1
+//#define BORDER_ROUTER_NODE			1
 //#define BORDER_ROUTER_NODE_TRANSMITTER	1
 
 #ifdef DONGLE_CODE
