@@ -1,0 +1,7 @@
+thermopile.c:201:6:HAL_ADC_ConvCpltCallback	8	static
+thermopile.c:212:6:HAL_ADC_ConvHalfCpltCallback	0	static
+thermopile.c:223:6:HAL_ADC_ErrorCallback	0	static
+thermopile.c:236:6:SwitchTemperatureSensor	16	static
+thermopile.c:297:6:TurnOff_LMP91051	16	static
+thermopile.c:275:6:Setup_LMP91051	16	static
+thermopile.c:72:6:ThermopileTask	16	static

@@ -88,7 +88,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -127,20 +126,21 @@ int main(void)
 //  HAL_IWDG_Refresh(&hiwdg);
 
   /* USER CODE END 2 */
+
   /* Init scheduler */
-  osKernelInitialize();
- 
-  /* Call init function for freertos objects (in freertos.c) */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init(); 
- 
   /* Start scheduler */
   osKernelStart();
  
   /* We should never get here as control is now taken by the scheduler */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+//	// start  PWM channel for blink LED
+//	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+//
+//	// start timer
+//	HAL_TIM_Base_Start(&htim2);
 
   while (1)
   {
@@ -170,6 +170,7 @@ void SystemClock_Config(void)
   __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
   /** Configure LSE Drive Capability 
   */
+  HAL_PWR_EnableBkUpAccess();
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   /** Configure the main internal regulator output voltage 
   */
@@ -221,7 +222,6 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSI;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
   PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE0;
-
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -235,7 +235,7 @@ void SystemClock_Config(void)
 
 /* USER CODE END 4 */
 
-/**
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment

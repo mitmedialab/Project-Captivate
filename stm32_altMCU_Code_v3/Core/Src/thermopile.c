@@ -43,6 +43,9 @@
 //  Write anything other than this sequence to get out of mode.
 #define LMP91051_SDIO_EN_REG  0xF
 
+#define TP_SAMPLING_PERIOD 				100
+#define CONTEXT_SWITCH_COMPENSATION 	2
+#define SAMPLING_DELAY 					TP_SAMPLING_PERIOD - CONTEXT_SWITCH_COMPENSATION
 
 
 
@@ -59,10 +62,12 @@ struct thermopilePackagedData tempData;
 
 struct adcThermopileData buffer = {0};
 //volatile uint16_t buffer_2[3] = {0};
-//uint16_t start;
-//uint16_t stop;
+//volatile uint32_t avgVal = 0;
+volatile uint16_t start;
+volatile uint16_t stop;
 //uint16_t diff;
 
+volatile uint32_t evt = 0;
 
 void ThermopileTask(void *argument){
 
@@ -73,13 +78,16 @@ void ThermopileTask(void *argument){
 //  HAL_ADC_Start_DMA(&hadc1, temp_ADC_Data, 600);
 
 //  sensorChoice sensor = nose;
-  uint32_t evt = 0;
+
+  uint8_t index_thermopile = 0;
+  uint32_t avgVal = 0;
+  int32_t delta_time = 0;
 
   while(1){
 
 	  	/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
-
+//	  evt = 0x00000001U;
 	    // if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
 
@@ -91,40 +99,70 @@ void ThermopileTask(void *argument){
 				//   note: the ADC samples in the following order: [selected thermopile, temple thermistor, nose thermistor
 
 				for(int i = 0; i < NUM_THERM_SAMPLES; i++){
+					start = HAL_GetTick();
 
 					/********* START DMA FOR ONE NOSE SAMPLE ************************/
 					SwitchTemperatureSensor(nose);
-					HAL_Delay(1);
-					while( HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 3) != HAL_OK)
+					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 12);
 
 					// wait for data to be received from nose
 					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
 
 					// break if told to stop by master thread
-					if( (evt & 0x00000002U) == 0x00000002U) break;
+					if( (evt & 0x00000002U) == 0x00000002U){
+						break;
+					}
+
+					// turn off PGA's to save power
+					TurnOff_LMP91051();
+
+					// get avg thermopile value
+					avgVal = 0;
+					for(index_thermopile = 0; index_thermopile<10; index_thermopile++){
+						avgVal += buffer.thermopile[index_thermopile];
+					}
+					avgVal = avgVal / 10;
 
 					// copy the data from the buffer and continue
 					tempData.nose[i].tick_ms = HAL_GetTick();
-					tempData.nose[i].thermopile = buffer.thermopile;
+					tempData.nose[i].thermopile = (uint16_t) avgVal;
 					tempData.nose[i].thermistor = buffer.nose_thermistor;
 
 					/********* START DMA FOR ONE TEMPLE SAMPLE ************************/
-					SwitchTemperature
-					Sensor(temple);
-					HAL_Delay(1);
-					while( HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 3) != HAL_OK);
+					SwitchTemperatureSensor(temple);
+
+					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 12);
 
 					// wait for data to be received from temple
 					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
 
 					// break if told to stop by master thread
-					if( (evt & 0x00000002U) == 0x00000002U) break;
+					if( (evt & 0x00000002U) == 0x00000002U){
+						break;
+					}
+
+					// turn off PGA's to save power
+					TurnOff_LMP91051();
+
+					// get avg thermopile value
+					avgVal = 0;
+					for(index_thermopile = 0; index_thermopile<10; index_thermopile++){
+						avgVal += buffer.thermopile[index_thermopile];
+					}
+					avgVal = avgVal / 10;
 
 					// copy the data from the buffer and continue
 					tempData.temple[i].tick_ms = HAL_GetTick();
-					tempData.temple[i].thermopile = buffer.thermopile;
+					tempData.temple[i].thermopile = (uint16_t) avgVal;
 					tempData.temple[i].thermistor = buffer.temple_thermistor;
 
+					stop = HAL_GetTick() - start;
+
+					// wait for next sampling period
+					delta_time = SAMPLING_DELAY - stop;
+					if((delta_time > 0) && (delta_time < SAMPLING_DELAY)){
+						osDelay(delta_time);
+					}
 				}
 
 				if( (evt & 0x00000002U) == 0x00000002U){
@@ -149,8 +187,11 @@ void ThermopileTask(void *argument){
 				// clear any flags
 				osThreadFlagsClear(0x0000000EU);
 
+				// turn off PGA's to save power
+				TurnOff_LMP91051();
+
 				// exit and wait for another start condition
-				break;
+//				break;
 			}
 		}
 	}
@@ -199,36 +240,68 @@ void SwitchTemperatureSensor(sensorChoice sense){
 	packet[0] = LMP91051_CFG_REG;
 
 	if(sense == nose){
-		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32| GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+//		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_4| GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_4 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+
+		//		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32| GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 
 //		packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_16 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 	else if(sense == temple){
-		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_4 | GAIN1_250 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
 
-//		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_16 | GAIN1_42 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
+//		packet[1] = TP_TEMPLE_SEL | PGA1_EN | PGA2_EN | GAIN2_4 | GAIN1_250 | CMN_MODE_1_15; //todo: add blocking semaphore so no LED conflict
 	}
 
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi3, packet, 2, 1);
-	HAL_Delay(2);
+	HAL_Delay(1);
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
+
+//	packet[0] = LMP91051_DAC_REG;
+//	if(sense == nose){
+//		packet[1] = 128; // shift signal down by -33.8mV (134 - 128) during 2nd stage amp
+//	}
+//	else if(sense == temple){
+//		packet[1] = 134; // shift signal down by -33.8mV (128 - 128) during 2nd stage amp
+//	}
+//
+//	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit(&hspi3, packet, 2, 1);
+//	HAL_Delay(2);
+//	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 }
 
 void Setup_LMP91051(void){
   uint8_t packet[2];
-  packet[0] = LMP91051_CFG_REG;
-  packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+//  packet[0] = LMP91051_CFG_REG;
+//  packet[1] = TP_NOSE_SEL | PGA1_EN | PGA2_EN | GAIN2_32 | GAIN1_42 | CMN_MODE_1_15 | EXT_FILT_EN; //todo: add blocking semaphore so no LED conflict
+//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
+//  HAL_SPI_Transmit(&hspi3, packet, 2, 1);
+//  HAL_Delay(2);
+//  HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
+
+  packet[0] = LMP91051_DAC_REG;
+//  packet[1] = 105; // shift signal down by -33.8mV (NDAC - 128) during 2nd stage amp
+//  packet[1] = 130; // shift signal down by -33.8mV (NDAC - 128) during 2nd stage amp
+  packet[1] = 110; // shift signal down by -33.8mV (NDAC - 128) during 2nd stage amp
+//  packet[1] = 140; // shift signal down by -33.8mV (159 - 128) during 2nd stage amp
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi3, packet, 2, 1);
   HAL_Delay(2);
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 
-  packet[0] = LMP91051_DAC_REG;
-  packet[1] = 140; // shift signal down by -33.8mV (159 - 128) during 2nd stage amp
+  TurnOff_LMP91051();
+}
+
+void TurnOff_LMP91051(void){
+  uint8_t packet[2];
+  packet[0] = LMP91051_CFG_REG;
+  packet[1] = 0; //todo: add blocking semaphore so no LED conflict
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi3, packet, 2, 1);
   HAL_Delay(2);
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 }
+
 

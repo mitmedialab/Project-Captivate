@@ -60,6 +60,9 @@ struct thermopilePackagedData	thermMsgReceived;
 uint8_t logEnabled = 0;
 void MasterThreadTask(void *argument)
 {
+
+	uint8_t skipPeriod = 0;
+
 	while(1)
 	{
 		// check if the queue has a new message (a command to start/stop logging)
@@ -96,19 +99,26 @@ void MasterThreadTask(void *argument)
 
 				if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
 				{
-					osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, osWaitForever);
+					if( osOK != osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, 1000)){
+						skipPeriod = 1;
+					}
 				}
 
-				packetizeData(&sensorPacket, &thermMsgReceived);
+				if(skipPeriod != 1){
+					packetizeData(&sensorPacket, &thermMsgReceived);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO MAIN MCU (STM32WB) .....*/
 				/**********************************************************************************/
 
-				osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
+					osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
 
-				// assert interrupt pin to notify master a packet is waiting
-				HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_SET);
+					// assert interrupt pin to notify master a packet is waiting
+					HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_SET);
+
+				}else{
+					skipPeriod = 0;
+				}
 
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/

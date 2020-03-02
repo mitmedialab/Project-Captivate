@@ -43,9 +43,12 @@
 /* GLOBAL DEFINES */
 struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
 uint8_t blink_buffer[2000] = { 0 };
+
+//uint32_t blink_float_buffer[2000] = { 0 };
 //uint8_t blink_buffer_neg[2000] = { 0 };
 
-uint8_t *blink_ptr;
+volatile uint8_t *blink_ptr;
+volatile uint8_t *blink_ptr_copy;
 
 uint32_t payload_ID = 0;
 uint32_t iterator = 0;
@@ -77,11 +80,14 @@ void BlinkTask(void *argument) {
 			// start timer for ADC to sample at 1kHz
 			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer, sizeof(blink_buffer));
 
+			// start timer for ADC to sample at 1kHz
+//			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_float_buffer, sizeof(blink_float_buffer));
+
 			// start  PWM channel for blink LED
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
 			// start timer
-			HAL_TIM_Base_Start_IT(&htim2);
+			HAL_TIM_Base_Start(&htim2);
 
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
@@ -91,7 +97,7 @@ void BlinkTask(void *argument) {
 
 				// wait for data ready flag and/or stop task flasg
 				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny, osWaitForever);
-
+				blink_ptr_copy = blink_ptr;
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
 
@@ -105,7 +111,7 @@ void BlinkTask(void *argument) {
 					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT; iterator++) {
 
 						// grab packet of size BLINK_PACKET_SIZE
-						memcpy(blinkMsgBuffer_1.data, &(blink_buffer[iterator * BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
+						memcpy(blinkMsgBuffer_1.data, &(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
 						blinkMsgBuffer_1.tick_ms = previousTick_ms + tick_ms_diff;
 						blinkMsgBuffer_1.payload_ID = payload_ID;
 
@@ -160,30 +166,29 @@ void BlinkTask(void *argument) {
 //	i++;
 //}
 
-volatile uint32_t start_time = 0;
-volatile uint32_t end_time = 0;
-
-volatile uint32_t pwm_tracker_s = 0;
-volatile uint32_t pwm_tracker_diff = 0;
-
-volatile uint32_t pwm_tracker = 0;
-
-volatile uint8_t low_adc_sample = 0;
-volatile uint8_t random_sample = 0;
+//volatile uint32_t start_time = 0;
+//volatile uint32_t end_time = 0;
+//
+//volatile uint32_t pwm_tracker_s = 0;
+//volatile uint32_t pwm_tracker_diff = 0;
+//
+//volatile uint32_t pwm_tracker = 0;
+//
+//volatile uint8_t low_adc_sample = 0;
+//volatile uint8_t random_sample = 0;
 
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-	end_time = HAL_GetTick() - start_time;
-	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
-	start_time = HAL_GetTick();
-	pwm_tracker_s = pwm_tracker;
+//	end_time = HAL_GetTick() - start_time;
+//	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
+//	start_time = HAL_GetTick();
+//	pwm_tracker_s = pwm_tracker;
 //	if(low_adc_sample){
 //		HAL_ADC_Stop(&hadc1);
 //		low_adc_sample = 0;
 //		return;
 //	}
 	blink_ptr = &blink_buffer[BLINK_HALF_BUFFER_SIZE];
-	random_sample = blink_buffer[80];
 	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
 }
@@ -199,7 +204,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
 //		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 //		HAL_ADC_Start(&hadc1);
 //	}
-	pwm_tracker++;
+//	pwm_tracker++;
 
 //	low_adc_sample = 1;
 //	HAL_ADC_Start(&hadc1);

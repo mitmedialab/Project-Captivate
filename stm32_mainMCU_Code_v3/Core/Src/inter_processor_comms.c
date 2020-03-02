@@ -39,14 +39,18 @@ void InterProcessorTask(void *argument){
 	// ensure secondary processor is not active, trying to send data
 	// 		note: this should only happen when debugging and resetting the main processor while secondary is logging
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
-	while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &nullMessage, sizeof(togLogMessageReceived), 100) != HAL_OK);
+	while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &nullMessage, sizeof(togLogMessageReceived), 100) != HAL_OK){
+		osSemaphoreRelease(messageI2C_LockHandle);
+		osDelay(100);
+		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+	};
 	osSemaphoreRelease(messageI2C_LockHandle);
 #endif
 	while(1){
 
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
 
-		// if signal was received successfully, start blink task
+		// if signal was received successfully, start task
 		if ( (evt & 0x00000001U) == 0x00000001U)  {
 
 			// tell secondary processor to start logging (in blocking mode)
@@ -54,8 +58,11 @@ void InterProcessorTask(void *argument){
 //			osThreadFlagsClear(0x0000000FU);
 			osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 			//while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK);
-			HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100);
-
+			while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK){
+					osSemaphoreRelease(messageI2C_LockHandle);
+					osDelay(100);
+					osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+				}
 			osDelay(100);
 			osSemaphoreRelease(messageI2C_LockHandle);
 
@@ -124,7 +131,11 @@ void InterProcessorTask(void *argument){
 // 					osThreadFlagsClear(0x00000010U);
 					// tell secondary processor to stop logging (in blocking mode)
 					osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
-					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &nullMessage, sizeof(togLogMessageReceived), 100) != HAL_OK);
+					while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &nullMessage, sizeof(togLogMessageReceived), 100) != HAL_OK){
+ 						osSemaphoreRelease(messageI2C_LockHandle);
+ 						osDelay(100);
+ 						osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+ 					};
 					osSemaphoreRelease(messageI2C_LockHandle);
 					// wait until transmit is complete
 //					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);

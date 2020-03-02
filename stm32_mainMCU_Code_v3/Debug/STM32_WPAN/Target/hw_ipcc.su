@@ -1,5 +1,5 @@
-stm32wbxx_ll_exti.h:748:22:LL_C2_EXTI_EnableEvent_32_63	16	static
-stm32wbxx_ll_exti.h:1008:22:LL_EXTI_EnableRisingTrig_32_63	16	static
+stm32wbxx_ll_exti.h:772:22:LL_C2_EXTI_EnableEvent_32_63	16	static
+stm32wbxx_ll_exti.h:1030:22:LL_EXTI_EnableRisingTrig_32_63	16	static
 stm32wbxx_ll_pwr.h:1599:22:LL_PWR_EnableBootC2	4	static
 stm32wbxx_ll_bus.h:706:22:LL_AHB3_GRP1_EnableClock	24	static
 stm32wbxx_ll_ipcc.h:138:22:LL_C1_IPCC_EnableIT_TXF	16	static

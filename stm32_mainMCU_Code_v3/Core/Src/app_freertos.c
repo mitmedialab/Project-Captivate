@@ -96,56 +96,56 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for frontLightsTask */
 osThreadId_t frontLightsTaskHandle;
 const osThreadAttr_t frontLightsTask_attributes = {
   .name = "frontLightsTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for masterTask */
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = {
   .name = "masterTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for inertialTask */
 osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = {
   .name = "inertialTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 1024
+  .stack_size = 1024 * 4
 };
 /* Definitions for pulseTask */
 osThreadId_t pulseTaskHandle;
 const osThreadAttr_t pulseTask_attributes = {
   .name = "pulseTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for interProcTask */
 osThreadId_t interProcTaskHandle;
 const osThreadAttr_t interProcTask_attributes = {
   .name = "interProcTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for blinkTask */
 osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = {
   .name = "blinkTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for msgPassingUSB_T */
 osThreadId_t msgPassingUSB_THandle;
 const osThreadAttr_t msgPassingUSB_T_attributes = {
   .name = "msgPassingUSB_T",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 4
 };
 /* Definitions for blinkMsgQueue */
 osMessageQueueId_t blinkMsgQueueHandle;
@@ -249,8 +249,6 @@ void msgPassingUSB(void *argument);
 extern void get3D_location(void *argument);
 void watchDogReset(void *argument);
 
-extern void MX_STM32_WPAN_Init(void);
-extern void MX_USB_Device_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* Hook prototypes */

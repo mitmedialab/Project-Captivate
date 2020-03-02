@@ -1,9 +1,9 @@
+/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
   * File Name          : app_conf.h
   * Description        : Application configuration file for STM32WPAN Middleware.
-  *
- ******************************************************************************
+  ******************************************************************************
   * @attention
   *
   * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef APP_CONF_H
@@ -65,9 +66,9 @@
 /**
  * Select UART interfaces
  */
-#define CFG_DEBUG_TRACE_UART    
+#define CFG_DEBUG_TRACE_UART    0
 #define CFG_CONSOLE_MENU      
-#define CFG_CLI_UART    
+//#define CFG_CLI_UART    No UART selected
 /******************************************************************************
  * USB interface
  ******************************************************************************/
@@ -191,7 +192,7 @@ typedef enum
  * keep debugger enabled while in any low power mode when set to 1
  * should be set to 0 in production
  */
-#define CFG_DEBUGGER_SUPPORTED    1
+#define CFG_DEBUGGER_SUPPORTED    0
 
 #if (CFG_FULL_LOW_POWER == 1)
 #undef CFG_DEBUGGER_SUPPORTED
@@ -291,7 +292,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACk_SIZE  (128 * 7)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 7)
 
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_NAME        "THREAD_MSG_M0_TO_M4_PROCESS"
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_ATTR_BITS   (0)
@@ -299,7 +300,7 @@ typedef enum
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_SIZE     (0)
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_MEM   (0)
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_PRIORITY    osPriorityLow
-#define CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACk_SIZE  (128 * 8)
+#define CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_SIZE  (128 * 8)
 
 #define CFG_THREAD_CLI_PROCESS_NAME        "THREAD_CLI_PROCESS"
 #define CFG_THREAD_CLI_PROCESS_ATTR_BITS   (0)
@@ -307,7 +308,7 @@ typedef enum
 #define CFG_THREAD_CLI_PROCESS_CB_SIZE     (0)
 #define CFG_THREAD_CLI_PROCESS_STACK_MEM   (0)
 #define CFG_THREAD_CLI_PROCESS_PRIORITY    osPriorityNormal
-#define CFG_THREAD_CLI_PROCESS_STACk_SIZE  (128 * 8)
+#define CFG_THREAD_CLI_PROCESS_STACK_SIZE  (128 * 8)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 

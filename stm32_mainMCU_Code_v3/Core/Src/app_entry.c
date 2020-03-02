@@ -77,7 +77,7 @@ const osThreadAttr_t ShciUserEvtProcess_attr = {
     .cb_size = CFG_SHCI_USER_EVT_PROCESS_CB_SIZE,
     .stack_mem = CFG_SHCI_USER_EVT_PROCESS_STACK_MEM,
     .priority = CFG_SHCI_USER_EVT_PROCESS_PRIORITY,
-    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACk_SIZE
+    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE
 };
 
 /* Global function prototypes -----------------------------------------------*/
@@ -391,6 +391,7 @@ void TL_TRACES_EvtReceived( TL_EvtPacket_t * hcievt )
 #if(CFG_DEBUG_TRACE != 0)
 void DbgOutputInit( void )
 {
+    MX_LPUART1_UART_Init();
 
   return;
 }

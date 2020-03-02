@@ -1,8 +1,8 @@
-stm32wbxx_ll_rcc.h:1468:22:LL_RCC_HSI_Enable	4	static
-stm32wbxx_ll_rcc.h:1488:26:LL_RCC_HSI_IsReady	4	static
-stm32wbxx_ll_rcc.h:2044:22:LL_RCC_SetSysClkSource	16	static
-stm32wbxx_ll_rcc.h:2058:26:LL_RCC_GetSysClkSource	4	static
-stm32wbxx_ll_rcc.h:2370:22:LL_RCC_SetSMPSClockSource	16	static
+stm32wbxx_ll_rcc.h:1554:22:LL_RCC_HSI_Enable	4	static
+stm32wbxx_ll_rcc.h:1574:26:LL_RCC_HSI_IsReady	4	static
+stm32wbxx_ll_rcc.h:2130:22:LL_RCC_SetSysClkSource	16	static
+stm32wbxx_ll_rcc.h:2144:26:LL_RCC_GetSysClkSource	4	static
+stm32wbxx_ll_rcc.h:2456:22:LL_RCC_SetSMPSClockSource	16	static
 stm32_lpm_if.c:70:6:PWR_EnterOffMode	4	static
 stm32_lpm_if.c:82:6:PWR_ExitOffMode	4	static
 stm32_lpm_if.c:95:6:PWR_EnterStopMode	4	static

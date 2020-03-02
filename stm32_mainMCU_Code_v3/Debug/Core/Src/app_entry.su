@@ -1,8 +1,8 @@
-stm32wbxx_ll_exti.h:348:22:LL_EXTI_EnableIT_32_63	16	static
-stm32wbxx_ll_exti.h:374:22:LL_C2_EXTI_EnableIT_32_63	16	static
-stm32wbxx_ll_rcc.h:2331:22:LL_RCC_SetClkAfterWakeFromStop	16	static
+stm32wbxx_ll_rcc.h:2417:22:LL_RCC_SetClkAfterWakeFromStop	16	static
+stm32wbxx_ll_bus.h:508:22:LL_AHB2_GRP1_EnableClock	24	static
+stm32wbxx_ll_bus.h:564:22:LL_AHB2_GRP1_DisableClock	16	static
 app_entry.c:112:6:APPE_Init	8	static
-app_entry.c:142:13:Init_Debug	8	static
+app_entry.c:142:13:Init_Debug	32	static
 app_entry.c:192:13:SystemPower_Config	8	static
 app_entry.c:213:13:appe_Tl_Init	40	static
 app_entry.c:243:13:APPE_SysStatusNot	16	static

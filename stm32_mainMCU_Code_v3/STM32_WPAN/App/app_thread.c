@@ -107,7 +107,7 @@ const osThreadAttr_t ThreadMsgM0ToM4Process_attr = {
     .cb_size = CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_SIZE,
     .stack_mem = CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_MEM,
     .priority = CFG_THREAD_MSG_M0_TO_M4_PROCESS_PRIORITY,
-    .stack_size = CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACk_SIZE
+    .stack_size = CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_SIZE
 };
 
 const osThreadAttr_t ThreadCliProcess_attr = {
@@ -117,7 +117,7 @@ const osThreadAttr_t ThreadCliProcess_attr = {
      .cb_size = CFG_THREAD_CLI_PROCESS_CB_SIZE,
      .stack_mem = CFG_THREAD_CLI_PROCESS_STACK_MEM,
      .priority = CFG_THREAD_CLI_PROCESS_PRIORITY,
-     .stack_size = CFG_THREAD_CLI_PROCESS_STACk_SIZE
+     .stack_size = CFG_THREAD_CLI_PROCESS_STACK_SIZE
  };
 
 /* USER CODE BEGIN PD */
@@ -312,6 +312,7 @@ struct sendIP_struct {
 	char node_type[12];
 	char description[12];
 	uint8_t uid[8];
+	uint16_t RLOC;
 };
 
 //static uint8_t OT_Command = 0;
@@ -353,9 +354,17 @@ union ColorComplex lightMessageComplex;
 struct SystemCal borderRouter = { 0 };
 struct SystemCal receivedSystemCal = { 0 };
 
-struct sendIP_struct msgSendMyIP = { .node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .uid = 0 };
+struct sendIP_struct msgSendMyIP = { .node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .RLOC = 0, .uid = 0 };
 
 otIp6Address multicastAddr;
+
+//otNetifMulticastAddress* multicastAddresses;
+//otIp6Address* meshLocalEID;
+//otIp6Address* linkLocalIPV6;
+
+volatile otNetifMulticastAddress* multicastAddresses;
+volatile otIp6Address* meshLocalEID;
+volatile otIp6Address* linkLocalIPV6;
 
 #ifdef OTA_ENABLED
 static otCoapResource OT_RessourceFuotaProvisioning = {C_RESSOURCE_FUOTA_PROVISIONING, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapReqHandlerFuotaProvisioning, NULL};
@@ -549,8 +558,10 @@ static void APP_THREAD_DeviceConfig(void)
 		APP_THREAD_Error(ERR_THREAD_SET_CHANNEL, error);
 	}
 
-	otChildSupervisionSetCheckTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
-	otChildSupervisionSetInterval(NULL, CHILD_SUPERVISION_INTERVAL);
+	otThreadSetChildTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
+
+//	otChildSupervisionSetCheckTimeout(NULL, CHILD_SUPERVISION_TIMEOUT);
+//	otChildSupervisionSetInterval(NULL, CHILD_SUPERVISION_INTERVAL);
 
 //   error = otIp6AddressFromString("ff12::1", &multicastAddr);
 //   error = otIp6SubscribeMulticastAddress(NULL, &multicastAddr);
@@ -627,6 +638,7 @@ static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext)
 
   if ((NotifFlags & (uint32_t)OT_CHANGED_THREAD_ROLE) == (uint32_t)OT_CHANGED_THREAD_ROLE)
   {
+	  msgSendMyIP.RLOC = otThreadGetRloc16(NULL);
     switch (otThreadGetDeviceRole(NULL))
     {
     case OT_DEVICE_ROLE_DISABLED:
@@ -1590,9 +1602,7 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, ot
 }
 
 
-volatile otNetifMulticastAddress multicastAddresses;
-volatile otIp6Address meshLocalEID;
-volatile otIp6Address linkLocalIPV6;
+
 
 static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_length, char *ipv6_addr, char *resource) {
 	//otError   error = OT_ERROR_NONE;
@@ -1697,12 +1707,12 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 	// https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
 	do {
 		// REMOVE BELOW CALLS (ONLY FOR DEBUGGING)
-//			  myRloc16 = otThreadGetRloc16(NULL);
-//			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
-//			  isEnabledIpv6 = otIp6IsEnabled(NULL);
-//			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
-//			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
-//			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+			  myRloc16 = otThreadGetRloc16(NULL);
+			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+			  isEnabledIpv6 = otIp6IsEnabled(NULL);
+			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
+			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
+			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
 
 		// clear info
 		memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
@@ -1713,12 +1723,14 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 		if(msgSize > 100){ // TODO : semd to borderRouter if the message is a log message (this is a temporary fix)
 #ifndef BORDER_ROUTER_NODE_TRANSMITTER
 			memcpy(&OT_MessageInfo.mPeerAddr, &borderRouter.ipv6, sizeof(otIp6Address));
-			otIp6AddressFromString("fd11:22::c34c:7994:cccc:4b82", &OT_MessageInfo.mSockAddr);
+			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+//			otIp6AddressFromString("fd11:22::c34c:7994:cccc:4b82", &OT_MessageInfo.mSockAddr);
 #else
 			memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr, sizeof(otIp6Address));
 #endif
 		}else{
 			memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr, sizeof(otIp6Address));
+			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
 		}
 
 //			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));

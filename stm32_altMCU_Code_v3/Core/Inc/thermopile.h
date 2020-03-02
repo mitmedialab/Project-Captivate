@@ -28,7 +28,7 @@ struct thermopilePackagedData{
 //};
 //
 struct adcThermopileData{
-	uint16_t thermopile;
+	uint16_t thermopile[10];
 	uint16_t temple_thermistor;
 	uint16_t nose_thermistor;
 };
@@ -54,6 +54,7 @@ osMessageQueueId_t thermMsgQueueHandle;
 void ThermopileTask(void *argument);
 void Setup_LMP91051(void);
 void SwitchTemperatureSensor(sensorChoice sense);
+void TurnOff_LMP91051(void);
 
 #ifdef __cplusplus
  }
