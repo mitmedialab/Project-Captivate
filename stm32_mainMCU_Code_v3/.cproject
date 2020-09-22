@@ -49,6 +49,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.287317056" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.5.0/Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\patri\STM32Cube\Repository\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\GCC&quot;"/>
 									<listOptionValue builtIn="false" value="C:/Users/patri/STM32Cube/Repository/STM32Cube_FW_WB_V1.5.0/Middlewares/ST/STM32_WPAN"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Users\patri\STM32Cube\Repository\STM32Cube_FW_WB_V1.4.0\Drivers\STM32WBxx_HAL_Driver\Src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Users\patri\STM32Cube\Repository\STM32Cube_FW_WB_V1.4.0\Middlewares\ST\STM32_TouchSensing_Library\inc&quot;"/>

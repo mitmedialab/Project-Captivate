@@ -1,4 +1,0 @@
-child_supervision.c:36:10:otChildSupervisionGetInterval	24	static
-child_supervision.c:52:6:otChildSupervisionSetInterval	24	static
-child_supervision.c:68:10:otChildSupervisionGetCheckTimeout	24	static
-child_supervision.c:84:6:otChildSupervisionSetCheckTimeout	24	static
