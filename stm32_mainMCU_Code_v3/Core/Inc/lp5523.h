@@ -24,7 +24,7 @@
 
 typedef union ColorComplex
 {
-    struct colors_indiv {
+    struct ColorsIndiv {
         uint8_t left_front_b;
         uint8_t left_front_g;
         uint8_t left_top_b;
@@ -44,9 +44,9 @@ typedef union ColorComplex
 		uint8_t right_front_r;
 		uint8_t right_top_r;
 		uint8_t right_side_r;
-    };
+    } ColorsIndiv;
     uint8_t color[18];
-};
+} ColorComplex;
 
 /* defines -----------------------------------------------------------*/
 

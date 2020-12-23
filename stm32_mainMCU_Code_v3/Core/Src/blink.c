@@ -111,7 +111,7 @@ void BlinkTask(void *argument) {
 					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT; iterator++) {
 
 						// grab packet of size BLINK_PACKET_SIZE
-						memcpy(blinkMsgBuffer_1.data, &(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
+						memcpy(blinkMsgBuffer_1.data,  (uint8_t*) &(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
 						blinkMsgBuffer_1.tick_ms = previousTick_ms + tick_ms_diff;
 						blinkMsgBuffer_1.payload_ID = payload_ID;
 

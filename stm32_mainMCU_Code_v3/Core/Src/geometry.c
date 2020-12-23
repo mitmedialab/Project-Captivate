@@ -60,7 +60,7 @@ void consume_angles(GeometryBuilder * self, const SensorAnglesFrame * f) {
             self->vive_vars_.time_ms = HAL_GetTick();
 
             //Put VIVE measurements in the message queue
-            osMessageQueuePut(viveQueueHandle, (void *) &self->vive_vars_, NULL, 0);
+            osMessageQueuePut(viveQueueHandle, (void *) &self->vive_vars_, 0U, 0);
             // tell timer function that localization is complete
 			osSemaphoreRelease(locCompleteHandle);
         }

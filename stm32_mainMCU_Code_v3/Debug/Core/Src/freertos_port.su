@@ -1,7 +1,1 @@
-freertos_port.c:84:6:vPortSuppressTicksAndSleep	16	static
-freertos_port.c:171:6:vPortSetupTimerInterrupt	8	static
-freertos_port.c:194:13:LpTimerInit	8	static
-freertos_port.c:207:13:LpTimerCb	4	static
-freertos_port.c:222:13:LpTimerStart	16	static
-freertos_port.c:287:13:LpEnter	4	static
-freertos_port.c:301:17:LpGetElapsedTime	40	static
+freertos_port.c:88:6:vPortSuppressTicksAndSleep	16	static

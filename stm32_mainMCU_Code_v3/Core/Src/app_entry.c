@@ -81,7 +81,9 @@ const osThreadAttr_t ShciUserEvtProcess_attr = {
 };
 
 /* Global function prototypes -----------------------------------------------*/
+#if(CFG_DEBUG_TRACE != 0)
 size_t DbgTraceWrite(int handle, const unsigned char * buf, size_t bufSize);
+#endif
 
 /* USER CODE BEGIN GFP */
 
@@ -189,16 +191,17 @@ static void Init_Debug( void )
  * @param  None
  * @retval None
  */
-static void SystemPower_Config( void )
+static void SystemPower_Config(void)
 {
-
   /**
    * Select HSI as system clock source after Wake Up from Stop mode
    */
   LL_RCC_SetClkAfterWakeFromStop(LL_RCC_STOP_WAKEUPCLOCK_HSI);
 
   /* Initialize low power manager */
-  UTIL_LPM_Init( );
+  UTIL_LPM_Init();
+  /* Initialize the CPU2 reset value before starting CPU2 with C2BOOT */
+  LL_C2_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
   /**
@@ -262,7 +265,7 @@ static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )
  * The type of the payload for a system user event is tSHCI_UserEvtRxParam
  * When the system event is both :
  *    - a ready event (subevtcode = SHCI_SUB_EVT_CODE_READY)
- *    - reported by the FUS (sysevt_ready_rsp == RSS_FW_RUNNING)
+ *    - reported by the FUS (sysevt_ready_rsp == FUS_FW_RUNNING)
  * The buffer shall not be released
  * ( eg ((tSHCI_UserEvtRxParam*)pPayload)->status shall be set to SHCI_TL_UserEventFlow_Disable )
  * When the status is not filled, the buffer is released by default
@@ -391,9 +394,9 @@ void TL_TRACES_EvtReceived( TL_EvtPacket_t * hcievt )
 #if(CFG_DEBUG_TRACE != 0)
 void DbgOutputInit( void )
 {
-    MX_LPUART1_UART_Init();
-
+#ifdef CFG_DEBUG_TRACE_UART
   return;
+#endif
 }
 
 /**

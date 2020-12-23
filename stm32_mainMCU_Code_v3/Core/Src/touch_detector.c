@@ -156,7 +156,7 @@ void touchSensingStop(void) {
 uint8_t temp_flag = 1;
 enum TouchType action = None;
 
-void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
+void process_touches(volatile TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 
 //	action = None;
 

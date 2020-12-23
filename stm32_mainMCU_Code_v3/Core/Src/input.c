@@ -10,6 +10,7 @@
 #include "captivate_config.h"
 
 #include "string.h"
+#include "app_thread.h"
 
 PulseProcessor pulse_processor;
 GeometryBuilder geometry_builder;
@@ -130,6 +131,6 @@ void get3D_location(void *arguments){
 
 void enqueue_pulse(Input *self, uint16_t start_time, uint16_t len){
 	Pulse p_in = {self->input_idx_, start_time, len};
-	osMessageQueuePut(pulseQueueHandle, (const void *) &p_in, NULL, 0);
+	osMessageQueuePut(pulseQueueHandle, (const void *) &p_in, 0U, 0);
 //	count = osMessageQueueGetCount(pulseQueueHandle);
 }

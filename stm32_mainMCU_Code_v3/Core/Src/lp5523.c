@@ -104,7 +104,7 @@ void setup_LP5523(uint8_t ADDR){
 	// enable logarithmic dimming
 //	packet = LOG_EN;
 //	while(HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT) != HAL_OK);
-	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, packet_array, 9, I2C_TIMEOUT);
+	HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, deviceAddress, LIS3DH_D1_CNTRL_REG, 1, (uint8_t *) packet_array, 9, I2C_TIMEOUT);
 
 	osSemaphoreRelease(messageI2C_LockHandle);
 #else

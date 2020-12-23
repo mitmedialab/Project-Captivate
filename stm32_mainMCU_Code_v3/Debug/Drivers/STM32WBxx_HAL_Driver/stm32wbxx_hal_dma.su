@@ -12,4 +12,4 @@ stm32wbxx_hal_dma.c:975:22:HAL_DMA_GetState	16	static
 stm32wbxx_hal_dma.c:987:10:HAL_DMA_GetError	16	static
 stm32wbxx_hal_dma.c:1013:13:DMA_SetConfig	24	static
 stm32wbxx_hal_dma.c:1056:13:DMA_CalcDMAMUXChannelBaseAndMask	24	static
-stm32wbxx_hal_dma.c:1088:13:DMA_CalcDMAMUXRequestGenBaseAndMask	24	static
+stm32wbxx_hal_dma.c:1090:13:DMA_CalcDMAMUXRequestGenBaseAndMask	24	static
