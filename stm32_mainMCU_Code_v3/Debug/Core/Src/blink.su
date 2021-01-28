@@ -1,4 +1,0 @@
-blink.c:65:6:BlinkTask	24	static
-blink.c:181:6:HAL_ADC_ConvCpltCallback	16	static
-blink.c:196:6:HAL_ADC_ConvHalfCpltCallback	16	static
-blink.c:202:6:HAL_TIM_PWM_PulseFinishedCallback	16	static

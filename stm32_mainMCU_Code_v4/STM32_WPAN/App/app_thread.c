@@ -50,8 +50,11 @@
 #include "usbd_cdc_if.h"
 
 // TODO: fix the below include call to be relative
-#include <C:\ST\STM32CubeIDE_1.3.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610\tools\arm-none-eabi\include\stdio.h>
-#include <C:\ST\STM32CubeIDE_1.3.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610\tools\arm-none-eabi\include\time.h>
+// C:\ST\STM32CubeIDE_1.5.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include
+//#include <C:\ST\STM32CubeIDE_1.5.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\stdio.h>
+//#include <C:\ST\STM32CubeIDE_1.5.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\time.h>
+#include "stdio.h"
+#include "time.h"
 
 /* USER CODE END Includes */
 
@@ -200,8 +203,8 @@ void stm32UID(uint8_t* uid) ;
 
 static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+//static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
+//		const otMessageInfo *pMessageInfo);
 
 //static void APP_THREAD_SendNextBuffer(void);
 //static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type);
@@ -215,10 +218,10 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 //                                  const otMessageInfo * pMessageInfo);
 
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+		otMessageInfo *pMessageInfo);
 
 static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+		otMessageInfo *pMessageInfo);
 
 static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo);
@@ -226,8 +229,8 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, ot
 static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+//static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
+//		const otMessageInfo *pMessageInfo);
 
 static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 		const otMessageInfo *pMessageInfo);
@@ -280,14 +283,22 @@ static osThreadId_t OsTaskCliId;            /* Task used to manage CLI comamnd  
 
 /* USER CODE BEGIN PV */
 //static otCoapResource OT_Light_Ressource = {C_LIGHT_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapRequestHandler, NULL};
-static otCoapResource OT_Lights_Complex_Ressource = { C_LIGHTS_SIMPLE_RESSOURCE, APP_THREAD_DummyReqHandler,
-		(void*) APP_THREAD_CoapLightsSimpleRequestHandler, NULL };
-static otCoapResource OT_Lights_Simple_Ressource = { C_LIGHTS_COMPLEX_RESSOURCE, APP_THREAD_DummyReqHandler,
-		(void*) APP_THREAD_CoapLightsComplexRequestHandler, NULL };
-static otCoapResource OT_Border_Time_Ressource = { C_BORER_TIME_RESSOURCE, APP_THREAD_DummyReqHandler,
-		(void*) APP_THREAD_CoapBorderTimeRequestHandler, NULL };
-static otCoapResource OT_Node_Info_Ressource = { C_NODE_INFO_RESSOURCE, APP_THREAD_DummyReqHandler,
-		(void*) APP_THREAD_CoapNodeInfoRequestHandler, NULL };
+//static otCoapResource OT_Lights_Complex_Ressource = { C_LIGHTS_SIMPLE_RESSOURCE, APP_THREAD_DummyReqHandler,
+//		(void*) APP_THREAD_CoapLightsSimpleRequestHandler, NULL };
+//static otCoapResource OT_Lights_Simple_Ressource = { C_LIGHTS_COMPLEX_RESSOURCE, APP_THREAD_DummyReqHandler,
+//		(void*) APP_THREAD_CoapLightsComplexRequestHandler, NULL };
+//static otCoapResource OT_Border_Time_Ressource = { C_BORER_TIME_RESSOURCE, APP_THREAD_DummyReqHandler,
+//		(void*) APP_THREAD_CoapBorderTimeRequestHandler, NULL };
+//static otCoapResource OT_Node_Info_Ressource = { C_NODE_INFO_RESSOURCE, APP_THREAD_DummyReqHandler,
+//		(void*) APP_THREAD_CoapNodeInfoRequestHandler, NULL };
+static otCoapResource OT_Lights_Complex_Ressource = {C_LIGHTS_SIMPLE_RESSOURCE,
+		(void*) APP_THREAD_CoapLightsSimpleRequestHandler,"myLightS", NULL};
+static otCoapResource OT_Lights_Simple_Ressource = {C_LIGHTS_COMPLEX_RESSOURCE,
+		(void*) APP_THREAD_CoapLightsComplexRequestHandler,"myLightC", NULL};
+static otCoapResource OT_Border_Time_Ressource = {C_BORER_TIME_RESSOURCE,
+		(void*) APP_THREAD_CoapBorderTimeRequestHandler,"myTime", NULL};
+static otCoapResource OT_Node_Info_Ressource = {C_NODE_INFO_RESSOURCE,
+		(void*) APP_THREAD_CoapNodeInfoRequestHandler,"myInfo", NULL};
 
 #ifdef BORDER_ROUTER_NODE
 static otCoapResource OT_Border_Log_Ressource = { C_BORDER_PACKET_RESSOURCE, APP_THREAD_DummyReqHandler,
@@ -295,7 +306,9 @@ static otCoapResource OT_Border_Log_Ressource = { C_BORDER_PACKET_RESSOURCE, APP
 #endif
 
 #ifndef DONGLE_CODE
-static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapToggleLoggingRequestHandler, NULL};
+//static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapToggleLoggingRequestHandler, NULL};
+static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE,
+		(void*) APP_THREAD_CoapToggleLoggingRequestHandler, "myTogLog", NULL};
 #endif
 
 otMessageInfo OT_MessageInfo = { 0 };
@@ -322,9 +335,9 @@ struct sendIP_struct {
 static otMessage *pOT_Message = NULL;
 //static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
 
-const otMasterKey masterKey = { 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33,
-		0x44, 0x44 };
-const otExtendedPanId extendedPanId = { 0x11, 0x11, 0x11, 0x11, 0x22, 0x22, 0x22, 0x22 };
+const otMasterKey masterKey = {{ 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33,
+		0x44, 0x44 }};
+const otExtendedPanId extendedPanId = {{ 0x11, 0x11, 0x11, 0x11, 0x22, 0x22, 0x22, 0x22 }};
 const char networkName[20] = "PatrickNetwork";
 
 //otIp6Address binary_border_ipv6;
@@ -335,7 +348,7 @@ const char networkName[20] = "PatrickNetwork";
 //const char border_ipv6[50] = "fd33:3333:3344:0:0:ff:fe00:e400";
 otError error = OT_ERROR_NONE;
 static uint8_t OT_ReceivedCommand = 0;
-static char OT_BufferSend[20] = "TEST PAYLOAD";
+//static char OT_BufferSend[20] = "TEST PAYLOAD";
 volatile otIp6Address *myAddress;
 volatile otMessageInfo *tempMessageInfo;
 volatile uint16_t myRloc16;
@@ -876,11 +889,11 @@ static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
  * @param
  * @retval None
  */
-static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
-	tempMessageInfo = pMessageInfo;
-	receivedMessage = (otMessageInfo*) pMessage;
-}
+//static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
+//		const otMessageInfo *pMessageInfo) {
+//	tempMessageInfo = pMessageInfo;
+//	receivedMessage = (otMessageInfo*) pMessage;
+//}
 
 #ifdef OTA_ENABLED
 /**
@@ -1310,7 +1323,7 @@ void APP_THREAD_UpdateBorderRouter() {
 
 // send a GET request to border router via multicast
 void APP_THREAD_SyncWithBorderRouter() {
-	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr, borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
+	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr, (char *) borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
 }
 
 void APP_THREAD_SendMyInfo() {
@@ -1326,7 +1339,7 @@ void APP_THREAD_SendMyInfo() {
 //
 //	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
 	// TODO: does this need an ACK
-	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, nodeInfoResource, NO_ACK,
+	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, (char *) nodeInfoResource, NO_ACK,
 			OT_COAP_CODE_PUT, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
@@ -1338,18 +1351,19 @@ void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource) {
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket) {
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6, borderPacket, NO_ACK,
+	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6, (char *) borderPacket, NO_ACK,
 			OT_COAP_CODE_PUT, 1U);
 
 }
 
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
+		otMessageInfo *pMessageInfo) {
 	do {
 
 		// if get, send response with current log message
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &lightsSimpleMessage, sizeof(lightsSimpleMessage));
+//			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &lightsSimpleMessage, sizeof(lightsSimpleMessage), pHeader, pMessageInfo);
+			APP_THREAD_SendDataResponse(&lightsSimpleMessage, sizeof(lightsSimpleMessage), pHeader, pMessageInfo);
 			break;
 		}
 
@@ -1366,7 +1380,8 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otM
 		receivedMessage = (otMessageInfo*) pMessage;
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
-			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, NULL, 0);
+//			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, NULL, 0);
+			APP_THREAD_SendDataResponse(NULL, 0, pHeader, pMessageInfo);
 			break;
 		}
 
@@ -1569,7 +1584,7 @@ void updateRTC(time_t now) {
 }
 
 static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
+		otMessageInfo *pMessageInfo) {
 	do {
 		//APP_THREAD_SendCoapUnicastRequest();
 
@@ -1652,7 +1667,7 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 		OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
 		OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
 
-		unicastAddresses = otIp6GetUnicastAddresses(NULL);
+		unicastAddresses = (otNetifAddress *OTCALL) otIp6GetUnicastAddresses(NULL);
 		OT_MessageInfo.mSockAddr = unicastAddresses->mAddress;
 		//OT_MessageInfo.mHopLimit = 20;
 
@@ -1707,11 +1722,11 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 	do {
 		// REMOVE BELOW CALLS (ONLY FOR DEBUGGING)
 			  myRloc16 = otThreadGetRloc16(NULL);
-			  unicastAddresses = otIp6GetUnicastAddresses(NULL);
+			  unicastAddresses = (otNetifAddress *OTCALL) otIp6GetUnicastAddresses(NULL);
 			  isEnabledIpv6 = otIp6IsEnabled(NULL);
-			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
-			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
-			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
+			  multicastAddresses = (otNetifMulticastAddress *) otIp6GetMulticastAddresses(NULL);
+			  meshLocalEID =  (otIp6Address *OTCALL) otThreadGetMeshLocalEid(NULL);
+			  linkLocalIPV6 = (otIp6Address *) otThreadGetLinkLocalIp6Address(NULL);
 
 		// clear info
 		memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));

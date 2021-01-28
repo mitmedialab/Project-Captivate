@@ -1,4 +1,0 @@
-stm32wbxx_ll_bus.h:540:22:LL_AHB2_GRP1_EnableClock	24	static
-comp.c:30:6:MX_COMP1_Init	8	static
-comp.c:49:6:HAL_COMP_MspInit	40	static
-comp.c:77:6:HAL_COMP_MspDeInit	16	static

@@ -1,4 +1,0 @@
-cycle_phase_classifier.c:12:6:process_pulse_lengths	40	static
-cycle_phase_classifier.c:46:7:expected_pulse_len	16	static
-cycle_phase_classifier.c:51:5:get_phase	16	static
-cycle_phase_classifier.c:59:6:reset	16	static

@@ -1,6 +1,0 @@
-stm32wbxx_ll_bus.h:365:22:LL_AHB1_GRP1_EnableClock	24	static
-stm32wbxx_ll_bus.h:411:22:LL_AHB1_GRP1_DisableClock	16	static
-stm32wbxx_ll_bus.h:540:22:LL_AHB2_GRP1_EnableClock	24	static
-tsc.c:29:6:MX_TSC_Init	8	static
-tsc.c:72:6:HAL_TSC_MspInit	40	static
-tsc.c:115:6:HAL_TSC_MspDeInit	16	static
