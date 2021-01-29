@@ -34,7 +34,7 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_ble.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +62,7 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t SystemCmdBuffer;
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255U];
 
 /* USER CODE BEGIN PV */
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t	BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
 
 /* USER CODE END PV */
 
@@ -118,7 +119,13 @@ void APPE_Init( void )
   HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
 /* USER CODE BEGIN APPE_Init_1 */
+  Init_Debug();
 
+  /**
+   * The Standby mode should not be entered before the initialization is over
+   * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
+   */
+  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 /* USER CODE END APPE_Init_1 */
   appe_Tl_Init();	/* Initialize all transport layers */
 
@@ -316,6 +323,16 @@ static void APPE_SysEvtReadyProcessing( void )
 {
   /* Traces channel initialization */
   TL_TRACES_Init( );
+
+//  APP_DBG("1- Initialisation of BLE Stack...");
+//  APP_BLE_Init_Dyn_1();
+//  APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
+  APP_THREAD_Init_Dyn_1();
+
+//  APP_DBG("3- Start BLE ADV...");
+//  APP_BLE_Init_Dyn_2();
+//  APP_DBG("4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
+  APP_THREAD_Init_Dyn_2();
 
   APP_THREAD_Init();
   UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);

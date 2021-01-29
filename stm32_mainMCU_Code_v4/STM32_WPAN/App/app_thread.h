@@ -163,6 +163,10 @@ void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket);
 void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource);
 void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_addr, char *resource,
 		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID);
+void APP_THREAD_Init_Dyn_1(void);
+void APP_THREAD_Init_Dyn_2(void);
+void APP_THREAD_Stop(void);
+void APP_THREAD_CleanCallbacks(void);
 /* USER CODE END EF */
 
 #ifdef __cplusplus

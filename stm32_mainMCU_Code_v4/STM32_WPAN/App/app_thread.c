@@ -212,6 +212,10 @@ static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapH
 static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_length, char *ipv6_addr, char *resource);
 
 
+//static void APP_THREAD_CoapRequestHandler(void                * pContext,
+//                                          otCoapHeader        * pHeader,
+//                                          otMessage           * pMessage,
+//                                          const otMessageInfo * pMessageInfo);
 
 //static void APP_THREAD_CoapRequestHandler(otCoapHeader        * pHeader,
 //                                  otMessage           * pMessage,
@@ -320,6 +324,9 @@ const char capLocResource[15] = "capLoc";
 const char nodeInfoResource[15] = "nodeInfo";
 
 otIp6Address multicastAddr;
+
+//static otCoapResource OT_Ressource = {C_RESSOURCE, APP_THREAD_CoapRequestHandler,"myCtx", NULL};
+
 
 struct sendIP_struct {
 	char node_type[12];
@@ -807,6 +814,90 @@ void stm32UID(uint8_t* uid) {
 /* USER CODE END FREERTOS_WRAPPER_FUNCTIONS */
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
+
+/**
+ * @brief Main entry point for the Thread Application
+ * @param  none
+ * @retval None
+ */
+void APP_THREAD_Init_Dyn_1( void )
+{
+  /* USER CODE BEGIN APP_THREAD_INIT_1 */
+
+  /* USER CODE END APP_THREAD_INIT_1 */
+
+  SHCI_CmdStatus_t ThreadInitStatus;
+
+  /* Check the compatibility with the Coprocessor Wireless Firmware loaded */
+  APP_THREAD_CheckWirelessFirmwareInfo();
+
+#if (CFG_USB_INTERFACE_ENABLE != 0)
+  VCP_Init(&VcpTxBuffer[0], &VcpRxBuffer[0]);
+#endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
+  /* Register cmdbuffer */
+  APP_THREAD_RegisterCmdBuffer(&ThreadOtCmdBuffer);
+
+  /**
+   * Do not allow standby in the application
+   */
+  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_THREAD, UTIL_LPM_DISABLE);
+
+  /* Init config buffer and call TL_THREAD_Init */
+  APP_THREAD_TL_THREAD_INIT();
+
+  /* Configure UART for sending CLI command from M4 */
+  APP_THREAD_Init_UART_CLI();
+
+  /* Send Thread start system cmd to M0 */
+  ThreadInitStatus = SHCI_C2_THREAD_Init();
+
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(ThreadInitStatus);
+
+  // TODO: added this call and remove the lines after since (I think) they are unnecessary
+  OsTaskMsgM0ToM4Id = osThreadNew(APP_THREAD_FreeRTOSProcessMsgM0ToM4Task, NULL,&ThreadMsgM0ToM4Process_attr);
+
+//  /* Register task */
+//  /* Create the different tasks */
+//  UTIL_SEQ_RegTask( 1<<(uint32_t)CFG_TASK_MSG_FROM_M0_TO_M4, UTIL_SEQ_RFU, APP_THREAD_ProcessMsgM0ToM4);
+//  UTIL_SEQ_RegTask( 1<<(uint32_t)CFG_TASK_COAP_MSG_BUTTON, UTIL_SEQ_RFU, APP_THREAD_SendCoapMsg);
+//
+//  UTIL_SEQ_RegTask( 1<<(uint32_t)CFG_TASK_COAP_SEND_MSG, UTIL_SEQ_RFU,APP_THREAD_SendCoapMsg);
+//  UTIL_SEQ_RegTask( 1<<(uint32_t)CFG_TASK_SET_THREAD_MODE, UTIL_SEQ_RFU,APP_THREAD_SetSleepyEndDeviceMode);
+}
+
+void APP_THREAD_Init_Dyn_2(void) {
+  /* Initialize and configure the Thread device*/
+  APP_THREAD_DeviceConfig();
+
+  //TODO: removed below as per Thread-only FreeRTOS example
+  /**
+   * Create timer to handle COAP request sending
+   */
+//  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &sedCoapTimerID, hw_ts_Repeated, APP_THREAD_CoapTimingElapsed);
+  /* Allow the 800_15_4 IP to enter in low power mode */
+}
+
+void APP_THREAD_Stop(void)
+{
+  otError error;
+  /* STOP THREAD */
+  error = otThreadSetEnabled(NULL, false);
+  if (error != OT_ERROR_NONE)
+  {
+//     APP_THREAD_Error(ERR_THREAD_STOP,error);
+  }
+}
+
+void APP_THREAD_CleanCallbacks(void)
+{
+  otRemoveStateChangeCallback(NULL, APP_THREAD_StateNotif, NULL);
+//  otCoapRemoveResource(NULL, &OT_Ressource);
+
+//  /* Remove Timers if any */
+//  HW_TS_Delete(setThreadModeTimerID);
+//  HW_TS_Delete(sedCoapTimerID);
+}
 
 #ifdef OTA_ENABLED
 static void Delete_Sectors( void )

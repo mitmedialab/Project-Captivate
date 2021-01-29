@@ -143,7 +143,7 @@ int main(void)
 
   while (1)
   {
-
+//	  UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
