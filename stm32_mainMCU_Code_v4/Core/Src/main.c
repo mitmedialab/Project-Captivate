@@ -44,6 +44,7 @@
 #include "usbd_cdc.h"
 #include "usb_device.h"
 #include "touch_detector.h"
+#include "otp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,7 +72,11 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void Reset_Device( void );
+static void Reset_IPCC( void );
+static void Reset_BackupDomain( void );
+static void Init_Exti( void );
+static void Config_HSE(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -86,6 +91,11 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	  /**
+	   * The OPTVERR flag is wrongly set at power on
+	   * It shall be cleared before using any HAL_FLASH_xxx() api
+	   */
+	   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -94,32 +104,34 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  Reset_Device();
+    Config_HSE();
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  Init_Exti(); /**< Configure the system Power Mode */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_ADC1_Init();
+//  MX_ADC1_Init();
   MX_RTC_Init();
-  MX_TIM2_Init();
+//  MX_TIM2_Init();
   MX_RF_Init();
-  MX_I2C1_Init();
-  MX_COMP1_Init();
-  MX_TIM16_Init();
-  MX_USB_Device_Init();
+//  MX_I2C1_Init();
+//  MX_COMP1_Init();
+//  MX_TIM16_Init();
+//  MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
 
 #ifndef BORDER_ROUTER_NODE
-  USBD_Stop(&hUsbDeviceFS);
+//  USBD_Stop(&hUsbDeviceFS);
 #endif
 
 //  HAL_IWDG_Refresh(&hiwdg);
@@ -231,7 +243,98 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void Config_HSE(void)
+{
+    OTP_ID0_t * p_otp;
 
+  /**
+   * Read HSE_Tuning from OTP
+   */
+  p_otp = (OTP_ID0_t *) OTP_Read(0);
+  if (p_otp)
+  {
+    LL_RCC_HSE_SetCapacitorTuning(p_otp->hse_tuning);
+  }
+
+  return;
+}
+
+
+static void Reset_Device( void )
+{
+#if ( CFG_HW_RESET_BY_FW == 1 )
+	Reset_BackupDomain();
+
+	Reset_IPCC();
+#endif
+
+	return;
+}
+
+static void Reset_IPCC( void )
+{
+	LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
+
+	LL_C1_IPCC_ClearFlag_CHx(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_ClearFlag_CHx(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C1_IPCC_DisableTransmitChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_DisableTransmitChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C1_IPCC_DisableReceiveChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_DisableReceiveChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	return;
+}
+
+static void Reset_BackupDomain( void )
+{
+	if ((LL_RCC_IsActiveFlag_PINRST() != FALSE) && (LL_RCC_IsActiveFlag_SFTRST() == FALSE))
+	{
+		HAL_PWR_EnableBkUpAccess(); /**< Enable access to the RTC registers */
+
+		/**
+		 *  Write twice the value to flush the APB-AHB bridge
+		 *  This bit shall be written in the register before writing the next one
+		 */
+		HAL_PWR_EnableBkUpAccess();
+
+		__HAL_RCC_BACKUPRESET_FORCE();
+		__HAL_RCC_BACKUPRESET_RELEASE();
+	}
+
+	return;
+}
+
+static void Init_Exti( void )
+{
+  /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
+  LL_EXTI_DisableIT_0_31(~0);
+  LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
 /* USER CODE END 4 */
 
  /**

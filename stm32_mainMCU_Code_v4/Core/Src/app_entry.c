@@ -78,7 +78,7 @@ const osThreadAttr_t ShciUserEvtProcess_attr = {
     .cb_size = CFG_SHCI_USER_EVT_PROCESS_CB_SIZE,
     .stack_mem = CFG_SHCI_USER_EVT_PROCESS_STACK_MEM,
     .priority = CFG_SHCI_USER_EVT_PROCESS_PRIORITY,
-    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE
+    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE * 2
 };
 
 /* Global function prototypes -----------------------------------------------*/
