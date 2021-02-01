@@ -37,6 +37,8 @@
 
 #include "cmsis_os.h"
 
+#include "master_thread.h"
+
 
 typedef enum
 {

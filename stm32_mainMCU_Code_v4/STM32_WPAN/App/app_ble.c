@@ -147,7 +147,7 @@ uint8_t index_con_int, mutex;
 static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'C', 'A', 'P', 'T', 'I', 'V', 'A', 'T', 'E'};
 #endif
 
-//uint8_t index_con_int, mutex;
+uint8_t index_con_int, mutex;
 
 uint8_t const manuf_data[22] = { 2, AD_TYPE_TX_POWER_LEVEL, 0x00 /* 0 dBm */, /* Trasmission Power */
 		10, AD_TYPE_COMPLETE_LOCAL_NAME, 'C', 'A', 'P', 'T', 'I', 'V', 'A', 'T', 'E', /* Complete Name */

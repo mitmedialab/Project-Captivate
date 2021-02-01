@@ -26,7 +26,7 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "dis.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

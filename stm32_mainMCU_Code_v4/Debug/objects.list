@@ -81,7 +81,6 @@
 "Middlewares/ST/STM32_WPAN/ble/svc/Src/svc_ctl.o"
 "Middlewares/ST/STM32_WPAN/ble/svc/Src/tps.o"
 "Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci/shci.o"
-"Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o"
 "Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o"
 "Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl_if.o"
 "Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o"

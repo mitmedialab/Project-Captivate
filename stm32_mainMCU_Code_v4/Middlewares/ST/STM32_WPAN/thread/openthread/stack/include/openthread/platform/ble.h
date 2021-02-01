@@ -44,6 +44,8 @@ extern "C" {
 
 #include <openthread/error.h>
 
+#include "Instance.h"
+
 /**
  * @addtogroup plat-ble
  *

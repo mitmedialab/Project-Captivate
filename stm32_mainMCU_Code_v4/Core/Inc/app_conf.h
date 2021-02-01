@@ -26,7 +26,6 @@
 #include "hw_conf.h"
 #include "hw_if.h"
 
-
 /******************************************************************************
  * Application Config
  ******************************************************************************/
@@ -65,9 +64,9 @@
 /**
  * Select UART interfaces
  */
-#define CFG_DEBUG_TRACE_UART    hw_lpuart1
+#define CFG_DEBUG_TRACE_UART    0
 #define CFG_CONSOLE_MENU
-#define CFG_CLI_UART    hw_uart1
+//#define CFG_CLI_UART    No UART selected
 /******************************************************************************
  * USB interface
  ******************************************************************************/
@@ -194,7 +193,7 @@ typedef enum
  * keep debugger enabled while in any low power mode when set to 1
  * should be set to 0 in production
  */
-#define CFG_DEBUGGER_SUPPORTED    1
+#define CFG_DEBUGGER_SUPPORTED    0
 
 #if (CFG_FULL_LOW_POWER == 1)
 #undef CFG_DEBUGGER_SUPPORTED
@@ -209,7 +208,7 @@ typedef enum
  * Note : Refer to utilities_conf.h file in order to details
  *        the level of traces : CFG_DEBUG_TRACE_FULL or CFG_DEBUG_TRACE_LIGHT
  *****************************************************************************/
-#define CFG_DEBUG_TRACE    1
+#define CFG_DEBUG_TRACE    0
 
 #if (CFG_FULL_LOW_POWER == 1)
 #undef CFG_DEBUG_TRACE
@@ -255,7 +254,7 @@ typedef enum
 /******************************************************************************
  * Configure Log level for Application
  ******************************************************************************/
-#define APPLI_CONFIG_LOG_LEVEL    LOG_LEVEL_INFO
+#define APPLI_CONFIG_LOG_LEVEL    LOG_LEVEL_NONE
 #define APPLI_PRINT_FILE_FUNC_LINE    0
 
 /* USER CODE BEGIN Defines */
@@ -613,90 +612,6 @@ typedef enum
 #endif /* CFG_FULL_LOW_POWER */
 
 #define DATA_NOTIFICATION_MAX_PACKET_SIZE           240
-/* USER CODE END Defines */
-
-/******************************************************************************
- * Scheduler
- ******************************************************************************/
-
-/**
- * These are the lists of task id registered to the scheduler
- * Each task id shall be in the range [0:31]
- * This mechanism allows to implement a generic code in the API TL_BLE_HCI_StatusNot() to comply with
- * the requirement that a HCI/ACI command shall never be sent if there is already one pending
- */
-
-/**< Add in that list all tasks that may send a ACI/HCI command */
-//typedef enum
-//{
-//  /* BLE */
-//  CFG_TASK_ADV_CANCEL_ID,
-//  CFG_TASK_SW1_BUTTON_PUSHED_ID,
-//  CFG_TASK_HCI_ASYNCH_EVT_ID,
-//
-//  /* Thread */
-//  CFG_TASK_COAP_MSG_BUTTON,
-//  CFG_TASK_MSG_FROM_M0_TO_M4,
-//  CFG_TASK_SEND_CLI_TO_M0,
-//  CFG_TASK_COAP_SEND_MSG,
-//  CFG_TASK_SET_THREAD_MODE,
-//
-//  /* Concurrent System */
-//  CFG_Task_Switch_Protocol,
-//
-//  CFG_LAST_TASK_ID_WITH_HCICMD, /**< Shall be LAST in the list */
-//
-//
-//} CFG_Task_Id_With_HCI_Cmd_t;
-//
-///**< Add in that list all tasks that never send a ACI/HCI command */
-//typedef enum
-//{
-//    CFG_FIRST_TASK_ID_WITH_NO_HCICMD = CFG_LAST_TASK_ID_WITH_HCICMD - 1,        /**< Shall be FIRST in the list */
-//
-//    CFG_TASK_SYSTEM_HCI_ASYNCH_EVT_ID,
-///* USER CODE BEGIN CFG_Task_Id_With_NO_HCI_Cmd_t */
-//
-///* USER CODE END CFG_Task_Id_With_NO_HCI_Cmd_t */
-//    CFG_LAST_TASK_ID_WITHO_NO_HCICMD                                            /**< Shall be LAST in the list */
-//} CFG_Task_Id_With_NO_HCI_Cmd_t;
-//#define CFG_TASK_NBR    CFG_LAST_TASK_ID_WITHO_NO_HCICMD
-//
-///**
-// * This is the list of priority required by the application
-// * Each Id shall be in the range 0..31
-// */
-//typedef enum
-//{
-//  CFG_SCH_PRIO_0,
-//  CFG_SCH_PRIO_1,
-//  CFG_PRIO_NBR,
-//} CFG_SCH_Prio_Id_t;
-//
-//#define TASK_COAP_MSG_BUTTON        (1U << CFG_TASK_COAP_MSG_BUTTON)
-//#define TASK_MSG_FROM_M0_TO_M4      (1U << CFG_TASK_MSG_FROM_M0_TO_M4)
-//#define TASK_COAP_SEND_MSG          (1U << CFG_TASK_COAP_SEND_MSG)
-//#define TASK_SET_THREAD_MODE        (1U << CFG_TASK_SET_THREAD_MODE)
-///**
-// * This is a bit mapping over 32bits listing all events id supported in the application
-// */
-//typedef enum
-//{
-//  CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID,
-//  CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
-//  /* THREAD */
-//  CFG_EVT_ACK_FROM_M0_EVT,
-//  CFG_EVT_SYNCHRO_BYPASS_IDLE,
-//  CFG_Evt_ThreadStop,
-//
-//  CFG_IDLEEVT_GAP_PROC_COMPLETE,
-//  CFG_IDLEEVT_GATT_PROC_COMPLETE,
-//} CFG_IdleEvt_Id_t;
-
-
-#define EVENT_ACK_FROM_M0_EVT            (1U << CFG_EVT_ACK_FROM_M0_EVT)
-#define EVENT_SYNCHRO_BYPASS_IDLE        (1U << CFG_EVT_SYNCHRO_BYPASS_IDLE)
-
 /* USER CODE END Defines */
 
 /******************************************************************************

@@ -29,12 +29,15 @@ extern "C"
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+#include "ble_types.h"
+
 /* Exported types ------------------------------------------------------------*/
 typedef struct
 {
   uint8_t     *pPayload;
   uint8_t     Length;
 }DIS_Data_t;
+
 
 
 /* Exported constants --------------------------------------------------------*/

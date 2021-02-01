@@ -340,98 +340,98 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the semaphores(s) */
   /* creation of messageI2C_Lock */
-//  messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
-//
-//  /* creation of locNotify */
-//  locNotifyHandle = osSemaphoreNew(1, 1, &locNotify_attributes);
-//
-//  /* creation of locComplete */
-//  locCompleteHandle = osSemaphoreNew(1, 1, &locComplete_attributes);
-//
-//  /* creation of lightingLabDemoEnd */
-//  lightingLabDemoEndHandle = osSemaphoreNew(1, 1, &lightingLabDemoEnd_attributes);
-//
-//  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  messageI2C_LockHandle = osSemaphoreNew(1, 1, &messageI2C_Lock_attributes);
+
+  /* creation of locNotify */
+  locNotifyHandle = osSemaphoreNew(1, 1, &locNotify_attributes);
+
+  /* creation of locComplete */
+  locCompleteHandle = osSemaphoreNew(1, 1, &locComplete_attributes);
+
+  /* creation of lightingLabDemoEnd */
+  lightingLabDemoEndHandle = osSemaphoreNew(1, 1, &lightingLabDemoEnd_attributes);
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
 ////  /* add semaphores, ... */
-//  /* USER CODE END RTOS_SEMAPHORES */
-//
-//  /* Create the timer(s) */
-//  /* creation of viveTimer */
-//  viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, (void*) &viveStateVar, &viveTimer_attributes);
-//
-//  /* creation of watchDogTimer */
-//  watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL, &watchDogTimer_attributes);
-//
-//  /* USER CODE BEGIN RTOS_TIMERS */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* Create the timer(s) */
+  /* creation of viveTimer */
+  viveTimerHandle = osTimerNew(get3D_location, osTimerPeriodic, (void*) &viveStateVar, &viveTimer_attributes);
+
+  /* creation of watchDogTimer */
+  watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL, &watchDogTimer_attributes);
+
+  /* USER CODE BEGIN RTOS_TIMERS */
 ////  /* start timers, add new ones, ... */
 //  osTimerStart(watchDogTimerHandle, WATCHDOG_PERIOD);
 //
-//  /* USER CODE END RTOS_TIMERS */
-//
-//  /* Create the queue(s) */
-//  /* creation of blinkMsgQueue */
-//  blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
-//
-//  /* creation of lightsSimpleQueue */
-//  lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
-//
-//  /* creation of togLoggingQueue */
-//  togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
-//
-//  /* creation of interProcessorMsgQueue */
-//  interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
-//
-//  /* creation of inertialSensingQueue */
-//  inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
-//
-//  /* creation of activitySampleQueue */
-//  activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
-//
-//  /* creation of rotationSampleQueue */
-//  rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
-//
-//  /* creation of pulseQueue */
-//  pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
-//
-//  /* creation of viveQueue */
-//  viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
-//
-//  /* creation of statusQueue */
-//  statusQueueHandle = osMessageQueueNew (1, sizeof(uint32_t), &statusQueue_attributes);
-//
-//  /* creation of msgPasssingUSB_Queue */
-//  msgPasssingUSB_QueueHandle = osMessageQueueNew (5, 11, &msgPasssingUSB_Queue_attributes);
-//
-//  /* USER CODE BEGIN RTOS_QUEUES */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of blinkMsgQueue */
+  blinkMsgQueueHandle = osMessageQueueNew (10, 108, &blinkMsgQueue_attributes);
+
+  /* creation of lightsSimpleQueue */
+  lightsSimpleQueueHandle = osMessageQueueNew (3, 4, &lightsSimpleQueue_attributes);
+
+  /* creation of togLoggingQueue */
+  togLoggingQueueHandle = osMessageQueueNew (4, 6, &togLoggingQueue_attributes);
+
+  /* creation of interProcessorMsgQueue */
+  interProcessorMsgQueueHandle = osMessageQueueNew (10, 24, &interProcessorMsgQueue_attributes);
+
+  /* creation of inertialSensingQueue */
+  inertialSensingQueueHandle = osMessageQueueNew (10, 40, &inertialSensingQueue_attributes);
+
+  /* creation of activitySampleQueue */
+  activitySampleQueueHandle = osMessageQueueNew (10, 16, &activitySampleQueue_attributes);
+
+  /* creation of rotationSampleQueue */
+  rotationSampleQueueHandle = osMessageQueueNew (3, 24, &rotationSampleQueue_attributes);
+
+  /* creation of pulseQueue */
+  pulseQueueHandle = osMessageQueueNew (10, 6, &pulseQueue_attributes);
+
+  /* creation of viveQueue */
+  viveQueueHandle = osMessageQueueNew (10, 24, &viveQueue_attributes);
+
+  /* creation of statusQueue */
+  statusQueueHandle = osMessageQueueNew (1, sizeof(uint32_t), &statusQueue_attributes);
+
+  /* creation of msgPasssingUSB_Queue */
+  msgPasssingUSB_QueueHandle = osMessageQueueNew (5, 11, &msgPasssingUSB_Queue_attributes);
+
+  /* USER CODE BEGIN RTOS_QUEUES */
 //  /* add queues, ... */
-//  /* USER CODE END RTOS_QUEUES */
-//
-//  /* Create the thread(s) */
-//  /* creation of defaultTask */
-//  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
-//
-//  /* creation of frontLightsTask */
-//  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
-//
-//  /* creation of masterTask */
-//  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
-//
-//  /* creation of inertialTask */
-//  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
-//
-//  /* creation of pulseTask */
-//  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
-//
-//  /* creation of interProcTask */
-//  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
-//
-//  /* creation of blinkTask */
-//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-//
-//  /* creation of msgPassingUSB_T */
-//  msgPassingUSB_THandle = osThreadNew(msgPassingUSB, NULL, &msgPassingUSB_T_attributes);
-//
-//  /* USER CODE BEGIN RTOS_THREADS */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of frontLightsTask */
+  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+
+  /* creation of masterTask */
+  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+
+  /* creation of inertialTask */
+  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+
+  /* creation of pulseTask */
+  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+
+  /* creation of interProcTask */
+  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+
+  /* creation of blinkTask */
+  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+  /* creation of msgPassingUSB_T */
+  msgPassingUSB_THandle = osThreadNew(msgPassingUSB, NULL, &msgPassingUSB_T_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
 //
 //  // ensure binary notification semaphores are initially empty
 //  osSemaphoreAcquire(locNotifyHandle, 0);

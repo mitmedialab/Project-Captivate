@@ -45,6 +45,11 @@
 #include "usb_device.h"
 #include "touch_detector.h"
 #include "otp.h"
+
+#include "stm32_lpm.h"
+#include "stm32_seq.h"
+#include "dbg_trace.h"
+#include "hw_conf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,14 +124,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-//  MX_ADC1_Init();
+  MX_ADC1_Init();
   MX_RTC_Init();
-//  MX_TIM2_Init();
+  MX_TIM2_Init();
   MX_RF_Init();
-//  MX_I2C1_Init();
-//  MX_COMP1_Init();
-//  MX_TIM16_Init();
-//  MX_USB_Device_Init();
+  MX_I2C1_Init();
+  MX_COMP1_Init();
+  MX_TIM16_Init();
+  MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
   MX_TSC_Init();
 
