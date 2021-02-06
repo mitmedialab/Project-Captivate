@@ -1,56 +1,56 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_uart_ex.c
-  * @author  MCD Application Team
-  * @brief   Extended UART HAL module driver.
-  *          This file provides firmware functions to manage the following extended
-  *          functionalities of the Universal Asynchronous Receiver Transmitter Peripheral (UART).
-  *           + Initialization and de-initialization functions
-  *           + Peripheral Control functions
-  *
-  *
-  @verbatim
-  ==============================================================================
-               ##### UART peripheral extended features  #####
-  ==============================================================================
+ ******************************************************************************
+ * @file    stm32wbxx_hal_uart_ex.c
+ * @author  MCD Application Team
+ * @brief   Extended UART HAL module driver.
+ *          This file provides firmware functions to manage the following extended
+ *          functionalities of the Universal Asynchronous Receiver Transmitter Peripheral (UART).
+ *           + Initialization and de-initialization functions
+ *           + Peripheral Control functions
+ *
+ *
+ @verbatim
+ ==============================================================================
+ ##### UART peripheral extended features  #####
+ ==============================================================================
 
-    (#) Declare a UART_HandleTypeDef handle structure.
+ (#) Declare a UART_HandleTypeDef handle structure.
 
-    (#) For the UART RS485 Driver Enable mode, initialize the UART registers
-        by calling the HAL_RS485Ex_Init() API.
+ (#) For the UART RS485 Driver Enable mode, initialize the UART registers
+ by calling the HAL_RS485Ex_Init() API.
 
-    (#) FIFO mode enabling/disabling and RX/TX FIFO threshold programming.
+ (#) FIFO mode enabling/disabling and RX/TX FIFO threshold programming.
 
-        -@- When UART operates in FIFO mode, FIFO mode must be enabled prior
-            starting RX/TX transfers. Also RX/TX FIFO thresholds must be
-            configured prior starting RX/TX transfers.
+ -@- When UART operates in FIFO mode, FIFO mode must be enabled prior
+ starting RX/TX transfers. Also RX/TX FIFO thresholds must be
+ configured prior starting RX/TX transfers.
 
-  @endverbatim
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ @endverbatim
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup UARTEx UARTEx
-  * @brief UART Extended HAL module driver
-  * @{
-  */
+ * @brief UART Extended HAL module driver
+ * @{
+ */
 
 #ifdef HAL_UART_MODULE_ENABLED
 
@@ -719,11 +719,11 @@ static void UARTEx_SetNbDataToProcess(UART_HandleTypeDef *huart)
 #endif /* HAL_UART_MODULE_ENABLED */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

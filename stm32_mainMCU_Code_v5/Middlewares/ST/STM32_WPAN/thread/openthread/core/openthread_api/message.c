@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    message.c
-  * @author  MCD Application Team
-  * @brief   This file contains the message buffers and queues interface shared
-  *          between M0 and M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    message.c
+ * @author  MCD Application Team
+ * @brief   This file contains the message buffers and queues interface shared
+ *          between M0 and M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
@@ -31,321 +30,306 @@
 #include "thread.h"
 #include "message.h"
 
+void otMessageFree(otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-void otMessageFree(otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_FREE;
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_FREE;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
+	Ot_Cmd_Transfer();
 
-    Ot_Cmd_Transfer();
-
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
 }
 
-uint16_t otMessageGetLength(otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+uint16_t otMessageGetLength(otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_LENGTH;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_LENGTH;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (uint16_t)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (uint16_t) p_ot_req->Data[0];
 }
 
-otError otMessageSetLength(otMessage *aMessage, uint16_t aLength)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageSetLength(otMessage *aMessage, uint16_t aLength) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_LENGTH;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_LENGTH;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aLength;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aLength;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-uint16_t otMessageGetOffset(otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+uint16_t otMessageGetOffset(otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_OFFSET;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_OFFSET;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (uint16_t)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (uint16_t) p_ot_req->Data[0];
 }
 
-otError otMessageSetOffset(otMessage *aMessage, uint16_t aOffset)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageSetOffset(otMessage *aMessage, uint16_t aOffset) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_OFFSET;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_OFFSET;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aOffset;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aOffset;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-bool otMessageIsLinkSecurityEnabled(otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+bool otMessageIsLinkSecurityEnabled(otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_IS_LINK_SECURITY_ENABLED;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_IS_LINK_SECURITY_ENABLED;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (bool)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (bool) p_ot_req->Data[0];
 }
 
-void otMessageSetDirectTransmission(otMessage *aMessage, bool aEnabled)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+void otMessageSetDirectTransmission(otMessage *aMessage, bool aEnabled) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_DIRECT_TRANSMISSION;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_SET_DIRECT_TRANSMISSION;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aEnabled;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aEnabled;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
 }
 
-int8_t otMessageGetRss(otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+int8_t otMessageGetRss(otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_RSS;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_GET_RSS;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (int8_t)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (int8_t) p_ot_req->Data[0];
 }
 
-otError otMessageAppend(otMessage *aMessage, const void *aBuf, uint16_t aLength)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageAppend(otMessage *aMessage, const void *aBuf, uint16_t aLength) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_APPEND;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_APPEND;
 
-    p_ot_req->Size=3;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aBuf;
-    p_ot_req->Data[2] = (uint32_t) aLength;
+	p_ot_req->Size = 3;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aBuf;
+	p_ot_req->Data[2] = (uint32_t) aLength;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-int otMessageRead(otMessage *aMessage, uint16_t aOffset, void *aBuf, uint16_t aLength)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+int otMessageRead(otMessage *aMessage, uint16_t aOffset, void *aBuf,
+		uint16_t aLength) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_READ;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_READ;
 
-    p_ot_req->Size=4;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aOffset;
-    p_ot_req->Data[2] = (uint32_t) aBuf;
-    p_ot_req->Data[3] = (uint32_t) aLength;
+	p_ot_req->Size = 4;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aOffset;
+	p_ot_req->Data[2] = (uint32_t) aBuf;
+	p_ot_req->Data[3] = (uint32_t) aLength;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (int)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (int) p_ot_req->Data[0];
 }
 
-int otMessageWrite(otMessage *aMessage, uint16_t aOffset, const void *aBuf, uint16_t aLength)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+int otMessageWrite(otMessage *aMessage, uint16_t aOffset, const void *aBuf,
+		uint16_t aLength) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_WRITE;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_WRITE;
 
-    p_ot_req->Size=4;
-    p_ot_req->Data[0] = (uint32_t) aMessage;
-    p_ot_req->Data[1] = (uint32_t) aOffset;
-    p_ot_req->Data[2] = (uint32_t) aBuf;
-    p_ot_req->Data[3] = (uint32_t) aLength;
+	p_ot_req->Size = 4;
+	p_ot_req->Data[0] = (uint32_t) aMessage;
+	p_ot_req->Data[1] = (uint32_t) aOffset;
+	p_ot_req->Data[2] = (uint32_t) aBuf;
+	p_ot_req->Data[3] = (uint32_t) aLength;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (int)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (int) p_ot_req->Data[0];
 }
 
-void otMessageQueueInit(otMessageQueue *aQueue)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+void otMessageQueueInit(otMessageQueue *aQueue) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_INIT;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_INIT;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
 }
 
-otError otMessageQueueEnqueue(otMessageQueue *aQueue, otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageQueueEnqueue(otMessageQueue *aQueue, otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_ENQUEUE;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_ENQUEUE;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
-    p_ot_req->Data[1] = (uint32_t) aMessage;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Data[1] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-otError otMessageQueueEnqueueAtHead(otMessageQueue *aQueue, otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageQueueEnqueueAtHead(otMessageQueue *aQueue, otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_ATHEAD;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_ATHEAD;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
-    p_ot_req->Data[1] = (uint32_t) aMessage;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Data[1] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 
 }
 
-otError otMessageQueueDequeue(otMessageQueue *aQueue, otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otMessageQueueDequeue(otMessageQueue *aQueue, otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_DEQUEUE;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_DEQUEUE;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
-    p_ot_req->Data[1] = (uint32_t) aMessage;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Data[1] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-otMessage *otMessageQueueGetHead(otMessageQueue *aQueue)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otMessage* otMessageQueueGetHead(otMessageQueue *aQueue) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_GET_HEAD;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_GET_HEAD;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otMessage *)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otMessage*) p_ot_req->Data[0];
 }
 
-otMessage *otMessageQueueGetNext(otMessageQueue *aQueue, const otMessage *aMessage)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otMessage* otMessageQueueGetNext(otMessageQueue *aQueue,
+		const otMessage *aMessage) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_GET_NEXT;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_QUEUE_GET_NEXT;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aQueue;
-    p_ot_req->Data[1] = (uint32_t) aMessage;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aQueue;
+	p_ot_req->Data[1] = (uint32_t) aMessage;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otMessage *)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otMessage*) p_ot_req->Data[0];
 }
 
-OTAPI void OTCALL otMessageGetBufferInfo(otInstance *aInstance, otBufferInfo *aBufferInfo)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI void OTCALL otMessageGetBufferInfo(otInstance *aInstance,
+		otBufferInfo *aBufferInfo) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_BUFFER_INFO;
+	p_ot_req->ID = MSG_M4TOM0_OT_MESSAGE_BUFFER_INFO;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aBufferInfo;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aBufferInfo;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
 }

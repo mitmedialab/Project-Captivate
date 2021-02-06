@@ -38,8 +38,6 @@
  *
  *************************************************************/
 
-
-
 /* GLOBAL DEFINES */
 struct blinkData blinkMsgBuffer_1 = { { 0 }, 0, 0 };
 uint8_t blink_buffer[2000] = { 0 };
@@ -82,7 +80,8 @@ void BlinkTask(void *argument) {
 			osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
 
 			// start timer for ADC to sample at 1kHz
-			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer, sizeof(blink_buffer));
+			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_buffer,
+					sizeof(blink_buffer));
 
 			// start timer for ADC to sample at 1kHz
 //			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_float_buffer, sizeof(blink_float_buffer));
@@ -100,7 +99,8 @@ void BlinkTask(void *argument) {
 			while (1) {
 
 				// wait for data ready flag and/or stop task flasg
-				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny, osWaitForever);
+				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny,
+						osWaitForever);
 				blink_ptr_copy = blink_ptr;
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
@@ -109,14 +109,19 @@ void BlinkTask(void *argument) {
 					if (previousTick_ms == 0) {
 						previousTick_ms = HAL_GetTick();
 					}
-					tick_ms_diff = (HAL_GetTick() - previousTick_ms) / ((float) BLINK_ITERATOR_COUNT);
+					tick_ms_diff = (HAL_GetTick() - previousTick_ms)
+							/ ((float) BLINK_ITERATOR_COUNT);
 
 					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
-					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT; iterator++) {
+					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT;
+							iterator++) {
 
 						// grab packet of size BLINK_PACKET_SIZE
-						memcpy(blinkMsgBuffer_1.data, &(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]), BLINK_PACKET_SIZE);
-						blinkMsgBuffer_1.tick_ms = previousTick_ms + tick_ms_diff;
+						memcpy(blinkMsgBuffer_1.data,
+								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
+								BLINK_PACKET_SIZE);
+						blinkMsgBuffer_1.tick_ms = previousTick_ms
+								+ tick_ms_diff;
 						blinkMsgBuffer_1.payload_ID = payload_ID;
 
 						// add tick cnt
@@ -124,11 +129,10 @@ void BlinkTask(void *argument) {
 						payload_ID++;
 
 						// put into queue
-						osMessageQueuePut(blinkMsgQueueHandle, (void*) &blinkMsgBuffer_1, 0U, 0);
+						osMessageQueuePut(blinkMsgQueueHandle,
+								(void*) &blinkMsgBuffer_1, 0U, 0);
 					}
 				}
-
-
 
 				// stop timer and put thread in idle if signal was reset
 				if ((evt & 0x00000002U) == 0x00000002U) {
@@ -139,13 +143,15 @@ void BlinkTask(void *argument) {
 					previousTick_ms = 0;
 
 					/* tell threads that blink is disabled */
-					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+					osMessageQueueGet(statusQueueHandle, &statusMessage, 0U,
+							osWaitForever);
 					statusMessage.blinkEnabled = 0;
 					// notify 3D localization thread that blink is deactivating if active
 					if (statusMessage.positionEnabled == 1) {
 						osSemaphoreRelease(locNotifyHandle);
 					}
-					osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
+					osMessageQueuePut(statusQueueHandle, (void*) &statusMessage,
+							0U, 0);
 
 					// empty queue
 					osMessageQueueReset(blinkMsgQueueHandle);
@@ -181,7 +187,6 @@ void BlinkTask(void *argument) {
 //volatile uint8_t low_adc_sample = 0;
 //volatile uint8_t random_sample = 0;
 
-
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 //	end_time = HAL_GetTick() - start_time;
 //	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
@@ -203,7 +208,7 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) {
 
 }
 
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
 //	if(htim->Instance == TIM2){
 //		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 //		HAL_ADC_Start(&hadc1);

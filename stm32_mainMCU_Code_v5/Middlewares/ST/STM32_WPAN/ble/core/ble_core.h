@@ -19,7 +19,6 @@
 #ifndef BLE_CORE_H__
 #define BLE_CORE_H__
 
-
 /* BLE standard definitions */
 #include "ble_std.h"
 
@@ -37,7 +36,6 @@
 
 /* BLE stack legacy definitions */
 #include "ble_legacy.h"
-
 
 #endif /* BLE_CORE_H__ */
 

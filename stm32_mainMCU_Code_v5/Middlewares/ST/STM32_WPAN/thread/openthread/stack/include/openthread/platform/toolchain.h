@@ -123,7 +123,6 @@ extern "C" {
  */
 
 // =========== TOOLCHAIN SELECTION : START ===========
-
 #if defined(__GNUC__) || defined(__clang__) || defined(__CC_ARM) || defined(__TI_ARM__)
 
 // https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html

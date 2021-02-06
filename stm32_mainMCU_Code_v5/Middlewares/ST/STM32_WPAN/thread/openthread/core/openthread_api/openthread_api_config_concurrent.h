@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    openthread_api_config_concurrent.h
-  * @author  MCD Application Team
-  * @brief   This file contains configuration header for configuring OpenThread
-  *          stack in BLE Thread Concurrent Mode.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    openthread_api_config_concurrent.h
+ * @author  MCD Application Team
+ * @brief   This file contains configuration header for configuring OpenThread
+ *          stack in BLE Thread Concurrent Mode.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef OPENTHREAD_API_CONFIG_CONCURRENT_H_
 #define OPENTHREAD_API_CONFIG_CONCURRENT_H_
@@ -28,7 +27,7 @@
 #endif
 
 /* Define to 1 if you want to enable support for multiple OpenThread
-   instances. */
+ instances. */
 #define OPENTHREAD_ENABLE_MULTIPLE_INSTANCES 0
 
 /* Define to 1 if you want to enable default log output. */

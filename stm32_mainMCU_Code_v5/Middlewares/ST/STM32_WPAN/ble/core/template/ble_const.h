@@ -19,13 +19,11 @@
 #ifndef BLE_CONST_H__
 #define BLE_CONST_H__
 
-
 #include <stdint.h>
 #include <string.h>
 #include "ble_std.h"
 #include "ble_defs.h"
 #include "osal.h"
-
 
 /* Default BLE variant */
 #ifndef LL_ONLY
@@ -37,7 +35,6 @@
 #ifndef BEACON_ONLY
 #define BEACON_ONLY 0
 #endif
-
 
 /* Size of command/events buffers:
  *
@@ -89,20 +86,17 @@
  * Change this value if needed. */
 #define BLE_EVT_MAX_PARAM_LEN          HCI_EVENT_MAX_PARAM_LEN
 
-
 /* Callback function to send command and receive response */
-struct hci_request
-{
-  uint16_t ogf;
-  uint16_t ocf;
-  int      event;
-  void*    cparam;
-  int      clen;
-  void*    rparam;
-  int      rlen;
+struct hci_request {
+	uint16_t ogf;
+	uint16_t ocf;
+	int event;
+	void *cparam;
+	int clen;
+	void *rparam;
+	int rlen;
 };
-extern int hci_send_req( struct hci_request* req, uint8_t async );
-
+extern int hci_send_req(struct hci_request *req, uint8_t async);
 
 #ifndef FALSE
 #define FALSE 0
@@ -115,7 +109,6 @@ extern int hci_send_req( struct hci_request* req, uint8_t async );
 #ifndef MAX
 #define MAX( a, b )            (((a) > (b)) ? (a) : (b))
 #endif
-
 
 #endif /* BLE_CONST_H__ */
 

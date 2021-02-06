@@ -19,7 +19,6 @@
 #ifndef BLE_DEFS_H__
 #define BLE_DEFS_H__
 
-
 /* ------------------------------------------------------------------------- */
 
 /* ACI vendor specific event codes */
@@ -186,7 +185,7 @@
 
 /* Notification/Indication can't be sent to the requested remote device because
  * it doesn't satisfy the needed security permission.
- */ 
+ */
 #define BLE_STATUS_SEC_PERMISSION_ERROR                 0x65U
 
 /* The address of the device could not be resolved using the IRK stored\n
@@ -599,6 +598,5 @@
 #define CONFIG_DATA_RANDOM_ADDRESS_LEN         6
 
 /* ------------------------------------------------------------------------- */
-
 
 #endif /* BLE_DEFS_H__ */

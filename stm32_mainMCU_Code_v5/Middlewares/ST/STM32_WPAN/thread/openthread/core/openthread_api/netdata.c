@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    netdata.c
-  * @author  MCD Application Team
-  * @brief   This file contains the netdata interface shared between M0 and
-  *          M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    netdata.c
+ * @author  MCD Application Team
+ * @brief   This file contains the netdata interface shared between M0 and
+ *          M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -30,93 +29,87 @@
 
 #include "netdata.h"
 
+OTAPI otError OTCALL otNetDataGet(otInstance *aInstance, bool aStable,
+		uint8_t *aData, uint8_t *aDataLength) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-OTAPI otError OTCALL otNetDataGet(otInstance *aInstance, bool aStable, uint8_t *aData,
-                                  uint8_t *aDataLength)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+	p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET;
 
-    p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET;
+	p_ot_req->Size = 3;
+	p_ot_req->Data[0] = (uint32_t) aStable;
+	p_ot_req->Data[1] = (uint32_t) aData;
+	p_ot_req->Data[2] = (uint32_t) aDataLength;
 
-    p_ot_req->Size=3;
-    p_ot_req->Data[0] = (uint32_t) aStable;
-    p_ot_req->Data[1] = (uint32_t) aData;
-    p_ot_req->Data[2] = (uint32_t) aDataLength;
+	Ot_Cmd_Transfer();
 
-    Ot_Cmd_Transfer();
-
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-OTAPI otError OTCALL otNetDataGetNextOnMeshPrefix(otInstance *aInstance, otNetworkDataIterator *aIterator,
-                                                  otBorderRouterConfig *aConfig)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI otError OTCALL otNetDataGetNextOnMeshPrefix(otInstance *aInstance,
+		otNetworkDataIterator *aIterator, otBorderRouterConfig *aConfig) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_NEXT_ON_MESH_PREFIX;
+	p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_NEXT_ON_MESH_PREFIX;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aIterator;
-    p_ot_req->Data[1] = (uint32_t) aConfig;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aIterator;
+	p_ot_req->Data[1] = (uint32_t) aConfig;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-otError otNetDataGetNextRoute(otInstance *aInstance, otNetworkDataIterator *aIterator,
-                              otExternalRouteConfig *aConfig)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+otError otNetDataGetNextRoute(otInstance *aInstance,
+		otNetworkDataIterator *aIterator, otExternalRouteConfig *aConfig) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_NEXT_ROUTE;
+	p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_NEXT_ROUTE;
 
-    p_ot_req->Size=2;
-    p_ot_req->Data[0] = (uint32_t) aIterator;
-    p_ot_req->Data[1] = (uint32_t) aConfig;
+	p_ot_req->Size = 2;
+	p_ot_req->Data[0] = (uint32_t) aIterator;
+	p_ot_req->Data[1] = (uint32_t) aConfig;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-OTAPI uint8_t OTCALL otNetDataGetVersion(otInstance *aInstance)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI uint8_t OTCALL otNetDataGetVersion(otInstance *aInstance) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_VERSION;
+	p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_VERSION;
 
-    p_ot_req->Size=0;
+	p_ot_req->Size = 0;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (uint8_t)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (uint8_t) p_ot_req->Data[0];
 }
 
-OTAPI uint8_t OTCALL otNetDataGetStableVersion(otInstance *aInstance)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI uint8_t OTCALL otNetDataGetStableVersion(otInstance *aInstance) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_STABLE_VERSION;
+	p_ot_req->ID = MSG_M4TOM0_OT_NET_DATA_GET_STABLE_VERSION;
 
-    p_ot_req->Size=0;
+	p_ot_req->Size = 0;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (uint8_t)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (uint8_t) p_ot_req->Data[0];
 }

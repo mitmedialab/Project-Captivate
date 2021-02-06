@@ -1,11 +1,11 @@
 /**
  ******************************************************************************
  * File Name          : config.h
-  * Description        : configuration file
-  ******************************************************************************
+ * Description        : configuration file
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef CAPTIVATE_CONFIG_H
 #define CAPTIVATE_CONFIG_H
@@ -25,11 +25,9 @@ extern "C" {
 //#define OTA_ENABLED					1
 //#define BORDER_ROUTER_NODE			1
 //#define BORDER_ROUTER_NODE_TRANSMITTER	1
-
 //#define LED_TEST	1
 //#define TEST_RUN_ON_START 1
 //#define TEST_TOUCH 1
-
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes
 #define NODE_DESCRIPTION  		"don_1"	  // max 11 bytes
@@ -87,7 +85,6 @@ extern "C" {
 /* WATCHDOG TIMER */
 #define WATCHDOG_PERIOD							5000 // 5 seconds
 
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -118,8 +115,6 @@ extern "C" {
 #define BLINK_HALF_BUFFER_SIZE	1000
 #define BLINK_PACKET_SIZE		100
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
-
-
 
 /* macros ------------------------------------------------------------*/
 

@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    jam_detection.c
-  * @author  MCD Application Team
-  * @brief   This file contains the Jam Detection interface shared between M0 and
-  *          M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    jam_detection.c
+ * @author  MCD Application Team
+ * @brief   This file contains the Jam Detection interface shared between M0 and
+ *          M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"

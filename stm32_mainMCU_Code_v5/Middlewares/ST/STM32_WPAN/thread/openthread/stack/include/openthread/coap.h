@@ -66,10 +66,10 @@ extern "C" {
  *
  */
 typedef enum otCoapType {
-    OT_COAP_TYPE_CONFIRMABLE     = 0x00, ///< Confirmable
-    OT_COAP_TYPE_NON_CONFIRMABLE = 0x10, ///< Non-confirmable
-    OT_COAP_TYPE_ACKNOWLEDGMENT  = 0x20, ///< Acknowledgment
-    OT_COAP_TYPE_RESET           = 0x30, ///< Reset
+	OT_COAP_TYPE_CONFIRMABLE = 0x00, ///< Confirmable
+	OT_COAP_TYPE_NON_CONFIRMABLE = 0x10, ///< Non-confirmable
+	OT_COAP_TYPE_ACKNOWLEDGMENT = 0x20, ///< Acknowledgment
+	OT_COAP_TYPE_RESET = 0x30, ///< Reset
 } otCoapType;
 
 /**
@@ -83,69 +83,68 @@ typedef enum otCoapType {
  *
  */
 typedef enum otCoapCode {
-    OT_COAP_CODE_EMPTY  = OT_COAP_CODE(0, 0), ///< Empty message code
-    OT_COAP_CODE_GET    = OT_COAP_CODE(0, 1), ///< Get
-    OT_COAP_CODE_POST   = OT_COAP_CODE(0, 2), ///< Post
-    OT_COAP_CODE_PUT    = OT_COAP_CODE(0, 3), ///< Put
-    OT_COAP_CODE_DELETE = OT_COAP_CODE(0, 4), ///< Delete
+	OT_COAP_CODE_EMPTY = OT_COAP_CODE(0, 0), ///< Empty message code
+	OT_COAP_CODE_GET = OT_COAP_CODE(0, 1), ///< Get
+	OT_COAP_CODE_POST = OT_COAP_CODE(0, 2), ///< Post
+	OT_COAP_CODE_PUT = OT_COAP_CODE(0, 3), ///< Put
+	OT_COAP_CODE_DELETE = OT_COAP_CODE(0, 4), ///< Delete
 
-    OT_COAP_CODE_RESPONSE_MIN = OT_COAP_CODE(2, 0), ///< 2.00
-    OT_COAP_CODE_CREATED      = OT_COAP_CODE(2, 1), ///< Created
-    OT_COAP_CODE_DELETED      = OT_COAP_CODE(2, 2), ///< Deleted
-    OT_COAP_CODE_VALID        = OT_COAP_CODE(2, 3), ///< Valid
-    OT_COAP_CODE_CHANGED      = OT_COAP_CODE(2, 4), ///< Changed
-    OT_COAP_CODE_CONTENT      = OT_COAP_CODE(2, 5), ///< Content
+	OT_COAP_CODE_RESPONSE_MIN = OT_COAP_CODE(2, 0), ///< 2.00
+	OT_COAP_CODE_CREATED = OT_COAP_CODE(2, 1), ///< Created
+	OT_COAP_CODE_DELETED = OT_COAP_CODE(2, 2), ///< Deleted
+	OT_COAP_CODE_VALID = OT_COAP_CODE(2, 3), ///< Valid
+	OT_COAP_CODE_CHANGED = OT_COAP_CODE(2, 4), ///< Changed
+	OT_COAP_CODE_CONTENT = OT_COAP_CODE(2, 5), ///< Content
 
-    OT_COAP_CODE_BAD_REQUEST         = OT_COAP_CODE(4, 0),  ///< Bad Request
-    OT_COAP_CODE_UNAUTHORIZED        = OT_COAP_CODE(4, 1),  ///< Unauthorized
-    OT_COAP_CODE_BAD_OPTION          = OT_COAP_CODE(4, 2),  ///< Bad Option
-    OT_COAP_CODE_FORBIDDEN           = OT_COAP_CODE(4, 3),  ///< Forbidden
-    OT_COAP_CODE_NOT_FOUND           = OT_COAP_CODE(4, 4),  ///< Not Found
-    OT_COAP_CODE_METHOD_NOT_ALLOWED  = OT_COAP_CODE(4, 5),  ///< Method Not Allowed
-    OT_COAP_CODE_NOT_ACCEPTABLE      = OT_COAP_CODE(4, 6),  ///< Not Acceptable
-    OT_COAP_CODE_PRECONDITION_FAILED = OT_COAP_CODE(4, 12), ///< Precondition Failed
-    OT_COAP_CODE_REQUEST_TOO_LARGE   = OT_COAP_CODE(4, 13), ///< Request Entity Too Large
-    OT_COAP_CODE_UNSUPPORTED_FORMAT  = OT_COAP_CODE(4, 15), ///< Unsupported Content-Format
+	OT_COAP_CODE_BAD_REQUEST = OT_COAP_CODE(4, 0),  ///< Bad Request
+	OT_COAP_CODE_UNAUTHORIZED = OT_COAP_CODE(4, 1),  ///< Unauthorized
+	OT_COAP_CODE_BAD_OPTION = OT_COAP_CODE(4, 2),  ///< Bad Option
+	OT_COAP_CODE_FORBIDDEN = OT_COAP_CODE(4, 3),  ///< Forbidden
+	OT_COAP_CODE_NOT_FOUND = OT_COAP_CODE(4, 4),  ///< Not Found
+	OT_COAP_CODE_METHOD_NOT_ALLOWED = OT_COAP_CODE(4, 5), ///< Method Not Allowed
+	OT_COAP_CODE_NOT_ACCEPTABLE = OT_COAP_CODE(4, 6),  ///< Not Acceptable
+	OT_COAP_CODE_PRECONDITION_FAILED = OT_COAP_CODE(4, 12), ///< Precondition Failed
+	OT_COAP_CODE_REQUEST_TOO_LARGE = OT_COAP_CODE(4, 13), ///< Request Entity Too Large
+	OT_COAP_CODE_UNSUPPORTED_FORMAT = OT_COAP_CODE(4, 15), ///< Unsupported Content-Format
 
-    OT_COAP_CODE_INTERNAL_ERROR      = OT_COAP_CODE(5, 0), ///< Internal Server Error
-    OT_COAP_CODE_NOT_IMPLEMENTED     = OT_COAP_CODE(5, 1), ///< Not Implemented
-    OT_COAP_CODE_BAD_GATEWAY         = OT_COAP_CODE(5, 2), ///< Bad Gateway
-    OT_COAP_CODE_SERVICE_UNAVAILABLE = OT_COAP_CODE(5, 3), ///< Service Unavailable
-    OT_COAP_CODE_GATEWAY_TIMEOUT     = OT_COAP_CODE(5, 4), ///< Gateway Timeout
-    OT_COAP_CODE_PROXY_NOT_SUPPORTED = OT_COAP_CODE(5, 5), ///< Proxying Not Supported
+	OT_COAP_CODE_INTERNAL_ERROR = OT_COAP_CODE(5, 0), ///< Internal Server Error
+	OT_COAP_CODE_NOT_IMPLEMENTED = OT_COAP_CODE(5, 1), ///< Not Implemented
+	OT_COAP_CODE_BAD_GATEWAY = OT_COAP_CODE(5, 2), ///< Bad Gateway
+	OT_COAP_CODE_SERVICE_UNAVAILABLE = OT_COAP_CODE(5, 3), ///< Service Unavailable
+	OT_COAP_CODE_GATEWAY_TIMEOUT = OT_COAP_CODE(5, 4), ///< Gateway Timeout
+	OT_COAP_CODE_PROXY_NOT_SUPPORTED = OT_COAP_CODE(5, 5), ///< Proxying Not Supported
 } otCoapCode;
 
 /**
  * CoAP Option Numbers
  */
 typedef enum otCoapOptionType {
-    OT_COAP_OPTION_IF_MATCH       = 1,  ///< If-Match
-    OT_COAP_OPTION_URI_HOST       = 3,  ///< Uri-Host
-    OT_COAP_OPTION_E_TAG          = 4,  ///< ETag
-    OT_COAP_OPTION_IF_NONE_MATCH  = 5,  ///< If-None-Match
-    OT_COAP_OPTION_OBSERVE        = 6,  ///< Observe
-    OT_COAP_OPTION_URI_PORT       = 7,  ///< Uri-Port
-    OT_COAP_OPTION_LOCATION_PATH  = 8,  ///< Location-Path
-    OT_COAP_OPTION_URI_PATH       = 11, ///< Uri-Path
-    OT_COAP_OPTION_CONTENT_FORMAT = 12, ///< Content-Format
-    OT_COAP_OPTION_MAX_AGE        = 14, ///< Max-Age
-    OT_COAP_OPTION_URI_QUERY      = 15, ///< Uri-Query
-    OT_COAP_OPTION_ACCEPT         = 17, ///< Accept
-    OT_COAP_OPTION_LOCATION_QUERY = 20, ///< Location-Query
-    OT_COAP_OPTION_PROXY_URI      = 35, ///< Proxy-Uri
-    OT_COAP_OPTION_PROXY_SCHEME   = 39, ///< Proxy-Scheme
-    OT_COAP_OPTION_SIZE1          = 60, ///< Size1
+	OT_COAP_OPTION_IF_MATCH = 1,  ///< If-Match
+	OT_COAP_OPTION_URI_HOST = 3,  ///< Uri-Host
+	OT_COAP_OPTION_E_TAG = 4,  ///< ETag
+	OT_COAP_OPTION_IF_NONE_MATCH = 5,  ///< If-None-Match
+	OT_COAP_OPTION_OBSERVE = 6,  ///< Observe
+	OT_COAP_OPTION_URI_PORT = 7,  ///< Uri-Port
+	OT_COAP_OPTION_LOCATION_PATH = 8,  ///< Location-Path
+	OT_COAP_OPTION_URI_PATH = 11, ///< Uri-Path
+	OT_COAP_OPTION_CONTENT_FORMAT = 12, ///< Content-Format
+	OT_COAP_OPTION_MAX_AGE = 14, ///< Max-Age
+	OT_COAP_OPTION_URI_QUERY = 15, ///< Uri-Query
+	OT_COAP_OPTION_ACCEPT = 17, ///< Accept
+	OT_COAP_OPTION_LOCATION_QUERY = 20, ///< Location-Query
+	OT_COAP_OPTION_PROXY_URI = 35, ///< Proxy-Uri
+	OT_COAP_OPTION_PROXY_SCHEME = 39, ///< Proxy-Scheme
+	OT_COAP_OPTION_SIZE1 = 60, ///< Size1
 } otCoapOptionType;
 
 /**
  * This structure represents a CoAP option.
  *
  */
-typedef struct otCoapOption
-{
-    uint16_t       mNumber; ///< Option Number
-    uint16_t       mLength; ///< Option Length
-    const uint8_t *mValue;  ///< A pointer to the Option Value
+typedef struct otCoapOption {
+	uint16_t mNumber; ///< Option Number
+	uint16_t mLength; ///< Option Length
+	const uint8_t *mValue;  ///< A pointer to the Option Value
 } otCoapOption;
 
 /**
@@ -154,12 +153,12 @@ typedef struct otCoapOption
  *
  */
 typedef enum otCoapOptionContentFormat {
-    OT_COAP_OPTION_CONTENT_FORMAT_TEXT_PLAIN   = 0,  ///< text/plain
-    OT_COAP_OPTION_CONTENT_FORMAT_LINK_FORMAT  = 40, ///< application/link-format
-    OT_COAP_OPTION_CONTENT_FORMAT_XML          = 41, ///< application/xml
-    OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM = 42, ///< application/octet-stream
-    OT_COAP_OPTION_CONTENT_FORMAT_EXI          = 47, ///< application/exi
-    OT_COAP_OPTION_CONTENT_FORMAT_JSON         = 50, ///< application/json
+	OT_COAP_OPTION_CONTENT_FORMAT_TEXT_PLAIN = 0,  ///< text/plain
+	OT_COAP_OPTION_CONTENT_FORMAT_LINK_FORMAT = 40, ///< application/link-format
+	OT_COAP_OPTION_CONTENT_FORMAT_XML = 41, ///< application/xml
+	OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM = 42, ///< application/octet-stream
+	OT_COAP_OPTION_CONTENT_FORMAT_EXI = 47, ///< application/exi
+	OT_COAP_OPTION_CONTENT_FORMAT_JSON = 50, ///< application/json
 } otCoapOptionContentFormat;
 
 #define OT_COAP_HEADER_MAX_LENGTH 128 ///< Max CoAP header length (bytes)
@@ -168,23 +167,20 @@ typedef enum otCoapOptionContentFormat {
  * This structure represents a CoAP header.
  *
  */
-typedef struct otCoapHeader
-{
-    union
-    {
-        struct
-        {
-            uint8_t  mVersionTypeToken;            ///< The CoAP Version, Type, and Token Length
-            uint8_t  mCode;                        ///< The CoAP Code
-            uint16_t mMessageId;                   ///< The CoAP Message ID
-        } mFields;                                 ///< Structure representing a CoAP base header
-        uint8_t mBytes[OT_COAP_HEADER_MAX_LENGTH]; ///< The raw byte encoding for the CoAP header
-    } mHeader;                                     ///< The CoAP header encoding
-    uint8_t      mHeaderLength;                    ///< The CoAP header length (bytes)
-    uint16_t     mOptionLast;                      ///< The last CoAP Option Number value
-    uint16_t     mFirstOptionOffset;               ///< The byte offset for the first CoAP Option
-    uint16_t     mNextOptionOffset;                ///< The byte offset for the next CoAP Option
-    otCoapOption mOption;                          ///< A structure representing the current CoAP Option
+typedef struct otCoapHeader {
+	union {
+		struct {
+			uint8_t mVersionTypeToken; ///< The CoAP Version, Type, and Token Length
+			uint8_t mCode;                        ///< The CoAP Code
+			uint16_t mMessageId;                   ///< The CoAP Message ID
+		} mFields;                ///< Structure representing a CoAP base header
+		uint8_t mBytes[OT_COAP_HEADER_MAX_LENGTH]; ///< The raw byte encoding for the CoAP header
+	} mHeader;                                     ///< The CoAP header encoding
+	uint8_t mHeaderLength;                   ///< The CoAP header length (bytes)
+	uint16_t mOptionLast;                 ///< The last CoAP Option Number value
+	uint16_t mFirstOptionOffset;  ///< The byte offset for the first CoAP Option
+	uint16_t mNextOptionOffset;    ///< The byte offset for the next CoAP Option
+	otCoapOption mOption;  ///< A structure representing the current CoAP Option
 } otCoapHeader;
 
 /**
@@ -201,11 +197,9 @@ typedef struct otCoapHeader
  * @retval  OT_ERROR_RESPONSE_TIMEOUT  No response or acknowledgment received during timeout period.
  *
  */
-typedef void (*otCoapResponseHandler)(void *               aContext,
-                                      otCoapHeader *       aHeader,
-                                      otMessage *          aMessage,
-                                      const otMessageInfo *aMessageInfo,
-                                      otError              aResult);
+typedef void (*otCoapResponseHandler)(void *aContext, otCoapHeader *aHeader,
+		otMessage *aMessage, const otMessageInfo *aMessageInfo,
+		otError aResult);
 
 /**
  * This function pointer is called when a CoAP request with a given Uri-Path is received.
@@ -216,21 +210,18 @@ typedef void (*otCoapResponseHandler)(void *               aContext,
  * @param[in]  aMessageInfo  A pointer to the message info for @p aMessage.
  *
  */
-typedef void (*otCoapRequestHandler)(void *               aContext,
-                                     otCoapHeader *       aHeader,
-                                     otMessage *          aMessage,
-                                     const otMessageInfo *aMessageInfo);
+typedef void (*otCoapRequestHandler)(void *aContext, otCoapHeader *aHeader,
+		otMessage *aMessage, const otMessageInfo *aMessageInfo);
 
 /**
  * This structure represents a CoAP resource.
  *
  */
-typedef struct otCoapResource
-{
-    const char *           mUriPath; ///< The URI Path string
-    otCoapRequestHandler   mHandler; ///< The callback for handling a received request
-    void *                 mContext; ///< Application-specific context
-    struct otCoapResource *mNext;    ///< The next CoAP resource in the list
+typedef struct otCoapResource {
+	const char *mUriPath; ///< The URI Path string
+	otCoapRequestHandler mHandler; ///< The callback for handling a received request
+	void *mContext; ///< Application-specific context
+	struct otCoapResource *mNext;    ///< The next CoAP resource in the list
 } otCoapResource;
 
 /**
@@ -241,7 +232,8 @@ typedef struct otCoapResource
  * @param[in]    aCode    CoAP message code.
  *
  */
-void otCoapHeaderInit(otCoapHeader *aHeader, otCoapType aType, otCoapCode aCode);
+void otCoapHeaderInit(otCoapHeader *aHeader, otCoapType aType,
+		otCoapCode aCode);
 
 /**
  * This function sets the Token value and length in a header.
@@ -251,7 +243,8 @@ void otCoapHeaderInit(otCoapHeader *aHeader, otCoapType aType, otCoapCode aCode)
  * @param[in]     aTokenLength  The Length of @p aToken.
  *
  */
-void otCoapHeaderSetToken(otCoapHeader *aHeader, const uint8_t *aToken, uint8_t aTokenLength);
+void otCoapHeaderSetToken(otCoapHeader *aHeader, const uint8_t *aToken,
+		uint8_t aTokenLength);
 
 /**
  * This function sets the Token length and randomizes its value.
@@ -281,7 +274,8 @@ void otCoapHeaderGenerateToken(otCoapHeader *aHeader, uint8_t aTokenLength);
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  *
  */
-otError otCoapHeaderAppendContentFormatOption(otCoapHeader *aHeader, otCoapOptionContentFormat aContentFormat);
+otError otCoapHeaderAppendContentFormatOption(otCoapHeader *aHeader,
+		otCoapOptionContentFormat aContentFormat);
 
 /**
  * This function appends a CoAP option in a header.
@@ -294,7 +288,8 @@ otError otCoapHeaderAppendContentFormatOption(otCoapHeader *aHeader, otCoapOptio
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  *
  */
-otError otCoapHeaderAppendOption(otCoapHeader *aHeader, const otCoapOption *aOption);
+otError otCoapHeaderAppendOption(otCoapHeader *aHeader,
+		const otCoapOption *aOption);
 
 /**
  * This function appends an unsigned integer CoAP option as specified in
@@ -309,7 +304,8 @@ otError otCoapHeaderAppendOption(otCoapHeader *aHeader, const otCoapOption *aOpt
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  *
  */
-otError otCoapHeaderAppendUintOption(otCoapHeader *aHeader, uint16_t aNumber, uint32_t aValue);
+otError otCoapHeaderAppendUintOption(otCoapHeader *aHeader, uint16_t aNumber,
+		uint32_t aValue);
 
 /**
  * This function appends an Observe option.
@@ -322,7 +318,8 @@ otError otCoapHeaderAppendUintOption(otCoapHeader *aHeader, uint16_t aNumber, ui
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  *
  */
-otError otCoapHeaderAppendObserveOption(otCoapHeader *aHeader, uint32_t aObserve);
+otError otCoapHeaderAppendObserveOption(otCoapHeader *aHeader,
+		uint32_t aObserve);
 
 /**
  * This function appends an Uri-Path option.
@@ -335,7 +332,8 @@ otError otCoapHeaderAppendObserveOption(otCoapHeader *aHeader, uint32_t aObserve
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  *
  */
-otError otCoapHeaderAppendUriPathOptions(otCoapHeader *aHeader, const char *aUriPath);
+otError otCoapHeaderAppendUriPathOptions(otCoapHeader *aHeader,
+		const char *aUriPath);
 
 /**
  * This function appends a Max-Age option.
@@ -360,7 +358,8 @@ otError otCoapHeaderAppendMaxAgeOption(otCoapHeader *aHeader, uint32_t aMaxAge);
  * @retval OT_ERROR_INVALID_ARGS  The option type is not equal or greater than the last option type.
  * @retval OT_ERROR_NO_BUFS       The option length exceeds the buffer size.
  */
-otError otCoapHeaderAppendUriQueryOption(otCoapHeader *aHeader, const char *aUriQuery);
+otError otCoapHeaderAppendUriQueryOption(otCoapHeader *aHeader,
+		const char *aUriQuery);
 
 /**
  * This function adds Payload Marker indicating beginning of the payload to the CoAP header.
@@ -430,7 +429,7 @@ uint8_t otCoapHeaderGetTokenLength(const otCoapHeader *aHeader);
  * @returns A pointer to the Token value.
  *
  */
-const uint8_t *otCoapHeaderGetToken(const otCoapHeader *aHeader);
+const uint8_t* otCoapHeaderGetToken(const otCoapHeader *aHeader);
 
 /**
  * This function returns a pointer to the first option.
@@ -440,7 +439,7 @@ const uint8_t *otCoapHeaderGetToken(const otCoapHeader *aHeader);
  * @returns A pointer to the first option. If no option is present NULL pointer is returned.
  *
  */
-const otCoapOption *otCoapHeaderGetFirstOption(otCoapHeader *aHeader);
+const otCoapOption* otCoapHeaderGetFirstOption(otCoapHeader *aHeader);
 
 /**
  * This function returns a pointer to the next option.
@@ -450,7 +449,7 @@ const otCoapOption *otCoapHeaderGetFirstOption(otCoapHeader *aHeader);
  * @returns A pointer to the next option. If no more options are present NULL pointer is returned.
  *
  */
-const otCoapOption *otCoapHeaderGetNextOption(otCoapHeader *aHeader);
+const otCoapOption* otCoapHeaderGetNextOption(otCoapHeader *aHeader);
 
 /**
  * This function creates a new message with a CoAP header.
@@ -461,7 +460,7 @@ const otCoapOption *otCoapHeaderGetNextOption(otCoapHeader *aHeader);
  * @returns A pointer to the message or NULL if failed to allocate message.
  *
  */
-otMessage *otCoapNewMessage(otInstance *aInstance, const otCoapHeader *aHeader);
+otMessage* otCoapNewMessage(otInstance *aInstance, const otCoapHeader *aHeader);
 
 /**
  * This function sends a CoAP request.
@@ -479,11 +478,9 @@ otMessage *otCoapNewMessage(otInstance *aInstance, const otCoapHeader *aHeader);
  * @retval OT_ERROR_NO_BUFS Failed to allocate retransmission data.
  *
  */
-otError otCoapSendRequest(otInstance *          aInstance,
-                          otMessage *           aMessage,
-                          const otMessageInfo * aMessageInfo,
-                          otCoapResponseHandler aHandler,
-                          void *                aContext);
+otError otCoapSendRequest(otInstance *aInstance, otMessage *aMessage,
+		const otMessageInfo *aMessageInfo, otCoapResponseHandler aHandler,
+		void *aContext);
 
 /**
  * This function starts the CoAP server.
@@ -535,7 +532,8 @@ void otCoapRemoveResource(otInstance *aInstance, otCoapResource *aResource);
  * @param[in]  aContext   A pointer to arbitrary context information. May be NULL if not used.
  *
  */
-void otCoapSetDefaultHandler(otInstance *aInstance, otCoapRequestHandler aHandler, void *aContext);
+void otCoapSetDefaultHandler(otInstance *aInstance,
+		otCoapRequestHandler aHandler, void *aContext);
 
 /**
  * This function sends a CoAP response from the server.
@@ -548,7 +546,8 @@ void otCoapSetDefaultHandler(otInstance *aInstance, otCoapRequestHandler aHandle
  * @retval OT_ERROR_NO_BUFS  Insufficient buffers available to send the CoAP response.
  *
  */
-otError otCoapSendResponse(otInstance *aInstance, otMessage *aMessage, const otMessageInfo *aMessageInfo);
+otError otCoapSendResponse(otInstance *aInstance, otMessage *aMessage,
+		const otMessageInfo *aMessageInfo);
 
 /**
  * @}

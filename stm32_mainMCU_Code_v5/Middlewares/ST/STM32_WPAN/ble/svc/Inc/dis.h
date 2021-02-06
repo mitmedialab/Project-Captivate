@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    dis.h
-  * @author  MCD Application Team
-  * @brief   Header for dis.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dis.h
+ * @author  MCD Application Team
+ * @brief   Header for dis.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,25 +17,20 @@
  ******************************************************************************
  */
 
-
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __DIS_H
 #define __DIS_H
 
 #ifdef __cplusplus
-extern "C" 
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
-typedef struct
-{
-  uint8_t     *pPayload;
-  uint8_t     Length;
-}DIS_Data_t;
-
+typedef struct {
+	uint8_t *pPayload;
+	uint8_t Length;
+} DIS_Data_t;
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/

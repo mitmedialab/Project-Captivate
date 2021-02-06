@@ -1,29 +1,29 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : app_common.h
-  * Description        : App Common application configuration file for STM32WPAN Middleware.
-  *
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : app_common.h
+ * Description        : App Common application configuration file for STM32WPAN Middleware.
+ *
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef APP_COMMON_H
 #define APP_COMMON_H
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #include <stdint.h>
@@ -34,9 +34,9 @@ extern "C"{
 
 #include "app_conf.h"
 
-  /* -------------------------------- *
-   *  Basic definitions               *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Basic definitions               *
+ * -------------------------------- */
 
 #undef NULL
 #define NULL                    0
@@ -47,24 +47,24 @@ extern "C"{
 #undef TRUE
 #define TRUE                    (!0)
 
-  /* -------------------------------- *
-   *  Critical Section definition     *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Critical Section definition     *
+ * -------------------------------- */
 #define BACKUP_PRIMASK()    uint32_t primask_bit= __get_PRIMASK()
 #define DISABLE_IRQ()       __disable_irq()
 #define RESTORE_PRIMASK()   __set_PRIMASK(primask_bit)
 
-  /* -------------------------------- *
-   *  Macro delimiters                *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Macro delimiters                *
+ * -------------------------------- */
 
 #define M_BEGIN     do {
 
 #define M_END       } while(0)
 
-  /* -------------------------------- *
-   *  Some useful macro definitions   *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Some useful macro definitions   *
+ * -------------------------------- */
 
 #ifndef MAX
 #define MAX( x, y )          (((x)>(y))?(x):(y))
@@ -99,9 +99,9 @@ extern "C"{
 
 #define BITNSET( w, n, b )   M_BEGIN (w)[(n)/32] |= ((U32)(b))<<((n)%32); M_END
 
-  /* -------------------------------- *
-   *  Compiler                         *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Compiler                         *
+ * -------------------------------- */
 #define PLACE_IN_SECTION( __x__ )  __attribute__((section (__x__)))
 
 #ifdef WIN32

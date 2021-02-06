@@ -19,10 +19,9 @@
 #ifndef COMPILER_H__
 #define COMPILER_H__
 
-
 /**
-  * @brief  This is the section dedicated to IAR toolchain
-  */
+ * @brief  This is the section dedicated to IAR toolchain
+ */
 #if defined(__ICCARM__) || defined(__IAR_SYSTEMS_ASM__)
 
 #ifndef __WEAK
@@ -148,7 +147,6 @@
 #endif
 #endif
 #endif
-
 
 #endif /* COMPILER_H__ */
 

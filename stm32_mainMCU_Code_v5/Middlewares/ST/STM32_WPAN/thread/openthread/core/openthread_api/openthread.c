@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    openthread.c
-  * @author  MCD Application Team
-  * @brief   This file contains the top-level OpenThread interface shared between
-  *          M0 and M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    openthread.c
+ * @author  MCD Application Team
+ * @brief   This file contains the top-level OpenThread interface shared between
+ *          M0 and M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -30,19 +29,18 @@
 
 #include "error.h"
 
-OTAPI const char *OTCALL otThreadErrorToString(otError aError)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI const char* OTCALL otThreadErrorToString(otError aError) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_OPENTHREAD_ERROR_TO_STRING;
+	p_ot_req->ID = MSG_M4TOM0_OT_OPENTHREAD_ERROR_TO_STRING;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aError;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aError;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (char *)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (char*) p_ot_req->Data[0];
 }

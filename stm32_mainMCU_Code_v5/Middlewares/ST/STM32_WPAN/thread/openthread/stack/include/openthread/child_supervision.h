@@ -97,7 +97,8 @@ uint16_t otChildSupervisionGetCheckTimeout(otInstance *aInstance);
  * @param[in]  aTimeout        The check timeout (in seconds). Zero to disable supervision check on the child.
  *
  */
-void otChildSupervisionSetCheckTimeout(otInstance *aInstance, uint16_t aTimeout);
+void otChildSupervisionSetCheckTimeout(otInstance *aInstance,
+		uint16_t aTimeout);
 
 /**
  * @}

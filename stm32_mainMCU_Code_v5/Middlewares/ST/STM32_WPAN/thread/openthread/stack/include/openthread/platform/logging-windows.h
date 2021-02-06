@@ -513,7 +513,6 @@
 // USESUFFIX(otLogDebgUtilErr, ", %!otError!", EXP);
 // end_wpp
 
-
 // ==MEM==
 
 // begin_wpp config

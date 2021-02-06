@@ -55,37 +55,35 @@ extern "C" {
 /**
  * This structure points to an OpenThread message buffer.
  */
-typedef struct otMessage
-{
-    struct otMessage *mNext; ///< A pointer to the next Message buffer.
+typedef struct otMessage {
+	struct otMessage *mNext; ///< A pointer to the next Message buffer.
 } otMessage;
 
 /**
  * This structure represents the message buffer information.
  *
  */
-typedef struct otBufferInfo
-{
-    uint16_t mTotalBuffers;            ///< The number of buffers in the pool.
-    uint16_t mFreeBuffers;             ///< The number of free message buffers.
-    uint16_t m6loSendMessages;         ///< The number of messages in the 6lo send queue.
-    uint16_t m6loSendBuffers;          ///< The number of buffers in the 6lo send queue.
-    uint16_t m6loReassemblyMessages;   ///< The number of messages in the 6LoWPAN reassembly queue.
-    uint16_t m6loReassemblyBuffers;    ///< The number of buffers in the 6LoWPAN reassembly queue.
-    uint16_t mIp6Messages;             ///< The number of messages in the IPv6 send queue.
-    uint16_t mIp6Buffers;              ///< The number of buffers in the IPv6 send queue.
-    uint16_t mMplMessages;             ///< The number of messages in the MPL send queue.
-    uint16_t mMplBuffers;              ///< The number of buffers in the MPL send queue.
-    uint16_t mMleMessages;             ///< The number of messages in the MLE send queue.
-    uint16_t mMleBuffers;              ///< The number of buffers in the MLE send queue.
-    uint16_t mArpMessages;             ///< The number of messages in the ARP send queue.
-    uint16_t mArpBuffers;              ///< The number of buffers in the ARP send queue.
-    uint16_t mCoapMessages;            ///< The number of messages in the CoAP send queue.
-    uint16_t mCoapBuffers;             ///< The number of buffers in the CoAP send queue.
-    uint16_t mCoapSecureMessages;      ///< The number of messages in the CoAP secure send queue.
-    uint16_t mCoapSecureBuffers;       ///< The number of buffers in the CoAP secure send queue.
-    uint16_t mApplicationCoapMessages; ///< The number of messages in the application CoAP send queue.
-    uint16_t mApplicationCoapBuffers;  ///< The number of buffers in the application CoAP send queue.
+typedef struct otBufferInfo {
+	uint16_t mTotalBuffers;            ///< The number of buffers in the pool.
+	uint16_t mFreeBuffers;             ///< The number of free message buffers.
+	uint16_t m6loSendMessages; ///< The number of messages in the 6lo send queue.
+	uint16_t m6loSendBuffers;  ///< The number of buffers in the 6lo send queue.
+	uint16_t m6loReassemblyMessages; ///< The number of messages in the 6LoWPAN reassembly queue.
+	uint16_t m6loReassemblyBuffers; ///< The number of buffers in the 6LoWPAN reassembly queue.
+	uint16_t mIp6Messages;   ///< The number of messages in the IPv6 send queue.
+	uint16_t mIp6Buffers;     ///< The number of buffers in the IPv6 send queue.
+	uint16_t mMplMessages;    ///< The number of messages in the MPL send queue.
+	uint16_t mMplBuffers;      ///< The number of buffers in the MPL send queue.
+	uint16_t mMleMessages;    ///< The number of messages in the MLE send queue.
+	uint16_t mMleBuffers;      ///< The number of buffers in the MLE send queue.
+	uint16_t mArpMessages;    ///< The number of messages in the ARP send queue.
+	uint16_t mArpBuffers;      ///< The number of buffers in the ARP send queue.
+	uint16_t mCoapMessages;  ///< The number of messages in the CoAP send queue.
+	uint16_t mCoapBuffers;    ///< The number of buffers in the CoAP send queue.
+	uint16_t mCoapSecureMessages; ///< The number of messages in the CoAP secure send queue.
+	uint16_t mCoapSecureBuffers; ///< The number of buffers in the CoAP secure send queue.
+	uint16_t mApplicationCoapMessages; ///< The number of messages in the application CoAP send queue.
+	uint16_t mApplicationCoapBuffers; ///< The number of buffers in the application CoAP send queue.
 } otBufferInfo;
 
 /**
@@ -230,7 +228,8 @@ int8_t otMessageGetRss(otMessage *aMessage);
  * @sa otMessageWrite
  *
  */
-otError otMessageAppend(otMessage *aMessage, const void *aBuf, uint16_t aLength);
+otError otMessageAppend(otMessage *aMessage, const void *aBuf,
+		uint16_t aLength);
 
 /**
  * Read bytes from a message.
@@ -251,7 +250,8 @@ otError otMessageAppend(otMessage *aMessage, const void *aBuf, uint16_t aLength)
  * @sa otMessageWrite
  *
  */
-int otMessageRead(otMessage *aMessage, uint16_t aOffset, void *aBuf, uint16_t aLength);
+int otMessageRead(otMessage *aMessage, uint16_t aOffset, void *aBuf,
+		uint16_t aLength);
 
 /**
  * Write bytes to a message.
@@ -272,14 +272,14 @@ int otMessageRead(otMessage *aMessage, uint16_t aOffset, void *aBuf, uint16_t aL
  * @sa otMessageRead
  *
  */
-int otMessageWrite(otMessage *aMessage, uint16_t aOffset, const void *aBuf, uint16_t aLength);
+int otMessageWrite(otMessage *aMessage, uint16_t aOffset, const void *aBuf,
+		uint16_t aLength);
 
 /**
  * This structure represents an OpenThread message queue.
  */
-typedef struct
-{
-    void *mData; ///< Opaque data used by the implementation.
+typedef struct {
+	void *mData; ///< Opaque data used by the implementation.
 } otMessageQueue;
 
 /**
@@ -316,7 +316,8 @@ otError otMessageQueueEnqueue(otMessageQueue *aQueue, otMessage *aMessage);
  * @retval OT_ERROR_ALREADY  The message is already enqueued in a queue.
  *
  */
-otError otMessageQueueEnqueueAtHead(otMessageQueue *aQueue, otMessage *aMessage);
+otError otMessageQueueEnqueueAtHead(otMessageQueue *aQueue,
+		otMessage *aMessage);
 
 /**
  * This function removes a message from the given message queue.
@@ -338,7 +339,7 @@ otError otMessageQueueDequeue(otMessageQueue *aQueue, otMessage *aMessage);
  * @returns  A pointer to the message at the head of queue or NULL if queue is empty.
  *
  */
-otMessage *otMessageQueueGetHead(otMessageQueue *aQueue);
+otMessage* otMessageQueueGetHead(otMessageQueue *aQueue);
 
 /**
  * This function returns a pointer to the next message in the queue by iterating forward (from head to tail).
@@ -350,7 +351,8 @@ otMessage *otMessageQueueGetHead(otMessageQueue *aQueue);
  *           NULL is returned if `aMessage` is not in the queue `aQueue`.
  *
  */
-otMessage *otMessageQueueGetNext(otMessageQueue *aQueue, const otMessage *aMessage);
+otMessage* otMessageQueueGetNext(otMessageQueue *aQueue,
+		const otMessage *aMessage);
 
 /**
  * Get the Message Buffer information.
@@ -359,7 +361,8 @@ otMessage *otMessageQueueGetNext(otMessageQueue *aQueue, const otMessage *aMessa
  * @param[out]  aBufferInfo  A pointer where the message buffer information is written.
  *
  */
-OTAPI void OTCALL otMessageGetBufferInfo(otInstance *aInstance, otBufferInfo *aBufferInfo);
+OTAPI void OTCALL otMessageGetBufferInfo(otInstance *aInstance,
+		otBufferInfo *aBufferInfo);
 
 /**
  * @}

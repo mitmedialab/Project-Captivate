@@ -1,69 +1,69 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_pcd.c
-  * @author  MCD Application Team
-  * @brief   PCD HAL module driver.
-  *          This file provides firmware functions to manage the following
-  *          functionalities of the USB Peripheral Controller:
-  *           + Initialization and de-initialization functions
-  *           + IO operation functions
-  *           + Peripheral Control functions
-  *           + Peripheral State functions
-  *
-  @verbatim
-  ==============================================================================
-                    ##### How to use this driver #####
-  ==============================================================================
-    [..]
-      The PCD HAL driver can be used as follows:
+ ******************************************************************************
+ * @file    stm32wbxx_hal_pcd.c
+ * @author  MCD Application Team
+ * @brief   PCD HAL module driver.
+ *          This file provides firmware functions to manage the following
+ *          functionalities of the USB Peripheral Controller:
+ *           + Initialization and de-initialization functions
+ *           + IO operation functions
+ *           + Peripheral Control functions
+ *           + Peripheral State functions
+ *
+ @verbatim
+ ==============================================================================
+ ##### How to use this driver #####
+ ==============================================================================
+ [..]
+ The PCD HAL driver can be used as follows:
 
-     (#) Declare a PCD_HandleTypeDef handle structure, for example:
-         PCD_HandleTypeDef  hpcd;
+ (#) Declare a PCD_HandleTypeDef handle structure, for example:
+ PCD_HandleTypeDef  hpcd;
 
-     (#) Fill parameters of Init structure in HCD handle
+ (#) Fill parameters of Init structure in HCD handle
 
-     (#) Call HAL_PCD_Init() API to initialize the PCD peripheral (Core, Device core, ...)
+ (#) Call HAL_PCD_Init() API to initialize the PCD peripheral (Core, Device core, ...)
 
-     (#) Initialize the PCD low level resources through the HAL_PCD_MspInit() API:
-         (##) Enable the PCD/USB Low Level interface clock using
-              (+++) __HAL_RCC_USB_CLK_ENABLE(); For USB Device only FS peripheral
+ (#) Initialize the PCD low level resources through the HAL_PCD_MspInit() API:
+ (##) Enable the PCD/USB Low Level interface clock using
+ (+++) __HAL_RCC_USB_CLK_ENABLE(); For USB Device only FS peripheral
 
-         (##) Initialize the related GPIO clocks
-         (##) Configure PCD pin-out
-         (##) Configure PCD NVIC interrupt
+ (##) Initialize the related GPIO clocks
+ (##) Configure PCD pin-out
+ (##) Configure PCD NVIC interrupt
 
-     (#)Associate the Upper USB device stack to the HAL PCD Driver:
-         (##) hpcd.pData = pdev;
+ (#)Associate the Upper USB device stack to the HAL PCD Driver:
+ (##) hpcd.pData = pdev;
 
-     (#)Enable PCD transmission and reception:
-         (##) HAL_PCD_Start();
+ (#)Enable PCD transmission and reception:
+ (##) HAL_PCD_Start();
 
-  @endverbatim
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ @endverbatim
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup PCD PCD
-  * @brief PCD HAL module driver
-  * @{
-  */
+ * @brief PCD HAL module driver
+ * @{
+ */
 
 #ifdef HAL_PCD_MODULE_ENABLED
 
@@ -74,66 +74,63 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup PCD_Private_Macros PCD Private Macros
-  * @{
-  */
+ * @{
+ */
 #define PCD_MIN(a, b)  (((a) < (b)) ? (a) : (b))
 #define PCD_MAX(a, b)  (((a) > (b)) ? (a) : (b))
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Private functions prototypes ----------------------------------------------*/
 /** @defgroup PCD_Private_Functions PCD Private Functions
-  * @{
-  */
+ * @{
+ */
 
 static HAL_StatusTypeDef PCD_EP_ISR_Handler(PCD_HandleTypeDef *hpcd);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported functions --------------------------------------------------------*/
 /** @defgroup PCD_Exported_Functions PCD Exported Functions
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup PCD_Exported_Functions_Group1 Initialization and de-initialization functions
  *  @brief    Initialization and Configuration functions
  *
-@verbatim
+ @verbatim
  ===============================================================================
-            ##### Initialization and de-initialization functions #####
+ ##### Initialization and de-initialization functions #####
  ===============================================================================
-    [..]  This section provides functions allowing to:
+ [..]  This section provides functions allowing to:
 
-@endverbatim
-  * @{
-  */
+ @endverbatim
+ * @{
+ */
 
 /**
-  * @brief  Initializes the PCD according to the specified
-  *         parameters in the PCD_InitTypeDef and initialize the associated handle.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *hpcd)
-{
-  uint8_t i;
+ * @brief  Initializes the PCD according to the specified
+ *         parameters in the PCD_InitTypeDef and initialize the associated handle.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *hpcd) {
+	uint8_t i;
 
-  /* Check the PCD handle allocation */
-  if (hpcd == NULL)
-  {
-    return HAL_ERROR;
-  }
+	/* Check the PCD handle allocation */
+	if (hpcd == NULL) {
+		return HAL_ERROR;
+	}
 
-  /* Check the parameters */
-  assert_param(IS_PCD_ALL_INSTANCE(hpcd->Instance));
+	/* Check the parameters */
+	assert_param(IS_PCD_ALL_INSTANCE(hpcd->Instance));
 
-  if (hpcd->State == HAL_PCD_STATE_RESET)
-  {
-    /* Allocate lock resource and initialize it */
-    hpcd->Lock = HAL_UNLOCKED;
+	if (hpcd->State == HAL_PCD_STATE_RESET) {
+		/* Allocate lock resource and initialize it */
+		hpcd->Lock = HAL_UNLOCKED;
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
     hpcd->SOFCallback = HAL_PCD_SOFCallback;
@@ -158,73 +155,68 @@ HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *hpcd)
     /* Init the low level hardware */
     hpcd->MspInitCallback(hpcd);
 #else
-    /* Init the low level hardware : GPIO, CLOCK, NVIC... */
-    HAL_PCD_MspInit(hpcd);
+		/* Init the low level hardware : GPIO, CLOCK, NVIC... */
+		HAL_PCD_MspInit(hpcd);
 #endif /* (USE_HAL_PCD_REGISTER_CALLBACKS) */
-  }
+	}
 
-  hpcd->State = HAL_PCD_STATE_BUSY;
+	hpcd->State = HAL_PCD_STATE_BUSY;
 
-  /* Disable the Interrupts */
-  __HAL_PCD_DISABLE(hpcd);
+	/* Disable the Interrupts */
+	__HAL_PCD_DISABLE(hpcd);
 
-  /* Init endpoints structures */
-  for (i = 0U; i < hpcd->Init.dev_endpoints; i++)
-  {
-    /* Init ep structure */
-    hpcd->IN_ep[i].is_in = 1U;
-    hpcd->IN_ep[i].num = i;
-    hpcd->IN_ep[i].tx_fifo_num = i;
-    /* Control until ep is activated */
-    hpcd->IN_ep[i].type = EP_TYPE_CTRL;
-    hpcd->IN_ep[i].maxpacket = 0U;
-    hpcd->IN_ep[i].xfer_buff = 0U;
-    hpcd->IN_ep[i].xfer_len = 0U;
-  }
+	/* Init endpoints structures */
+	for (i = 0U; i < hpcd->Init.dev_endpoints; i++) {
+		/* Init ep structure */
+		hpcd->IN_ep[i].is_in = 1U;
+		hpcd->IN_ep[i].num = i;
+		hpcd->IN_ep[i].tx_fifo_num = i;
+		/* Control until ep is activated */
+		hpcd->IN_ep[i].type = EP_TYPE_CTRL;
+		hpcd->IN_ep[i].maxpacket = 0U;
+		hpcd->IN_ep[i].xfer_buff = 0U;
+		hpcd->IN_ep[i].xfer_len = 0U;
+	}
 
-  for (i = 0U; i < hpcd->Init.dev_endpoints; i++)
-  {
-    hpcd->OUT_ep[i].is_in = 0U;
-    hpcd->OUT_ep[i].num = i;
-    /* Control until ep is activated */
-    hpcd->OUT_ep[i].type = EP_TYPE_CTRL;
-    hpcd->OUT_ep[i].maxpacket = 0U;
-    hpcd->OUT_ep[i].xfer_buff = 0U;
-    hpcd->OUT_ep[i].xfer_len = 0U;
-  }
+	for (i = 0U; i < hpcd->Init.dev_endpoints; i++) {
+		hpcd->OUT_ep[i].is_in = 0U;
+		hpcd->OUT_ep[i].num = i;
+		/* Control until ep is activated */
+		hpcd->OUT_ep[i].type = EP_TYPE_CTRL;
+		hpcd->OUT_ep[i].maxpacket = 0U;
+		hpcd->OUT_ep[i].xfer_buff = 0U;
+		hpcd->OUT_ep[i].xfer_len = 0U;
+	}
 
-  /* Init Device */
-  (void)USB_DevInit(hpcd->Instance, hpcd->Init);
+	/* Init Device */
+	(void) USB_DevInit(hpcd->Instance, hpcd->Init);
 
-  hpcd->USB_Address = 0U;
-  hpcd->State = HAL_PCD_STATE_READY;
-  
-  /* Activate LPM */
-  if (hpcd->Init.lpm_enable == 1U)
-  {
-    (void)HAL_PCDEx_ActivateLPM(hpcd);
-  }
-  
-  return HAL_OK;
+	hpcd->USB_Address = 0U;
+	hpcd->State = HAL_PCD_STATE_READY;
+
+	/* Activate LPM */
+	if (hpcd->Init.lpm_enable == 1U) {
+		(void) HAL_PCDEx_ActivateLPM(hpcd);
+	}
+
+	return HAL_OK;
 }
 
 /**
-  * @brief  DeInitializes the PCD peripheral.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_DeInit(PCD_HandleTypeDef *hpcd)
-{
-  /* Check the PCD handle allocation */
-  if (hpcd == NULL)
-  {
-    return HAL_ERROR;
-  }
+ * @brief  DeInitializes the PCD peripheral.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_DeInit(PCD_HandleTypeDef *hpcd) {
+	/* Check the PCD handle allocation */
+	if (hpcd == NULL) {
+		return HAL_ERROR;
+	}
 
-  hpcd->State = HAL_PCD_STATE_BUSY;
+	hpcd->State = HAL_PCD_STATE_BUSY;
 
-  /* Stop Device */
-  (void)HAL_PCD_Stop(hpcd);
+	/* Stop Device */
+	(void) HAL_PCD_Stop(hpcd);
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
   if (hpcd->MspDeInitCallback == NULL)
@@ -235,43 +227,41 @@ HAL_StatusTypeDef HAL_PCD_DeInit(PCD_HandleTypeDef *hpcd)
   /* DeInit the low level hardware */
   hpcd->MspDeInitCallback(hpcd);
 #else
-  /* DeInit the low level hardware: CLOCK, NVIC.*/
-  HAL_PCD_MspDeInit(hpcd);
+	/* DeInit the low level hardware: CLOCK, NVIC.*/
+	HAL_PCD_MspDeInit(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 
-  hpcd->State = HAL_PCD_STATE_RESET;
+	hpcd->State = HAL_PCD_STATE_RESET;
 
-  return HAL_OK;
+	return HAL_OK;
 }
 
 /**
-  * @brief  Initializes the PCD MSP.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  Initializes the PCD MSP.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_MspInit could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_MspInit could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  DeInitializes PCD MSP.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  DeInitializes PCD MSP.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_MspDeInit(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_MspDeInit could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_MspDeInit could be implemented in the user file
+	 */
 }
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
@@ -936,932 +926,851 @@ HAL_StatusTypeDef HAL_PCD_UnRegisterLpmCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup PCD_Exported_Functions_Group2 Input and Output operation functions
  *  @brief   Data transfers functions
  *
-@verbatim
+ @verbatim
  ===============================================================================
-                      ##### IO operation functions #####
+ ##### IO operation functions #####
  ===============================================================================
-    [..]
-    This subsection provides a set of functions allowing to manage the PCD data
-    transfers.
+ [..]
+ This subsection provides a set of functions allowing to manage the PCD data
+ transfers.
 
-@endverbatim
-  * @{
-  */
+ @endverbatim
+ * @{
+ */
 
 /**
-  * @brief  Start the USB device
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *hpcd)
-{
-  __HAL_LOCK(hpcd);
-  (void)USB_DevConnect(hpcd->Instance);
-  __HAL_PCD_ENABLE(hpcd);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
+ * @brief  Start the USB device
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *hpcd) {
+	__HAL_LOCK(hpcd);
+	(void) USB_DevConnect(hpcd->Instance);
+	__HAL_PCD_ENABLE(hpcd);
+	__HAL_UNLOCK(hpcd);
+	return HAL_OK;
 }
 
 /**
-  * @brief  Stop the USB device.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *hpcd)
-{
-  __HAL_LOCK(hpcd);
-  __HAL_PCD_DISABLE(hpcd);
+ * @brief  Stop the USB device.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *hpcd) {
+	__HAL_LOCK(hpcd);
+	__HAL_PCD_DISABLE(hpcd);
 
-  (void)USB_StopDevice(hpcd->Instance);
+	(void) USB_StopDevice(hpcd->Instance);
 
-  __HAL_UNLOCK(hpcd);
+	__HAL_UNLOCK(hpcd);
 
-  return HAL_OK;
+	return HAL_OK;
 }
 
-
 /**
-  * @brief  This function handles PCD interrupt request.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
-{
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_CTR))
-  {
-    /* servicing of the endpoint correct transfer interrupt */
-    /* clear of the CTR flag into the sub */
-    (void)PCD_EP_ISR_Handler(hpcd);
-  }
+ * @brief  This function handles PCD interrupt request.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd) {
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_CTR)) {
+		/* servicing of the endpoint correct transfer interrupt */
+		/* clear of the CTR flag into the sub */
+		(void) PCD_EP_ISR_Handler(hpcd);
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_RESET))
-  {
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_RESET);
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_RESET)) {
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_RESET);
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
     hpcd->ResetCallback(hpcd);
 #else
-    HAL_PCD_ResetCallback(hpcd);
+		HAL_PCD_ResetCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 
-    (void)HAL_PCD_SetAddress(hpcd, 0U);
-  }
+		(void) HAL_PCD_SetAddress(hpcd, 0U);
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_PMAOVR))
-  {
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_PMAOVR);
-  }
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_PMAOVR)) {
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_PMAOVR);
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_ERR))
-  {
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_ERR);
-  }
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_ERR)) {
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_ERR);
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_WKUP))
-  {
-    hpcd->Instance->CNTR &= (uint16_t) ~(USB_CNTR_LPMODE);
-    hpcd->Instance->CNTR &= (uint16_t) ~(USB_CNTR_FSUSP);
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_WKUP)) {
+		hpcd->Instance->CNTR &= (uint16_t) ~(USB_CNTR_LPMODE);
+		hpcd->Instance->CNTR &= (uint16_t) ~(USB_CNTR_FSUSP);
 
-    if (hpcd->LPM_State == LPM_L1)
-    {
-      hpcd->LPM_State = LPM_L0;
+		if (hpcd->LPM_State == LPM_L1) {
+			hpcd->LPM_State = LPM_L0;
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
       hpcd->LPMCallback(hpcd, PCD_LPM_L0_ACTIVE);
 #else
-      HAL_PCDEx_LPM_Callback(hpcd, PCD_LPM_L0_ACTIVE);
+			HAL_PCDEx_LPM_Callback(hpcd, PCD_LPM_L0_ACTIVE);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-    }
+		}
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
     hpcd->ResumeCallback(hpcd);
 #else
-    HAL_PCD_ResumeCallback(hpcd);
+		HAL_PCD_ResumeCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_WKUP);
-  }
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_WKUP);
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_SUSP))
-  {
-    /* Force low-power mode in the macrocell */
-    hpcd->Instance->CNTR |= (uint16_t)USB_CNTR_FSUSP;
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_SUSP)) {
+		/* Force low-power mode in the macrocell */
+		hpcd->Instance->CNTR |= (uint16_t) USB_CNTR_FSUSP;
 
-    /* clear of the ISTR bit must be done after setting of CNTR_FSUSP */
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_SUSP);
+		/* clear of the ISTR bit must be done after setting of CNTR_FSUSP */
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_SUSP);
 
-    hpcd->Instance->CNTR |= (uint16_t)USB_CNTR_LPMODE;
+		hpcd->Instance->CNTR |= (uint16_t) USB_CNTR_LPMODE;
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
     hpcd->SuspendCallback(hpcd);
 #else
-    HAL_PCD_SuspendCallback(hpcd);
+		HAL_PCD_SuspendCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-  }
+	}
 
-  /* Handle LPM Interrupt */
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_L1REQ))
-  {
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_L1REQ);
-    if (hpcd->LPM_State == LPM_L0)
-    {
-      /* Force suspend and low-power mode before going to L1 state*/
-      hpcd->Instance->CNTR |= (uint16_t)USB_CNTR_LPMODE;
-      hpcd->Instance->CNTR |= (uint16_t)USB_CNTR_FSUSP;
+	/* Handle LPM Interrupt */
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_L1REQ)) {
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_L1REQ);
+		if (hpcd->LPM_State == LPM_L0) {
+			/* Force suspend and low-power mode before going to L1 state*/
+			hpcd->Instance->CNTR |= (uint16_t) USB_CNTR_LPMODE;
+			hpcd->Instance->CNTR |= (uint16_t) USB_CNTR_FSUSP;
 
-      hpcd->LPM_State = LPM_L1;
-      hpcd->BESL = ((uint32_t)hpcd->Instance->LPMCSR & USB_LPMCSR_BESL) >> 2;
+			hpcd->LPM_State = LPM_L1;
+			hpcd->BESL = ((uint32_t) hpcd->Instance->LPMCSR & USB_LPMCSR_BESL)
+					>> 2;
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
       hpcd->LPMCallback(hpcd, PCD_LPM_L1_ACTIVE);
 #else
-      HAL_PCDEx_LPM_Callback(hpcd, PCD_LPM_L1_ACTIVE);
+			HAL_PCDEx_LPM_Callback(hpcd, PCD_LPM_L1_ACTIVE);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-    }
-    else
-    {
+		} else {
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
       hpcd->SuspendCallback(hpcd);
 #else
-      HAL_PCD_SuspendCallback(hpcd);
+			HAL_PCD_SuspendCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-    }
-  }
+		}
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_SOF))
-  {
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_SOF);
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_SOF)) {
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_SOF);
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
     hpcd->SOFCallback(hpcd);
 #else
-    HAL_PCD_SOFCallback(hpcd);
+		HAL_PCD_SOFCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-  }
+	}
 
-  if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_ESOF))
-  {
-    /* clear ESOF flag in ISTR */
-    __HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_ESOF);
-  }
-}
-
-
-/**
-  * @brief  Data OUT stage callback.
-  * @param  hpcd PCD handle
-  * @param  epnum endpoint number
-  * @retval None
-  */
-__weak void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(epnum);
-
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_DataOutStageCallback could be implemented in the user file
-   */
+	if (__HAL_PCD_GET_FLAG(hpcd, USB_ISTR_ESOF)) {
+		/* clear ESOF flag in ISTR */
+		__HAL_PCD_CLEAR_FLAG(hpcd, USB_ISTR_ESOF);
+	}
 }
 
 /**
-  * @brief  Data IN stage callback
-  * @param  hpcd PCD handle
-  * @param  epnum endpoint number
-  * @retval None
-  */
-__weak void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(epnum);
+ * @brief  Data OUT stage callback.
+ * @param  hpcd PCD handle
+ * @param  epnum endpoint number
+ * @retval None
+ */
+__weak void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+	UNUSED(epnum);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_DataInStageCallback could be implemented in the user file
-   */
-}
-/**
-  * @brief  Setup stage callback
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_SetupStageCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_DataOutStageCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  USB Start Of Frame callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  Data IN stage callback
+ * @param  hpcd PCD handle
+ * @param  epnum endpoint number
+ * @retval None
+ */
+__weak void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+	UNUSED(epnum);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_SOFCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_DataInStageCallback could be implemented in the user file
+	 */
+}
+/**
+ * @brief  Setup stage callback
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_SetupStageCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  USB Reset callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  USB Start Of Frame callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_ResetCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_SOFCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Suspend event callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  USB Reset callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_SuspendCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_ResetCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Resume event callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  Suspend event callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_ResumeCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_SuspendCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Incomplete ISO OUT callback.
-  * @param  hpcd PCD handle
-  * @param  epnum endpoint number
-  * @retval None
-  */
-__weak void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(epnum);
+ * @brief  Resume event callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_ISOOUTIncompleteCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_ResumeCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Incomplete ISO IN callback.
-  * @param  hpcd PCD handle
-  * @param  epnum endpoint number
-  * @retval None
-  */
-__weak void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(epnum);
+ * @brief  Incomplete ISO OUT callback.
+ * @param  hpcd PCD handle
+ * @param  epnum endpoint number
+ * @retval None
+ */
+__weak void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *hpcd,
+		uint8_t epnum) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+	UNUSED(epnum);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_ISOINIncompleteCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_ISOOUTIncompleteCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Connection event callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  Incomplete ISO IN callback.
+ * @param  hpcd PCD handle
+ * @param  epnum endpoint number
+ * @retval None
+ */
+__weak void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd,
+		uint8_t epnum) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+	UNUSED(epnum);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_ConnectCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_ISOINIncompleteCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @brief  Disconnection event callback.
-  * @param  hpcd PCD handle
-  * @retval None
-  */
-__weak void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
+ * @brief  Connection event callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_PCD_DisconnectCallback could be implemented in the user file
-   */
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_ConnectCallback could be implemented in the user file
+	 */
 }
 
 /**
-  * @}
-  */
+ * @brief  Disconnection event callback.
+ * @param  hpcd PCD handle
+ * @retval None
+ */
+__weak void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+
+	/* NOTE : This function should not be modified, when the callback is needed,
+	 the HAL_PCD_DisconnectCallback could be implemented in the user file
+	 */
+}
+
+/**
+ * @}
+ */
 
 /** @defgroup PCD_Exported_Functions_Group3 Peripheral Control functions
  *  @brief   management functions
  *
-@verbatim
+ @verbatim
  ===============================================================================
-                      ##### Peripheral Control functions #####
+ ##### Peripheral Control functions #####
  ===============================================================================
-    [..]
-    This subsection provides a set of functions allowing to control the PCD data
-    transfers.
+ [..]
+ This subsection provides a set of functions allowing to control the PCD data
+ transfers.
 
-@endverbatim
-  * @{
-  */
+ @endverbatim
+ * @{
+ */
 
 /**
-  * @brief  Connect the USB device
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_DevConnect(PCD_HandleTypeDef *hpcd)
-{
-  __HAL_LOCK(hpcd);
-  (void)USB_DevConnect(hpcd->Instance);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
+ * @brief  Connect the USB device
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_DevConnect(PCD_HandleTypeDef *hpcd) {
+	__HAL_LOCK(hpcd);
+	(void) USB_DevConnect(hpcd->Instance);
+	__HAL_UNLOCK(hpcd);
+	return HAL_OK;
 }
 
 /**
-  * @brief  Disconnect the USB device.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_DevDisconnect(PCD_HandleTypeDef *hpcd)
-{
-  __HAL_LOCK(hpcd);
-  (void)USB_DevDisconnect(hpcd->Instance);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
+ * @brief  Disconnect the USB device.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_DevDisconnect(PCD_HandleTypeDef *hpcd) {
+	__HAL_LOCK(hpcd);
+	(void) USB_DevDisconnect(hpcd->Instance);
+	__HAL_UNLOCK(hpcd);
+	return HAL_OK;
 }
 
 /**
-  * @brief  Set the USB Device address.
-  * @param  hpcd PCD handle
-  * @param  address new device address
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *hpcd, uint8_t address)
-{
-  __HAL_LOCK(hpcd);
-  hpcd->USB_Address = address;
-  (void)USB_SetDevAddress(hpcd->Instance, address);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
+ * @brief  Set the USB Device address.
+ * @param  hpcd PCD handle
+ * @param  address new device address
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *hpcd, uint8_t address) {
+	__HAL_LOCK(hpcd);
+	hpcd->USB_Address = address;
+	(void) USB_SetDevAddress(hpcd->Instance, address);
+	__HAL_UNLOCK(hpcd);
+	return HAL_OK;
 }
 /**
-  * @brief  Open and configure an endpoint.
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @param  ep_mps endpoint max packet size
-  * @param  ep_type endpoint type
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint16_t ep_mps, uint8_t ep_type)
-{
-  HAL_StatusTypeDef  ret = HAL_OK;
-  PCD_EPTypeDef *ep;
+ * @brief  Open and configure an endpoint.
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @param  ep_mps endpoint max packet size
+ * @param  ep_type endpoint type
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *hpcd, uint8_t ep_addr,
+		uint16_t ep_mps, uint8_t ep_type) {
+	HAL_StatusTypeDef ret = HAL_OK;
+	PCD_EPTypeDef *ep;
 
-  if ((ep_addr & 0x80U) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 0U;
-  }
+	if ((ep_addr & 0x80U) == 0x80U) {
+		ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 1U;
+	} else {
+		ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 0U;
+	}
 
-  ep->num = ep_addr & EP_ADDR_MSK;
-  ep->maxpacket = ep_mps;
-  ep->type = ep_type;
+	ep->num = ep_addr & EP_ADDR_MSK;
+	ep->maxpacket = ep_mps;
+	ep->type = ep_type;
 
-  if (ep->is_in != 0U)
-  {
-    /* Assign a Tx FIFO */
-    ep->tx_fifo_num = ep->num;
-  }
-  /* Set initial data PID. */
-  if (ep_type == EP_TYPE_BULK)
-  {
-    ep->data_pid_start = 0U;
-  }
+	if (ep->is_in != 0U) {
+		/* Assign a Tx FIFO */
+		ep->tx_fifo_num = ep->num;
+	}
+	/* Set initial data PID. */
+	if (ep_type == EP_TYPE_BULK) {
+		ep->data_pid_start = 0U;
+	}
 
-  __HAL_LOCK(hpcd);
-  (void)USB_ActivateEndpoint(hpcd->Instance, ep);
-  __HAL_UNLOCK(hpcd);
+	__HAL_LOCK(hpcd);
+	(void) USB_ActivateEndpoint(hpcd->Instance, ep);
+	__HAL_UNLOCK(hpcd);
 
-  return ret;
+	return ret;
 }
 
 /**
-  * @brief  Deactivate an endpoint.
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  PCD_EPTypeDef *ep;
+ * @brief  Deactivate an endpoint.
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *hpcd, uint8_t ep_addr) {
+	PCD_EPTypeDef *ep;
 
-  if ((ep_addr & 0x80U) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 0U;
-  }
-  ep->num   = ep_addr & EP_ADDR_MSK;
+	if ((ep_addr & 0x80U) == 0x80U) {
+		ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 1U;
+	} else {
+		ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 0U;
+	}
+	ep->num = ep_addr & EP_ADDR_MSK;
 
-  __HAL_LOCK(hpcd);
-  (void)USB_DeactivateEndpoint(hpcd->Instance, ep);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
-}
-
-
-/**
-  * @brief  Receive an amount of data.
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @param  pBuf pointer to the reception buffer
-  * @param  len amount of data to be received
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint8_t *pBuf, uint32_t len)
-{
-  PCD_EPTypeDef *ep;
-
-  ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-
-  /*setup and start the Xfer */
-  ep->xfer_buff = pBuf;
-  ep->xfer_len = len;
-  ep->xfer_count = 0U;
-  ep->is_in = 0U;
-  ep->num = ep_addr & EP_ADDR_MSK;
-
-  if ((ep_addr & EP_ADDR_MSK) == 0U)
-  {
-    (void)USB_EP0StartXfer(hpcd->Instance, ep);
-  }
-  else
-  {
-    (void)USB_EPStartXfer(hpcd->Instance, ep);
-  }
-
-  return HAL_OK;
+	__HAL_LOCK(hpcd);
+	(void) USB_DeactivateEndpoint(hpcd->Instance, ep);
+	__HAL_UNLOCK(hpcd);
+	return HAL_OK;
 }
 
 /**
-  * @brief  Get Received Data Size
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @retval Data Size
-  */
-uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  return hpcd->OUT_ep[ep_addr & EP_ADDR_MSK].xfer_count;
-}
-/**
-  * @brief  Send an amount of data
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @param  pBuf pointer to the transmission buffer
-  * @param  len amount of data to be sent
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint8_t *pBuf, uint32_t len)
-{
-  PCD_EPTypeDef *ep;
+ * @brief  Receive an amount of data.
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @param  pBuf pointer to the reception buffer
+ * @param  len amount of data to be received
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr,
+		uint8_t *pBuf, uint32_t len) {
+	PCD_EPTypeDef *ep;
 
-  ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
+	ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
 
-  /*setup and start the Xfer */
-  ep->xfer_buff = pBuf;
-  ep->xfer_len = len;
-  ep->xfer_count = 0U;
-  ep->is_in = 1U;
-  ep->num = ep_addr & EP_ADDR_MSK;
+	/*setup and start the Xfer */
+	ep->xfer_buff = pBuf;
+	ep->xfer_len = len;
+	ep->xfer_count = 0U;
+	ep->is_in = 0U;
+	ep->num = ep_addr & EP_ADDR_MSK;
 
-  if ((ep_addr & EP_ADDR_MSK) == 0U)
-  {
-    (void)USB_EP0StartXfer(hpcd->Instance, ep);
-  }
-  else
-  {
-    (void)USB_EPStartXfer(hpcd->Instance, ep);
-  }
+	if ((ep_addr & EP_ADDR_MSK) == 0U) {
+		(void) USB_EP0StartXfer(hpcd->Instance, ep);
+	} else {
+		(void) USB_EPStartXfer(hpcd->Instance, ep);
+	}
 
-  return HAL_OK;
+	return HAL_OK;
 }
 
 /**
-  * @brief  Set a STALL condition over an endpoint
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_SetStall(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  PCD_EPTypeDef *ep;
+ * @brief  Get Received Data Size
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @retval Data Size
+ */
+uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef *hpcd, uint8_t ep_addr) {
+	return hpcd->OUT_ep[ep_addr & EP_ADDR_MSK].xfer_count;
+}
+/**
+ * @brief  Send an amount of data
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @param  pBuf pointer to the transmission buffer
+ * @param  len amount of data to be sent
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *hpcd, uint8_t ep_addr,
+		uint8_t *pBuf, uint32_t len) {
+	PCD_EPTypeDef *ep;
 
-  if (((uint32_t)ep_addr & EP_ADDR_MSK) > hpcd->Init.dev_endpoints)
-  {
-    return HAL_ERROR;
-  }
+	ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
 
-  if ((0x80U & ep_addr) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr];
-    ep->is_in = 0U;
-  }
+	/*setup and start the Xfer */
+	ep->xfer_buff = pBuf;
+	ep->xfer_len = len;
+	ep->xfer_count = 0U;
+	ep->is_in = 1U;
+	ep->num = ep_addr & EP_ADDR_MSK;
 
-  ep->is_stall = 1U;
-  ep->num = ep_addr & EP_ADDR_MSK;
+	if ((ep_addr & EP_ADDR_MSK) == 0U) {
+		(void) USB_EP0StartXfer(hpcd->Instance, ep);
+	} else {
+		(void) USB_EPStartXfer(hpcd->Instance, ep);
+	}
 
-  __HAL_LOCK(hpcd);
-
-  (void)USB_EPSetStall(hpcd->Instance, ep);
-  if ((ep_addr & EP_ADDR_MSK) == 0U)
-  {
-    (void)USB_EP0_OutStart(hpcd->Instance, (uint8_t *)hpcd->Setup);
-  }
-  __HAL_UNLOCK(hpcd);
-
-  return HAL_OK;
+	return HAL_OK;
 }
 
 /**
-  * @brief  Clear a STALL condition over in an endpoint
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_ClrStall(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  PCD_EPTypeDef *ep;
+ * @brief  Set a STALL condition over an endpoint
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_SetStall(PCD_HandleTypeDef *hpcd, uint8_t ep_addr) {
+	PCD_EPTypeDef *ep;
 
-  if (((uint32_t)ep_addr & 0x0FU) > hpcd->Init.dev_endpoints)
-  {
-    return HAL_ERROR;
-  }
+	if (((uint32_t) ep_addr & EP_ADDR_MSK) > hpcd->Init.dev_endpoints) {
+		return HAL_ERROR;
+	}
 
-  if ((0x80U & ep_addr) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 0U;
-  }
+	if ((0x80U & ep_addr) == 0x80U) {
+		ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 1U;
+	} else {
+		ep = &hpcd->OUT_ep[ep_addr];
+		ep->is_in = 0U;
+	}
 
-  ep->is_stall = 0U;
-  ep->num = ep_addr & EP_ADDR_MSK;
+	ep->is_stall = 1U;
+	ep->num = ep_addr & EP_ADDR_MSK;
 
-  __HAL_LOCK(hpcd);
-  (void)USB_EPClearStall(hpcd->Instance, ep);
-  __HAL_UNLOCK(hpcd);
+	__HAL_LOCK(hpcd);
 
-  return HAL_OK;
+	(void) USB_EPSetStall(hpcd->Instance, ep);
+	if ((ep_addr & EP_ADDR_MSK) == 0U) {
+		(void) USB_EP0_OutStart(hpcd->Instance, (uint8_t*) hpcd->Setup);
+	}
+	__HAL_UNLOCK(hpcd);
+
+	return HAL_OK;
 }
 
 /**
-  * @brief  Flush an endpoint
-  * @param  hpcd PCD handle
-  * @param  ep_addr endpoint address
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(ep_addr);
+ * @brief  Clear a STALL condition over in an endpoint
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_ClrStall(PCD_HandleTypeDef *hpcd, uint8_t ep_addr) {
+	PCD_EPTypeDef *ep;
 
-  return HAL_OK;
+	if (((uint32_t) ep_addr & 0x0FU) > hpcd->Init.dev_endpoints) {
+		return HAL_ERROR;
+	}
+
+	if ((0x80U & ep_addr) == 0x80U) {
+		ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 1U;
+	} else {
+		ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
+		ep->is_in = 0U;
+	}
+
+	ep->is_stall = 0U;
+	ep->num = ep_addr & EP_ADDR_MSK;
+
+	__HAL_LOCK(hpcd);
+	(void) USB_EPClearStall(hpcd->Instance, ep);
+	__HAL_UNLOCK(hpcd);
+
+	return HAL_OK;
 }
 
 /**
-  * @brief  Activate remote wakeup signalling
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_ActivateRemoteWakeup(PCD_HandleTypeDef *hpcd)
-{
-  return (USB_ActivateRemoteWakeup(hpcd->Instance));
+ * @brief  Flush an endpoint
+ * @param  hpcd PCD handle
+ * @param  ep_addr endpoint address
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *hpcd, uint8_t ep_addr) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hpcd);
+	UNUSED(ep_addr);
+
+	return HAL_OK;
 }
 
 /**
-  * @brief  De-activate remote wakeup signalling.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_PCD_DeActivateRemoteWakeup(PCD_HandleTypeDef *hpcd)
-{
-  return (USB_DeActivateRemoteWakeup(hpcd->Instance));
+ * @brief  Activate remote wakeup signalling
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_ActivateRemoteWakeup(PCD_HandleTypeDef *hpcd) {
+	return (USB_ActivateRemoteWakeup(hpcd->Instance));
 }
 
 /**
-  * @}
-  */
+ * @brief  De-activate remote wakeup signalling.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+HAL_StatusTypeDef HAL_PCD_DeActivateRemoteWakeup(PCD_HandleTypeDef *hpcd) {
+	return (USB_DeActivateRemoteWakeup(hpcd->Instance));
+}
+
+/**
+ * @}
+ */
 
 /** @defgroup PCD_Exported_Functions_Group4 Peripheral State functions
  *  @brief   Peripheral State functions
  *
-@verbatim
+ @verbatim
  ===============================================================================
-                      ##### Peripheral State functions #####
+ ##### Peripheral State functions #####
  ===============================================================================
-    [..]
-    This subsection permits to get in run-time the status of the peripheral
-    and the data flow.
+ [..]
+ This subsection permits to get in run-time the status of the peripheral
+ and the data flow.
 
-@endverbatim
-  * @{
-  */
+ @endverbatim
+ * @{
+ */
 
 /**
-  * @brief  Return the PCD handle state.
-  * @param  hpcd PCD handle
-  * @retval HAL state
-  */
-PCD_StateTypeDef HAL_PCD_GetState(PCD_HandleTypeDef *hpcd)
-{
-  return hpcd->State;
+ * @brief  Return the PCD handle state.
+ * @param  hpcd PCD handle
+ * @retval HAL state
+ */
+PCD_StateTypeDef HAL_PCD_GetState(PCD_HandleTypeDef *hpcd) {
+	return hpcd->State;
 }
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Private functions ---------------------------------------------------------*/
 /** @addtogroup PCD_Private_Functions
-  * @{
-  */
-
+ * @{
+ */
 
 /**
-  * @brief  This function handles PCD Endpoint interrupt request.
-  * @param  hpcd PCD handle
-  * @retval HAL status
-  */
-static HAL_StatusTypeDef PCD_EP_ISR_Handler(PCD_HandleTypeDef *hpcd)
-{
-  PCD_EPTypeDef *ep;
-  uint16_t count;
-  uint16_t wIstr;
-  uint16_t wEPVal;
-  uint8_t epindex;
+ * @brief  This function handles PCD Endpoint interrupt request.
+ * @param  hpcd PCD handle
+ * @retval HAL status
+ */
+static HAL_StatusTypeDef PCD_EP_ISR_Handler(PCD_HandleTypeDef *hpcd) {
+	PCD_EPTypeDef *ep;
+	uint16_t count;
+	uint16_t wIstr;
+	uint16_t wEPVal;
+	uint8_t epindex;
 
-  /* stay in loop while pending interrupts */
-  while ((hpcd->Instance->ISTR & USB_ISTR_CTR) != 0U)
-  {
-    wIstr = hpcd->Instance->ISTR;
-    /* extract highest priority endpoint number */
-    epindex = (uint8_t)(wIstr & USB_ISTR_EP_ID);
+	/* stay in loop while pending interrupts */
+	while ((hpcd->Instance->ISTR & USB_ISTR_CTR) != 0U) {
+		wIstr = hpcd->Instance->ISTR;
+		/* extract highest priority endpoint number */
+		epindex = (uint8_t) (wIstr & USB_ISTR_EP_ID);
 
-    if (epindex == 0U)
-    {
-      /* Decode and service control endpoint interrupt */
+		if (epindex == 0U) {
+			/* Decode and service control endpoint interrupt */
 
-      /* DIR bit = origin of the interrupt */
-      if ((wIstr & USB_ISTR_DIR) == 0U)
-      {
-        /* DIR = 0 */
+			/* DIR bit = origin of the interrupt */
+			if ((wIstr & USB_ISTR_DIR) == 0U) {
+				/* DIR = 0 */
 
-        /* DIR = 0 => IN  int */
-        /* DIR = 0 implies that (EP_CTR_TX = 1) always */
-        PCD_CLEAR_TX_EP_CTR(hpcd->Instance, PCD_ENDP0);
-        ep = &hpcd->IN_ep[0];
+				/* DIR = 0 => IN  int */
+				/* DIR = 0 implies that (EP_CTR_TX = 1) always */
+				PCD_CLEAR_TX_EP_CTR(hpcd->Instance, PCD_ENDP0);
+				ep = &hpcd->IN_ep[0];
 
-        ep->xfer_count = PCD_GET_EP_TX_CNT(hpcd->Instance, ep->num);
-        ep->xfer_buff += ep->xfer_count;
+				ep->xfer_count = PCD_GET_EP_TX_CNT(hpcd->Instance, ep->num);
+				ep->xfer_buff += ep->xfer_count;
 
-        /* TX COMPLETE */
+				/* TX COMPLETE */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
         hpcd->DataInStageCallback(hpcd, 0U);
 #else
-        HAL_PCD_DataInStageCallback(hpcd, 0U);
+				HAL_PCD_DataInStageCallback(hpcd, 0U);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 
-        if ((hpcd->USB_Address > 0U) && (ep->xfer_len == 0U))
-        {
-          hpcd->Instance->DADDR = ((uint16_t)hpcd->USB_Address | USB_DADDR_EF);
-          hpcd->USB_Address = 0U;
-        }
-      }
-      else
-      {
-        /* DIR = 1 */
+				if ((hpcd->USB_Address > 0U) && (ep->xfer_len == 0U)) {
+					hpcd->Instance->DADDR = ((uint16_t) hpcd->USB_Address
+							| USB_DADDR_EF);
+					hpcd->USB_Address = 0U;
+				}
+			} else {
+				/* DIR = 1 */
 
-        /* DIR = 1 & CTR_RX => SETUP or OUT int */
-        /* DIR = 1 & (CTR_TX | CTR_RX) => 2 int pending */
-        ep = &hpcd->OUT_ep[0];
-        wEPVal = PCD_GET_ENDPOINT(hpcd->Instance, PCD_ENDP0);
+				/* DIR = 1 & CTR_RX => SETUP or OUT int */
+				/* DIR = 1 & (CTR_TX | CTR_RX) => 2 int pending */
+				ep = &hpcd->OUT_ep[0];
+				wEPVal = PCD_GET_ENDPOINT(hpcd->Instance, PCD_ENDP0);
 
-        if ((wEPVal & USB_EP_SETUP) != 0U)
-        {
-          /* Get SETUP Packet */
-          ep->xfer_count = PCD_GET_EP_RX_CNT(hpcd->Instance, ep->num);
+				if ((wEPVal & USB_EP_SETUP) != 0U) {
+					/* Get SETUP Packet */
+					ep->xfer_count = PCD_GET_EP_RX_CNT(hpcd->Instance, ep->num);
 
-          USB_ReadPMA(hpcd->Instance, (uint8_t *)hpcd->Setup,
-                      ep->pmaadress, (uint16_t)ep->xfer_count);
+					USB_ReadPMA(hpcd->Instance, (uint8_t*) hpcd->Setup,
+							ep->pmaadress, (uint16_t) ep->xfer_count);
 
-          /* SETUP bit kept frozen while CTR_RX = 1 */
-          PCD_CLEAR_RX_EP_CTR(hpcd->Instance, PCD_ENDP0);
+					/* SETUP bit kept frozen while CTR_RX = 1 */
+					PCD_CLEAR_RX_EP_CTR(hpcd->Instance, PCD_ENDP0);
 
-          /* Process SETUP Packet*/
+					/* Process SETUP Packet*/
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
           hpcd->SetupStageCallback(hpcd);
 #else
-          HAL_PCD_SetupStageCallback(hpcd);
+					HAL_PCD_SetupStageCallback(hpcd);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-        }
+				}
 
-        else if ((wEPVal & USB_EP_CTR_RX) != 0U)
-        {
-          PCD_CLEAR_RX_EP_CTR(hpcd->Instance, PCD_ENDP0);
+				else if ((wEPVal & USB_EP_CTR_RX) != 0U) {
+					PCD_CLEAR_RX_EP_CTR(hpcd->Instance, PCD_ENDP0);
 
-          /* Get Control Data OUT Packet */
-          ep->xfer_count = PCD_GET_EP_RX_CNT(hpcd->Instance, ep->num);
+					/* Get Control Data OUT Packet */
+					ep->xfer_count = PCD_GET_EP_RX_CNT(hpcd->Instance, ep->num);
 
-          if ((ep->xfer_count != 0U) && (ep->xfer_buff != 0U))
-          {
-            USB_ReadPMA(hpcd->Instance, ep->xfer_buff,
-                        ep->pmaadress, (uint16_t)ep->xfer_count);
+					if ((ep->xfer_count != 0U) && (ep->xfer_buff != 0U)) {
+						USB_ReadPMA(hpcd->Instance, ep->xfer_buff,
+								ep->pmaadress, (uint16_t) ep->xfer_count);
 
-            ep->xfer_buff += ep->xfer_count;
+						ep->xfer_buff += ep->xfer_count;
 
-            /* Process Control Data OUT Packet */
+						/* Process Control Data OUT Packet */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
             hpcd->DataOutStageCallback(hpcd, 0U);
 #else
-            HAL_PCD_DataOutStageCallback(hpcd, 0U);
+						HAL_PCD_DataOutStageCallback(hpcd, 0U);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-          }
+					}
 
-          PCD_SET_EP_RX_CNT(hpcd->Instance, PCD_ENDP0, ep->maxpacket);
-          PCD_SET_EP_RX_STATUS(hpcd->Instance, PCD_ENDP0, USB_EP_RX_VALID);
-        }
-      }
-    }
-    else
-    {
-      /* Decode and service non control endpoints interrupt */
+					PCD_SET_EP_RX_CNT(hpcd->Instance, PCD_ENDP0, ep->maxpacket);
+					PCD_SET_EP_RX_STATUS(hpcd->Instance, PCD_ENDP0,
+							USB_EP_RX_VALID);
+				}
+			}
+		} else {
+			/* Decode and service non control endpoints interrupt */
 
-      /* process related endpoint register */
-      wEPVal = PCD_GET_ENDPOINT(hpcd->Instance, epindex);
-      if ((wEPVal & USB_EP_CTR_RX) != 0U)
-      {
-        /* clear int flag */
-        PCD_CLEAR_RX_EP_CTR(hpcd->Instance, epindex);
-        ep = &hpcd->OUT_ep[epindex];
+			/* process related endpoint register */
+			wEPVal = PCD_GET_ENDPOINT(hpcd->Instance, epindex);
+			if ((wEPVal & USB_EP_CTR_RX) != 0U) {
+				/* clear int flag */
+				PCD_CLEAR_RX_EP_CTR(hpcd->Instance, epindex);
+				ep = &hpcd->OUT_ep[epindex];
 
-        /* OUT double Buffering */
-        if (ep->doublebuffer == 0U)
-        {
-          count = (uint16_t)PCD_GET_EP_RX_CNT(hpcd->Instance, ep->num);
-          if (count != 0U)
-          {
-            USB_ReadPMA(hpcd->Instance, ep->xfer_buff, ep->pmaadress, count);
-          }
-        }
-        else
-        {
-          /* free EP OUT Buffer */
-          PCD_FreeUserBuffer(hpcd->Instance, ep->num, 0U);
+				/* OUT double Buffering */
+				if (ep->doublebuffer == 0U) {
+					count = (uint16_t) PCD_GET_EP_RX_CNT(hpcd->Instance,
+							ep->num);
+					if (count != 0U) {
+						USB_ReadPMA(hpcd->Instance, ep->xfer_buff,
+								ep->pmaadress, count);
+					}
+				} else {
+					/* free EP OUT Buffer */
+					PCD_FreeUserBuffer(hpcd->Instance, ep->num, 0U);
 
-          if ((PCD_GET_ENDPOINT(hpcd->Instance, ep->num) & USB_EP_DTOG_RX) != 0U)
-          {
-            /* read from endpoint BUF0Addr buffer */
-            count = (uint16_t)PCD_GET_EP_DBUF0_CNT(hpcd->Instance, ep->num);
-            if (count != 0U)
-            {
-              USB_ReadPMA(hpcd->Instance, ep->xfer_buff, ep->pmaaddr0, count);
-            }
-          }
-          else
-          {
-            /* read from endpoint BUF1Addr buffer */
-            count = (uint16_t)PCD_GET_EP_DBUF1_CNT(hpcd->Instance, ep->num);
-            if (count != 0U)
-            {
-              USB_ReadPMA(hpcd->Instance, ep->xfer_buff, ep->pmaaddr1, count);
-            }
-          }
-        }
-        /* multi-packet on the NON control OUT endpoint */
-        ep->xfer_count += count;
-        ep->xfer_buff += count;
+					if ((PCD_GET_ENDPOINT(hpcd->Instance, ep->num)
+							& USB_EP_DTOG_RX) != 0U) {
+						/* read from endpoint BUF0Addr buffer */
+						count = (uint16_t) PCD_GET_EP_DBUF0_CNT(hpcd->Instance,
+								ep->num);
+						if (count != 0U) {
+							USB_ReadPMA(hpcd->Instance, ep->xfer_buff,
+									ep->pmaaddr0, count);
+						}
+					} else {
+						/* read from endpoint BUF1Addr buffer */
+						count = (uint16_t) PCD_GET_EP_DBUF1_CNT(hpcd->Instance,
+								ep->num);
+						if (count != 0U) {
+							USB_ReadPMA(hpcd->Instance, ep->xfer_buff,
+									ep->pmaaddr1, count);
+						}
+					}
+				}
+				/* multi-packet on the NON control OUT endpoint */
+				ep->xfer_count += count;
+				ep->xfer_buff += count;
 
-        if ((ep->xfer_len == 0U) || (count < ep->maxpacket))
-        {
-          /* RX COMPLETE */
+				if ((ep->xfer_len == 0U) || (count < ep->maxpacket)) {
+					/* RX COMPLETE */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
           hpcd->DataOutStageCallback(hpcd, ep->num);
 #else
-          HAL_PCD_DataOutStageCallback(hpcd, ep->num);
+					HAL_PCD_DataOutStageCallback(hpcd, ep->num);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-        }
-        else
-        {
-          (void)HAL_PCD_EP_Receive(hpcd, ep->num, ep->xfer_buff, ep->xfer_len);
-        }
+				} else {
+					(void) HAL_PCD_EP_Receive(hpcd, ep->num, ep->xfer_buff,
+							ep->xfer_len);
+				}
 
-      } /* if((wEPVal & EP_CTR_RX) */
+			} /* if((wEPVal & EP_CTR_RX) */
 
-      if ((wEPVal & USB_EP_CTR_TX) != 0U)
-      {
-        ep = &hpcd->IN_ep[epindex];
+			if ((wEPVal & USB_EP_CTR_TX) != 0U) {
+				ep = &hpcd->IN_ep[epindex];
 
-        /* clear int flag */
-        PCD_CLEAR_TX_EP_CTR(hpcd->Instance, epindex);
+				/* clear int flag */
+				PCD_CLEAR_TX_EP_CTR(hpcd->Instance, epindex);
 
-        /* multi-packet on the NON control IN endpoint */
-        ep->xfer_count = PCD_GET_EP_TX_CNT(hpcd->Instance, ep->num);
-        ep->xfer_buff += ep->xfer_count;
+				/* multi-packet on the NON control IN endpoint */
+				ep->xfer_count = PCD_GET_EP_TX_CNT(hpcd->Instance, ep->num);
+				ep->xfer_buff += ep->xfer_count;
 
-        /* Zero Length Packet? */
-        if (ep->xfer_len == 0U)
-        {
-          /* TX COMPLETE */
+				/* Zero Length Packet? */
+				if (ep->xfer_len == 0U) {
+					/* TX COMPLETE */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
           hpcd->DataInStageCallback(hpcd, ep->num);
 #else
-          HAL_PCD_DataInStageCallback(hpcd, ep->num);
+					HAL_PCD_DataInStageCallback(hpcd, ep->num);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-        }
-        else
-        {
-          (void)HAL_PCD_EP_Transmit(hpcd, ep->num, ep->xfer_buff, ep->xfer_len);
-        }
-      }
-    }
-  }
-  return HAL_OK;
+				} else {
+					(void) HAL_PCD_EP_Transmit(hpcd, ep->num, ep->xfer_buff,
+							ep->xfer_len);
+				}
+			}
+		}
+	}
+	return HAL_OK;
 }
 
-
 /**
-  * @}
-  */
+ * @}
+ */
 #endif /* defined (USB) */
 #endif /* HAL_PCD_MODULE_ENABLED */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

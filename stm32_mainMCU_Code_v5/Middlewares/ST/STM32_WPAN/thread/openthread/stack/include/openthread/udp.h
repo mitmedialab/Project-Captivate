@@ -60,36 +60,36 @@ extern "C" {
  * @retval  false   The message is not handled by this receiver.
  *
  */
-typedef bool (*otUdpHandler)(void *aContext, const otMessage *aMessage, const otMessageInfo *aMessageInfo);
+typedef bool (*otUdpHandler)(void *aContext, const otMessage *aMessage,
+		const otMessageInfo *aMessageInfo);
 
 /**
  * This structure represents a UDP receiver.
  *
  */
-typedef struct otUdpReceiver
-{
-    struct otUdpReceiver *mNext;    ///< A pointer to the next UDP receiver (internal use only).
-    otUdpHandler          mHandler; ///< A function pointer to the receiver callback.
-    void *                mContext; ///< A pointer to application-specific context.
+typedef struct otUdpReceiver {
+	struct otUdpReceiver *mNext; ///< A pointer to the next UDP receiver (internal use only).
+	otUdpHandler mHandler; ///< A function pointer to the receiver callback.
+	void *mContext; ///< A pointer to application-specific context.
 } otUdpReceiver;
 
 /**
  * This callback allows OpenThread to inform the application of a received UDP message.
  *
  */
-typedef void (*otUdpReceive)(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
+typedef void (*otUdpReceive)(void *aContext, otMessage *aMessage,
+		const otMessageInfo *aMessageInfo);
 
 /**
  * This structure represents a UDP socket.
  *
  */
-typedef struct otUdpSocket
-{
-    otSockAddr          mSockName; ///< The local IPv6 socket address.
-    otSockAddr          mPeerName; ///< The peer IPv6 socket address.
-    otUdpReceive        mHandler;  ///< A function pointer to the application callback.
-    void *              mContext;  ///< A pointer to application-specific context.
-    struct otUdpSocket *mNext;     ///< A pointer to the next UDP socket (internal use only).
+typedef struct otUdpSocket {
+	otSockAddr mSockName; ///< The local IPv6 socket address.
+	otSockAddr mPeerName; ///< The peer IPv6 socket address.
+	otUdpReceive mHandler;  ///< A function pointer to the application callback.
+	void *mContext;  ///< A pointer to application-specific context.
+	struct otUdpSocket *mNext; ///< A pointer to the next UDP socket (internal use only).
 } otUdpSocket;
 
 /**
@@ -103,7 +103,7 @@ typedef struct otUdpSocket
  * @sa otFreeMessage
  *
  */
-otMessage *otUdpNewMessage(otInstance *aInstance, bool aLinkSecurityEnabled);
+otMessage* otUdpNewMessage(otInstance *aInstance, bool aLinkSecurityEnabled);
 
 /**
  * Open a UDP/IPv6 socket.
@@ -123,7 +123,8 @@ otMessage *otUdpNewMessage(otInstance *aInstance, bool aLinkSecurityEnabled);
  * @sa otUdpSend
  *
  */
-otError otUdpOpen(otInstance *aInstance, otUdpSocket *aSocket, otUdpReceive aCallback, void *aContext);
+otError otUdpOpen(otInstance *aInstance, otUdpSocket *aSocket,
+		otUdpReceive aCallback, void *aContext);
 
 /**
  * Close a UDP/IPv6 socket.
@@ -190,7 +191,8 @@ otError otUdpConnect(otUdpSocket *aSocket, otSockAddr *aSockName);
  * @sa otUdpSend
  *
  */
-otError otUdpSend(otUdpSocket *aSocket, otMessage *aMessage, const otMessageInfo *aMessageInfo);
+otError otUdpSend(otUdpSocket *aSocket, otMessage *aMessage,
+		const otMessageInfo *aMessageInfo);
 
 /**
  * @}
@@ -219,11 +221,8 @@ otError otUdpSend(otUdpSocket *aSocket, otMessage *aMessage, const otMessageInfo
  * @param[in]  aContext   A pointer to application-specific context.
  *
  */
-typedef void (*otUdpProxySender)(otMessage *   aMessage,
-                                 uint16_t      aPeerPort,
-                                 otIp6Address *aPeerAddr,
-                                 uint16_t      aSockPort,
-                                 void *        aContext);
+typedef void (*otUdpProxySender)(otMessage *aMessage, uint16_t aPeerPort,
+		otIp6Address *aPeerAddr, uint16_t aSockPort, void *aContext);
 
 /**
  * Set UDP proxy callback to deliever UDP packets to host.
@@ -233,7 +232,8 @@ typedef void (*otUdpProxySender)(otMessage *   aMessage,
  * @param[in]  aContext             A pointer to application-specific context.
  *
  */
-void otUdpProxySetSender(otInstance *aInstance, otUdpProxySender aSender, void *aContext);
+void otUdpProxySetSender(otInstance *aInstance, otUdpProxySender aSender,
+		void *aContext);
 
 /**
  * Handle a UDP packet received from host.
@@ -247,11 +247,8 @@ void otUdpProxySetSender(otInstance *aInstance, otUdpProxySender aSender, void *
  * @warning No matter the call success or fail, the message is freed.
  *
  */
-void otUdpProxyReceive(otInstance *        aInstance,
-                       otMessage *         aMessage,
-                       uint16_t            aPeerPort,
-                       const otIp6Address *aPeerAddr,
-                       uint16_t            aSockPort);
+void otUdpProxyReceive(otInstance *aInstance, otMessage *aMessage,
+		uint16_t aPeerPort, const otIp6Address *aPeerAddr, uint16_t aSockPort);
 
 /**
  * @}

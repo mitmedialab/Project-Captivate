@@ -94,7 +94,8 @@ otError otNcpStreamWrite(int aStreamId, const uint8_t *aDataPtr, int aDataLen);
  * @param[in]  aFormat     A pointer to the format string.
  * @param[in]  aArgs       va_list matching aFormat.
  */
-void otNcpPlatLogv(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, va_list aArgs);
+void otNcpPlatLogv(otLogLevel aLogLevel, otLogRegion aLogRegion,
+		const char *aFormat, va_list aArgs);
 
 //-----------------------------------------------------------------------------------------
 // Peek/Poke memory access control delegates
@@ -126,8 +127,9 @@ typedef bool (*otNcpDelegateAllowPeekPoke)(uint32_t aAddress, uint16_t aCount);
  * @retval OT_ERROR_DISABLED_FEATURE  Peek/Poke feature is disabled (by a build-time configuration option).
  *
  */
-otError otNcpRegisterPeekPokeDelagates(otNcpDelegateAllowPeekPoke aAllowPeekDelegate,
-                                       otNcpDelegateAllowPeekPoke aAllowPokeDelegate);
+otError otNcpRegisterPeekPokeDelagates(
+		otNcpDelegateAllowPeekPoke aAllowPeekDelegate,
+		otNcpDelegateAllowPeekPoke aAllowPokeDelegate);
 
 //-----------------------------------------------------------------------------------------
 // Legacy network APIs
@@ -175,12 +177,11 @@ typedef void (*otNcpHandlerSetLegacyUlaPrefix)(const uint8_t *aUlaPrefix);
  * Defines a struct containing all the legacy handlers (function pointers).
  *
  */
-typedef struct otNcpLegacyHandlers
-{
-    otNcpHandlerStartLegacy        mStartLegacy;        ///< Start handler
-    otNcpHandlerStopLegacy         mStopLegacy;         ///< Stop handler
-    otNcpHandlerJoinLegacyNode     mJoinLegacyNode;     ///< Join handler
-    otNcpHandlerSetLegacyUlaPrefix mSetLegacyUlaPrefix; ///< Set ULA handler
+typedef struct otNcpLegacyHandlers {
+	otNcpHandlerStartLegacy mStartLegacy;        ///< Start handler
+	otNcpHandlerStopLegacy mStopLegacy;         ///< Stop handler
+	otNcpHandlerJoinLegacyNode mJoinLegacyNode;     ///< Join handler
+	otNcpHandlerSetLegacyUlaPrefix mSetLegacyUlaPrefix; ///< Set ULA handler
 } otNcpLegacyHandlers;
 
 /**

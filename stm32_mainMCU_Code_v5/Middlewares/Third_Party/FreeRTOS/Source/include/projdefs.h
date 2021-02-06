@@ -32,13 +32,13 @@
  * Defines the prototype to which task functions must conform.  Defined in this
  * file to ensure the type is known before portable.h is included.
  */
-typedef void (*TaskFunction_t)( void * );
+typedef void (*TaskFunction_t)(void*);
 
 /* Converts a time in milliseconds to a time in ticks.  This macro can be
-overridden by a macro of the same name defined in FreeRTOSConfig.h in case the
-definition here is not suitable for your application. */
+ overridden by a macro of the same name defined in FreeRTOSConfig.h in case the
+ definition here is not suitable for your application. */
 #ifndef pdMS_TO_TICKS
-	#define pdMS_TO_TICKS( xTimeInMs ) ( ( TickType_t ) ( ( ( TickType_t ) ( xTimeInMs ) * ( TickType_t ) configTICK_RATE_HZ ) / ( TickType_t ) 1000 ) )
+#define pdMS_TO_TICKS( xTimeInMs ) ( ( TickType_t ) ( ( ( TickType_t ) ( xTimeInMs ) * ( TickType_t ) configTICK_RATE_HZ ) / ( TickType_t ) 1000 ) )
 #endif
 
 #define pdFALSE			( ( BaseType_t ) 0 )
@@ -56,17 +56,17 @@ definition here is not suitable for your application. */
 
 /* Macros used for basic data corruption checks. */
 #ifndef configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES
-	#define configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES 0
+#define configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES 0
 #endif
 
 #if( configUSE_16_BIT_TICKS == 1 )
 	#define pdINTEGRITY_CHECK_VALUE 0x5a5a
 #else
-	#define pdINTEGRITY_CHECK_VALUE 0x5a5a5a5aUL
+#define pdINTEGRITY_CHECK_VALUE 0x5a5a5a5aUL
 #endif
 
 /* The following errno values are used by FreeRTOS+ components, not FreeRTOS
-itself. */
+ itself. */
 #define pdFREERTOS_ERRNO_NONE			0	/* No errors */
 #define	pdFREERTOS_ERRNO_ENOENT			2	/* No such file or directory */
 #define	pdFREERTOS_ERRNO_EINTR			4	/* Interrupted system call */
@@ -109,7 +109,7 @@ itself. */
 #define	pdFREERTOS_ERRNO_ECANCELED		140	/* Operation canceled. */
 
 /* The following endian values are used by FreeRTOS+ components, not FreeRTOS
-itself. */
+ itself. */
 #define pdFREERTOS_LITTLE_ENDIAN		0
 #define pdFREERTOS_BIG_ENDIAN			1
 
@@ -117,8 +117,5 @@ itself. */
 #define pdLITTLE_ENDIAN					pdFREERTOS_LITTLE_ENDIAN
 #define pdBIG_ENDIAN					pdFREERTOS_BIG_ENDIAN
 
-
 #endif /* PROJDEFS_H */
-
-
 

@@ -63,14 +63,12 @@ extern "C" {
  *
  */
 OT_TOOL_PACKED_BEGIN
-struct otIp6Address
-{
-    union OT_TOOL_PACKED_FIELD
-    {
-        uint8_t  m8[OT_IP6_ADDRESS_SIZE];                     ///< 8-bit fields
-        uint16_t m16[OT_IP6_ADDRESS_SIZE / sizeof(uint16_t)]; ///< 16-bit fields
-        uint32_t m32[OT_IP6_ADDRESS_SIZE / sizeof(uint32_t)]; ///< 32-bit fields
-    } mFields;                                                ///< IPv6 accessor fields
+struct otIp6Address {
+	union OT_TOOL_PACKED_FIELD {
+		uint8_t m8[OT_IP6_ADDRESS_SIZE];                     ///< 8-bit fields
+		uint16_t m16[OT_IP6_ADDRESS_SIZE / sizeof(uint16_t)]; ///< 16-bit fields
+		uint32_t m32[OT_IP6_ADDRESS_SIZE / sizeof(uint32_t)]; ///< 32-bit fields
+	} mFields;                                         ///< IPv6 accessor fields
 } OT_TOOL_PACKED_END;
 
 /**
@@ -84,10 +82,9 @@ typedef struct otIp6Address otIp6Address;
  *
  */
 OT_TOOL_PACKED_BEGIN
-struct otIp6Prefix
-{
-    otIp6Address mPrefix; ///< The IPv6 prefix.
-    uint8_t      mLength; ///< The IPv6 prefix length.
+struct otIp6Prefix {
+	otIp6Address mPrefix; ///< The IPv6 prefix.
+	uint8_t mLength; ///< The IPv6 prefix length.
 } OT_TOOL_PACKED_END;
 
 /**
@@ -100,26 +97,24 @@ typedef struct otIp6Prefix otIp6Prefix;
  * This structure represents an IPv6 network interface unicast address.
  *
  */
-typedef struct otNetifAddress
-{
-    otIp6Address           mAddress;                ///< The IPv6 unicast address.
-    uint8_t                mPrefixLength;           ///< The Prefix length.
-    bool                   mPreferred : 1;          ///< TRUE if the address is preferred, FALSE otherwise.
-    bool                   mValid : 1;              ///< TRUE if the address is valid, FALSE otherwise.
-    bool                   mScopeOverrideValid : 1; ///< TRUE if the mScopeOverride value is valid, FALSE otherwise.
-    unsigned int           mScopeOverride : 4;      ///< The IPv6 scope of this address.
-    bool                   mRloc : 1;               ///< TRUE if the address is an RLOC, FALSE otherwise.
-    struct otNetifAddress *mNext;                   ///< A pointer to the next network interface address.
+typedef struct otNetifAddress {
+	otIp6Address mAddress;                ///< The IPv6 unicast address.
+	uint8_t mPrefixLength;           ///< The Prefix length.
+	bool mPreferred :1;  ///< TRUE if the address is preferred, FALSE otherwise.
+	bool mValid :1;          ///< TRUE if the address is valid, FALSE otherwise.
+	bool mScopeOverrideValid :1; ///< TRUE if the mScopeOverride value is valid, FALSE otherwise.
+	unsigned int mScopeOverride :4;      ///< The IPv6 scope of this address.
+	bool mRloc :1;         ///< TRUE if the address is an RLOC, FALSE otherwise.
+	struct otNetifAddress *mNext; ///< A pointer to the next network interface address.
 } otNetifAddress;
 
 /**
  * This structure represents an IPv6 network interface multicast address.
  *
  */
-typedef struct otNetifMulticastAddress
-{
-    otIp6Address                          mAddress; ///< The IPv6 multicast address.
-    const struct otNetifMulticastAddress *mNext;    ///< A pointer to the next network interface multicast address.
+typedef struct otNetifMulticastAddress {
+	otIp6Address mAddress; ///< The IPv6 multicast address.
+	const struct otNetifMulticastAddress *mNext; ///< A pointer to the next network interface multicast address.
 } otNetifMulticastAddress;
 
 /**
@@ -127,58 +122,55 @@ typedef struct otNetifMulticastAddress
  *
  */
 typedef enum otNetifInterfaceId {
-    OT_NETIF_INTERFACE_ID_HOST   = -1, ///< The interface ID telling packets received by host side interfaces.
-    OT_NETIF_INTERFACE_ID_THREAD = 1,  ///< The Thread Network interface ID.
+	OT_NETIF_INTERFACE_ID_HOST = -1, ///< The interface ID telling packets received by host side interfaces.
+	OT_NETIF_INTERFACE_ID_THREAD = 1,  ///< The Thread Network interface ID.
 } otNetifInterfaceId;
 
 /**
  * This structure represents data used by Semantically Opaque IID Generator.
  *
  */
-typedef struct
-{
-    uint8_t *mInterfaceId;       ///< String of bytes representing interface ID. Like "eth0" or "wlan0".
-    uint8_t  mInterfaceIdLength; ///< Length of interface ID string.
+typedef struct {
+	uint8_t *mInterfaceId; ///< String of bytes representing interface ID. Like "eth0" or "wlan0".
+	uint8_t mInterfaceIdLength; ///< Length of interface ID string.
 
-    uint8_t *mNetworkId;       ///< Network ID (or name). Can be null if mNetworkIdLength is 0.
-    uint8_t  mNetworkIdLength; ///< Length of Network ID string.
+	uint8_t *mNetworkId; ///< Network ID (or name). Can be null if mNetworkIdLength is 0.
+	uint8_t mNetworkIdLength; ///< Length of Network ID string.
 
-    uint8_t mDadCounter; ///< Duplicate address detection counter.
+	uint8_t mDadCounter; ///< Duplicate address detection counter.
 
-    uint8_t *mSecretKey;       ///< Secret key used to create IID. Cannot be null.
-    uint16_t mSecretKeyLength; ///< Secret key length in bytes. Should be at least 16 bytes == 128 bits.
+	uint8_t *mSecretKey;     ///< Secret key used to create IID. Cannot be null.
+	uint16_t mSecretKeyLength; ///< Secret key length in bytes. Should be at least 16 bytes == 128 bits.
 } otSemanticallyOpaqueIidGeneratorData;
 
 /**
  * This structure represents an IPv6 socket address.
  *
  */
-typedef struct otSockAddr
-{
-    otIp6Address mAddress; ///< An IPv6 address.
-    uint16_t     mPort;    ///< A transport-layer port.
-    int8_t       mScopeId; ///< An IPv6 scope identifier.
+typedef struct otSockAddr {
+	otIp6Address mAddress; ///< An IPv6 address.
+	uint16_t mPort;    ///< A transport-layer port.
+	int8_t mScopeId; ///< An IPv6 scope identifier.
 } otSockAddr;
 
 /**
  * This structure represents the local and peer IPv6 socket addresses.
  *
  */
-typedef struct otMessageInfo
-{
-    otIp6Address mSockAddr;    ///< The local IPv6 address.
-    otIp6Address mPeerAddr;    ///< The peer IPv6 address.
-    uint16_t     mSockPort;    ///< The local transport-layer port.
-    uint16_t     mPeerPort;    ///< The peer transport-layer port.
-    int8_t       mInterfaceId; ///< The IPv6 interface identifier.
-    uint8_t      mHopLimit;    ///< The IPv6 hop limit.
+typedef struct otMessageInfo {
+	otIp6Address mSockAddr;    ///< The local IPv6 address.
+	otIp6Address mPeerAddr;    ///< The peer IPv6 address.
+	uint16_t mSockPort;    ///< The local transport-layer port.
+	uint16_t mPeerPort;    ///< The peer transport-layer port.
+	int8_t mInterfaceId; ///< The IPv6 interface identifier.
+	uint8_t mHopLimit;    ///< The IPv6 hop limit.
 
-    /**
-     * A pointer to link-specific information. In case @p mInterfaceId is set to OT_NETIF_INTERFACE_ID_THREAD,
-     * @p mLinkInfo points to @sa otThreadLinkInfo. This field is only valid for messages received from the
-     * Thread radio and is ignored on transmission.
-     */
-    const void *mLinkInfo;
+	/**
+	 * A pointer to link-specific information. In case @p mInterfaceId is set to OT_NETIF_INTERFACE_ID_THREAD,
+	 * @p mLinkInfo points to @sa otThreadLinkInfo. This field is only valid for messages received from the
+	 * Thread radio and is ignored on transmission.
+	 */
+	const void *mLinkInfo;
 } otMessageInfo;
 
 /**
@@ -219,7 +211,8 @@ OTAPI bool OTCALL otIp6IsEnabled(otInstance *aInstance);
  * @retval OT_ERROR_INVALID_ARGS  The IP Address indicated by @p aAddress is an internal address.
  * @retval OT_ERROR_NO_BUFS       The Network Interface is already storing the maximum allowed external addresses.
  */
-OTAPI otError OTCALL otIp6AddUnicastAddress(otInstance *aInstance, const otNetifAddress *aAddress);
+OTAPI otError OTCALL otIp6AddUnicastAddress(otInstance *aInstance,
+		const otNetifAddress *aAddress);
 
 /**
  * Remove a Network Interface Address from the Thread interface.
@@ -231,7 +224,8 @@ OTAPI otError OTCALL otIp6AddUnicastAddress(otInstance *aInstance, const otNetif
  * @retval OT_ERROR_INVALID_ARGS  The IP Address indicated by @p aAddress is an internal address.
  * @retval OT_ERROR_NOT_FOUND     The IP Address indicated by @p aAddress was not found.
  */
-OTAPI otError OTCALL otIp6RemoveUnicastAddress(otInstance *aInstance, const otIp6Address *aAddress);
+OTAPI otError OTCALL otIp6RemoveUnicastAddress(otInstance *aInstance,
+		const otIp6Address *aAddress);
 
 /**
  * Get the list of IPv6 addresses assigned to the Thread interface.
@@ -240,7 +234,8 @@ OTAPI otError OTCALL otIp6RemoveUnicastAddress(otInstance *aInstance, const otIp
  *
  * @returns A pointer to the first Network Interface Address.
  */
-OTAPI const otNetifAddress *OTCALL otIp6GetUnicastAddresses(otInstance *aInstance);
+OTAPI const otNetifAddress* OTCALL otIp6GetUnicastAddresses(
+		otInstance *aInstance);
 
 /**
  * Subscribe the Thread interface to a Network Interface Multicast Address.
@@ -258,7 +253,8 @@ OTAPI const otNetifAddress *OTCALL otIp6GetUnicastAddresses(otInstance *aInstanc
  * addresses.
  *
  */
-otError otIp6SubscribeMulticastAddress(otInstance *aInstance, const otIp6Address *aAddress);
+otError otIp6SubscribeMulticastAddress(otInstance *aInstance,
+		const otIp6Address *aAddress);
 
 /**
  * Unsubscribe the Thread interface to a Network Interface Multicast Address.
@@ -270,7 +266,8 @@ otError otIp6SubscribeMulticastAddress(otInstance *aInstance, const otIp6Address
  * @retval OT_ERROR_INVALID_ARGS  The IP Address indicated by @p aAddress is an internal address.
  * @retval OT_ERROR_NOT_FOUND     The IP Address indicated by @p aAddress was not found.
  */
-otError otIp6UnsubscribeMulticastAddress(otInstance *aInstance, const otIp6Address *aAddress);
+otError otIp6UnsubscribeMulticastAddress(otInstance *aInstance,
+		const otIp6Address *aAddress);
 
 /**
  * Get the list of IPv6 multicast addresses subscribed to the Thread interface.
@@ -279,7 +276,8 @@ otError otIp6UnsubscribeMulticastAddress(otInstance *aInstance, const otIp6Addre
  *
  * @returns A pointer to the first Network Interface Multicast Address.
  */
-const otNetifMulticastAddress *otIp6GetMulticastAddresses(otInstance *aInstance);
+const otNetifMulticastAddress* otIp6GetMulticastAddresses(
+		otInstance *aInstance);
 
 /**
  * Check if multicast promiscuous mode is enabled on the Thread interface.
@@ -311,7 +309,8 @@ void otIp6SetMulticastPromiscuousEnabled(otInstance *aInstance, bool aEnabled);
  * @retval OT_ERROR_IP6_ADDRESS_CREATION_FAILURE  Creation of valid IID for given IPv6 address failed.
  *
  */
-typedef otError (*otIp6SlaacIidCreate)(otInstance *aInstance, otNetifAddress *aAddress, void *aContext);
+typedef otError (*otIp6SlaacIidCreate)(otInstance *aInstance,
+		otNetifAddress *aAddress, void *aContext);
 
 /**
  * Update all automatically created IPv6 addresses for prefixes from current Network Data with SLAAC procedure.
@@ -323,11 +322,8 @@ typedef otError (*otIp6SlaacIidCreate)(otInstance *aInstance, otNetifAddress *aA
  * @param[in]     aContext       A pointer to data passed to aIidCreate function.
  *
  */
-void otIp6SlaacUpdate(otInstance *        aInstance,
-                      otNetifAddress *    aAddresses,
-                      uint32_t            aNumAddresses,
-                      otIp6SlaacIidCreate aIidCreate,
-                      void *              aContext);
+void otIp6SlaacUpdate(otInstance *aInstance, otNetifAddress *aAddresses,
+		uint32_t aNumAddresses, otIp6SlaacIidCreate aIidCreate, void *aContext);
 
 /**
  * Create random IID for given IPv6 address.
@@ -339,7 +335,8 @@ void otIp6SlaacUpdate(otInstance *        aInstance,
  * @retval OT_ERROR_NONE  Created valid IID for given IPv6 address.
  *
  */
-otError otIp6CreateRandomIid(otInstance *aInstance, otNetifAddress *aAddresses, void *aContext);
+otError otIp6CreateRandomIid(otInstance *aInstance, otNetifAddress *aAddresses,
+		void *aContext);
 
 /**
  * Create IID for given IPv6 address using extended MAC address.
@@ -351,7 +348,8 @@ otError otIp6CreateRandomIid(otInstance *aInstance, otNetifAddress *aAddresses, 
  * @retval OT_ERROR_NONE  Created valid IID for given IPv6 address.
  *
  */
-otError otIp6CreateMacIid(otInstance *aInstance, otNetifAddress *aAddresses, void *aContext);
+otError otIp6CreateMacIid(otInstance *aInstance, otNetifAddress *aAddresses,
+		void *aContext);
 
 /**
  * Create semantically opaque IID for given IPv6 address.
@@ -364,7 +362,8 @@ otError otIp6CreateMacIid(otInstance *aInstance, otNetifAddress *aAddresses, voi
  * @retval OT_ERROR_IP6_ADDRESS_CREATION_FAILURE  Could not create valid IID for given IPv6 address.
  *
  */
-otError otIp6CreateSemanticallyOpaqueIid(otInstance *aInstance, otNetifAddress *aAddresses, void *aContext);
+otError otIp6CreateSemanticallyOpaqueIid(otInstance *aInstance,
+		otNetifAddress *aAddresses, void *aContext);
 
 /**
  * Allocate a new message buffer for sending an IPv6 message.
@@ -376,7 +375,7 @@ otError otIp6CreateSemanticallyOpaqueIid(otInstance *aInstance, otNetifAddress *
  *
  * @sa otFreeMessage
  */
-otMessage *otIp6NewMessage(otInstance *aInstance, bool aLinkSecurityEnabled);
+otMessage* otIp6NewMessage(otInstance *aInstance, bool aLinkSecurityEnabled);
 
 /**
  * This function pointer is called when an IPv6 datagram is received.
@@ -402,7 +401,8 @@ typedef void (*otIp6ReceiveCallback)(otMessage *aMessage, void *aContext);
  * @sa otIp6SetReceiveFilterEnabled
  *
  */
-void otIp6SetReceiveCallback(otInstance *aInstance, otIp6ReceiveCallback aCallback, void *aCallbackContext);
+void otIp6SetReceiveCallback(otInstance *aInstance,
+		otIp6ReceiveCallback aCallback, void *aCallbackContext);
 
 /**
  * This function indicates whether or not Thread control traffic is filtered out when delivering IPv6 datagrams
@@ -487,7 +487,8 @@ void otIp6RemoveAllUnsecurePorts(otInstance *aInstance);
  * @returns A pointer to the unsecure port list.
  *
  */
-const uint16_t *otIp6GetUnsecurePorts(otInstance *aInstance, uint8_t *aNumEntries);
+const uint16_t* otIp6GetUnsecurePorts(otInstance *aInstance,
+		uint8_t *aNumEntries);
 
 /**
  * Test if two IPv6 addresses are the same.
@@ -498,7 +499,8 @@ const uint16_t *otIp6GetUnsecurePorts(otInstance *aInstance, uint8_t *aNumEntrie
  * @retval TRUE   The two IPv6 addresses are the same.
  * @retval FALSE  The two IPv6 addresses are not the same.
  */
-OTAPI bool OTCALL otIp6IsAddressEqual(const otIp6Address *aFirst, const otIp6Address *aSecond);
+OTAPI bool OTCALL otIp6IsAddressEqual(const otIp6Address *aFirst,
+		const otIp6Address *aSecond);
 
 /**
  * Convert a human-readable IPv6 address string into a binary representation.
@@ -509,7 +511,8 @@ OTAPI bool OTCALL otIp6IsAddressEqual(const otIp6Address *aFirst, const otIp6Add
  * @retval OT_ERROR_NONE          Successfully parsed the string.
  * @retval OT_ERROR_INVALID_ARGS  Failed to parse the string.
  */
-OTAPI otError OTCALL otIp6AddressFromString(const char *aString, otIp6Address *aAddress);
+OTAPI otError OTCALL otIp6AddressFromString(const char *aString,
+		otIp6Address *aAddress);
 
 /**
  * This function returns the prefix match length (bits) for two IPv6 addresses.
@@ -520,7 +523,8 @@ OTAPI otError OTCALL otIp6AddressFromString(const char *aString, otIp6Address *a
  * @returns  The prefix match length in bits.
  *
  */
-OTAPI uint8_t OTCALL otIp6PrefixMatch(const otIp6Address *aFirst, const otIp6Address *aSecond);
+OTAPI uint8_t OTCALL otIp6PrefixMatch(const otIp6Address *aFirst,
+		const otIp6Address *aSecond);
 
 /**
  * This function indicates whether or not a given IPv6 address is the Unspecified Address.

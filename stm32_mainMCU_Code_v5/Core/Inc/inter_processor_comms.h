@@ -1,11 +1,11 @@
 /**
  ******************************************************************************
  * File Name          : inter_processor_comms.h
-  * Description        :
-  ******************************************************************************
+ * Description        :
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef INTER_PROCESSOR_COMMS_H
 #define INTER_PROCESSOR_COMMS_H
@@ -20,16 +20,15 @@ extern "C" {
 #include "stm32wbxx_hal.h"
 /* typedef -----------------------------------------------------------*/
 
-
 /***** TEMPERATURE SPECIFIC DATATYPES ************************/
 
-struct thermopileData{
+struct thermopileData {
 	uint16_t thermopile;
 	uint16_t thermistor;
 	uint32_t tick_ms;
 };
 
-struct thermopilePackagedData{
+struct thermopilePackagedData {
 	struct thermopileData temple[5];
 	struct thermopileData nose[5];
 };
@@ -44,7 +43,6 @@ struct thermopilePackagedData{
 //	float quatRadianAccuracy;
 //	uint32_t tick_ms;
 //};
-
 //struct inertialInferenceData{
 //	uint8_t activityConfidence[9];
 //	uint32_t tick_ms_activity;
@@ -55,25 +53,22 @@ struct thermopilePackagedData{
 //	uint16_t stepCount;
 //	uint32_t tick_ms_step;
 //};
-
 //struct inertialData{
 //	struct rotationData rotationMatrix[5];
 //	struct inertialInferenceData inferenceInfo;
 //};
-
 /***** COMPILED DATA PACKET FROM SECONDARY MCU *******************/
 
-struct secondaryProcessorData
-{
-	struct thermopilePackagedData	temp;
+struct secondaryProcessorData {
+	struct thermopilePackagedData temp;
 //	struct inertialData				inertial;
-	uint32_t						tick_ms;
-	uint32_t						epoch;
+	uint32_t tick_ms;
+	uint32_t epoch;
 };
 
 /***** PARSEDPACKET FROM SECONDARY MCU *******************/
 
-struct parsedSecondaryProcessorPacket{
+struct parsedSecondaryProcessorPacket {
 	struct thermopileData temple;
 	struct thermopileData nose;
 //	struct rotationData rotationMatrix;
@@ -82,24 +77,17 @@ struct parsedSecondaryProcessorPacket{
 	uint32_t epoch;
 };
 
-
-
 /* defines -----------------------------------------------------------*/
 #define SECONDARY_MCU_ADDRESS 	0x73
 
-
 /* macros ------------------------------------------------------------*/
-
 
 /* function prototypes -----------------------------------------------*/
 
-
 /* variables -----------------------------------------------*/
-
 
 /* Functions Definition ------------------------------------------------------*/
 void InterProcessorTask(void *argument);
-
 
 /*************************************************************
  *
@@ -117,11 +105,7 @@ void InterProcessorTask(void *argument);
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-
-
-
-
+ *************************************************************/
 
 #ifdef __cplusplus
 } /* extern "C" */

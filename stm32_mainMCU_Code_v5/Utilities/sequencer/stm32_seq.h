@@ -9,14 +9,13 @@
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the 
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the 
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
  *
  ******************************************************************************
  */
-
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32_SEQ_H
@@ -28,10 +27,10 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stdint.h"
-  
+
 /** @defgroup SEQUENCER sequencer utilities
-  * @{
-  */
+ * @{
+ */
 
 /* Exported types ------------------------------------------------------------*/
 /** @defgroup SEQUENCER_Exported_type SEQUENCER exported types
@@ -45,7 +44,7 @@ extern "C" {
 typedef uint32_t UTIL_SEQ_bm_t;
 
 /**
-  * @}
+ * @}
  */
 
 /* Exported constants --------------------------------------------------------*/
@@ -76,7 +75,7 @@ typedef uint32_t UTIL_SEQ_bm_t;
 #define UTIL_SEQ_DEFAULT         (~0U)
 
 /**
-  * @}
+ * @}
  */
 
 /* External variables --------------------------------------------------------*/
@@ -91,13 +90,13 @@ typedef uint32_t UTIL_SEQ_bm_t;
  * @brief  This function initializes the sequencer resources.
  *
  */
-void UTIL_SEQ_Init( void );
+void UTIL_SEQ_Init(void);
 
 /**
  * @brief  This function un-initializes the sequencer resources.
  *
  */
-void UTIL_SEQ_DeInit( void );
+void UTIL_SEQ_DeInit(void);
 
 /**
  * @brief This function is called by the sequencer in critical section (PRIMASK bit) when
@@ -108,7 +107,7 @@ void UTIL_SEQ_DeInit( void );
  *        When this function is not implemented by the application, the sequencer keeps running a while loop (RUN MODE)
  *
  */
-void UTIL_SEQ_Idle( void );
+void UTIL_SEQ_Idle(void);
 
 /**
  * @brief This function is called by the sequencer outside critical section just before calling UTIL_SEQ_Idle( )
@@ -117,7 +116,7 @@ void UTIL_SEQ_Idle( void );
  *        UTIL_SEQ_Idle() will not be called.
  *
  */
-void UTIL_SEQ_PreIdle( void );
+void UTIL_SEQ_PreIdle(void);
 
 /**
  * @brief This function is called by the sequencer outside critical section either
@@ -129,7 +128,7 @@ void UTIL_SEQ_PreIdle( void );
  *        Note: UTIL_SEQ_PostIdle() is always called if UTIL_SEQ_PreIdle() has been called and never called otherwise
  *
  */
-void UTIL_SEQ_PostIdle( void );
+void UTIL_SEQ_PostIdle(void);
 
 /**
  * @brief This function requests the sequencer to execute all pending tasks using round robin mechanism.
@@ -139,7 +138,7 @@ void UTIL_SEQ_PostIdle( void );
  * @param Mask_bm list of task (bit mapping) that is be kept in the sequencer list.
  *
  */
-void UTIL_SEQ_Run( UTIL_SEQ_bm_t Mask_bm );
+void UTIL_SEQ_Run(UTIL_SEQ_bm_t Mask_bm);
 
 /**
  * @brief This function registers a task in the sequencer.
@@ -149,7 +148,8 @@ void UTIL_SEQ_Run( UTIL_SEQ_bm_t Mask_bm );
  * @param Task Reference of the function to be executed
  *
  */
-void UTIL_SEQ_RegTask( UTIL_SEQ_bm_t TaskId_bm, uint32_t Flags, void (*Task)( void ) );
+void UTIL_SEQ_RegTask(UTIL_SEQ_bm_t TaskId_bm, uint32_t Flags,
+		void (*Task)(void));
 
 /**
  * @brief This function requests a task to be executed
@@ -162,7 +162,7 @@ void UTIL_SEQ_RegTask( UTIL_SEQ_bm_t TaskId_bm, uint32_t Flags, void (*Task)( vo
  *        It does not permit to preempt a running task with lower priority
  *
  */
-void UTIL_SEQ_SetTask( UTIL_SEQ_bm_t TaskId_bm , uint32_t Task_Prio );
+void UTIL_SEQ_SetTask(UTIL_SEQ_bm_t TaskId_bm, uint32_t Task_Prio);
 
 /**
  * @brief This function checks if a task could be scheduled.
@@ -171,7 +171,7 @@ void UTIL_SEQ_SetTask( UTIL_SEQ_bm_t TaskId_bm , uint32_t Task_Prio );
  *        It shall be (1<<task_id) where task_id is the number assigned when the task has been registered
  * @retval 0 if not 1 if true
  */
-uint32_t UTIL_SEQ_IsSchedulableTask( UTIL_SEQ_bm_t TaskId_bm);
+uint32_t UTIL_SEQ_IsSchedulableTask(UTIL_SEQ_bm_t TaskId_bm);
 
 /**
  * @brief This function prevents a task to be called by the sequencer even when set with UTIL_SEQ_SetTask()
@@ -182,7 +182,7 @@ uint32_t UTIL_SEQ_IsSchedulableTask( UTIL_SEQ_bm_t TaskId_bm);
  *        It shall be (1<<task_id) where task_id is the number assigned when the task has been registered
  *
  */
-void UTIL_SEQ_PauseTask( UTIL_SEQ_bm_t TaskId_bm );
+void UTIL_SEQ_PauseTask(UTIL_SEQ_bm_t TaskId_bm);
 
 /**
  * @brief This function allows to know if the task has been put in pause.
@@ -193,7 +193,7 @@ void UTIL_SEQ_PauseTask( UTIL_SEQ_bm_t TaskId_bm );
  *        It shall be (1<<task_id) where task_id is the number assigned when the task has been registered
  *
  */
-uint32_t UTIL_SEQ_IsPauseTask( UTIL_SEQ_bm_t TaskId_bm );
+uint32_t UTIL_SEQ_IsPauseTask(UTIL_SEQ_bm_t TaskId_bm);
 
 /**
  * @brief This function allows again a task to be called by the sequencer if set with UTIL_SEQ_SetTask()
@@ -203,7 +203,7 @@ uint32_t UTIL_SEQ_IsPauseTask( UTIL_SEQ_bm_t TaskId_bm );
  *        It shall be (1<<task_id) where task_id is the number assigned when the task has been registered
  *
  */
-void UTIL_SEQ_ResumeTask( UTIL_SEQ_bm_t TaskId_bm );
+void UTIL_SEQ_ResumeTask(UTIL_SEQ_bm_t TaskId_bm);
 
 /**
  * @brief This function sets an event that is waited with UTIL_SEQ_WaitEvt()
@@ -213,7 +213,7 @@ void UTIL_SEQ_ResumeTask( UTIL_SEQ_bm_t TaskId_bm );
  * @note an event shall be a 32 bit mapping where only 1 bit is set
  *
  */
-void UTIL_SEQ_SetEvt( UTIL_SEQ_bm_t EvtId_bm );
+void UTIL_SEQ_SetEvt(UTIL_SEQ_bm_t EvtId_bm);
 
 /**
  * @brief This function may be used to clear the event before calling UTIL_SEQ_WaitEvt()
@@ -224,7 +224,7 @@ void UTIL_SEQ_SetEvt( UTIL_SEQ_bm_t EvtId_bm );
  *        It shall be a bit mapping where only 1 bit is set
  *
  */
-void UTIL_SEQ_ClrEvt( UTIL_SEQ_bm_t EvtId_bm );
+void UTIL_SEQ_ClrEvt(UTIL_SEQ_bm_t EvtId_bm);
 
 /**
  * @brief This function waits for a specific event to be set. The sequencer loops UTIL_SEQ_EvtIdle() until the event is set
@@ -235,7 +235,7 @@ void UTIL_SEQ_ClrEvt( UTIL_SEQ_bm_t EvtId_bm );
  *        It shall be a bit mapping where only 1 bit is set
  *
  */
-void UTIL_SEQ_WaitEvt( UTIL_SEQ_bm_t EvtId_bm );
+void UTIL_SEQ_WaitEvt(UTIL_SEQ_bm_t EvtId_bm);
 
 /**
  * @brief This function returns whether the waited event is pending or not
@@ -245,7 +245,7 @@ void UTIL_SEQ_WaitEvt( UTIL_SEQ_bm_t EvtId_bm );
  *
  * @retval  0 when the waited event is not there or the evt_id when the waited event is pending
  */
-UTIL_SEQ_bm_t UTIL_SEQ_IsEvtPend( void );
+UTIL_SEQ_bm_t UTIL_SEQ_IsEvtPend(void);
 
 /**
  * @brief This function loops until the waited event is set
@@ -260,10 +260,10 @@ UTIL_SEQ_bm_t UTIL_SEQ_IsEvtPend( void );
  *        Else the user can redefine his own function for example call sequencer UTIL_SEQ_Run(0) to suspend all
  *        the task and let the sequencer enter the low power mode.
  */
-void UTIL_SEQ_EvtIdle( UTIL_SEQ_bm_t TaskId_bm, UTIL_SEQ_bm_t EvtWaited_bm );
+void UTIL_SEQ_EvtIdle(UTIL_SEQ_bm_t TaskId_bm, UTIL_SEQ_bm_t EvtWaited_bm);
 
 /**
-  * @}
+ * @}
  */
 
 /**

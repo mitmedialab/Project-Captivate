@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    dis.c
-  * @author  MCD Application Team
-  * @brief   Device Information Service
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dis.c
+ * @author  MCD Application Team
+ * @brief   Device Information Service
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,17 +17,14 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "common_blesvc.h"
 
-
 /* Private typedef -----------------------------------------------------------*/
-typedef struct
-{
-  uint16_t  DeviceInformationSvcHdle;       /**< Service handle */
+typedef struct {
+	uint16_t DeviceInformationSvcHdle; /**< Service handle */
 #if (BLE_CFG_DIS_MANUFACTURER_NAME_STRING != 0)
-  uint16_t  ManufacturerNameStringCharHdle; /**< Characteristic handle */
+	uint16_t ManufacturerNameStringCharHdle; /**< Characteristic handle */
 #endif
 #if (BLE_CFG_DIS_MODEL_NUMBER_STRING != 0)
   uint16_t  ModelNumberStringCharHdle;      /**< Characteristic handle */
@@ -53,8 +50,7 @@ typedef struct
 #if (BLE_CFG_DIS_PNP_ID != 0)
   uint16_t  PNPIDCharHdle;                  /**< Characteristic handle */
 #endif
-}DIS_Context_t;
-
+} DIS_Context_t;
 
 /* Private defines -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
@@ -70,7 +66,6 @@ PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static DIS_Context_t DIS_Context;
  * END of Section BLE_DRIVER_CONTEXT
  */
 
-
 /* Functions Definition ------------------------------------------------------*/
 /* Private functions ----------------------------------------------------------*/
 /* Public functions ----------------------------------------------------------*/
@@ -79,28 +74,26 @@ PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static DIS_Context_t DIS_Context;
  * @param  None
  * @retval None
  */
-void DIS_Init(void)
-{
-  uint16_t uuid;
-  tBleStatus hciCmdResult;
+void DIS_Init(void) {
+	uint16_t uuid;
+	tBleStatus hciCmdResult;
 
-  memset ( &DIS_Context, 0, sizeof(DIS_Context_t) );
+	memset(&DIS_Context, 0, sizeof(DIS_Context_t));
 
-  /**
-   *  Register the event handler to the BLE controller
-   *
-   *  There is no need of an interrupt handler for this service
-   */
+	/**
+	 *  Register the event handler to the BLE controller
+	 *
+	 *  There is no need of an interrupt handler for this service
+	 */
 
-  /**
-   *  Add Device Information Service
-   */
-  uuid = DEVICE_INFORMATION_SERVICE_UUID;
-  hciCmdResult = aci_gatt_add_service(UUID_TYPE_16,
-                                      (Service_UUID_t *) &uuid,
-                                      PRIMARY_SERVICE,
+	/**
+	 *  Add Device Information Service
+	 */
+	uuid = DEVICE_INFORMATION_SERVICE_UUID;
+	hciCmdResult = aci_gatt_add_service(UUID_TYPE_16, (Service_UUID_t*) &uuid,
+	PRIMARY_SERVICE,
 #if (BLE_CFG_DIS_MANUFACTURER_NAME_STRING != 0)
-                                      2+
+			2 +
 #endif
 #if (BLE_CFG_DIS_MODEL_NUMBER_STRING != 0)
                                       2+
@@ -126,46 +119,38 @@ void DIS_Init(void)
 #if (BLE_CFG_DIS_PNP_ID != 0)
                                       2+
 #endif
-                                      1,
-                                      &(DIS_Context.DeviceInformationSvcHdle));
+					1, &(DIS_Context.DeviceInformationSvcHdle));
 
-  if (hciCmdResult == BLE_STATUS_SUCCESS)
-  {
-    BLE_DBG_DIS_MSG ("Device Information Service (DIS) is added Successfully %04X\n", 
-                 DIS_Context.DeviceInformationSvcHdle);
-  }
-  else
-  {
-    BLE_DBG_DIS_MSG ("FAILED to add Device Information Service (DIS), Error: %02X !!\n", 
-                 hciCmdResult);
-  }
+	if (hciCmdResult == BLE_STATUS_SUCCESS) {
+		BLE_DBG_DIS_MSG ("Device Information Service (DIS) is added Successfully %04X\n",
+				DIS_Context.DeviceInformationSvcHdle);
+	} else {
+		BLE_DBG_DIS_MSG ("FAILED to add Device Information Service (DIS), Error: %02X !!\n",
+				hciCmdResult);
+	}
 
 #if (BLE_CFG_DIS_MANUFACTURER_NAME_STRING != 0)
-  /**
-   *  Add Manufacturer Name String Characteristic
-   */
-  uuid = MANUFACTURER_NAME_UUID;
-  hciCmdResult = aci_gatt_add_char(DIS_Context.DeviceInformationSvcHdle,
-                                   UUID_TYPE_16,
-                                   (Char_UUID_t *) &uuid ,
-                                   BLE_CFG_DIS_MANUFACTURER_NAME_STRING_LEN_MAX,
-                                   CHAR_PROP_READ,
-                                   ATTR_PERMISSION_NONE,
-                                   GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
-                                   10, /* encryKeySize */
-                                   CHAR_VALUE_LEN_VARIABLE, /* isVariable */
-                                   &(DIS_Context.ManufacturerNameStringCharHdle));
+	/**
+	 *  Add Manufacturer Name String Characteristic
+	 */
+	uuid = MANUFACTURER_NAME_UUID;
+	hciCmdResult = aci_gatt_add_char(DIS_Context.DeviceInformationSvcHdle,
+	UUID_TYPE_16, (Char_UUID_t*) &uuid,
+	BLE_CFG_DIS_MANUFACTURER_NAME_STRING_LEN_MAX,
+	CHAR_PROP_READ,
+	ATTR_PERMISSION_NONE,
+	GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+	10, /* encryKeySize */
+	CHAR_VALUE_LEN_VARIABLE, /* isVariable */
+	&(DIS_Context.ManufacturerNameStringCharHdle));
 
-  if (hciCmdResult == BLE_STATUS_SUCCESS)
-  {
-    BLE_DBG_DIS_MSG ("Manufacturer Name Characteristic Added Successfully  %04X \n", 
-                 DIS_Context.ManufacturerNameStringCharHdle);
-  }
-  else
-  {
-    BLE_DBG_DIS_MSG ("FAILED to add Manufacturer Name Characteristic, Error: %02X !!\n", 
-                hciCmdResult);
-  }
+	if (hciCmdResult == BLE_STATUS_SUCCESS) {
+		BLE_DBG_DIS_MSG ("Manufacturer Name Characteristic Added Successfully  %04X \n",
+				DIS_Context.ManufacturerNameStringCharHdle);
+	} else {
+		BLE_DBG_DIS_MSG ("FAILED to add Manufacturer Name Characteristic, Error: %02X !!\n",
+				hciCmdResult);
+	}
 
 #endif
 
@@ -387,8 +372,8 @@ void DIS_Init(void)
                 hciCmdResult);
   }
 #endif
-      
-  return;
+
+	return;
 }
 
 /**
@@ -396,20 +381,17 @@ void DIS_Init(void)
  * @param  UUID: UUID of the characteristic
  * @retval None
  */
-tBleStatus DIS_UpdateChar(uint16_t UUID, DIS_Data_t *pPData)
-{
-  tBleStatus return_value;
+tBleStatus DIS_UpdateChar(uint16_t UUID, DIS_Data_t *pPData) {
+	tBleStatus return_value;
 
-  switch(UUID)
-  {
+	switch (UUID) {
 #if (BLE_CFG_DIS_MANUFACTURER_NAME_STRING != 0)
-    case MANUFACTURER_NAME_UUID:
-      return_value = aci_gatt_update_char_value(DIS_Context.DeviceInformationSvcHdle,
-                                                DIS_Context.ManufacturerNameStringCharHdle,
-                                                0,
-                                                pPData->Length,
-                                                (uint8_t *)pPData->pPayload);
-      break;
+	case MANUFACTURER_NAME_UUID:
+		return_value = aci_gatt_update_char_value(
+				DIS_Context.DeviceInformationSvcHdle,
+				DIS_Context.ManufacturerNameStringCharHdle, 0, pPData->Length,
+				(uint8_t*) pPData->pPayload);
+		break;
 #endif
 
 #if (BLE_CFG_DIS_MODEL_NUMBER_STRING != 0)
@@ -492,12 +474,12 @@ tBleStatus DIS_UpdateChar(uint16_t UUID, DIS_Data_t *pPData)
       break;
 #endif
 
-    default:
-      return_value = 0;
-      break;
-  }
+	default:
+		return_value = 0;
+		break;
+	}
 
-  return return_value;
+	return return_value;
 }/* end DIS_UpdateChar() */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : App/app_thread.c
-  * Description        : Thread Application.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : App/app_thread.c
+ * Description        : Thread Application.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -61,16 +61,11 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 /**
-  * @brief  APP_THREAD Status structures definition
-  */
-typedef enum
-{
-  APP_THREAD_OK       = 0x00,
-  APP_THREAD_ERROR    = 0x01,
+ * @brief  APP_THREAD Status structures definition
+ */
+typedef enum {
+	APP_THREAD_OK = 0x00, APP_THREAD_ERROR = 0x01,
 } APP_THREAD_StatusTypeDef;
-
-
-
 
 typedef enum {
 	COLOR_RED = 0, COLOR_BLUE = 1, COLOR_GREEN = 2
@@ -103,25 +98,23 @@ typedef enum {
 #define C_CHANNEL_NB            23U
 
 /* FreeRtos stacks attributes */
-const osThreadAttr_t ThreadMsgM0ToM4Process_attr = {
-    .name = CFG_THREAD_MSG_M0_TO_M4_PROCESS_NAME,
-    .attr_bits = CFG_THREAD_MSG_M0_TO_M4_PROCESS_ATTR_BITS,
-    .cb_mem = CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_MEM,
-    .cb_size = CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_SIZE,
-    .stack_mem = CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_MEM,
-    .priority = CFG_THREAD_MSG_M0_TO_M4_PROCESS_PRIORITY,
-    .stack_size = CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_SIZE
-};
+const osThreadAttr_t ThreadMsgM0ToM4Process_attr = { .name =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_NAME, .attr_bits =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_ATTR_BITS, .cb_mem =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_MEM, .cb_size =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_CB_SIZE, .stack_mem =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_MEM, .priority =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_PRIORITY, .stack_size =
+		CFG_THREAD_MSG_M0_TO_M4_PROCESS_STACK_SIZE };
 
-const osThreadAttr_t ThreadCliProcess_attr = {
-     .name = CFG_THREAD_CLI_PROCESS_NAME,
-     .attr_bits = CFG_THREAD_CLI_PROCESS_ATTR_BITS,
-     .cb_mem = CFG_THREAD_CLI_PROCESS_CB_MEM,
-     .cb_size = CFG_THREAD_CLI_PROCESS_CB_SIZE,
-     .stack_mem = CFG_THREAD_CLI_PROCESS_STACK_MEM,
-     .priority = CFG_THREAD_CLI_PROCESS_PRIORITY,
-     .stack_size = CFG_THREAD_CLI_PROCESS_STACK_SIZE
- };
+const osThreadAttr_t ThreadCliProcess_attr = { .name =
+		CFG_THREAD_CLI_PROCESS_NAME, .attr_bits =
+		CFG_THREAD_CLI_PROCESS_ATTR_BITS, .cb_mem =
+		CFG_THREAD_CLI_PROCESS_CB_MEM,
+		.cb_size = CFG_THREAD_CLI_PROCESS_CB_SIZE, .stack_mem =
+				CFG_THREAD_CLI_PROCESS_STACK_MEM, .priority =
+				CFG_THREAD_CLI_PROCESS_PRIORITY, .stack_size =
+				CFG_THREAD_CLI_PROCESS_STACK_SIZE };
 
 /* USER CODE BEGIN PD */
 
@@ -136,7 +129,7 @@ const osThreadAttr_t ThreadCliProcess_attr = {
 #define THREAD_LINK_POLL_PERIOD         (5*1000*1000/CFG_TS_TICK_VAL) /**< 5s */
 
 #define OT_AUTOSTART_MODE 1 // Automatic OT start and COAP after reset
-							// ste to 0 for GRL testing
+// ste to 0 for GRL testing
 
 /* USER CODE END PM */
 
@@ -144,12 +137,12 @@ const osThreadAttr_t ThreadCliProcess_attr = {
 static void APP_THREAD_CheckWirelessFirmwareInfo(void);
 static void APP_THREAD_DeviceConfig(void);
 static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext);
-static void APP_THREAD_TraceError(const char * pMess, uint32_t ErrCode);
+static void APP_THREAD_TraceError(const char *pMess, uint32_t ErrCode);
 #if (CFG_FULL_LOW_POWER == 0)
 static void Send_CLI_To_M0(void);
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 static void Send_CLI_Ack_For_OT(void);
-static void HostTxCb( void );
+static void HostTxCb(void);
 static void Wait_Getting_Ack_From_M0(void);
 static void Receive_Ack_From_M0(void);
 static void Receive_Notification_From_M0(void);
@@ -176,10 +169,8 @@ static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument);
 /* USER CODE BEGIN PFP */
 //void APP_THREAD_SendCoapMsg(void);
 static void APP_THREAD_SendCoapMulticastRequest(uint8_t command);
-static void APP_THREAD_CoapRequestHandler(void                * pContext,
-                                          otCoapHeader        * pHeader,
-                                          otMessage           * pMessage,
-                                          const otMessageInfo * pMessageInfo);
+static void APP_THREAD_CoapRequestHandler(void *pContext, otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo);
 
 static void APP_THREAD_SetSleepyEndDeviceMode(void);
 static void APP_THREAD_CoapTimingElapsed(void);
@@ -215,10 +206,10 @@ static void APP_THREAD_TimingElapsed(void);
 static APP_THREAD_StatusTypeDef APP_THREAD_CheckDeviceCapabilities(void);
 #endif
 
+void stm32UID(uint8_t *uid);
 
-void stm32UID(uint8_t* uid) ;
-
-static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo);
+static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize,
+		otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo);
 
 //static void APP_THREAD_DummyReqHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
 //		const otMessageInfo *pMessageInfo);
@@ -226,8 +217,8 @@ static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapH
 //static void APP_THREAD_SendNextBuffer(void);
 //static void APP_THREAD_SendCoapMsg(char* message, char* ipv6_addr, char* resource, otCoapType type);
 //static void APP_THREAD_SendCoapUnicastRequest(char* message, char* ipv6_addr  , char* resource);
-static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_length, char *ipv6_addr, char *resource);
-
+static void APP_THREAD_SendCoapUnicastRequest(char *message,
+		uint8_t message_length, char *ipv6_addr, char *resource);
 
 //static void APP_THREAD_CoapRequestHandler(void                * pContext,
 //                                          otCoapHeader        * pHeader,
@@ -238,29 +229,30 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 //                                  otMessage           * pMessage,
 //                                  const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo);
 
 //static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 //		const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo, otError Result);
+static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo, otError Result);
 
-static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize, otIp6Address *ipv6_addr, char *resource,
-		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID);
+static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
+		otIp6Address *ipv6_addr, char *resource, uint8_t request_ack,
+		otCoapCode coapCode, uint8_t msgID);
 
 void APP_THREAD_GetBorderRouterIP(void);
 
@@ -289,27 +281,29 @@ static __IO uint16_t CptReceiveCmdFromUser = 0;
 
 static TL_CmdPacket_t *p_thread_otcmdbuffer;
 static TL_EvtPacket_t *p_thread_notif_M0_to_M4;
-static __IO uint32_t  CptReceiveMsgFromM0 = 0;
+static __IO uint32_t CptReceiveMsgFromM0 = 0;
 static volatile int FlagReceiveAckFromM0 = 0;
 
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_TH_Config_t ThreadConfigBuffer;
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t ThreadOtCmdBuffer;
-PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t ThreadNotifRspEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255U];
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t ThreadNotifRspEvtBuffer[sizeof(TL_PacketHeader_t)
+		+ TL_EVT_HDR_SIZE + 255U];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t ThreadCliCmdBuffer;
 
-static osThreadId_t OsTaskMsgM0ToM4Id;      /* Task managing the M0 to M4 messaging        */
+static osThreadId_t OsTaskMsgM0ToM4Id; /* Task managing the M0 to M4 messaging        */
 #if (CFG_FULL_LOW_POWER == 0)
-static osThreadId_t OsTaskCliId;            /* Task used to manage CLI comamnd             */
+static osThreadId_t OsTaskCliId; /* Task used to manage CLI comamnd             */
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN PV */
-static otCoapResource OT_Ressource = {C_RESSOURCE, APP_THREAD_CoapRequestHandler,"myCtx", NULL};
-static otMessageInfo OT_MessageInfo = {0};
+static otCoapResource OT_Ressource = { C_RESSOURCE,
+		APP_THREAD_CoapRequestHandler, "myCtx", NULL };
+static otMessageInfo OT_MessageInfo = { 0 };
 static uint8_t OT_Command = 0;
-static otCoapHeader  OT_Header = {0};
+static otCoapHeader OT_Header = { 0 };
 static uint8_t OT_ReceivedCommand = 0;
-static otMessage   * pOT_Message = NULL;
-static otLinkModeConfig OT_LinkMode = {0};
+static otMessage *pOT_Message = NULL;
+static otLinkModeConfig OT_LinkMode = { 0 };
 static uint32_t sleepyEndDeviceFlag = FALSE;
 static uint8_t sedCoapTimerID;
 static uint8_t setThreadModeTimerID;
@@ -326,14 +320,14 @@ static uint32_t DebugTxCoapCpt = 0;
 //		(void*) APP_THREAD_CoapBorderTimeRequestHandler, NULL };
 //static otCoapResource OT_Node_Info_Ressource = { C_NODE_INFO_RESSOURCE, APP_THREAD_DummyReqHandler,
 //		(void*) APP_THREAD_CoapNodeInfoRequestHandler, NULL };
-static otCoapResource OT_Lights_Complex_Ressource = {C_LIGHTS_SIMPLE_RESSOURCE,
-		(void*) APP_THREAD_CoapLightsSimpleRequestHandler,"myLightS", NULL};
-static otCoapResource OT_Lights_Simple_Ressource = {C_LIGHTS_COMPLEX_RESSOURCE,
-		(void*) APP_THREAD_CoapLightsComplexRequestHandler,"myLightC", NULL};
-static otCoapResource OT_Border_Time_Ressource = {C_BORER_TIME_RESSOURCE,
-		(void*) APP_THREAD_CoapBorderTimeRequestHandler,"myTime", NULL};
-static otCoapResource OT_Node_Info_Ressource = {C_NODE_INFO_RESSOURCE,
-		(void*) APP_THREAD_CoapNodeInfoRequestHandler,"myInfo", NULL};
+static otCoapResource OT_Lights_Complex_Ressource = { C_LIGHTS_SIMPLE_RESSOURCE,
+		(void*) APP_THREAD_CoapLightsSimpleRequestHandler, "myLightS", NULL };
+static otCoapResource OT_Lights_Simple_Ressource = { C_LIGHTS_COMPLEX_RESSOURCE,
+		(void*) APP_THREAD_CoapLightsComplexRequestHandler, "myLightC", NULL };
+static otCoapResource OT_Border_Time_Ressource = { C_BORER_TIME_RESSOURCE,
+		(void*) APP_THREAD_CoapBorderTimeRequestHandler, "myTime", NULL };
+static otCoapResource OT_Node_Info_Ressource = { C_NODE_INFO_RESSOURCE,
+		(void*) APP_THREAD_CoapNodeInfoRequestHandler, "myInfo", NULL };
 
 #ifdef BORDER_ROUTER_NODE
 static otCoapResource OT_Border_Log_Ressource = { C_BORDER_PACKET_RESSOURCE, APP_THREAD_DummyReqHandler,
@@ -342,8 +336,9 @@ static otCoapResource OT_Border_Log_Ressource = { C_BORDER_PACKET_RESSOURCE, APP
 
 #ifndef DONGLE_CODE
 //static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapToggleLoggingRequestHandler, NULL};
-static otCoapResource OT_Toggle_Logging_Ressource = {C_TOGGLE_LOGGING_RESSOURCE,
-		(void*) APP_THREAD_CoapToggleLoggingRequestHandler, "myTogLog", NULL};
+static otCoapResource OT_Toggle_Logging_Ressource = {
+		C_TOGGLE_LOGGING_RESSOURCE,
+		(void*) APP_THREAD_CoapToggleLoggingRequestHandler, "myTogLog", NULL };
 #endif
 
 //otMessageInfo OT_MessageInfo = { 0 };
@@ -357,7 +352,6 @@ const char nodeInfoResource[15] = "nodeInfo";
 otIp6Address multicastAddr;
 
 //static otCoapResource OT_Ressource = {C_RESSOURCE, APP_THREAD_CoapRequestHandler,"myCtx", NULL};
-
 
 struct sendIP_struct {
 	char node_type[12];
@@ -373,9 +367,10 @@ struct sendIP_struct {
 //static otMessage *pOT_Message = NULL;
 //static otIp6Address   OT_PeerAddress = { .mFields.m8 = { 0 } };
 
-const otMasterKey masterKey = {{ 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33,
-		0x44, 0x44 }};
-const otExtendedPanId extendedPanId = {{ 0x11, 0x11, 0x11, 0x11, 0x22, 0x22, 0x22, 0x22 }};
+const otMasterKey masterKey = { { 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44,
+		0x44, 0x33, 0x33, 0x44, 0x44, 0x33, 0x33, 0x44, 0x44 } };
+const otExtendedPanId extendedPanId = { { 0x11, 0x11, 0x11, 0x11, 0x22, 0x22,
+		0x22, 0x22 } };
 const char networkName[20] = "PatrickNetwork";
 
 //otIp6Address binary_border_ipv6;
@@ -405,7 +400,8 @@ union ColorComplex lightMessageComplex;
 struct SystemCal borderRouter = { 0 };
 struct SystemCal receivedSystemCal = { 0 };
 
-struct sendIP_struct msgSendMyIP = { .node_type = NODE_TYPE, .description = NODE_DESCRIPTION, .RLOC = 0, .uid = 0 };
+struct sendIP_struct msgSendMyIP = { .node_type = NODE_TYPE, .description =
+		NODE_DESCRIPTION, .RLOC = 0, .uid = 0 };
 
 otIp6Address multicastAddr;
 
@@ -413,9 +409,9 @@ otIp6Address multicastAddr;
 //otIp6Address* meshLocalEID;
 //otIp6Address* linkLocalIPV6;
 
-volatile otNetifMulticastAddress* multicastAddresses;
-volatile otIp6Address* meshLocalEID;
-volatile otIp6Address* linkLocalIPV6;
+volatile otNetifMulticastAddress *multicastAddresses;
+volatile otIp6Address *meshLocalEID;
+volatile otIp6Address *linkLocalIPV6;
 
 #ifdef OTA_ENABLED
 static otCoapResource OT_RessourceFuotaProvisioning = {C_RESSOURCE_FUOTA_PROVISIONING, APP_THREAD_DummyReqHandler, (void*)APP_THREAD_CoapReqHandlerFuotaProvisioning, NULL};
@@ -437,9 +433,8 @@ static uint32_t flash_current_offset = 0;
 
 /* Functions Definition ------------------------------------------------------*/
 
-void APP_THREAD_Init( void )
-{
-  /* USER CODE BEGIN APP_THREAD_INIT_1 */
+void APP_THREAD_Init(void) {
+	/* USER CODE BEGIN APP_THREAD_INIT_1 */
 #ifdef OTA_ENABLED
 	  /**
 	   * This is a safe clear in case the engi bytes are not all written
@@ -451,100 +446,100 @@ void APP_THREAD_Init( void )
 	  Delete_Sectors();
 #endif
 
-  /* USER CODE END APP_THREAD_INIT_1 */
+	/* USER CODE END APP_THREAD_INIT_1 */
 
-  SHCI_CmdStatus_t ThreadInitStatus;
+	SHCI_CmdStatus_t ThreadInitStatus;
 
-  /* Check the compatibility with the Coprocessor Wireless Firmware loaded */
-  APP_THREAD_CheckWirelessFirmwareInfo();
+	/* Check the compatibility with the Coprocessor Wireless Firmware loaded */
+	APP_THREAD_CheckWirelessFirmwareInfo();
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
   VCP_Init(&VcpTxBuffer[0], &VcpRxBuffer[0]);
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
 
-  /* Register cmdbuffer */
-  APP_THREAD_RegisterCmdBuffer(&ThreadOtCmdBuffer);
+	/* Register cmdbuffer */
+	APP_THREAD_RegisterCmdBuffer(&ThreadOtCmdBuffer);
 
-  /**
-   * Do not allow standby in the application
-   */
-  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_THREAD, UTIL_LPM_DISABLE);
+	/**
+	 * Do not allow standby in the application
+	 */
+	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_THREAD, UTIL_LPM_DISABLE);
 
-  /* Init config buffer and call TL_THREAD_Init */
-  APP_THREAD_TL_THREAD_INIT();
+	/* Init config buffer and call TL_THREAD_Init */
+	APP_THREAD_TL_THREAD_INIT();
 
-  /* Configure UART for sending CLI command from M4 */
-  APP_THREAD_Init_UART_CLI();
+	/* Configure UART for sending CLI command from M4 */
+	APP_THREAD_Init_UART_CLI();
 
-  /* Send Thread start system cmd to M0 */
-  ThreadInitStatus = SHCI_C2_THREAD_Init();
+	/* Send Thread start system cmd to M0 */
+	ThreadInitStatus = SHCI_C2_THREAD_Init();
 
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(ThreadInitStatus);
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(ThreadInitStatus);
 
-  /* USER CODE BEGIN APP_THREAD_INIT_TIMER */
+	/* USER CODE BEGIN APP_THREAD_INIT_TIMER */
 
-  /* USER CODE END APP_THREAD_INIT_TIMER */
+	/* USER CODE END APP_THREAD_INIT_TIMER */
 
-  /* Create the different FreeRTOS tasks requested to run this Thread application*/
-  OsTaskMsgM0ToM4Id = osThreadNew(APP_THREAD_FreeRTOSProcessMsgM0ToM4Task, NULL,&ThreadMsgM0ToM4Process_attr);
+	/* Create the different FreeRTOS tasks requested to run this Thread application*/
+	OsTaskMsgM0ToM4Id = osThreadNew(APP_THREAD_FreeRTOSProcessMsgM0ToM4Task,
+			NULL, &ThreadMsgM0ToM4Process_attr);
 
-  /* USER CODE BEGIN APP_THREAD_INIT_FREERTOS */
+	/* USER CODE BEGIN APP_THREAD_INIT_FREERTOS */
 
-  /* USER CODE END APP_THREAD_INIT_FREERTOS */
+	/* USER CODE END APP_THREAD_INIT_FREERTOS */
 
-  /* Configure the Thread device at start */
-  APP_THREAD_DeviceConfig();
+	/* Configure the Thread device at start */
+	APP_THREAD_DeviceConfig();
 
-  /* USER CODE BEGIN APP_THREAD_INIT_2 */
+	/* USER CODE BEGIN APP_THREAD_INIT_2 */
 
-  /* USER CODE END APP_THREAD_INIT_2 */
+	/* USER CODE END APP_THREAD_INIT_2 */
 }
 
 /**
-  * @brief  Trace the error or the warning reported.
-  * @param  ErrId :
-  * @param  ErrCode
-  * @retval None
-  */
-void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
-{
-  /* USER CODE BEGIN APP_THREAD_Error_1 */
+ * @brief  Trace the error or the warning reported.
+ * @param  ErrId :
+ * @param  ErrCode
+ * @retval None
+ */
+void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode) {
+	/* USER CODE BEGIN APP_THREAD_Error_1 */
 
-  /* USER CODE END APP_THREAD_Error_1 */
-  switch(ErrId)
-  {
-  case ERR_REC_MULTI_MSG_FROM_M0 :
-    APP_THREAD_TraceError("ERROR : ERR_REC_MULTI_MSG_FROM_M0 ", ErrCode);
-    break;
-  case ERR_THREAD_SET_STATE_CB :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_STATE_CB ",ErrCode);
-    break;
-  case ERR_THREAD_SET_CHANNEL :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_CHANNEL ",ErrCode);
-    break;
-  case ERR_THREAD_SET_PANID :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_PANID ",ErrCode);
-    break;
-  case ERR_THREAD_IPV6_ENABLE :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_IPV6_ENABLE ",ErrCode);
-    break;
-  case ERR_THREAD_START :
-    APP_THREAD_TraceError("ERROR: ERR_THREAD_START ", ErrCode);
-    break;
-  case ERR_THREAD_ERASE_PERSISTENT_INFO :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_ERASE_PERSISTENT_INFO ",ErrCode);
-    break;
-  case ERR_THREAD_CHECK_WIRELESS :
-    APP_THREAD_TraceError("ERROR : ERR_THREAD_CHECK_WIRELESS ",ErrCode);
-    break;
-  /* USER CODE BEGIN APP_THREAD_Error_2 */
+	/* USER CODE END APP_THREAD_Error_1 */
+	switch (ErrId) {
+	case ERR_REC_MULTI_MSG_FROM_M0:
+		APP_THREAD_TraceError("ERROR : ERR_REC_MULTI_MSG_FROM_M0 ", ErrCode);
+		break;
+	case ERR_THREAD_SET_STATE_CB:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_STATE_CB ", ErrCode);
+		break;
+	case ERR_THREAD_SET_CHANNEL:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_CHANNEL ", ErrCode);
+		break;
+	case ERR_THREAD_SET_PANID:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_SET_PANID ", ErrCode);
+		break;
+	case ERR_THREAD_IPV6_ENABLE:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_IPV6_ENABLE ", ErrCode);
+		break;
+	case ERR_THREAD_START:
+		APP_THREAD_TraceError("ERROR: ERR_THREAD_START ", ErrCode);
+		break;
+	case ERR_THREAD_ERASE_PERSISTENT_INFO:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_ERASE_PERSISTENT_INFO ",
+				ErrCode);
+		break;
+	case ERR_THREAD_CHECK_WIRELESS:
+		APP_THREAD_TraceError("ERROR : ERR_THREAD_CHECK_WIRELESS ", ErrCode);
+		break;
+		/* USER CODE BEGIN APP_THREAD_Error_2 */
 
-  /* USER CODE END APP_THREAD_Error_2 */
-  default :
-    APP_THREAD_TraceError("ERROR Unknown ", 0);
-    break;
-  }
+		/* USER CODE END APP_THREAD_Error_2 */
+	default:
+		APP_THREAD_TraceError("ERROR Unknown ", 0);
+		break;
+	}
 }
 
 /*************************************************************
@@ -558,43 +553,36 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode)
  * @param  None
  * @retval None
  */
-static void APP_THREAD_DeviceConfig(void)
-{
-  otError error;
-  error = otInstanceErasePersistentInfo(NULL);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_ERASE_PERSISTENT_INFO,error);
-  }
-  otInstanceFinalize(NULL);
-  otInstanceInitSingle();
-  error = otSetStateChangedCallback(NULL, APP_THREAD_StateNotif, NULL);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_STATE_CB,error);
-  }
-  error = otLinkSetChannel(NULL, C_CHANNEL_NB);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_CHANNEL,error);
-  }
-  error = otLinkSetPanId(NULL, C_PANID);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_SET_PANID,error);
-  }
-  error = otIp6SetEnabled(NULL, true);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_IPV6_ENABLE,error);
-  }
-  error = otThreadSetEnabled(NULL, true);
-  if (error != OT_ERROR_NONE)
-  {
-    APP_THREAD_Error(ERR_THREAD_START,error);
-  }
+static void APP_THREAD_DeviceConfig(void) {
+	otError error;
+	error = otInstanceErasePersistentInfo(NULL);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_ERASE_PERSISTENT_INFO, error);
+	}
+	otInstanceFinalize(NULL);
+	otInstanceInitSingle();
+	error = otSetStateChangedCallback(NULL, APP_THREAD_StateNotif, NULL);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_SET_STATE_CB, error);
+	}
+	error = otLinkSetChannel(NULL, C_CHANNEL_NB);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_SET_CHANNEL, error);
+	}
+	error = otLinkSetPanId(NULL, C_PANID);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_SET_PANID, error);
+	}
+	error = otIp6SetEnabled(NULL, true);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_IPV6_ENABLE, error);
+	}
+	error = otThreadSetEnabled(NULL, true);
+	if (error != OT_ERROR_NONE) {
+		APP_THREAD_Error(ERR_THREAD_START, error);
+	}
 
-  /* USER CODE BEGIN DEVICECONFIG */
+	/* USER CODE BEGIN DEVICECONFIG */
 	error = otThreadSetEnabled(NULL, false);
 	if (error != OT_ERROR_NONE) {
 		APP_THREAD_Error(ERR_THREAD_START, error);
@@ -657,7 +645,7 @@ static void APP_THREAD_DeviceConfig(void)
 	  error = otCoapAddResource(NULL, &OT_RessourceFuotaSend);
 #endif
 #ifndef DONGLE_CODE
-    error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
+	error = otCoapAddResource(NULL, &OT_Toggle_Logging_Ressource);
 #endif
 	// set default multicast address for border router
 //    otIp6AddressFromString("ff03::1", &borderRouter.ipv6);
@@ -669,7 +657,7 @@ static void APP_THREAD_DeviceConfig(void)
 //	 = UID64_BASE;
 	stm32UID(msgSendMyIP.uid);
 
-  /* USER CODE END DEVICECONFIG */
+	/* USER CODE END DEVICECONFIG */
 }
 
 /**
@@ -679,81 +667,78 @@ static void APP_THREAD_DeviceConfig(void)
  *
  * @retval None
  */
-static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(pContext);
+static void APP_THREAD_StateNotif(uint32_t NotifFlags, void *pContext) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(pContext);
 
-  /* USER CODE BEGIN APP_THREAD_STATENOTIF */
+	/* USER CODE BEGIN APP_THREAD_STATENOTIF */
 
-  /* USER CODE END APP_THREAD_STATENOTIF */
+	/* USER CODE END APP_THREAD_STATENOTIF */
 
-  if ((NotifFlags & (uint32_t)OT_CHANGED_THREAD_ROLE) == (uint32_t)OT_CHANGED_THREAD_ROLE)
-  {
-    switch (otThreadGetDeviceRole(NULL))
-    {
-    case OT_DEVICE_ROLE_DISABLED:
-      /* USER CODE BEGIN OT_DEVICE_ROLE_DISABLED */
+	if ((NotifFlags & (uint32_t) OT_CHANGED_THREAD_ROLE)
+			== (uint32_t) OT_CHANGED_THREAD_ROLE) {
+		switch (otThreadGetDeviceRole(NULL)) {
+		case OT_DEVICE_ROLE_DISABLED:
+			/* USER CODE BEGIN OT_DEVICE_ROLE_DISABLED */
 			borderRouter.epoch = 0;
-      /* USER CODE END OT_DEVICE_ROLE_DISABLED */
-      break;
-    case OT_DEVICE_ROLE_DETACHED:
-      /* USER CODE BEGIN OT_DEVICE_ROLE_DETACHED */
+			/* USER CODE END OT_DEVICE_ROLE_DISABLED */
+			break;
+		case OT_DEVICE_ROLE_DETACHED:
+			/* USER CODE BEGIN OT_DEVICE_ROLE_DETACHED */
 			borderRouter.epoch = 0;
-      /* USER CODE END OT_DEVICE_ROLE_DETACHED */
-      break;
-    case OT_DEVICE_ROLE_CHILD:
-      /* USER CODE BEGIN OT_DEVICE_ROLE_CHILD */
+			/* USER CODE END OT_DEVICE_ROLE_DETACHED */
+			break;
+		case OT_DEVICE_ROLE_CHILD:
+			/* USER CODE BEGIN OT_DEVICE_ROLE_CHILD */
 #ifdef DONGLE_CODE
 			BSP_LED_On(LED_GREEN);
 			BSP_LED_Off(LED_RED);
 			BSP_LED_Off(LED_BLUE);
 #endif
 			APP_THREAD_UpdateBorderRouter();
-      /* USER CODE END OT_DEVICE_ROLE_CHILD */
-      break;
-    case OT_DEVICE_ROLE_ROUTER :
-      /* USER CODE BEGIN OT_DEVICE_ROLE_ROUTER */
+			/* USER CODE END OT_DEVICE_ROLE_CHILD */
+			break;
+		case OT_DEVICE_ROLE_ROUTER:
+			/* USER CODE BEGIN OT_DEVICE_ROLE_ROUTER */
 #ifdef DONGLE_CODE
 			BSP_LED_Off(LED_GREEN);
 			BSP_LED_Off(LED_RED);
 			BSP_LED_On(LED_BLUE);
 #endif
 			APP_THREAD_UpdateBorderRouter();
-      /* USER CODE END OT_DEVICE_ROLE_ROUTER */
-      break;
-    case OT_DEVICE_ROLE_LEADER :
-      /* USER CODE BEGIN OT_DEVICE_ROLE_LEADER */
+			/* USER CODE END OT_DEVICE_ROLE_ROUTER */
+			break;
+		case OT_DEVICE_ROLE_LEADER:
+			/* USER CODE BEGIN OT_DEVICE_ROLE_LEADER */
 #ifdef DONGLE_CODE
 			BSP_LED_On(LED_GREEN);
 			BSP_LED_Off(LED_RED);
 			BSP_LED_On(LED_BLUE);
 #endif
 			APP_THREAD_UpdateBorderRouter();
-      /* USER CODE END OT_DEVICE_ROLE_LEADER */
-      break;
-    default:
-      /* USER CODE BEGIN DEFAULT */
+			/* USER CODE END OT_DEVICE_ROLE_LEADER */
+			break;
+		default:
+			/* USER CODE BEGIN DEFAULT */
 			APP_THREAD_UpdateBorderRouter();
-      /* USER CODE END DEFAULT */
-      break;
-    }
-  }
+			/* USER CODE END DEFAULT */
+			break;
+		}
+	}
 }
 
 /**
-  * @brief  Warn the user that an error has occurred.In this case,
-  *         the LEDs on the Board will start blinking.
-  *
-  * @param  pMess  : Message associated to the error.
-  * @param  ErrCode: Error code associated to the module (OpenThread or other module if any)
-  * @retval None
-  */
-static void APP_THREAD_TraceError(const char * pMess, uint32_t ErrCode)
-{
-  /* USER CODE BEGIN TRACE_ERROR */
+ * @brief  Warn the user that an error has occurred.In this case,
+ *         the LEDs on the Board will start blinking.
+ *
+ * @param  pMess  : Message associated to the error.
+ * @param  ErrCode: Error code associated to the module (OpenThread or other module if any)
+ * @retval None
+ */
+static void APP_THREAD_TraceError(const char *pMess, uint32_t ErrCode) {
+	/* USER CODE BEGIN TRACE_ERROR */
 
-  /* USER CODE END TRACE_ERROR */
+	/* USER CODE END TRACE_ERROR */
 }
 
 /**
@@ -762,87 +747,84 @@ static void APP_THREAD_TraceError(const char * pMess, uint32_t ErrCode)
  * @param  None
  * @retval None
  */
-static void APP_THREAD_CheckWirelessFirmwareInfo(void)
-{
-  WirelessFwInfo_t wireless_info_instance;
-  WirelessFwInfo_t* p_wireless_info = &wireless_info_instance;
+static void APP_THREAD_CheckWirelessFirmwareInfo(void) {
+	WirelessFwInfo_t wireless_info_instance;
+	WirelessFwInfo_t *p_wireless_info = &wireless_info_instance;
 
-  if (SHCI_GetWirelessFwInfo(p_wireless_info) != SHCI_Success)
-  {
-    APP_THREAD_Error((uint32_t)ERR_THREAD_CHECK_WIRELESS, (uint32_t)ERR_INTERFACE_FATAL);
-  }
-  else
-  {
-    APP_DBG("**********************************************************");
-    APP_DBG("WIRELESS COPROCESSOR FW:");
-    /* Print version */
-    APP_DBG("VERSION ID = %d.%d.%d", p_wireless_info->VersionMajor, p_wireless_info->VersionMinor, p_wireless_info->VersionSub);
+	if (SHCI_GetWirelessFwInfo(p_wireless_info) != SHCI_Success) {
+		APP_THREAD_Error((uint32_t) ERR_THREAD_CHECK_WIRELESS,
+				(uint32_t) ERR_INTERFACE_FATAL);
+	} else {
+		APP_DBG("**********************************************************");
+		APP_DBG("WIRELESS COPROCESSOR FW:");
+		/* Print version */
+		APP_DBG("VERSION ID = %d.%d.%d", p_wireless_info->VersionMajor,
+				p_wireless_info->VersionMinor, p_wireless_info->VersionSub);
 
-    switch(p_wireless_info->StackType)
-    {
-    case INFO_STACK_TYPE_THREAD_FTD :
-      APP_DBG("FW Type : Thread FTD");
-      break;
-    case INFO_STACK_TYPE_THREAD_MTD :
-      APP_DBG("FW Type : Thread MTD");
-      break;
-    case INFO_STACK_TYPE_BLE_THREAD_FTD_STATIC :
-      APP_DBG("FW Type : Static Concurrent Mode BLE/Thread");
-      break;
-    default :
-      /* No Thread device supported ! */
-      APP_THREAD_Error((uint32_t)ERR_THREAD_CHECK_WIRELESS, (uint32_t)ERR_INTERFACE_FATAL);
-      break;
-    }
-    APP_DBG("**********************************************************");
-  }
+		switch (p_wireless_info->StackType) {
+		case INFO_STACK_TYPE_THREAD_FTD:
+			APP_DBG("FW Type : Thread FTD")
+			;
+			break;
+		case INFO_STACK_TYPE_THREAD_MTD:
+			APP_DBG("FW Type : Thread MTD")
+			;
+			break;
+		case INFO_STACK_TYPE_BLE_THREAD_FTD_STATIC:
+			APP_DBG("FW Type : Static Concurrent Mode BLE/Thread")
+			;
+			break;
+		default:
+			/* No Thread device supported ! */
+			APP_THREAD_Error((uint32_t) ERR_THREAD_CHECK_WIRELESS,
+					(uint32_t) ERR_INTERFACE_FATAL);
+			break;
+		}
+		APP_DBG("**********************************************************");
+	}
 }
 
 /*************************************************************
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-static void APP_THREAD_FreeRTOSProcessMsgM0ToM4Task(void *argument)
-{
-  UNUSED(argument);
-  for(;;)
-  {
-    /* USER CODE BEGIN APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_1 */
+ *************************************************************/
+static void APP_THREAD_FreeRTOSProcessMsgM0ToM4Task(void *argument) {
+	UNUSED(argument);
+	for (;;) {
+		/* USER CODE BEGIN APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_1 */
 
-    /* USER END END APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_1 */
-    osThreadFlagsWait(1,osFlagsWaitAll,osWaitForever);
-    APP_THREAD_ProcessMsgM0ToM4();
-    /* USER CODE BEGIN APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_2 */
+		/* USER END END APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_1 */
+		osThreadFlagsWait(1, osFlagsWaitAll, osWaitForever);
+		APP_THREAD_ProcessMsgM0ToM4();
+		/* USER CODE BEGIN APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_2 */
 
-    /* USER END END APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_2 */
-  }
+		/* USER END END APP_THREAD_FREERTOS_PROCESS_MSG_M0_TO_M4_2 */
+	}
 }
 
 #if (CFG_FULL_LOW_POWER == 0)
-static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument)
-{
-  UNUSED(argument);
-  for(;;)
-  {
-    /* USER CODE BEGIN APP_THREAD_FREERTOS_SEND_CLI_TO_M0_1 */
+static void APP_THREAD_FreeRTOSSendCLIToM0Task(void *argument) {
+	UNUSED(argument);
+	for (;;) {
+		/* USER CODE BEGIN APP_THREAD_FREERTOS_SEND_CLI_TO_M0_1 */
 
-    /* USER END END APP_THREAD_FREERTOS_SEND_CLI_TO_M0_1 */
-    osThreadFlagsWait(1,osFlagsWaitAll,osWaitForever);
-    Send_CLI_To_M0();
-    /* USER CODE BEGIN APP_THREAD_FREERTOS_SEND_CLI_TO_M0_2 */
+		/* USER END END APP_THREAD_FREERTOS_SEND_CLI_TO_M0_1 */
+		osThreadFlagsWait(1, osFlagsWaitAll, osWaitForever);
+		Send_CLI_To_M0();
+		/* USER CODE BEGIN APP_THREAD_FREERTOS_SEND_CLI_TO_M0_2 */
 
-    /* USER END END APP_THREAD_FREERTOS_SEND_CLI_TO_M0_2 */
-  }
+		/* USER END END APP_THREAD_FREERTOS_SEND_CLI_TO_M0_2 */
+	}
 }
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
 /* USER CODE BEGIN FREERTOS_WRAPPER_FUNCTIONS */
-void stm32UID(uint8_t* uid) {
-  for(uint8_t i = 0; i < 12; i++) {
-    uid[i] = *(volatile uint8_t *)(UID_BASE + i);
-    }
-  }
+void stm32UID(uint8_t *uid) {
+	for (uint8_t i = 0; i < 12; i++) {
+		uid[i] = *(volatile uint8_t*) (UID_BASE + i);
+	}
+}
 /* USER CODE END FREERTOS_WRAPPER_FUNCTIONS */
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
@@ -852,42 +834,41 @@ void stm32UID(uint8_t* uid) {
  * @param  none
  * @retval None
  */
-void APP_THREAD_Init_Dyn_1( void )
-{
-  /* USER CODE BEGIN APP_THREAD_INIT_1 */
+void APP_THREAD_Init_Dyn_1(void) {
+	/* USER CODE BEGIN APP_THREAD_INIT_1 */
 
-  /* USER CODE END APP_THREAD_INIT_1 */
+	/* USER CODE END APP_THREAD_INIT_1 */
 
-  SHCI_CmdStatus_t ThreadInitStatus;
+	SHCI_CmdStatus_t ThreadInitStatus;
 
-  /* Check the compatibility with the Coprocessor Wireless Firmware loaded */
-  APP_THREAD_CheckWirelessFirmwareInfo();
+	/* Check the compatibility with the Coprocessor Wireless Firmware loaded */
+	APP_THREAD_CheckWirelessFirmwareInfo();
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
   VCP_Init(&VcpTxBuffer[0], &VcpRxBuffer[0]);
 #endif /* (CFG_USB_INTERFACE_ENABLE != 0) */
-  /* Register cmdbuffer */
-  APP_THREAD_RegisterCmdBuffer(&ThreadOtCmdBuffer);
+	/* Register cmdbuffer */
+	APP_THREAD_RegisterCmdBuffer(&ThreadOtCmdBuffer);
 
-  /**
-   * Do not allow standby in the application
-   */
-  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_THREAD, UTIL_LPM_DISABLE);
+	/**
+	 * Do not allow standby in the application
+	 */
+	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_THREAD, UTIL_LPM_DISABLE);
 
-  /* Init config buffer and call TL_THREAD_Init */
-  APP_THREAD_TL_THREAD_INIT();
+	/* Init config buffer and call TL_THREAD_Init */
+	APP_THREAD_TL_THREAD_INIT();
 
-  /* Configure UART for sending CLI command from M4 */
+	/* Configure UART for sending CLI command from M4 */
 //  APP_THREAD_Init_UART_CLI();
+	/* Send Thread start system cmd to M0 */
+	ThreadInitStatus = SHCI_C2_THREAD_Init();
 
-  /* Send Thread start system cmd to M0 */
-  ThreadInitStatus = SHCI_C2_THREAD_Init();
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(ThreadInitStatus);
 
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(ThreadInitStatus);
-
-  // TODO: added this call and removed the lines after since (I think) they are unnecessary
-  OsTaskMsgM0ToM4Id = osThreadNew(APP_THREAD_FreeRTOSProcessMsgM0ToM4Task, NULL,&ThreadMsgM0ToM4Process_attr);
+	// TODO: added this call and removed the lines after since (I think) they are unnecessary
+	OsTaskMsgM0ToM4Id = osThreadNew(APP_THREAD_FreeRTOSProcessMsgM0ToM4Task,
+			NULL, &ThreadMsgM0ToM4Process_attr);
 
 //  /* Register task */
 //  /* Create the different tasks */
@@ -899,31 +880,28 @@ void APP_THREAD_Init_Dyn_1( void )
 }
 
 void APP_THREAD_Init_Dyn_2(void) {
-  /* Initialize and configure the Thread device*/
-  APP_THREAD_DeviceConfig();
+	/* Initialize and configure the Thread device*/
+	APP_THREAD_DeviceConfig();
 
-  //TODO: removed below as per Thread-only FreeRTOS example
-  /**
-   * Create timer to handle COAP request sending
-   */
+	//TODO: removed below as per Thread-only FreeRTOS example
+	/**
+	 * Create timer to handle COAP request sending
+	 */
 //  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &sedCoapTimerID, hw_ts_Repeated, APP_THREAD_CoapTimingElapsed);
-  /* Allow the 800_15_4 IP to enter in low power mode */
+	/* Allow the 800_15_4 IP to enter in low power mode */
 }
 
-void APP_THREAD_Stop(void)
-{
-  otError error;
-  /* STOP THREAD */
-  error = otThreadSetEnabled(NULL, false);
-  if (error != OT_ERROR_NONE)
-  {
+void APP_THREAD_Stop(void) {
+	otError error;
+	/* STOP THREAD */
+	error = otThreadSetEnabled(NULL, false);
+	if (error != OT_ERROR_NONE) {
 //     APP_THREAD_Error(ERR_THREAD_STOP,error);
-  }
+	}
 }
 
-void APP_THREAD_CleanCallbacks(void)
-{
-  otRemoveStateChangeCallback(NULL, APP_THREAD_StateNotif, NULL);
+void APP_THREAD_CleanCallbacks(void) {
+	otRemoveStateChangeCallback(NULL, APP_THREAD_StateNotif, NULL);
 //  otCoapRemoveResource(NULL, &OT_Ressource);
 
 //  /* Remove Timers if any */
@@ -977,8 +955,8 @@ static void Delete_Sectors( void )
 }
 #endif
 
-static void APP_THREAD_DummyRespHandler(void *p_context, otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo, otError Result) {
+static void APP_THREAD_DummyRespHandler(void *p_context, otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo, otError Result) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(p_context);
 	UNUSED(pHeader);
@@ -988,21 +966,22 @@ static void APP_THREAD_DummyRespHandler(void *p_context, otCoapHeader *pHeader, 
 }
 
 volatile uint16_t test_num;
-static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo, otError Result) {
+static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo, otError Result) {
 
 //	taskENTER_CRITICAL();
 //	test_num = otMessageGetLength(pMessage);
 //	test_num = otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal));
 
-	if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal))
+	if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+			&receivedSystemCal, sizeof(receivedSystemCal))
 			== sizeof(receivedSystemCal)) {
 
-			// if successful, update border router state variable
-			memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
+		// if successful, update border router state variable
+		memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
 
-			// update the onboard RTC unix time
-			updateRTC(borderRouter.epoch);
+		// update the onboard RTC unix time
+		updateRTC(borderRouter.epoch);
 	}
 //	taskEXIT_CRITICAL();
 }
@@ -1017,7 +996,6 @@ static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
 //	tempMessageInfo = pMessageInfo;
 //	receivedMessage = (otMessageInfo*) pMessage;
 //}
-
 #ifdef OTA_ENABLED
 /**
  * @brief Handler called when the server receives a COAP request.
@@ -1418,7 +1396,6 @@ static void APP_THREAD_TimingElapsed(void)
 //	APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_BORDER_ROUTER, borderSyncResource);
 //}
 
-
 //char msgSendMyIP[5] = "cal";
 ////otIp6Address* test_ip;
 //otNeighborInfo test_info_neighbor;
@@ -1446,7 +1423,8 @@ void APP_THREAD_UpdateBorderRouter() {
 
 // send a GET request to border router via multicast
 void APP_THREAD_SyncWithBorderRouter() {
-	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr, (char *) borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
+	APP_THREAD_SendCoapMsgForBorderSync(NULL, 0, &multicastAddr,
+			(char*) borderSyncResource, NO_ACK, OT_COAP_CODE_GET, 1U);
 }
 
 void APP_THREAD_SendMyInfo() {
@@ -1462,39 +1440,44 @@ void APP_THREAD_SendMyInfo() {
 //
 //	error = otThreadGetNextNeighborInfo(NULL, &test_neighbor_iterator, &test_info_neighbor);
 	// TODO: does this need an ACK
-	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP), &borderRouter.ipv6, (char *) nodeInfoResource, NO_ACK,
+	APP_THREAD_SendCoapMsg(&msgSendMyIP, sizeof(msgSendMyIP),
+			&borderRouter.ipv6, (char*) nodeInfoResource, NO_ACK,
 			OT_COAP_CODE_PUT, 1U);
 //	APP_THREAD_SendCoapUnicastMsg(NULL, NULL, borderRouter.ipv6  , borderSyncResource, 1U);
 }
 
 void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource) {
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapMsg(packet, len, &borderRouter.ipv6, resource, NO_ACK, OT_COAP_CODE_PUT, 1U);
+	APP_THREAD_SendCoapMsg(packet, len, &borderRouter.ipv6, resource, NO_ACK,
+			OT_COAP_CODE_PUT, 1U);
 }
 
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket) {
 //	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
-	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct LogPacket), &borderRouter.ipv6, (char *) borderPacket, NO_ACK,
-			OT_COAP_CODE_PUT, 1U);
+	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct LogPacket),
+			&borderRouter.ipv6, (char*) borderPacket, NO_ACK, OT_COAP_CODE_PUT,
+			1U);
 
 }
 
-static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, otMessageInfo *pMessageInfo) {
 	do {
 
 		// if get, send response with current log message
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
 //			APP_THREAD_SendDataResponse(pHeader, pMessageInfo, &lightsSimpleMessage, sizeof(lightsSimpleMessage), pHeader, pMessageInfo);
-			APP_THREAD_SendDataResponse(&lightsSimpleMessage, sizeof(lightsSimpleMessage), pHeader, pMessageInfo);
+			APP_THREAD_SendDataResponse(&lightsSimpleMessage,
+					sizeof(lightsSimpleMessage), pHeader, pMessageInfo);
 			break;
 		}
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightsSimpleMessage, sizeof(lightsSimpleMessage))
-				== 4U) {
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+				&lightsSimpleMessage, sizeof(lightsSimpleMessage)) == 4U) {
 			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
 					|| (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_POST)) {
-				osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessage, 0U, 0U);
+				osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessage,
+						0U, 0U);
 			}
 
 		}
@@ -1508,7 +1491,8 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otM
 			break;
 		}
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U) {
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+				&OT_ReceivedCommand, 1U) != 1U) {
 			//APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
 		}
 
@@ -1520,17 +1504,19 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader, otM
 
 #ifndef DONGLE_CODE
 // request handler for when receiving a message directed at the data logging resource
-static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
 	do {
 		// if get, send response with current log message
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
-			APP_THREAD_SendDataResponse(&logMessage, sizeof(logMessage), pHeader, pMessageInfo);
+			APP_THREAD_SendDataResponse(&logMessage, sizeof(logMessage),
+					pHeader, pMessageInfo);
 			break;
 		}
 
 		// TODO : this will overwrite log message so maybe add a safer method
-		if ( otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage)) == sizeof(logMessage)){
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage,
+				sizeof(logMessage)) == sizeof(logMessage)) {
 //			otMessageRead(pMessage, otMessageGetOffset(pMessage), &logMessage, sizeof(logMessage));
 			// if post or put, add to queue for masterthread processing
 			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
@@ -1538,7 +1524,6 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, ot
 				osMessageQueuePut(togLoggingQueueHandle, &logMessage, 0U, 0U);
 			}
 		}
-
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
 			APP_THREAD_SendDataResponse(NULL, 0, pHeader, pMessageInfo);
@@ -1550,21 +1535,22 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader, ot
 
 #endif
 
-
 // request handler for when receiving a message directed at the border router synchronizing resource
-static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
 	do {
 #ifdef DONGLE_CODE
 		BSP_LED_Toggle(LED_RED);
 #endif
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &receivedSystemCal, sizeof(receivedSystemCal))
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+				&receivedSystemCal, sizeof(receivedSystemCal))
 				== sizeof(receivedSystemCal)) {
 			// if the message was a put request, copy message over to border router info struct
 			if ((otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_PUT)
 					|| (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_POST)) {
 
-				memcpy(&borderRouter, &receivedSystemCal, sizeof(receivedSystemCal));
+				memcpy(&borderRouter, &receivedSystemCal,
+						sizeof(receivedSystemCal));
 
 				// update the onboard RTC unix time
 				updateRTC(borderRouter.epoch);
@@ -1582,7 +1568,7 @@ static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader, otMes
 		}
 
 		if (otCoapHeaderGetType(pHeader) == OT_COAP_TYPE_CONFIRMABLE) {
-			APP_THREAD_SendDataResponse(NULL, 0 , pHeader, pMessageInfo);
+			APP_THREAD_SendDataResponse(NULL, 0, pHeader, pMessageInfo);
 			break;
 		}
 
@@ -1644,10 +1630,10 @@ static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otM
 #endif
 
 // Only get requests allowed for this resource
-struct sendIP_struct tempVar = {"test","test",0};
+struct sendIP_struct tempVar = { "test", "test", 0 };
 //char test_string[200] = "test";
-static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
 	do {
 #ifdef DONGLE_CODE
 		BSP_LED_Toggle(LED_RED);
@@ -1706,12 +1692,13 @@ void updateRTC(time_t now) {
 	HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2); // lock it in with the backup registers
 }
 
-static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
-		otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader,
+		otMessage *pMessage, otMessageInfo *pMessageInfo) {
 	do {
 		//APP_THREAD_SendCoapUnicastRequest();
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &lightMessageComplex, sizeof(lightMessageComplex))
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+				&lightMessageComplex, sizeof(lightMessageComplex))
 				== sizeof(lightMessageComplex)) {
 			FrontLightsSet(&lightMessageComplex);
 		}
@@ -1727,7 +1714,8 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, ot
 			break;
 		}
 
-		if (otMessageRead(pMessage, otMessageGetOffset(pMessage), &OT_ReceivedCommand, 1U) != 1U) {
+		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
+				&OT_ReceivedCommand, 1U) != 1U) {
 			//APP_THREAD_Error(ERR_THREAD_MESSAGE_READ, 0);
 		}
 
@@ -1738,10 +1726,8 @@ static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader, ot
 	} while (false);
 }
 
-
-
-
-static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_length, char *ipv6_addr, char *resource) {
+static void APP_THREAD_SendCoapUnicastRequest(char *message,
+		uint8_t message_length, char *ipv6_addr, char *resource) {
 	//otError   error = OT_ERROR_NONE;
 
 //  if (error != OT_ERROR_NONE)
@@ -1773,7 +1759,8 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 //			  multicastAddresses = otIp6GetMulticastAddresses(NULL);
 //			  meshLocalEID =  otThreadGetMeshLocalEid(NULL);
 //			  linkLocalIPV6 = otThreadGetLinkLocalIp6Address(NULL);
-		memcpy(&meshLocalEID, otThreadGetMeshLocalEid(NULL), sizeof(otIp6Address));
+		memcpy(&meshLocalEID, otThreadGetMeshLocalEid(NULL),
+				sizeof(otIp6Address));
 
 		// clear info
 		memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
@@ -1782,7 +1769,8 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 		//error = otIp6AddressFromString("ff03::1", &OT_MessageInfo.mPeerAddr);
 		error = otIp6AddressFromString(ipv6_addr, &OT_MessageInfo.mPeerAddr);
 
-		memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+		memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL),
+				sizeof(OT_MessageInfo.mSockAddr));
 
 		// error = otIp6AddressFromString("fd11:22::994e:6ed7:263d:6187", &OT_MessageInfo.mPeerAddr);
 		//error = otIp6AddressFromString("fdde:ad00:beef:0:0:ff:fe00:3800", &OT_MessageInfo.mPeerAddr);
@@ -1790,14 +1778,16 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 		OT_MessageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
 		OT_MessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
 
-		unicastAddresses = (otNetifAddress *OTCALL) otIp6GetUnicastAddresses(NULL);
+		unicastAddresses = (otNetifAddress*OTCALL) otIp6GetUnicastAddresses(
+				NULL);
 		OT_MessageInfo.mSockAddr = unicastAddresses->mAddress;
 		//OT_MessageInfo.mHopLimit = 20;
 
 		/************** CREATE NEW MESSAGE ********************ifco*/
 
 		// create header
-		otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+		otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+				OT_COAP_CODE_PUT);
 		//otCoapHeaderSetMessageId(&OT_Header,OT_BufferIdSend); //may not need since sendRequest should set to 0
 		otCoapHeaderGenerateToken(&OT_Header, 2U); //This function sets the Token length and randomizes its value.
 
@@ -1836,20 +1826,22 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message, uint8_t message_len
 
 }
 
-
 static char empty_message[10] = "";
-void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_addr, char *resource,
-		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID) {
+void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize,
+		otIp6Address *ipv6_addr, char *resource, uint8_t request_ack,
+		otCoapCode coapCode, uint8_t msgID) {
 	/************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
 	// https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
 	do {
 		// REMOVE BELOW CALLS (ONLY FOR DEBUGGING)
-			  myRloc16 = otThreadGetRloc16(NULL);
-			  unicastAddresses = (otNetifAddress *OTCALL) otIp6GetUnicastAddresses(NULL);
-			  isEnabledIpv6 = otIp6IsEnabled(NULL);
-			  multicastAddresses = (otNetifMulticastAddress *) otIp6GetMulticastAddresses(NULL);
-			  meshLocalEID =  (otIp6Address *OTCALL) otThreadGetMeshLocalEid(NULL);
-			  linkLocalIPV6 = (otIp6Address *) otThreadGetLinkLocalIp6Address(NULL);
+		myRloc16 = otThreadGetRloc16(NULL);
+		unicastAddresses = (otNetifAddress*OTCALL) otIp6GetUnicastAddresses(
+				NULL);
+		isEnabledIpv6 = otIp6IsEnabled(NULL);
+		multicastAddresses =
+				(otNetifMulticastAddress*) otIp6GetMulticastAddresses(NULL);
+		meshLocalEID = (otIp6Address*OTCALL) otThreadGetMeshLocalEid(NULL);
+		linkLocalIPV6 = (otIp6Address*) otThreadGetLinkLocalIp6Address(NULL);
 
 		// clear info
 		memset(&OT_MessageInfo, 0, sizeof(OT_MessageInfo));
@@ -1857,17 +1849,21 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 		// add destination IPv6 address to header
 		// TODO : swap the below statements once ST has their shit fixed
 
-		if(msgSize > 100){ // TODO : semd to borderRouter if the message is a log message (this is a temporary fix)
+		if (msgSize > 100) { // TODO : semd to borderRouter if the message is a log message (this is a temporary fix)
 #ifndef BORDER_ROUTER_NODE_TRANSMITTER
-			memcpy(&OT_MessageInfo.mPeerAddr, &borderRouter.ipv6, sizeof(otIp6Address));
-			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+			memcpy(&OT_MessageInfo.mPeerAddr, &borderRouter.ipv6,
+					sizeof(otIp6Address));
+			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL),
+					sizeof(OT_MessageInfo.mSockAddr));
 //			otIp6AddressFromString("fd11:22::c34c:7994:cccc:4b82", &OT_MessageInfo.mSockAddr);
 #else
 			memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr, sizeof(otIp6Address));
 #endif
-		}else{
-			memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr, sizeof(otIp6Address));
-			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL), sizeof(OT_MessageInfo.mSockAddr));
+		} else {
+			memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr,
+					sizeof(otIp6Address));
+			memcpy(&OT_MessageInfo.mSockAddr, otThreadGetMeshLocalEid(NULL),
+					sizeof(OT_MessageInfo.mSockAddr));
 		}
 
 //			  memcpy(&OT_MessageInfo.mPeerAddr, ipv6_addr, sizeof(otIp6Address));
@@ -1895,17 +1891,23 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 
 		// create header
 		if (request_ack && (coapCode == OT_COAP_CODE_PUT))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_PUT);
 		else if (request_ack && (coapCode == OT_COAP_CODE_GET))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_GET);
 		else if (request_ack && (coapCode == OT_COAP_CODE_POST))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_POST);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_PUT))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_PUT);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_GET))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_GET);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_GET);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_POST))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_POST);
 		else
 			return // this return should never happen
 
@@ -1917,7 +1919,8 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// need this so the coap server doesnt try to parse as 'utf-8' and error out
-		otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
+		otCoapHeaderAppendContentFormatOption(&OT_Header,
+				OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
@@ -1944,13 +1947,8 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 
 		// TODO: the response function should only be used for the border update event (I think only if message is embedded in ACK)?
 
-
-		error = otCoapSendRequest(NULL,
-								pOT_Message,
-								&OT_MessageInfo,
-								NULL,
-								(void*) NULL);
-
+		error = otCoapSendRequest(NULL, pOT_Message, &OT_MessageInfo,
+		NULL, (void*) NULL);
 
 		// if error: free allocated message buffer if one was allocated
 		if (error != OT_ERROR_NONE && pOT_Message != NULL) {
@@ -1960,8 +1958,9 @@ void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize, otIp6Address *ipv6_
 	} while (false);
 }
 
-static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize, otIp6Address *ipv6_addr, char *resource,
-		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID) {
+static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
+		otIp6Address *ipv6_addr, char *resource, uint8_t request_ack,
+		otCoapCode coapCode, uint8_t msgID) {
 	/************ SET MESSAGE INFO (WHERE THE PACKET GOES) ************/
 	// https://openthread.io/reference/struct/ot-message-info.html#structot_message_info
 	do {
@@ -1978,7 +1977,6 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 
 		// add destination IPv6 address to header
 		// TODO : swap the below statements once ST has their shit fixed
-
 
 		memcpy(&OT_MessageInfo.mPeerAddr, &multicastAddr, sizeof(otIp6Address));
 
@@ -2007,17 +2005,23 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 
 		// create header
 		if (request_ack && (coapCode == OT_COAP_CODE_PUT))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_PUT);
 		else if (request_ack && (coapCode == OT_COAP_CODE_GET))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_GET);
 		else if (request_ack && (coapCode == OT_COAP_CODE_POST))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_CONFIRMABLE,
+					OT_COAP_CODE_POST);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_PUT))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_PUT);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_GET))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_GET);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_GET);
 		else if (!request_ack && (coapCode == OT_COAP_CODE_POST))
-			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST);
+			otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_NON_CONFIRMABLE,
+					OT_COAP_CODE_POST);
 		else
 			return // this return should never happen
 
@@ -2049,15 +2053,13 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 //			error = otMessageAppend(pOT_Message, empty_message, 10);
 //		}
 
-			 // if (error != OT_ERROR_NONE) while(1);
+		// if (error != OT_ERROR_NONE) while(1);
 
 		// TODO: the response function should only be used for the border update event (I think only if message is embedded in ACK)?
 
-
-		error = otCoapSendRequest(NULL, pOT_Message, &OT_MessageInfo, &APP_THREAD_DummyRespHandler,
+		error = otCoapSendRequest(NULL, pOT_Message, &OT_MessageInfo,
+				&APP_THREAD_DummyRespHandler,
 				(void*) &APP_THREAD_CoapRespHandler_UpdateBorderRouter);
-
-
 
 		// if error: free allocated message buffer if one was allocated
 		if (error != OT_ERROR_NONE && pOT_Message != NULL) {
@@ -2077,22 +2079,27 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
  */
 
 /*From RFC:  In a piggybacked response, the Message ID of the Confirmable
-request and the Acknowledgement MUST match, and the tokens of the
-response and original request MUST match.  In a separate
-response, just the tokens of the response and original request
-MUST match.*/
+ request and the Acknowledgement MUST match, and the tokens of the
+ response and original request MUST match.  In a separate
+ response, just the tokens of the response and original request
+ MUST match.*/
 
-static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize,
+		otCoapHeader *pRequestHeader, const otMessageInfo *pMessageInfo) {
 	otError error = OT_ERROR_NONE;
 
 	//APP_DBG(" ********* APP_THREAD_SendDataResponse \r\n");
-	otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_ACKNOWLEDGMENT, OT_COAP_CODE_CHANGED);
-	otCoapHeaderSetMessageId(&OT_Header, otCoapHeaderGetMessageId(pRequestHeader));
-	otCoapHeaderSetToken(&OT_Header, otCoapHeaderGetToken(pRequestHeader), otCoapHeaderGetTokenLength(pRequestHeader));
+	otCoapHeaderInit(&OT_Header, OT_COAP_TYPE_ACKNOWLEDGMENT,
+			OT_COAP_CODE_CHANGED);
+	otCoapHeaderSetMessageId(&OT_Header,
+			otCoapHeaderGetMessageId(pRequestHeader));
+	otCoapHeaderSetToken(&OT_Header, otCoapHeaderGetToken(pRequestHeader),
+			otCoapHeaderGetTokenLength(pRequestHeader));
 
-	if (msgSize > 0){
+	if (msgSize > 0) {
 		// need this so the coap server doesnt try to parse as 'utf-8' and error out
-		otCoapHeaderAppendContentFormatOption(&OT_Header, OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
+		otCoapHeaderAppendContentFormatOption(&OT_Header,
+				OT_COAP_OPTION_CONTENT_FORMAT_OCTET_STREAM);
 //			  if (error != OT_ERROR_NONE) while(1);
 
 		// This function adds Payload Marker indicating beginning of the payload to the CoAP header
@@ -2123,24 +2130,20 @@ static void APP_THREAD_SendDataResponse(void *message, uint16_t msgSize, otCoapH
  *
  *************************************************************/
 
-void APP_THREAD_RegisterCmdBuffer(TL_CmdPacket_t* p_buffer)
-{
-  p_thread_otcmdbuffer = p_buffer;
+void APP_THREAD_RegisterCmdBuffer(TL_CmdPacket_t *p_buffer) {
+	p_thread_otcmdbuffer = p_buffer;
 }
 
-Thread_OT_Cmd_Request_t* THREAD_Get_OTCmdPayloadBuffer(void)
-{
-  return (Thread_OT_Cmd_Request_t*)p_thread_otcmdbuffer->cmdserial.cmd.payload;
+Thread_OT_Cmd_Request_t* THREAD_Get_OTCmdPayloadBuffer(void) {
+	return (Thread_OT_Cmd_Request_t*) p_thread_otcmdbuffer->cmdserial.cmd.payload;
 }
 
-Thread_OT_Cmd_Request_t* THREAD_Get_OTCmdRspPayloadBuffer(void)
-{
-  return (Thread_OT_Cmd_Request_t*)((TL_EvtPacket_t *)p_thread_otcmdbuffer)->evtserial.evt.payload;
+Thread_OT_Cmd_Request_t* THREAD_Get_OTCmdRspPayloadBuffer(void) {
+	return (Thread_OT_Cmd_Request_t*) ((TL_EvtPacket_t*) p_thread_otcmdbuffer)->evtserial.evt.payload;
 }
 
-Thread_OT_Cmd_Request_t* THREAD_Get_NotificationPayloadBuffer(void)
-{
-  return (Thread_OT_Cmd_Request_t*)(p_thread_notif_M0_to_M4)->evtserial.evt.payload;
+Thread_OT_Cmd_Request_t* THREAD_Get_NotificationPayloadBuffer(void) {
+	return (Thread_OT_Cmd_Request_t*) (p_thread_notif_M0_to_M4)->evtserial.evt.payload;
 }
 
 /**
@@ -2150,19 +2153,20 @@ Thread_OT_Cmd_Request_t* THREAD_Get_NotificationPayloadBuffer(void)
  * @param   None
  * @return  None
  */
-void Ot_Cmd_Transfer(void)
-{
-  /* OpenThread OT command cmdcode range 0x280 .. 0x3DF = 352 */
-  p_thread_otcmdbuffer->cmdserial.cmd.cmdcode = 0x280U;
-  /* Size = otCmdBuffer->Size (Number of OT cmd arguments : 1 arg = 32bits so multiply by 4 to get size in bytes)
-   * + ID (4 bytes) + Size (4 bytes) */
-  uint32_t l_size = ((Thread_OT_Cmd_Request_t*)(p_thread_otcmdbuffer->cmdserial.cmd.payload))->Size * 4U + 8U;
-  p_thread_otcmdbuffer->cmdserial.cmd.plen = l_size;
+void Ot_Cmd_Transfer(void) {
+	/* OpenThread OT command cmdcode range 0x280 .. 0x3DF = 352 */
+	p_thread_otcmdbuffer->cmdserial.cmd.cmdcode = 0x280U;
+	/* Size = otCmdBuffer->Size (Number of OT cmd arguments : 1 arg = 32bits so multiply by 4 to get size in bytes)
+	 * + ID (4 bytes) + Size (4 bytes) */
+	uint32_t l_size =
+			((Thread_OT_Cmd_Request_t*) (p_thread_otcmdbuffer->cmdserial.cmd.payload))->Size
+					* 4U + 8U;
+	p_thread_otcmdbuffer->cmdserial.cmd.plen = l_size;
 
-  TL_OT_SendCmd();
+	TL_OT_SendCmd();
 
-  /* Wait completion of cmd */
-  Wait_Getting_Ack_From_M0();
+	/* Wait completion of cmd */
+	Wait_Getting_Ack_From_M0();
 }
 
 /**
@@ -2171,12 +2175,11 @@ void Ot_Cmd_Transfer(void)
  * @param   Otbuffer : a pointer to TL_EvtPacket_t
  * @return  None
  */
-void TL_OT_CmdEvtReceived( TL_EvtPacket_t * Otbuffer )
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(Otbuffer);
+void TL_OT_CmdEvtReceived(TL_EvtPacket_t *Otbuffer) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(Otbuffer);
 
-  Receive_Ack_From_M0();
+	Receive_Ack_From_M0();
 }
 
 /**
@@ -2185,83 +2188,74 @@ void TL_OT_CmdEvtReceived( TL_EvtPacket_t * Otbuffer )
  * @param   Notbuffer : a pointer to TL_EvtPacket_t
  * @return  None
  */
-void TL_THREAD_NotReceived( TL_EvtPacket_t * Notbuffer )
-{
-  p_thread_notif_M0_to_M4 = Notbuffer;
+void TL_THREAD_NotReceived(TL_EvtPacket_t *Notbuffer) {
+	p_thread_notif_M0_to_M4 = Notbuffer;
 
-  Receive_Notification_From_M0();
+	Receive_Notification_From_M0();
 }
 
 /**
-  * @brief  This function is called before sending any ot command to the M0
-  *         core. The purpose of this function is to be able to check if
-  *         there are no notifications coming from the M0 core which are
-  *         pending before sending a new ot command.
-  * @param  None
-  * @retval None
-  */
-void Pre_OtCmdProcessing(void)
-{
+ * @brief  This function is called before sending any ot command to the M0
+ *         core. The purpose of this function is to be able to check if
+ *         there are no notifications coming from the M0 core which are
+ *         pending before sending a new ot command.
+ * @param  None
+ * @retval None
+ */
+void Pre_OtCmdProcessing(void) {
 
 }
 
 /**
-  * @brief  This function waits for getting an acknowledgment from the M0.
-  *
-  * @param  None
-  * @retval None
-  */
-static void Wait_Getting_Ack_From_M0(void)
-{
-  while (FlagReceiveAckFromM0 == 0)
-  {
-  }
-  FlagReceiveAckFromM0 = 0;
+ * @brief  This function waits for getting an acknowledgment from the M0.
+ *
+ * @param  None
+ * @retval None
+ */
+static void Wait_Getting_Ack_From_M0(void) {
+	while (FlagReceiveAckFromM0 == 0) {
+	}
+	FlagReceiveAckFromM0 = 0;
 }
 
 /**
-  * @brief  Receive an acknowledgment from the M0+ core.
-  *         Each command send by the M4 to the M0 are acknowledged.
-  *         This function is called under interrupt.
-  * @param  None
-  * @retval None
-  */
-static void Receive_Ack_From_M0(void)
-{
-  FlagReceiveAckFromM0 = 1;
+ * @brief  Receive an acknowledgment from the M0+ core.
+ *         Each command send by the M4 to the M0 are acknowledged.
+ *         This function is called under interrupt.
+ * @param  None
+ * @retval None
+ */
+static void Receive_Ack_From_M0(void) {
+	FlagReceiveAckFromM0 = 1;
 }
 
 /**
-  * @brief  Receive a notification from the M0+ through the IPCC.
-  *         This function is called under interrupt.
-  * @param  None
-  * @retval None
-  */
-static void Receive_Notification_From_M0(void)
-{
-  CptReceiveMsgFromM0++;
-  osThreadFlagsSet(OsTaskMsgM0ToM4Id,1);
+ * @brief  Receive a notification from the M0+ through the IPCC.
+ *         This function is called under interrupt.
+ * @param  None
+ * @retval None
+ */
+static void Receive_Notification_From_M0(void) {
+	CptReceiveMsgFromM0++;
+	osThreadFlagsSet(OsTaskMsgM0ToM4Id, 1);
 }
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
 #else
 #if (CFG_FULL_LOW_POWER == 0)
-static void RxCpltCallback(void)
-{
-  /* Filling buffer and wait for '\r' char */
-  if (indexReceiveChar < C_SIZE_CMD_STRING)
-  {
-    CommandString[indexReceiveChar++] = aRxBuffer[0];
-    if (aRxBuffer[0] == '\r')
-    {
-      CptReceiveCmdFromUser = 1U;
+static void RxCpltCallback(void) {
+	/* Filling buffer and wait for '\r' char */
+	if (indexReceiveChar < C_SIZE_CMD_STRING) {
+		CommandString[indexReceiveChar++] = aRxBuffer[0];
+		if (aRxBuffer[0] == '\r') {
+			CptReceiveCmdFromUser = 1U;
 
-      /* UART task scheduling*/
-      osThreadFlagsSet(OsTaskCliId,1);
-    }
-  }
+			/* UART task scheduling*/
+			osThreadFlagsSet(OsTaskCliId, 1);
+		}
+	}
 
-  /* Once a character has been sent, put back the device in reception mode */
+	/* Once a character has been sent, put back the device in reception mode */
 //  HW_UART_Receive_IT(CFG_CLI_UART, aRxBuffer, 1U, RxCpltCallback);
 }
 #endif /* (CFG_FULL_LOW_POWER == 0) */
@@ -2313,19 +2307,19 @@ static uint32_t  ProcessCmdString( uint8_t* buf , uint32_t len )
  * @param  None
  * @retval None
  */
-static void Send_CLI_To_M0(void)
-{
-  memset(ThreadCliCmdBuffer.cmdserial.cmd.payload, 0x0U, 255U);
-  memcpy(ThreadCliCmdBuffer.cmdserial.cmd.payload, CommandString, indexReceiveChar);
-  ThreadCliCmdBuffer.cmdserial.cmd.plen = indexReceiveChar;
-  ThreadCliCmdBuffer.cmdserial.cmd.cmdcode = 0x0;
+static void Send_CLI_To_M0(void) {
+	memset(ThreadCliCmdBuffer.cmdserial.cmd.payload, 0x0U, 255U);
+	memcpy(ThreadCliCmdBuffer.cmdserial.cmd.payload, CommandString,
+			indexReceiveChar);
+	ThreadCliCmdBuffer.cmdserial.cmd.plen = indexReceiveChar;
+	ThreadCliCmdBuffer.cmdserial.cmd.cmdcode = 0x0;
 
-  /* Clear receive buffer, character counter and command complete */
-  CptReceiveCmdFromUser = 0;
-  indexReceiveChar = 0;
-  memset(CommandString, 0, C_SIZE_CMD_STRING);
+	/* Clear receive buffer, character counter and command complete */
+	CptReceiveCmdFromUser = 0;
+	indexReceiveChar = 0;
+	memset(CommandString, 0, C_SIZE_CMD_STRING);
 
-  TL_CLI_SendCmd();
+	TL_CLI_SendCmd();
 }
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
@@ -2334,11 +2328,10 @@ static void Send_CLI_To_M0(void)
  * @param  None
  * @retval None
  */
-static void Send_CLI_Ack_For_OT(void)
-{
+static void Send_CLI_Ack_For_OT(void) {
 
-  /* Notify M0 that characters have been sent to UART */
-  TL_THREAD_CliSendAck();
+	/* Notify M0 that characters have been sent to UART */
+	TL_THREAD_CliSendAck();
 }
 
 /**
@@ -2346,10 +2339,10 @@ static void Send_CLI_Ack_For_OT(void)
  * @param  None
  * @retval None
  */
-void APP_THREAD_Init_UART_CLI(void)
-{
+void APP_THREAD_Init_UART_CLI(void) {
 #if (CFG_FULL_LOW_POWER == 0)
-  OsTaskCliId = osThreadNew(APP_THREAD_FreeRTOSSendCLIToM0Task, NULL,&ThreadCliProcess_attr);
+	OsTaskCliId = osThreadNew(APP_THREAD_FreeRTOSSendCLIToM0Task, NULL,
+			&ThreadCliProcess_attr);
 #endif /* (CFG_FULL_LOW_POWER == 0) */
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
@@ -2365,13 +2358,13 @@ void APP_THREAD_Init_UART_CLI(void)
  * @param  None
  * @retval None
  */
-void APP_THREAD_TL_THREAD_INIT(void)
-{
-  ThreadConfigBuffer.p_ThreadOtCmdRspBuffer = (uint8_t*)&ThreadOtCmdBuffer;
-  ThreadConfigBuffer.p_ThreadNotAckBuffer = (uint8_t*)ThreadNotifRspEvtBuffer;
-  ThreadConfigBuffer.p_ThreadCliRspBuffer = (uint8_t*)&ThreadCliCmdBuffer;
+void APP_THREAD_TL_THREAD_INIT(void) {
+	ThreadConfigBuffer.p_ThreadOtCmdRspBuffer = (uint8_t*) &ThreadOtCmdBuffer;
+	ThreadConfigBuffer.p_ThreadNotAckBuffer =
+			(uint8_t*) ThreadNotifRspEvtBuffer;
+	ThreadConfigBuffer.p_ThreadCliRspBuffer = (uint8_t*) &ThreadCliCmdBuffer;
 
-  TL_THREAD_Init( &ThreadConfigBuffer );
+	TL_THREAD_Init(&ThreadConfigBuffer);
 }
 
 /**
@@ -2380,25 +2373,21 @@ void APP_THREAD_TL_THREAD_INIT(void)
  * @param   Notbuffer : a pointer to TL_EvtPacket_t
  * @return  None
  */
-void TL_THREAD_CliNotReceived( TL_EvtPacket_t * Notbuffer )
-{
-  TL_CmdPacket_t* l_CliBuffer = (TL_CmdPacket_t*)Notbuffer;
-  uint8_t l_size = l_CliBuffer->cmdserial.cmd.plen;
+void TL_THREAD_CliNotReceived(TL_EvtPacket_t *Notbuffer) {
+	TL_CmdPacket_t *l_CliBuffer = (TL_CmdPacket_t*) Notbuffer;
+	uint8_t l_size = l_CliBuffer->cmdserial.cmd.plen;
 
-  /* WORKAROUND: if string to output is "> " then respond directly to M0 and do not output it */
-  if (strcmp((const char *)l_CliBuffer->cmdserial.cmd.payload, "> ") != 0)
-  {
-    /* Write to CLI UART */
+	/* WORKAROUND: if string to output is "> " then respond directly to M0 and do not output it */
+	if (strcmp((const char*) l_CliBuffer->cmdserial.cmd.payload, "> ") != 0) {
+		/* Write to CLI UART */
 #if (CFG_USB_INTERFACE_ENABLE != 0)
     VCP_SendData( l_CliBuffer->cmdserial.cmd.payload, l_size, HostTxCb);
 #else
 //    HW_UART_Transmit_IT(CFG_CLI_UART, l_CliBuffer->cmdserial.cmd.payload, l_size, HostTxCb);
 #endif /*USAGE_OF_VCP */
-  }
-  else
-  {
-    Send_CLI_Ack_For_OT();
-  }
+	} else {
+		Send_CLI_Ack_For_OT();
+	}
 }
 
 /**
@@ -2407,9 +2396,8 @@ void TL_THREAD_CliNotReceived( TL_EvtPacket_t * Notbuffer )
  * @param   Notbuffer : a pointer to TL_EvtPacket_t
  * @return  None
  */
-void HostTxCb(void)
-{
-  Send_CLI_Ack_For_OT();
+void HostTxCb(void) {
+	Send_CLI_Ack_For_OT();
 }
 
 /**
@@ -2417,22 +2405,17 @@ void HostTxCb(void)
  * @param  None
  * @retval None
  */
-void APP_THREAD_ProcessMsgM0ToM4(void)
-{
-  if (CptReceiveMsgFromM0 != 0)
-  {
-    /* If CptReceiveMsgFromM0 is > 1. it means that we did not serve all the events from the radio */
-    if (CptReceiveMsgFromM0 > 1U)
-    {
-      APP_THREAD_Error(ERR_REC_MULTI_MSG_FROM_M0, 0);
-    }
-    else
-    {
-      OpenThread_CallBack_Processing();
-    }
-    /* Reset counter */
-    CptReceiveMsgFromM0 = 0;
-  }
+void APP_THREAD_ProcessMsgM0ToM4(void) {
+	if (CptReceiveMsgFromM0 != 0) {
+		/* If CptReceiveMsgFromM0 is > 1. it means that we did not serve all the events from the radio */
+		if (CptReceiveMsgFromM0 > 1U) {
+			APP_THREAD_Error(ERR_REC_MULTI_MSG_FROM_M0, 0);
+		} else {
+			OpenThread_CallBack_Processing();
+		}
+		/* Reset counter */
+		CptReceiveMsgFromM0 = 0;
+	}
 }
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)

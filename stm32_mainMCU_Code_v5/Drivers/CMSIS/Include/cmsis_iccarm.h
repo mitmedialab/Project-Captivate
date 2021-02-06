@@ -23,12 +23,11 @@
 //
 //------------------------------------------------------------------------------
 
-
 #ifndef __CMSIS_ICCARM_H__
 #define __CMSIS_ICCARM_H__
 
 #ifndef __ICCARM__
-  #error This file should only be compiled by ICCARM
+#error This file should only be compiled by ICCARM
 #endif
 
 #pragma system_include
@@ -38,21 +37,20 @@
 #if (__VER__ >= 8000000)
   #define __ICCARM_V8 1
 #else
-  #define __ICCARM_V8 0
+#define __ICCARM_V8 0
 #endif
 
 #ifndef __ALIGNED
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __ALIGNED(x) __attribute__((aligned(x)))
   #elif (__VER__ >= 7080000)
     /* Needs IAR language extensions */
     #define __ALIGNED(x) __attribute__((aligned(x)))
   #else
-    #warning No compiler specific solution for __ALIGNED.__ALIGNED is ignored.
-    #define __ALIGNED(x)
-  #endif
+#warning No compiler specific solution for __ALIGNED.__ALIGNED is ignored.
+#define __ALIGNED(x)
 #endif
-
+#endif
 
 /* Define compiler macros for CPU architecture, used in CMSIS 5.
  */
@@ -96,103 +94,97 @@
   #endif
 #endif
 
-
-
 #if defined(__ARM_ARCH_6M__) && __ARM_ARCH_6M__==1
   #define __IAR_M0_FAMILY  1
 #elif defined(__ARM_ARCH_8M_BASE__) && __ARM_ARCH_8M_BASE__==1
   #define __IAR_M0_FAMILY  1
 #else
-  #define __IAR_M0_FAMILY  0
+#define __IAR_M0_FAMILY  0
 #endif
 
-
 #ifndef __ASM
-  #define __ASM __asm
+#define __ASM __asm
 #endif
 
 #ifndef   __COMPILER_BARRIER
-  #define __COMPILER_BARRIER() __ASM volatile("":::"memory")
+#define __COMPILER_BARRIER() __ASM volatile("":::"memory")
 #endif
 
 #ifndef __INLINE
-  #define __INLINE inline
+#define __INLINE inline
 #endif
 
 #ifndef   __NO_RETURN
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __NO_RETURN __attribute__((__noreturn__))
   #else
-    #define __NO_RETURN _Pragma("object_attribute=__noreturn")
-  #endif
+#define __NO_RETURN _Pragma("object_attribute=__noreturn")
+#endif
 #endif
 
 #ifndef   __PACKED
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __PACKED __attribute__((packed, aligned(1)))
   #else
-    /* Needs IAR language extensions */
-    #define __PACKED __packed
-  #endif
+/* Needs IAR language extensions */
+#define __PACKED __packed
+#endif
 #endif
 
 #ifndef   __PACKED_STRUCT
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __PACKED_STRUCT struct __attribute__((packed, aligned(1)))
   #else
-    /* Needs IAR language extensions */
-    #define __PACKED_STRUCT __packed struct
-  #endif
+/* Needs IAR language extensions */
+#define __PACKED_STRUCT __packed struct
+#endif
 #endif
 
 #ifndef   __PACKED_UNION
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __PACKED_UNION union __attribute__((packed, aligned(1)))
   #else
-    /* Needs IAR language extensions */
-    #define __PACKED_UNION __packed union
-  #endif
+/* Needs IAR language extensions */
+#define __PACKED_UNION __packed union
+#endif
 #endif
 
 #ifndef   __RESTRICT
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __RESTRICT            __restrict
   #else
-    /* Needs IAR language extensions */
-    #define __RESTRICT            restrict
-  #endif
+/* Needs IAR language extensions */
+#define __RESTRICT            restrict
+#endif
 #endif
 
 #ifndef   __STATIC_INLINE
-  #define __STATIC_INLINE       static inline
+#define __STATIC_INLINE       static inline
 #endif
 
 #ifndef   __FORCEINLINE
-  #define __FORCEINLINE         _Pragma("inline=forced")
+#define __FORCEINLINE         _Pragma("inline=forced")
 #endif
 
 #ifndef   __STATIC_FORCEINLINE
-  #define __STATIC_FORCEINLINE  __FORCEINLINE __STATIC_INLINE
+#define __STATIC_FORCEINLINE  __FORCEINLINE __STATIC_INLINE
 #endif
 
 #ifndef __UNALIGNED_UINT16_READ
 #pragma language=save
 #pragma language=extended
-__IAR_FT uint16_t __iar_uint16_read(void const *ptr)
-{
-  return *(__packed uint16_t*)(ptr);
+__IAR_FT uint16_t __iar_uint16_read(void const *ptr) {
+return *(__packed uint16_t*)(ptr);
 }
 #pragma language=restore
 #define __UNALIGNED_UINT16_READ(PTR) __iar_uint16_read(PTR)
 #endif
 
-
 #ifndef __UNALIGNED_UINT16_WRITE
 #pragma language=save
 #pragma language=extended
-__IAR_FT void __iar_uint16_write(void const *ptr, uint16_t val)
-{
-  *(__packed uint16_t*)(ptr) = val;;
+__IAR_FT void __iar_uint16_write(void const *ptr, uint16_t val) {
+*(__packed uint16_t*)(ptr) = val;;
 }
 #pragma language=restore
 #define __UNALIGNED_UINT16_WRITE(PTR,VAL) __iar_uint16_write(PTR,VAL)
@@ -201,9 +193,8 @@ __IAR_FT void __iar_uint16_write(void const *ptr, uint16_t val)
 #ifndef __UNALIGNED_UINT32_READ
 #pragma language=save
 #pragma language=extended
-__IAR_FT uint32_t __iar_uint32_read(void const *ptr)
-{
-  return *(__packed uint32_t*)(ptr);
+__IAR_FT uint32_t __iar_uint32_read(void const *ptr) {
+return *(__packed uint32_t*)(ptr);
 }
 #pragma language=restore
 #define __UNALIGNED_UINT32_READ(PTR) __iar_uint32_read(PTR)
@@ -212,9 +203,8 @@ __IAR_FT uint32_t __iar_uint32_read(void const *ptr)
 #ifndef __UNALIGNED_UINT32_WRITE
 #pragma language=save
 #pragma language=extended
-__IAR_FT void __iar_uint32_write(void const *ptr, uint32_t val)
-{
-  *(__packed uint32_t*)(ptr) = val;;
+__IAR_FT void __iar_uint32_write(void const *ptr, uint32_t val) {
+*(__packed uint32_t*)(ptr) = val;;
 }
 #pragma language=restore
 #define __UNALIGNED_UINT32_WRITE(PTR,VAL) __iar_uint32_write(PTR,VAL)
@@ -223,25 +213,27 @@ __IAR_FT void __iar_uint32_write(void const *ptr, uint32_t val)
 #ifndef __UNALIGNED_UINT32   /* deprecated */
 #pragma language=save
 #pragma language=extended
-__packed struct  __iar_u32 { uint32_t v; };
+__packed struct __iar_u32 {
+uint32_t v;
+};
 #pragma language=restore
 #define __UNALIGNED_UINT32(PTR) (((struct __iar_u32 *)(PTR))->v)
 #endif
 
 #ifndef   __USED
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __USED __attribute__((used))
   #else
-    #define __USED _Pragma("__root")
-  #endif
+#define __USED _Pragma("__root")
+#endif
 #endif
 
 #ifndef   __WEAK
-  #if __ICCARM_V8
+#if __ICCARM_V8
     #define __WEAK __attribute__((weak))
   #else
-    #define __WEAK _Pragma("__weak")
-  #endif
+#define __WEAK _Pragma("__weak")
+#endif
 #endif
 
 #ifndef __PROGRAM_START
@@ -265,7 +257,7 @@ __packed struct  __iar_u32 { uint32_t v; };
 #endif
 
 #ifndef __ICCARM_INTRINSICS_VERSION__
-  #define __ICCARM_INTRINSICS_VERSION__  0
+#define __ICCARM_INTRINSICS_VERSION__  0
 #endif
 
 #if __ICCARM_INTRINSICS_VERSION__ == 2
@@ -492,7 +484,7 @@ __packed struct  __iar_u32 { uint32_t v; };
 
 #else /* __ICCARM_INTRINSICS_VERSION__ == 2 */
 
-  #if __IAR_M0_FAMILY
+#if __IAR_M0_FAMILY
    /* Avoid clash between intrinsics.h and arm_math.h when compiling for Cortex-M0. */
     #define __CLZ  __cmsis_iar_clz_not_active
     #define __SSAT __cmsis_iar_ssat_not_active
@@ -501,20 +493,19 @@ __packed struct  __iar_u32 { uint32_t v; };
     #define __get_APSR  __cmsis_iar_get_APSR_not_active
   #endif
 
-
-  #if (!((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
+#if (!((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
          (defined (__FPU_USED   ) && (__FPU_USED    == 1U))     ))
-    #define __get_FPSCR __cmsis_iar_get_FPSR_not_active
-    #define __set_FPSCR __cmsis_iar_set_FPSR_not_active
-  #endif
+#define __get_FPSCR __cmsis_iar_get_FPSR_not_active
+#define __set_FPSCR __cmsis_iar_set_FPSR_not_active
+#endif
 
-  #ifdef __INTRINSICS_INCLUDED
+#ifdef __INTRINSICS_INCLUDED
   #error intrinsics.h is already included previously!
   #endif
 
-  #include <intrinsics.h>
+#include <intrinsics.h>
 
-  #if __IAR_M0_FAMILY
+#if __IAR_M0_FAMILY
    /* Avoid clash between intrinsics.h and arm_math.h when compiling for Cortex-M0. */
     #undef __CLZ
     #undef __SSAT
@@ -559,39 +550,36 @@ __packed struct  __iar_u32 { uint32_t v; };
 
   #endif
 
-  #if (!((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
+#if (!((defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)) && \
          (defined (__FPU_USED   ) && (__FPU_USED    == 1U))     ))
-    #undef __get_FPSCR
-    #undef __set_FPSCR
-    #define __get_FPSCR()       (0)
-    #define __set_FPSCR(VALUE)  ((void)VALUE)
-  #endif
+#undef __get_FPSCR
+#undef __set_FPSCR
+#define __get_FPSCR()       (0)
+#define __set_FPSCR(VALUE)  ((void)VALUE)
+#endif
 
-  #pragma diag_suppress=Pe940
-  #pragma diag_suppress=Pe177
+#pragma diag_suppress=Pe940
+#pragma diag_suppress=Pe177
 
-  #define __enable_irq    __enable_interrupt
-  #define __disable_irq   __disable_interrupt
-  #define __NOP           __no_operation
+#define __enable_irq    __enable_interrupt
+#define __disable_irq   __disable_interrupt
+#define __NOP           __no_operation
 
-  #define __get_xPSR      __get_PSR
+#define __get_xPSR      __get_PSR
 
-  #if (!defined(__ARM_ARCH_6M__) || __ARM_ARCH_6M__==0)
+#if (!defined(__ARM_ARCH_6M__) || __ARM_ARCH_6M__==0)
 
-    __IAR_FT uint32_t __LDREXW(uint32_t volatile *ptr)
-    {
-      return __LDREX((unsigned long *)ptr);
-    }
+__IAR_FT uint32_t __LDREXW(uint32_t volatile *ptr) {
+return __LDREX((unsigned long*) ptr);
+}
 
-    __IAR_FT uint32_t __STREXW(uint32_t value, uint32_t volatile *ptr)
-    {
-      return __STREX(value, (unsigned long *)ptr);
-    }
-  #endif
+__IAR_FT uint32_t __STREXW(uint32_t value, uint32_t volatile *ptr) {
+return __STREX(value, (unsigned long*) ptr);
+}
+#endif
 
-
-  /* __CORTEX_M is defined in core_cm0.h, core_cm3.h and core_cm4.h. */
-  #if (__CORTEX_M >= 0x03)
+/* __CORTEX_M is defined in core_cm0.h, core_cm3.h and core_cm4.h. */
+#if (__CORTEX_M >= 0x03)
 
     __IAR_FT uint32_t __RRX(uint32_t value)
     {
@@ -612,12 +600,11 @@ __packed struct  __iar_u32 { uint32_t v; };
 
   #endif /* (__CORTEX_M >= 0x03) */
 
-  __IAR_FT uint32_t __ROR(uint32_t op1, uint32_t op2)
-  {
-    return (op1 >> op2) | (op1 << ((sizeof(op1)*8)-op2));
-  }
+__IAR_FT uint32_t __ROR(uint32_t op1, uint32_t op2) {
+return (op1 >> op2) | (op1 << ((sizeof(op1) * 8) - op2));
+}
 
-  #if ((defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) || \
+#if ((defined (__ARM_ARCH_8M_MAIN__ ) && (__ARM_ARCH_8M_MAIN__ == 1)) || \
        (defined (__ARM_ARCH_8M_BASE__ ) && (__ARM_ARCH_8M_BASE__ == 1))    )
 
    __IAR_FT uint32_t __get_MSPLIM(void)

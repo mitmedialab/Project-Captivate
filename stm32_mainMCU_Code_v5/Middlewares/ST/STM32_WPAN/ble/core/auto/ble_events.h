@@ -20,17 +20,15 @@
 #ifndef BLE_EVENTS_H__
 #define BLE_EVENTS_H__
 
-
 #include "ble_types.h"
 
 #define HCI_EVENT_TABLE_SIZE 6
 #define HCI_LE_EVENT_TABLE_SIZE 11
 #define HCI_VS_EVENT_TABLE_SIZE 43
 
-typedef struct
-{
-  uint16_t evt_code;
-  void (*process)(const uint8_t* in);
+typedef struct {
+	uint16_t evt_code;
+	void (*process)(const uint8_t *in);
 } hci_event_table_t;
 
 extern const hci_event_table_t hci_event_table[HCI_EVENT_TABLE_SIZE];
@@ -58,9 +56,8 @@ extern const hci_event_table_t hci_vs_event_table[HCI_VS_EVENT_TABLE_SIZE];
  *        [Vol 2] Part D, Error Codes).
  * @return None
  */
-void hci_disconnection_complete_event( uint8_t Status,
-                                       uint16_t Connection_Handle,
-                                       uint8_t Reason );
+void hci_disconnection_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint8_t Reason);
 
 /**
  * @brief HCI_ENCRYPTION_CHANGE_EVENT
@@ -91,9 +88,8 @@ void hci_disconnection_complete_event( uint8_t Status,
  *        - 0x01: Link Level Encryption is ON with AES-CCM
  * @return None
  */
-void hci_encryption_change_event( uint8_t Status,
-                                  uint16_t Connection_Handle,
-                                  uint8_t Encryption_Enabled );
+void hci_encryption_change_event(uint8_t Status, uint16_t Connection_Handle,
+		uint8_t Encryption_Enabled);
 
 /**
  * @brief HCI_READ_REMOTE_VERSION_INFORMATION_COMPLETE_EVENT
@@ -125,11 +121,9 @@ void hci_encryption_change_event( uint8_t Status,
  * @param Subversion Subversion of the LMP in the remote Controller
  * @return None
  */
-void hci_read_remote_version_information_complete_event( uint8_t Status,
-                                                         uint16_t Connection_Handle,
-                                                         uint8_t Version,
-                                                         uint16_t Manufacturer_Name,
-                                                         uint16_t Subversion );
+void hci_read_remote_version_information_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint8_t Version, uint16_t Manufacturer_Name,
+		uint16_t Subversion);
 
 /**
  * @brief HCI_HARDWARE_ERROR_EVENT
@@ -149,7 +143,7 @@ void hci_read_remote_version_information_complete_event( uint8_t Status,
  *        - 0x03: event_fifo_full error
  * @return None
  */
-void hci_hardware_error_event( uint8_t Hardware_Code );
+void hci_hardware_error_event(uint8_t Hardware_Code);
 
 /**
  * @brief HCI_NUMBER_OF_COMPLETED_PACKETS_EVENT
@@ -172,8 +166,8 @@ void hci_hardware_error_event( uint8_t Hardware_Code );
  * @param Handle_Packets_Pair_Entry See @ref Handle_Packets_Pair_Entry_t
  * @return None
  */
-void hci_number_of_completed_packets_event( uint8_t Number_of_Handles,
-                                            const Handle_Packets_Pair_Entry_t* Handle_Packets_Pair_Entry );
+void hci_number_of_completed_packets_event(uint8_t Number_of_Handles,
+		const Handle_Packets_Pair_Entry_t *Handle_Packets_Pair_Entry);
 
 /**
  * @brief HCI_ENCRYPTION_KEY_REFRESH_COMPLETE_EVENT
@@ -195,8 +189,8 @@ void hci_number_of_completed_packets_event( uint8_t Number_of_Handles,
  *        - 0x0000 ... 0x0EFF
  * @return None
  */
-void hci_encryption_key_refresh_complete_event( uint8_t Status,
-                                                uint16_t Connection_Handle );
+void hci_encryption_key_refresh_complete_event(uint8_t Status,
+		uint16_t Connection_Handle);
 
 /* HCI LE meta events */
 
@@ -255,15 +249,11 @@ void hci_encryption_key_refresh_complete_event( uint8_t Status,
  *        - 0x07: 20 ppm
  * @return None
  */
-void hci_le_connection_complete_event( uint8_t Status,
-                                       uint16_t Connection_Handle,
-                                       uint8_t Role,
-                                       uint8_t Peer_Address_Type,
-                                       const uint8_t* Peer_Address,
-                                       uint16_t Conn_Interval,
-                                       uint16_t Conn_Latency,
-                                       uint16_t Supervision_Timeout,
-                                       uint8_t Master_Clock_Accuracy );
+void hci_le_connection_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint8_t Role, uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address, uint16_t Conn_Interval,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout,
+		uint8_t Master_Clock_Accuracy);
 
 /**
  * @brief HCI_LE_ADVERTISING_REPORT_EVENT
@@ -280,8 +270,8 @@ void hci_le_connection_complete_event( uint8_t Status,
  * @param Advertising_Report See @ref Advertising_Report_t
  * @return None
  */
-void hci_le_advertising_report_event( uint8_t Num_Reports,
-                                      const Advertising_Report_t* Advertising_Report );
+void hci_le_advertising_report_event(uint8_t Num_Reports,
+		const Advertising_Report_t *Advertising_Report);
 
 /**
  * @brief HCI_LE_CONNECTION_UPDATE_COMPLETE_EVENT
@@ -312,11 +302,9 @@ void hci_le_advertising_report_event( uint8_t Num_Reports,
  *        - 0x000A (100 ms)  ... 0x0C80 (32000 ms)
  * @return None
  */
-void hci_le_connection_update_complete_event( uint8_t Status,
-                                              uint16_t Connection_Handle,
-                                              uint16_t Conn_Interval,
-                                              uint16_t Conn_Latency,
-                                              uint16_t Supervision_Timeout );
+void hci_le_connection_update_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint16_t Conn_Interval,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout);
 
 /**
  * @brief HCI_LE_READ_REMOTE_FEATURES_COMPLETE_EVENT
@@ -334,9 +322,8 @@ void hci_le_connection_update_complete_event( uint8_t Status,
  *        Link Layer specification.
  * @return None
  */
-void hci_le_read_remote_features_complete_event( uint8_t Status,
-                                                 uint16_t Connection_Handle,
-                                                 const uint8_t* LE_Features );
+void hci_le_read_remote_features_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, const uint8_t *LE_Features);
 
 /**
  * @brief HCI_LE_LONG_TERM_KEY_REQUEST_EVENT
@@ -353,9 +340,8 @@ void hci_le_read_remote_features_complete_event( uint8_t Status,
  * @param Encrypted_Diversifier 16-bit encrypted diversifier
  * @return None
  */
-void hci_le_long_term_key_request_event( uint16_t Connection_Handle,
-                                         const uint8_t* Random_Number,
-                                         uint16_t Encrypted_Diversifier );
+void hci_le_long_term_key_request_event(uint16_t Connection_Handle,
+		const uint8_t *Random_Number, uint16_t Encrypted_Diversifier);
 
 /**
  * @brief HCI_LE_DATA_LENGTH_CHANGE_EVENT
@@ -393,11 +379,9 @@ void hci_le_long_term_key_request_event( uint16_t Connection_Handle,
  *        - 0x0148 ... 0x4290
  * @return None
  */
-void hci_le_data_length_change_event( uint16_t Connection_Handle,
-                                      uint16_t MaxTxOctets,
-                                      uint16_t MaxTxTime,
-                                      uint16_t MaxRxOctets,
-                                      uint16_t MaxRxTime );
+void hci_le_data_length_change_event(uint16_t Connection_Handle,
+		uint16_t MaxTxOctets, uint16_t MaxTxTime, uint16_t MaxRxOctets,
+		uint16_t MaxRxTime);
 
 /**
  * @brief HCI_LE_READ_LOCAL_P256_PUBLIC_KEY_COMPLETE_EVENT
@@ -408,8 +392,8 @@ void hci_le_data_length_change_event( uint16_t Connection_Handle,
  * @param Local_P256_Public_Key Local P-256 public key.
  * @return None
  */
-void hci_le_read_local_p256_public_key_complete_event( uint8_t Status,
-                                                       const uint8_t* Local_P256_Public_Key );
+void hci_le_read_local_p256_public_key_complete_event(uint8_t Status,
+		const uint8_t *Local_P256_Public_Key);
 
 /**
  * @brief HCI_LE_GENERATE_DHKEY_COMPLETE_EVENT
@@ -421,8 +405,7 @@ void hci_le_read_local_p256_public_key_complete_event( uint8_t Status,
  * @param DHKey Diffie Hellman Key
  * @return None
  */
-void hci_le_generate_dhkey_complete_event( uint8_t Status,
-                                           const uint8_t* DHKey );
+void hci_le_generate_dhkey_complete_event(uint8_t Status, const uint8_t *DHKey);
 
 /**
  * @brief HCI_LE_ENHANCED_CONNECTION_COMPLETE_EVENT
@@ -500,17 +483,13 @@ void hci_le_generate_dhkey_complete_event( uint8_t Status,
  *        - 0x07: 20 ppm
  * @return None
  */
-void hci_le_enhanced_connection_complete_event( uint8_t Status,
-                                                uint16_t Connection_Handle,
-                                                uint8_t Role,
-                                                uint8_t Peer_Address_Type,
-                                                const uint8_t* Peer_Address,
-                                                const uint8_t* Local_Resolvable_Private_Address,
-                                                const uint8_t* Peer_Resolvable_Private_Address,
-                                                uint16_t Conn_Interval,
-                                                uint16_t Conn_Latency,
-                                                uint16_t Supervision_Timeout,
-                                                uint8_t Master_Clock_Accuracy );
+void hci_le_enhanced_connection_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint8_t Role, uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address,
+		const uint8_t *Local_Resolvable_Private_Address,
+		const uint8_t *Peer_Resolvable_Private_Address, uint16_t Conn_Interval,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout,
+		uint8_t Master_Clock_Accuracy);
 
 /**
  * @brief HCI_LE_DIRECT_ADVERTISING_REPORT_EVENT
@@ -530,8 +509,8 @@ void hci_le_enhanced_connection_complete_event( uint8_t Status,
  * @param Direct_Advertising_Report See @ref Direct_Advertising_Report_t
  * @return None
  */
-void hci_le_direct_advertising_report_event( uint8_t Num_Reports,
-                                             const Direct_Advertising_Report_t* Direct_Advertising_Report );
+void hci_le_direct_advertising_report_event(uint8_t Num_Reports,
+		const Direct_Advertising_Report_t *Direct_Advertising_Report);
 
 /**
  * @brief HCI_LE_PHY_UPDATE_COMPLETE_EVENT
@@ -562,10 +541,8 @@ void hci_le_direct_advertising_report_event( uint8_t Num_Reports,
  *          (Not supported by STM32WB)
  * @return None
  */
-void hci_le_phy_update_complete_event( uint8_t Status,
-                                       uint16_t Connection_Handle,
-                                       uint8_t TX_PHY,
-                                       uint8_t RX_PHY );
+void hci_le_phy_update_complete_event(uint8_t Status,
+		uint16_t Connection_Handle, uint8_t TX_PHY, uint8_t RX_PHY);
 
 /* ACI GAP events */
 
@@ -576,7 +553,7 @@ void hci_le_phy_update_complete_event( uint8_t Status,
  * 
  * @return None
  */
-void aci_gap_limited_discoverable_event( void );
+void aci_gap_limited_discoverable_event(void);
 
 /**
  * @brief ACI_GAP_PAIRING_COMPLETE_EVENT
@@ -610,9 +587,8 @@ void aci_gap_limited_discoverable_event( void );
  *        - 0x0C: SMP_SC_NUMCOMPARISON_FAILED
  * @return None
  */
-void aci_gap_pairing_complete_event( uint16_t Connection_Handle,
-                                     uint8_t Status,
-                                     uint8_t Reason );
+void aci_gap_pairing_complete_event(uint16_t Connection_Handle, uint8_t Status,
+		uint8_t Reason);
 
 /**
  * @brief ACI_GAP_PASS_KEY_REQ_EVENT
@@ -624,7 +600,7 @@ void aci_gap_pairing_complete_event( uint16_t Connection_Handle,
  *        requested.
  * @return None
  */
-void aci_gap_pass_key_req_event( uint16_t Connection_Handle );
+void aci_gap_pass_key_req_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GAP_AUTHORIZATION_REQ_EVENT
@@ -638,7 +614,7 @@ void aci_gap_pass_key_req_event( uint16_t Connection_Handle );
  *        requested.
  * @return None
  */
-void aci_gap_authorization_req_event( uint16_t Connection_Handle );
+void aci_gap_authorization_req_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GAP_SLAVE_SECURITY_INITIATED_EVENT
@@ -647,7 +623,7 @@ void aci_gap_authorization_req_event( uint16_t Connection_Handle );
  * 
  * @return None
  */
-void aci_gap_slave_security_initiated_event( void );
+void aci_gap_slave_security_initiated_event(void);
 
 /**
  * @brief ACI_GAP_BOND_LOST_EVENT
@@ -659,7 +635,7 @@ void aci_gap_slave_security_initiated_event( void );
  * 
  * @return None
  */
-void aci_gap_bond_lost_event( void );
+void aci_gap_bond_lost_event(void);
 
 /**
  * @brief ACI_GAP_PROC_COMPLETE_EVENT
@@ -684,10 +660,8 @@ void aci_gap_bond_lost_event( void );
  *        procedure completed successfully.
  * @return None
  */
-void aci_gap_proc_complete_event( uint8_t Procedure_Code,
-                                  uint8_t Status,
-                                  uint8_t Data_Length,
-                                  const uint8_t* Data );
+void aci_gap_proc_complete_event(uint8_t Procedure_Code, uint8_t Status,
+		uint8_t Data_Length, const uint8_t *Data);
 
 /**
  * @brief ACI_GAP_ADDR_NOT_RESOLVED_EVENT
@@ -699,7 +673,7 @@ void aci_gap_proc_complete_event( uint8_t Procedure_Code,
  *        could not be resolved with any of the stored IRK's.
  * @return None
  */
-void aci_gap_addr_not_resolved_event( uint16_t Connection_Handle );
+void aci_gap_addr_not_resolved_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GAP_NUMERIC_COMPARISON_VALUE_EVENT
@@ -711,8 +685,8 @@ void aci_gap_addr_not_resolved_event( uint16_t Connection_Handle );
  * @param Connection_Handle Connection handle related to the underlying Pairing
  * @return None
  */
-void aci_gap_numeric_comparison_value_event( uint16_t Connection_Handle,
-                                             uint32_t Numeric_Value );
+void aci_gap_numeric_comparison_value_event(uint16_t Connection_Handle,
+		uint32_t Numeric_Value);
 
 /**
  * @brief ACI_GAP_KEYPRESS_NOTIFICATION_EVENT
@@ -726,8 +700,8 @@ void aci_gap_numeric_comparison_value_event( uint16_t Connection_Handle,
  *        device (having Keyboard only I/O capabilities
  * @return None
  */
-void aci_gap_keypress_notification_event( uint16_t Connection_Handle,
-                                          uint8_t Notification_Type );
+void aci_gap_keypress_notification_event(uint16_t Connection_Handle,
+		uint8_t Notification_Type);
 
 /* ACI GATT/ATT events */
 
@@ -752,11 +726,9 @@ void aci_gap_keypress_notification_event( uint16_t Connection_Handle,
  * @param Attr_Data The modified value
  * @return None
  */
-void aci_gatt_attribute_modified_event( uint16_t Connection_Handle,
-                                        uint16_t Attr_Handle,
-                                        uint16_t Offset,
-                                        uint16_t Attr_Data_Length,
-                                        const uint8_t* Attr_Data );
+void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Offset, uint16_t Attr_Data_Length,
+		const uint8_t *Attr_Data);
 
 /**
  * @brief ACI_GATT_PROC_TIMEOUT_EVENT
@@ -775,7 +747,7 @@ void aci_gatt_attribute_modified_event( uint16_t Connection_Handle,
  *        timed out
  * @return None
  */
-void aci_gatt_proc_timeout_event( uint16_t Connection_Handle );
+void aci_gatt_proc_timeout_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_ATT_EXCHANGE_MTU_RESP_EVENT
@@ -788,8 +760,8 @@ void aci_gatt_proc_timeout_event( uint16_t Connection_Handle );
  * @param Server_RX_MTU Attribute server receive MTU size
  * @return None
  */
-void aci_att_exchange_mtu_resp_event( uint16_t Connection_Handle,
-                                      uint16_t Server_RX_MTU );
+void aci_att_exchange_mtu_resp_event(uint16_t Connection_Handle,
+		uint16_t Server_RX_MTU);
 
 /**
  * @brief ACI_ATT_FIND_INFO_RESP_EVENT
@@ -808,10 +780,8 @@ void aci_att_exchange_mtu_resp_event( uint16_t Connection_Handle,
  *        pair is:[2 octets for handle, 16 octets for UUIDs]
  * @return None
  */
-void aci_att_find_info_resp_event( uint16_t Connection_Handle,
-                                   uint8_t Format,
-                                   uint8_t Event_Data_Length,
-                                   const uint8_t* Handle_UUID_Pair );
+void aci_att_find_info_resp_event(uint16_t Connection_Handle, uint8_t Format,
+		uint8_t Event_Data_Length, const uint8_t *Handle_UUID_Pair);
 
 /**
  * @brief ACI_ATT_FIND_BY_TYPE_VALUE_RESP_EVENT
@@ -824,9 +794,9 @@ void aci_att_find_info_resp_event( uint16_t Connection_Handle,
  * @param Attribute_Group_Handle_Pair See @ref Attribute_Group_Handle_Pair_t
  * @return None
  */
-void aci_att_find_by_type_value_resp_event( uint16_t Connection_Handle,
-                                            uint8_t Num_of_Handle_Pair,
-                                            const Attribute_Group_Handle_Pair_t* Attribute_Group_Handle_Pair );
+void aci_att_find_by_type_value_resp_event(uint16_t Connection_Handle,
+		uint8_t Num_of_Handle_Pair,
+		const Attribute_Group_Handle_Pair_t *Attribute_Group_Handle_Pair);
 
 /**
  * @brief ACI_ATT_READ_BY_TYPE_RESP_EVENT
@@ -844,10 +814,9 @@ void aci_att_find_by_type_value_resp_event( uint16_t Connection_Handle,
  *        Value]
  * @return None
  */
-void aci_att_read_by_type_resp_event( uint16_t Connection_Handle,
-                                      uint8_t Handle_Value_Pair_Length,
-                                      uint8_t Data_Length,
-                                      const uint8_t* Handle_Value_Pair_Data );
+void aci_att_read_by_type_resp_event(uint16_t Connection_Handle,
+		uint8_t Handle_Value_Pair_Length, uint8_t Data_Length,
+		const uint8_t *Handle_Value_Pair_Data);
 
 /**
  * @brief ACI_ATT_READ_RESP_EVENT
@@ -861,9 +830,8 @@ void aci_att_read_by_type_resp_event( uint16_t Connection_Handle,
  * @param Attribute_Value The value of the attribute.
  * @return None
  */
-void aci_att_read_resp_event( uint16_t Connection_Handle,
-                              uint8_t Event_Data_Length,
-                              const uint8_t* Attribute_Value );
+void aci_att_read_resp_event(uint16_t Connection_Handle,
+		uint8_t Event_Data_Length, const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_ATT_READ_BLOB_RESP_EVENT
@@ -877,9 +845,8 @@ void aci_att_read_resp_event( uint16_t Connection_Handle,
  * @param Attribute_Value Part of the attribute value.
  * @return None
  */
-void aci_att_read_blob_resp_event( uint16_t Connection_Handle,
-                                   uint8_t Event_Data_Length,
-                                   const uint8_t* Attribute_Value );
+void aci_att_read_blob_resp_event(uint16_t Connection_Handle,
+		uint8_t Event_Data_Length, const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_ATT_READ_MULTIPLE_RESP_EVENT
@@ -894,9 +861,8 @@ void aci_att_read_blob_resp_event( uint16_t Connection_Handle,
  *        in the request in the order that they were requested.
  * @return None
  */
-void aci_att_read_multiple_resp_event( uint16_t Connection_Handle,
-                                       uint8_t Event_Data_Length,
-                                       const uint8_t* Set_Of_Values );
+void aci_att_read_multiple_resp_event(uint16_t Connection_Handle,
+		uint8_t Event_Data_Length, const uint8_t *Set_Of_Values);
 
 /**
  * @brief ACI_ATT_READ_BY_GROUP_TYPE_RESP_EVENT
@@ -914,10 +880,9 @@ void aci_att_read_multiple_resp_event( uint16_t Connection_Handle,
  *        Group Handle, (Attribute_Data_Length - 4 octets) for Attribute Value]
  * @return None
  */
-void aci_att_read_by_group_type_resp_event( uint16_t Connection_Handle,
-                                            uint8_t Attribute_Data_Length,
-                                            uint8_t Data_Length,
-                                            const uint8_t* Attribute_Data_List );
+void aci_att_read_by_group_type_resp_event(uint16_t Connection_Handle,
+		uint8_t Attribute_Data_Length, uint8_t Data_Length,
+		const uint8_t *Attribute_Data_List);
 
 /**
  * @brief ACI_ATT_PREPARE_WRITE_RESP_EVENT
@@ -932,11 +897,10 @@ void aci_att_read_by_group_type_resp_event( uint16_t Connection_Handle,
  * @param Part_Attribute_Value The value of the attribute to be written
  * @return None
  */
-void aci_att_prepare_write_resp_event( uint16_t Connection_Handle,
-                                       uint16_t Attribute_Handle,
-                                       uint16_t Offset,
-                                       uint8_t Part_Attribute_Value_Length,
-                                       const uint8_t* Part_Attribute_Value );
+void aci_att_prepare_write_resp_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint16_t Offset,
+		uint8_t Part_Attribute_Value_Length,
+		const uint8_t *Part_Attribute_Value);
 
 /**
  * @brief ACI_ATT_EXEC_WRITE_RESP_EVENT
@@ -947,7 +911,7 @@ void aci_att_prepare_write_resp_event( uint16_t Connection_Handle,
  *        - 0x0000 ... 0x0EFF
  * @return None
  */
-void aci_att_exec_write_resp_event( uint16_t Connection_Handle );
+void aci_att_exec_write_resp_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GATT_INDICATION_EVENT
@@ -961,10 +925,9 @@ void aci_att_exec_write_resp_event( uint16_t Connection_Handle );
  * @param Attribute_Value The current value of the attribute
  * @return None
  */
-void aci_gatt_indication_event( uint16_t Connection_Handle,
-                                uint16_t Attribute_Handle,
-                                uint8_t Attribute_Value_Length,
-                                const uint8_t* Attribute_Value );
+void aci_gatt_indication_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint8_t Attribute_Value_Length,
+		const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_GATT_NOTIFICATION_EVENT
@@ -978,10 +941,9 @@ void aci_gatt_indication_event( uint16_t Connection_Handle,
  * @param Attribute_Value The current value of the attribute
  * @return None
  */
-void aci_gatt_notification_event( uint16_t Connection_Handle,
-                                  uint16_t Attribute_Handle,
-                                  uint8_t Attribute_Value_Length,
-                                  const uint8_t* Attribute_Value );
+void aci_gatt_notification_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint8_t Attribute_Value_Length,
+		const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_GATT_PROC_COMPLETE_EVENT
@@ -995,8 +957,8 @@ void aci_gatt_notification_event( uint16_t Connection_Handle,
  *        was successful (see "Status error codes" section)
  * @return None
  */
-void aci_gatt_proc_complete_event( uint16_t Connection_Handle,
-                                   uint8_t Error_Code );
+void aci_gatt_proc_complete_event(uint16_t Connection_Handle,
+		uint8_t Error_Code);
 
 /**
  * @brief ACI_GATT_ERROR_RESP_EVENT
@@ -1033,10 +995,8 @@ void aci_gatt_proc_complete_event( uint16_t Connection_Handle,
  *        - 0x11: Insufficient resources
  * @return None
  */
-void aci_gatt_error_resp_event( uint16_t Connection_Handle,
-                                uint8_t Req_Opcode,
-                                uint16_t Attribute_Handle,
-                                uint8_t Error_Code );
+void aci_gatt_error_resp_event(uint16_t Connection_Handle, uint8_t Req_Opcode,
+		uint16_t Attribute_Handle, uint8_t Error_Code);
 
 /**
  * @brief ACI_GATT_DISC_READ_CHAR_BY_UUID_RESP_EVENT
@@ -1059,10 +1019,9 @@ void aci_gatt_error_resp_event( uint16_t Connection_Handle,
  *        Characteristic UUID" has been performed.
  * @return None
  */
-void aci_gatt_disc_read_char_by_uuid_resp_event( uint16_t Connection_Handle,
-                                                 uint16_t Attribute_Handle,
-                                                 uint8_t Attribute_Value_Length,
-                                                 const uint8_t* Attribute_Value );
+void aci_gatt_disc_read_char_by_uuid_resp_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint8_t Attribute_Value_Length,
+		const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_GATT_WRITE_PERMIT_REQ_EVENT
@@ -1090,10 +1049,8 @@ void aci_gatt_disc_read_char_by_uuid_resp_event( uint16_t Connection_Handle,
  * @param Data The data that the client has requested to write
  * @return None
  */
-void aci_gatt_write_permit_req_event( uint16_t Connection_Handle,
-                                      uint16_t Attribute_Handle,
-                                      uint8_t Data_Length,
-                                      const uint8_t* Data );
+void aci_gatt_write_permit_req_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint8_t Data_Length, const uint8_t *Data);
 
 /**
  * @brief ACI_GATT_READ_PERMIT_REQ_EVENT
@@ -1112,9 +1069,8 @@ void aci_gatt_write_permit_req_event( uint16_t Connection_Handle,
  * @param Offset Contains the offset from which the read has been requested
  * @return None
  */
-void aci_gatt_read_permit_req_event( uint16_t Connection_Handle,
-                                     uint16_t Attribute_Handle,
-                                     uint16_t Offset );
+void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint16_t Offset);
 
 /**
  * @brief ACI_GATT_READ_MULTI_PERMIT_REQ_EVENT
@@ -1132,9 +1088,8 @@ void aci_gatt_read_permit_req_event( uint16_t Connection_Handle,
  * @param Handle_Item See @ref Handle_Item_t
  * @return None
  */
-void aci_gatt_read_multi_permit_req_event( uint16_t Connection_Handle,
-                                           uint8_t Number_of_Handles,
-                                           const Handle_Item_t* Handle_Item );
+void aci_gatt_read_multi_permit_req_event(uint16_t Connection_Handle,
+		uint8_t Number_of_Handles, const Handle_Item_t *Handle_Item);
 
 /**
  * @brief ACI_GATT_TX_POOL_AVAILABLE_EVENT
@@ -1149,8 +1104,8 @@ void aci_gatt_read_multi_permit_req_event( uint16_t Connection_Handle,
  * @param Available_Buffers Number of buffers available
  * @return None
  */
-void aci_gatt_tx_pool_available_event( uint16_t Connection_Handle,
-                                       uint16_t Available_Buffers );
+void aci_gatt_tx_pool_available_event(uint16_t Connection_Handle,
+		uint16_t Available_Buffers);
 
 /**
  * @brief ACI_GATT_SERVER_CONFIRMATION_EVENT
@@ -1162,7 +1117,7 @@ void aci_gatt_tx_pool_available_event( uint16_t Connection_Handle,
  *        - 0x0000 ... 0x0EFF
  * @return None
  */
-void aci_gatt_server_confirmation_event( uint16_t Connection_Handle );
+void aci_gatt_server_confirmation_event(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GATT_PREPARE_WRITE_PERMIT_REQ_EVENT
@@ -1187,11 +1142,9 @@ void aci_gatt_server_confirmation_event( uint16_t Connection_Handle );
  * @param Data The data that the client has requested to write
  * @return None
  */
-void aci_gatt_prepare_write_permit_req_event( uint16_t Connection_Handle,
-                                              uint16_t Attribute_Handle,
-                                              uint16_t Offset,
-                                              uint8_t Data_Length,
-                                              const uint8_t* Data );
+void aci_gatt_prepare_write_permit_req_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint16_t Offset, uint8_t Data_Length,
+		const uint8_t *Data);
 
 /**
  * @brief ACI_GATT_READ_EXT_EVENT
@@ -1212,10 +1165,8 @@ void aci_gatt_prepare_write_permit_req_event( uint16_t Connection_Handle,
  * @param Attribute_Value The value of the attribute(s).
  * @return None
  */
-void aci_gatt_read_ext_event( uint16_t Connection_Handle,
-                              uint16_t Offset,
-                              uint16_t Event_Data_Length,
-                              const uint8_t* Attribute_Value );
+void aci_gatt_read_ext_event(uint16_t Connection_Handle, uint16_t Offset,
+		uint16_t Event_Data_Length, const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_GATT_INDICATION_EXT_EVENT
@@ -1237,11 +1188,9 @@ void aci_gatt_read_ext_event( uint16_t Connection_Handle,
  * @param Attribute_Value The current value of the attribute
  * @return None
  */
-void aci_gatt_indication_ext_event( uint16_t Connection_Handle,
-                                    uint16_t Attribute_Handle,
-                                    uint16_t Offset,
-                                    uint16_t Attribute_Value_Length,
-                                    const uint8_t* Attribute_Value );
+void aci_gatt_indication_ext_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint16_t Offset,
+		uint16_t Attribute_Value_Length, const uint8_t *Attribute_Value);
 
 /**
  * @brief ACI_GATT_NOTIFICATION_EXT_EVENT
@@ -1263,11 +1212,9 @@ void aci_gatt_indication_ext_event( uint16_t Connection_Handle,
  * @param Attribute_Value The current value of the attribute
  * @return None
  */
-void aci_gatt_notification_ext_event( uint16_t Connection_Handle,
-                                      uint16_t Attribute_Handle,
-                                      uint16_t Offset,
-                                      uint16_t Attribute_Value_Length,
-                                      const uint8_t* Attribute_Value );
+void aci_gatt_notification_ext_event(uint16_t Connection_Handle,
+		uint16_t Attribute_Handle, uint16_t Offset,
+		uint16_t Attribute_Value_Length, const uint8_t *Attribute_Value);
 
 /* ACI L2CAP events */
 
@@ -1280,8 +1227,8 @@ void aci_gatt_notification_ext_event( uint16_t Connection_Handle,
  *        where the Disconnection has been received.
  * @return None
  */
-void aci_l2cap_connection_update_resp_event( uint16_t Connection_Handle,
-                                             uint16_t Result );
+void aci_l2cap_connection_update_resp_event(uint16_t Connection_Handle,
+		uint16_t Result);
 
 /**
  * @brief ACI_L2CAP_PROC_TIMEOUT_EVENT
@@ -1294,9 +1241,8 @@ void aci_l2cap_connection_update_resp_event( uint16_t Connection_Handle,
  * @param Data_Length Length of following data
  * @return None
  */
-void aci_l2cap_proc_timeout_event( uint16_t Connection_Handle,
-                                   uint8_t Data_Length,
-                                   const uint8_t* Data );
+void aci_l2cap_proc_timeout_event(uint16_t Connection_Handle,
+		uint8_t Data_Length, const uint8_t *Data);
 
 /**
  * @brief ACI_L2CAP_CONNECTION_UPDATE_REQ_EVENT
@@ -1327,13 +1273,10 @@ void aci_l2cap_proc_timeout_event( uint16_t Connection_Handle,
  *        following manner: Timeout Multiplier * 10ms.
  * @return None
  */
-void aci_l2cap_connection_update_req_event( uint16_t Connection_Handle,
-                                            uint8_t Identifier,
-                                            uint16_t L2CAP_Length,
-                                            uint16_t Interval_Min,
-                                            uint16_t Interval_Max,
-                                            uint16_t Slave_Latency,
-                                            uint16_t Timeout_Multiplier );
+void aci_l2cap_connection_update_req_event(uint16_t Connection_Handle,
+		uint8_t Identifier, uint16_t L2CAP_Length, uint16_t Interval_Min,
+		uint16_t Interval_Max, uint16_t Slave_Latency,
+		uint16_t Timeout_Multiplier);
 
 /**
  * @brief ACI_L2CAP_COMMAND_REJECT_EVENT
@@ -1349,11 +1292,9 @@ void aci_l2cap_connection_update_req_event( uint16_t Connection_Handle,
  * @param Data Data field associated with Reason
  * @return None
  */
-void aci_l2cap_command_reject_event( uint16_t Connection_Handle,
-                                     uint8_t Identifier,
-                                     uint16_t Reason,
-                                     uint8_t Data_Length,
-                                     const uint8_t* Data );
+void aci_l2cap_command_reject_event(uint16_t Connection_Handle,
+		uint8_t Identifier, uint16_t Reason, uint8_t Data_Length,
+		const uint8_t *Data);
 
 /* ACI HAL events */
 
@@ -1398,9 +1339,8 @@ void aci_l2cap_command_reject_event( uint16_t Connection_Handle,
  *        time units.
  * @return None
  */
-void aci_hal_end_of_radio_activity_event( uint8_t Last_State,
-                                          uint8_t Next_State,
-                                          uint32_t Next_State_SysTime );
+void aci_hal_end_of_radio_activity_event(uint8_t Last_State, uint8_t Next_State,
+		uint32_t Next_State_SysTime);
 
 /**
  * @brief ACI_HAL_SCAN_REQ_REPORT_EVENT
@@ -1428,9 +1368,8 @@ void aci_hal_end_of_radio_activity_event( uint8_t Last_State,
  *        peer device
  * @return None
  */
-void aci_hal_scan_req_report_event( uint8_t RSSI,
-                                    uint8_t Peer_Address_Type,
-                                    const uint8_t* Peer_Address );
+void aci_hal_scan_req_report_event(uint8_t RSSI, uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address);
 
 /**
  * @brief ACI_HAL_FW_ERROR_EVENT
@@ -1445,9 +1384,7 @@ void aci_hal_scan_req_report_event( uint8_t RSSI,
  * @param Data The error event info
  * @return None
  */
-void aci_hal_fw_error_event( uint8_t FW_Error_Type,
-                             uint8_t Data_Length,
-                             const uint8_t* Data );
-
+void aci_hal_fw_error_event(uint8_t FW_Error_Type, uint8_t Data_Length,
+		const uint8_t *Data);
 
 #endif /* BLE_EVENTS_H__ */

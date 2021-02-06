@@ -19,7 +19,6 @@
 #ifndef BLE_STD_H__
 #define BLE_STD_H__
 
-
 /* HCI packet type */
 #define HCI_COMMAND_PKT_TYPE             0x01
 #define HCI_ACLDATA_PKT_TYPE             0x02
@@ -114,7 +113,6 @@
 #define HCI_RX_PHYS_LE_1M_PREF           0x01
 #define HCI_RX_PHYS_LE_2M_PREF           0x02
 #define HCI_RX_PHYS_LE_CODED_PREF        0x04
-
 
 #endif /* BLE_STD_H__ */
 

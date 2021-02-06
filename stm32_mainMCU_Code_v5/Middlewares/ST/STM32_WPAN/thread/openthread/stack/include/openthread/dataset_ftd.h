@@ -69,7 +69,8 @@ OTAPI uint32_t OTCALL otDatasetGetDelayTimerMinimal(otInstance *aInstance);
  * @retval  OT_ERROR_INVALID_ARGS  If @p aDelayTimerMinimal is not valid.
  *
  */
-OTAPI otError OTCALL otDatasetSetDelayTimerMinimal(otInstance *aInstance, uint32_t aDelayTimerMinimal);
+OTAPI otError OTCALL otDatasetSetDelayTimerMinimal(otInstance *aInstance,
+		uint32_t aDelayTimerMinimal);
 
 /**
  * @}

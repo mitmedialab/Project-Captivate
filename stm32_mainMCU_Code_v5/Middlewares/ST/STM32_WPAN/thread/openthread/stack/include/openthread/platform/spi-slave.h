@@ -79,12 +79,9 @@ extern "C" {
  * @returns  TRUE if after this call returns the platform should invoke the process callback `aProcessCallback`,
  *           FALSE if there is nothing to process and no need to invoke the process callback.
  */
-typedef bool (*otPlatSpiSlaveTransactionCompleteCallback)(void *   aContext,
-                                                          uint8_t *aOutputBuf,
-                                                          uint16_t aOutputBufLen,
-                                                          uint8_t *aInputBuf,
-                                                          uint16_t aInputBufLen,
-                                                          uint16_t aTransactionLength);
+typedef bool (*otPlatSpiSlaveTransactionCompleteCallback)(void *aContext,
+		uint8_t *aOutputBuf, uint16_t aOutputBufLen, uint8_t *aInputBuf,
+		uint16_t aInputBufLen, uint16_t aTransactionLength);
 
 /**
  * Invoked after a transaction complete callback is called and returns `TRUE` to do any further processing required.
@@ -113,9 +110,10 @@ typedef void (*otPlatSpiSlaveTransactionProcessCallback)(void *aContext);
  * @retval OT_ERROR_FAILED   Failed to enable the SPI Slave interface.
  *
  */
-otError otPlatSpiSlaveEnable(otPlatSpiSlaveTransactionCompleteCallback aCompleteCallback,
-                             otPlatSpiSlaveTransactionProcessCallback  aProcessCallback,
-                             void *                                    aContext);
+otError otPlatSpiSlaveEnable(
+		otPlatSpiSlaveTransactionCompleteCallback aCompleteCallback,
+		otPlatSpiSlaveTransactionProcessCallback aProcessCallback,
+		void *aContext);
 
 /**
  * Shutdown and disable the SPI slave interface.
@@ -164,10 +162,8 @@ void otPlatSpiSlaveDisable(void);
  *
  */
 otError otPlatSpiSlavePrepareTransaction(uint8_t *aOutputBuf,
-                                         uint16_t aOutputBufLen,
-                                         uint8_t *aInputBuf,
-                                         uint16_t aInputBufLen,
-                                         bool     aRequestTransactionFlag);
+		uint16_t aOutputBufLen, uint8_t *aInputBuf, uint16_t aInputBufLen,
+		bool aRequestTransactionFlag);
 
 /**
  * @}

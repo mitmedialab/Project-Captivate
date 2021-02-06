@@ -96,27 +96,28 @@ const uint8_t FreeRTOSDebugConfig[] __attribute__((used)) =
 const uint8_t FreeRTOSDebugConfig[] =
 #endif
 {
-    FREERTOS_DEBUG_CONFIG_MAJOR_VERSION,
-    FREERTOS_DEBUG_CONFIG_MINOR_VERSION,
-    tskKERNEL_VERSION_MAJOR,
-    tskKERNEL_VERSION_MINOR,
-    tskKERNEL_VERSION_BUILD,
-    configFRTOS_MEMORY_SCHEME,
-    offsetof(struct tskTaskControlBlock, pxTopOfStack),
+	FREERTOS_DEBUG_CONFIG_MAJOR_VERSION,
+	FREERTOS_DEBUG_CONFIG_MINOR_VERSION,
+	tskKERNEL_VERSION_MAJOR,
+	tskKERNEL_VERSION_MINOR,
+	tskKERNEL_VERSION_BUILD,
+	configFRTOS_MEMORY_SCHEME,
+	offsetof(struct tskTaskControlBlock, pxTopOfStack),
 #if (tskKERNEL_VERSION_MAJOR > 8)
-    offsetof(struct tskTaskControlBlock, xStateListItem),
+	offsetof(struct tskTaskControlBlock, xStateListItem),
 #else
-    offsetof(struct tskTaskControlBlock, xGenericListItem),
+	offsetof(struct tskTaskControlBlock, xGenericListItem),
 #endif
-    offsetof(struct tskTaskControlBlock, xEventListItem),
-    offsetof(struct tskTaskControlBlock, pxStack),
-    offsetof(struct tskTaskControlBlock, pcTaskName),
-    offsetof(struct tskTaskControlBlock, uxTCBNumber),
-    offsetof(struct tskTaskControlBlock, uxTaskNumber),
-    configMAX_TASK_NAME_LEN,
-    configMAX_PRIORITIES,
-    0 /* pad to 32-bit boundary */
-};
+	offsetof(struct tskTaskControlBlock, xEventListItem),
+	offsetof(struct tskTaskControlBlock, pxStack),
+	offsetof(struct tskTaskControlBlock, pcTaskName),
+	offsetof(struct tskTaskControlBlock, uxTCBNumber),
+	offsetof(struct tskTaskControlBlock, uxTaskNumber),
+	configMAX_TASK_NAME_LEN,
+	configMAX_PRIORITIES,
+	0 /* pad to 32-bit boundary */
+}
+;
 
 #ifdef __cplusplus
 }

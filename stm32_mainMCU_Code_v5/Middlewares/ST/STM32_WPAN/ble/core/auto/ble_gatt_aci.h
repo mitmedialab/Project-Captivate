@@ -20,7 +20,6 @@
 #ifndef BLE_GATT_ACI_H__
 #define BLE_GATT_ACI_H__
 
-
 #include "ble_types.h"
 
 /**
@@ -33,7 +32,7 @@
  * 
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_init( void );
+tBleStatus aci_gatt_init(void);
 
 /**
  * @brief ACI_GATT_ADD_SERVICE
@@ -64,11 +63,9 @@ tBleStatus aci_gatt_init( void );
  *        serviceHandle to <serviceHandle + max_attr_records - 1>
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_add_service( uint8_t Service_UUID_Type,
-                                 const Service_UUID_t* Service_UUID,
-                                 uint8_t Service_Type,
-                                 uint8_t Max_Attribute_Records,
-                                 uint16_t* Service_Handle );
+tBleStatus aci_gatt_add_service(uint8_t Service_UUID_Type,
+		const Service_UUID_t *Service_UUID, uint8_t Service_Type,
+		uint8_t Max_Attribute_Records, uint16_t *Service_Handle);
 
 /**
  * @brief ACI_GATT_INCLUDE_SERVICE
@@ -89,12 +86,10 @@ tBleStatus aci_gatt_add_service( uint8_t Service_UUID_Type,
  * @param[out] Include_Handle Handle of the include declaration
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_include_service( uint16_t Service_Handle,
-                                     uint16_t Include_Start_Handle,
-                                     uint16_t Include_End_Handle,
-                                     uint8_t Include_UUID_Type,
-                                     const Include_UUID_t* Include_UUID,
-                                     uint16_t* Include_Handle );
+tBleStatus aci_gatt_include_service(uint16_t Service_Handle,
+		uint16_t Include_Start_Handle, uint16_t Include_End_Handle,
+		uint8_t Include_UUID_Type, const Include_UUID_t *Include_UUID,
+		uint16_t *Include_Handle);
 
 /**
  * @brief ACI_GATT_ADD_CHAR
@@ -150,16 +145,11 @@ tBleStatus aci_gatt_include_service( uint16_t Service_Handle,
  *        CHAR_PROP_INDICATE properties.
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_add_char( uint16_t Service_Handle,
-                              uint8_t Char_UUID_Type,
-                              const Char_UUID_t* Char_UUID,
-                              uint16_t Char_Value_Length,
-                              uint8_t Char_Properties,
-                              uint8_t Security_Permissions,
-                              uint8_t GATT_Evt_Mask,
-                              uint8_t Enc_Key_Size,
-                              uint8_t Is_Variable,
-                              uint16_t* Char_Handle );
+tBleStatus aci_gatt_add_char(uint16_t Service_Handle, uint8_t Char_UUID_Type,
+		const Char_UUID_t *Char_UUID, uint16_t Char_Value_Length,
+		uint8_t Char_Properties, uint8_t Security_Permissions,
+		uint8_t GATT_Evt_Mask, uint8_t Enc_Key_Size, uint8_t Is_Variable,
+		uint16_t *Char_Handle);
 
 /**
  * @brief ACI_GATT_ADD_CHAR_DESC
@@ -209,19 +199,12 @@ tBleStatus aci_gatt_add_char( uint16_t Service_Handle,
  * @param[out] Char_Desc_Handle Handle of the characteristic descriptor
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_add_char_desc( uint16_t Service_Handle,
-                                   uint16_t Char_Handle,
-                                   uint8_t Char_Desc_Uuid_Type,
-                                   const Char_Desc_Uuid_t* Char_Desc_Uuid,
-                                   uint8_t Char_Desc_Value_Max_Len,
-                                   uint8_t Char_Desc_Value_Length,
-                                   const uint8_t* Char_Desc_Value,
-                                   uint8_t Security_Permissions,
-                                   uint8_t Access_Permissions,
-                                   uint8_t GATT_Evt_Mask,
-                                   uint8_t Enc_Key_Size,
-                                   uint8_t Is_Variable,
-                                   uint16_t* Char_Desc_Handle );
+tBleStatus aci_gatt_add_char_desc(uint16_t Service_Handle, uint16_t Char_Handle,
+		uint8_t Char_Desc_Uuid_Type, const Char_Desc_Uuid_t *Char_Desc_Uuid,
+		uint8_t Char_Desc_Value_Max_Len, uint8_t Char_Desc_Value_Length,
+		const uint8_t *Char_Desc_Value, uint8_t Security_Permissions,
+		uint8_t Access_Permissions, uint8_t GATT_Evt_Mask, uint8_t Enc_Key_Size,
+		uint8_t Is_Variable, uint16_t *Char_Desc_Handle);
 
 /**
  * @brief ACI_GATT_UPDATE_CHAR_VALUE
@@ -256,11 +239,9 @@ tBleStatus aci_gatt_add_char_desc( uint16_t Service_Handle,
  * @param Char_Value Characteristic value
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_update_char_value( uint16_t Service_Handle,
-                                       uint16_t Char_Handle,
-                                       uint8_t Val_Offset,
-                                       uint8_t Char_Value_Length,
-                                       const uint8_t* Char_Value );
+tBleStatus aci_gatt_update_char_value(uint16_t Service_Handle,
+		uint16_t Char_Handle, uint8_t Val_Offset, uint8_t Char_Value_Length,
+		const uint8_t *Char_Value);
 
 /**
  * @brief ACI_GATT_DEL_CHAR
@@ -270,8 +251,7 @@ tBleStatus aci_gatt_update_char_value( uint16_t Service_Handle,
  * @param Char_Handle Handle of the characteristic which has to be deleted
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_del_char( uint16_t Serv_Handle,
-                              uint16_t Char_Handle );
+tBleStatus aci_gatt_del_char(uint16_t Serv_Handle, uint16_t Char_Handle);
 
 /**
  * @brief ACI_GATT_DEL_SERVICE
@@ -280,7 +260,7 @@ tBleStatus aci_gatt_del_char( uint16_t Serv_Handle,
  * @param Serv_Handle Handle of the service to be deleted
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_del_service( uint16_t Serv_Handle );
+tBleStatus aci_gatt_del_service(uint16_t Serv_Handle);
 
 /**
  * @brief ACI_GATT_DEL_INCLUDE_SERVICE
@@ -291,8 +271,8 @@ tBleStatus aci_gatt_del_service( uint16_t Serv_Handle );
  * @param Include_Handle Handle of the included service which has to be deleted
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_del_include_service( uint16_t Serv_Handle,
-                                         uint16_t Include_Handle );
+tBleStatus aci_gatt_del_include_service(uint16_t Serv_Handle,
+		uint16_t Include_Handle);
 
 /**
  * @brief ACI_GATT_SET_EVENT_MASK
@@ -324,7 +304,7 @@ tBleStatus aci_gatt_del_include_service( uint16_t Serv_Handle,
  *        - 0x00400000: ACI_GATT_NOTIFICATION_EXT_EVENT
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_set_event_mask( uint32_t GATT_Evt_Mask );
+tBleStatus aci_gatt_set_event_mask(uint32_t GATT_Evt_Mask);
 
 /**
  * @brief ACI_GATT_EXCHANGE_CONFIG
@@ -339,7 +319,7 @@ tBleStatus aci_gatt_set_event_mask( uint32_t GATT_Evt_Mask );
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_exchange_config( uint16_t Connection_Handle );
+tBleStatus aci_gatt_exchange_config(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_ATT_FIND_INFO_REQ
@@ -356,9 +336,8 @@ tBleStatus aci_gatt_exchange_config( uint16_t Connection_Handle );
  * @param End_Handle Last requested handle number
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_find_info_req( uint16_t Connection_Handle,
-                                  uint16_t Start_Handle,
-                                  uint16_t End_Handle );
+tBleStatus aci_att_find_info_req(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle);
 
 /**
  * @brief ACI_ATT_FIND_BY_TYPE_VALUE_REQ
@@ -381,12 +360,9 @@ tBleStatus aci_att_find_info_req( uint16_t Connection_Handle,
  * @param Attribute_Val Attribute value to find
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_find_by_type_value_req( uint16_t Connection_Handle,
-                                           uint16_t Start_Handle,
-                                           uint16_t End_Handle,
-                                           uint16_t UUID,
-                                           uint8_t Attribute_Val_Length,
-                                           const uint8_t* Attribute_Val );
+tBleStatus aci_att_find_by_type_value_req(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle, uint16_t UUID,
+		uint8_t Attribute_Val_Length, const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_ATT_READ_BY_TYPE_REQ
@@ -404,11 +380,9 @@ tBleStatus aci_att_find_by_type_value_req( uint16_t Connection_Handle,
  * @param UUID See @ref UUID_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_read_by_type_req( uint16_t Connection_Handle,
-                                     uint16_t Start_Handle,
-                                     uint16_t End_Handle,
-                                     uint8_t UUID_Type,
-                                     const UUID_t* UUID );
+tBleStatus aci_att_read_by_type_req(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle, uint8_t UUID_Type,
+		const UUID_t *UUID);
 
 /**
  * @brief ACI_ATT_READ_BY_GROUP_TYPE_REQ
@@ -430,11 +404,9 @@ tBleStatus aci_att_read_by_type_req( uint16_t Connection_Handle,
  * @param UUID See @ref UUID_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_read_by_group_type_req( uint16_t Connection_Handle,
-                                           uint16_t Start_Handle,
-                                           uint16_t End_Handle,
-                                           uint8_t UUID_Type,
-                                           const UUID_t* UUID );
+tBleStatus aci_att_read_by_group_type_req(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle, uint8_t UUID_Type,
+		const UUID_t *UUID);
 
 /**
  * @brief ACI_ATT_PREPARE_WRITE_REQ
@@ -455,11 +427,9 @@ tBleStatus aci_att_read_by_group_type_req( uint16_t Connection_Handle,
  * @param Attribute_Val The value of the attribute to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_prepare_write_req( uint16_t Connection_Handle,
-                                      uint16_t Attr_Handle,
-                                      uint16_t Val_Offset,
-                                      uint8_t Attribute_Val_Length,
-                                      const uint8_t* Attribute_Val );
+tBleStatus aci_att_prepare_write_req(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_ATT_EXECUTE_WRITE_REQ
@@ -481,8 +451,8 @@ tBleStatus aci_att_prepare_write_req( uint16_t Connection_Handle,
  *        - 0x01: Immediately write all pending prepared values
  * @return Value indicating success or error code.
  */
-tBleStatus aci_att_execute_write_req( uint16_t Connection_Handle,
-                                      uint8_t Execute );
+tBleStatus aci_att_execute_write_req(uint16_t Connection_Handle,
+		uint8_t Execute);
 
 /**
  * @brief ACI_GATT_DISC_ALL_PRIMARY_SERVICES
@@ -496,7 +466,7 @@ tBleStatus aci_att_execute_write_req( uint16_t Connection_Handle,
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_disc_all_primary_services( uint16_t Connection_Handle );
+tBleStatus aci_gatt_disc_all_primary_services(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GATT_DISC_PRIMARY_SERVICE_BY_UUID
@@ -514,9 +484,8 @@ tBleStatus aci_gatt_disc_all_primary_services( uint16_t Connection_Handle );
  * @param UUID See @ref UUID_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_disc_primary_service_by_uuid( uint16_t Connection_Handle,
-                                                  uint8_t UUID_Type,
-                                                  const UUID_t* UUID );
+tBleStatus aci_gatt_disc_primary_service_by_uuid(uint16_t Connection_Handle,
+		uint8_t UUID_Type, const UUID_t *UUID);
 
 /**
  * @brief ACI_GATT_FIND_INCLUDED_SERVICES
@@ -533,9 +502,8 @@ tBleStatus aci_gatt_disc_primary_service_by_uuid( uint16_t Connection_Handle,
  * @param End_Handle End attribute handle of the service
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_find_included_services( uint16_t Connection_Handle,
-                                            uint16_t Start_Handle,
-                                            uint16_t End_Handle );
+tBleStatus aci_gatt_find_included_services(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle);
 
 /**
  * @brief ACI_GATT_DISC_ALL_CHAR_OF_SERVICE
@@ -551,9 +519,8 @@ tBleStatus aci_gatt_find_included_services( uint16_t Connection_Handle,
  * @param End_Handle End attribute handle of the service
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_disc_all_char_of_service( uint16_t Connection_Handle,
-                                              uint16_t Start_Handle,
-                                              uint16_t End_Handle );
+tBleStatus aci_gatt_disc_all_char_of_service(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle);
 
 /**
  * @brief ACI_GATT_DISC_CHAR_BY_UUID
@@ -571,11 +538,9 @@ tBleStatus aci_gatt_disc_all_char_of_service( uint16_t Connection_Handle,
  * @param UUID See @ref UUID_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_disc_char_by_uuid( uint16_t Connection_Handle,
-                                       uint16_t Start_Handle,
-                                       uint16_t End_Handle,
-                                       uint8_t UUID_Type,
-                                       const UUID_t* UUID );
+tBleStatus aci_gatt_disc_char_by_uuid(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle, uint8_t UUID_Type,
+		const UUID_t *UUID);
 
 /**
  * @brief ACI_GATT_DISC_ALL_CHAR_DESC
@@ -592,9 +557,8 @@ tBleStatus aci_gatt_disc_char_by_uuid( uint16_t Connection_Handle,
  * @param End_Handle End handle of the characteristic
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_disc_all_char_desc( uint16_t Connection_Handle,
-                                        uint16_t Char_Handle,
-                                        uint16_t End_Handle );
+tBleStatus aci_gatt_disc_all_char_desc(uint16_t Connection_Handle,
+		uint16_t Char_Handle, uint16_t End_Handle);
 
 /**
  * @brief ACI_GATT_READ_CHAR_VALUE
@@ -609,8 +573,8 @@ tBleStatus aci_gatt_disc_all_char_desc( uint16_t Connection_Handle,
  * @param Attr_Handle Handle of the characteristic value to be read
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_char_value( uint16_t Connection_Handle,
-                                     uint16_t Attr_Handle );
+tBleStatus aci_gatt_read_char_value(uint16_t Connection_Handle,
+		uint16_t Attr_Handle);
 
 /**
  * @brief ACI_GATT_READ_USING_CHAR_UUID
@@ -633,11 +597,9 @@ tBleStatus aci_gatt_read_char_value( uint16_t Connection_Handle,
  * @param UUID See @ref UUID_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_using_char_uuid( uint16_t Connection_Handle,
-                                          uint16_t Start_Handle,
-                                          uint16_t End_Handle,
-                                          uint8_t UUID_Type,
-                                          const UUID_t* UUID );
+tBleStatus aci_gatt_read_using_char_uuid(uint16_t Connection_Handle,
+		uint16_t Start_Handle, uint16_t End_Handle, uint8_t UUID_Type,
+		const UUID_t *UUID);
 
 /**
  * @brief ACI_GATT_READ_LONG_CHAR_VALUE
@@ -653,9 +615,8 @@ tBleStatus aci_gatt_read_using_char_uuid( uint16_t Connection_Handle,
  * @param Val_Offset Offset from which the value needs to be read
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_long_char_value( uint16_t Connection_Handle,
-                                          uint16_t Attr_Handle,
-                                          uint16_t Val_Offset );
+tBleStatus aci_gatt_read_long_char_value(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset);
 
 /**
  * @brief ACI_GATT_READ_MULTIPLE_CHAR_VALUE
@@ -674,9 +635,8 @@ tBleStatus aci_gatt_read_long_char_value( uint16_t Connection_Handle,
  * @param Handle_Entry See @ref Handle_Entry_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_multiple_char_value( uint16_t Connection_Handle,
-                                              uint8_t Number_of_Handles,
-                                              const Handle_Entry_t* Handle_Entry );
+tBleStatus aci_gatt_read_multiple_char_value(uint16_t Connection_Handle,
+		uint8_t Number_of_Handles, const Handle_Entry_t *Handle_Entry);
 
 /**
  * @brief ACI_GATT_WRITE_CHAR_VALUE
@@ -692,10 +652,9 @@ tBleStatus aci_gatt_read_multiple_char_value( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_char_value( uint16_t Connection_Handle,
-                                      uint16_t Attr_Handle,
-                                      uint8_t Attribute_Val_Length,
-                                      const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_char_value(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_WRITE_LONG_CHAR_VALUE
@@ -713,11 +672,9 @@ tBleStatus aci_gatt_write_char_value( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_long_char_value( uint16_t Connection_Handle,
-                                           uint16_t Attr_Handle,
-                                           uint16_t Val_Offset,
-                                           uint8_t Attribute_Val_Length,
-                                           const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_long_char_value(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_WRITE_CHAR_RELIABLE
@@ -735,11 +692,9 @@ tBleStatus aci_gatt_write_long_char_value( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_char_reliable( uint16_t Connection_Handle,
-                                         uint16_t Attr_Handle,
-                                         uint16_t Val_Offset,
-                                         uint8_t Attribute_Val_Length,
-                                         const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_char_reliable(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_WRITE_LONG_CHAR_DESC
@@ -757,11 +712,9 @@ tBleStatus aci_gatt_write_char_reliable( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_long_char_desc( uint16_t Connection_Handle,
-                                          uint16_t Attr_Handle,
-                                          uint16_t Val_Offset,
-                                          uint8_t Attribute_Val_Length,
-                                          const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_long_char_desc(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_READ_LONG_CHAR_DESC
@@ -777,9 +730,8 @@ tBleStatus aci_gatt_write_long_char_desc( uint16_t Connection_Handle,
  * @param Val_Offset Offset from which the value needs to be read
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_long_char_desc( uint16_t Connection_Handle,
-                                         uint16_t Attr_Handle,
-                                         uint16_t Val_Offset );
+tBleStatus aci_gatt_read_long_char_desc(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint16_t Val_Offset);
 
 /**
  * @brief ACI_GATT_WRITE_CHAR_DESC
@@ -795,10 +747,9 @@ tBleStatus aci_gatt_read_long_char_desc( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_char_desc( uint16_t Connection_Handle,
-                                     uint16_t Attr_Handle,
-                                     uint8_t Attribute_Val_Length,
-                                     const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_char_desc(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_READ_CHAR_DESC
@@ -814,8 +765,8 @@ tBleStatus aci_gatt_write_char_desc( uint16_t Connection_Handle,
  * @param Attr_Handle Handle of the descriptor to be read
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_char_desc( uint16_t Connection_Handle,
-                                    uint16_t Attr_Handle );
+tBleStatus aci_gatt_read_char_desc(uint16_t Connection_Handle,
+		uint16_t Attr_Handle);
 
 /**
  * @brief ACI_GATT_WRITE_WITHOUT_RESP
@@ -833,10 +784,9 @@ tBleStatus aci_gatt_read_char_desc( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_without_resp( uint16_t Connection_Handle,
-                                        uint16_t Attr_Handle,
-                                        uint8_t Attribute_Val_Length,
-                                        const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_without_resp(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_SIGNED_WRITE_WITHOUT_RESP
@@ -855,10 +805,9 @@ tBleStatus aci_gatt_write_without_resp( uint16_t Connection_Handle,
  * @param Attribute_Val Value to be written
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_signed_write_without_resp( uint16_t Connection_Handle,
-                                               uint16_t Attr_Handle,
-                                               uint8_t Attribute_Val_Length,
-                                               const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_signed_write_without_resp(uint16_t Connection_Handle,
+		uint16_t Attr_Handle, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_CONFIRM_INDICATION
@@ -870,7 +819,7 @@ tBleStatus aci_gatt_signed_write_without_resp( uint16_t Connection_Handle,
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_confirm_indication( uint16_t Connection_Handle );
+tBleStatus aci_gatt_confirm_indication(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GATT_WRITE_RESP
@@ -900,12 +849,9 @@ tBleStatus aci_gatt_confirm_indication( uint16_t Connection_Handle );
  *        ACI_GATT_WRITE_PERMIT_REQ_EVENT
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_write_resp( uint16_t Connection_Handle,
-                                uint16_t Attr_Handle,
-                                uint8_t Write_status,
-                                uint8_t Error_Code,
-                                uint8_t Attribute_Val_Length,
-                                const uint8_t* Attribute_Val );
+tBleStatus aci_gatt_write_resp(uint16_t Connection_Handle, uint16_t Attr_Handle,
+		uint8_t Write_status, uint8_t Error_Code, uint8_t Attribute_Val_Length,
+		const uint8_t *Attribute_Val);
 
 /**
  * @brief ACI_GATT_ALLOW_READ
@@ -924,7 +870,7 @@ tBleStatus aci_gatt_write_resp( uint16_t Connection_Handle,
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_allow_read( uint16_t Connection_Handle );
+tBleStatus aci_gatt_allow_read(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GATT_SET_SECURITY_PERMISSION
@@ -947,9 +893,8 @@ tBleStatus aci_gatt_allow_read( uint16_t Connection_Handle );
  *        - 0x20: ENCRY_WRITE (need encryption to write)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_set_security_permission( uint16_t Serv_Handle,
-                                             uint16_t Attr_Handle,
-                                             uint8_t Security_Permissions );
+tBleStatus aci_gatt_set_security_permission(uint16_t Serv_Handle,
+		uint16_t Attr_Handle, uint8_t Security_Permissions);
 
 /**
  * @brief ACI_GATT_SET_DESC_VALUE
@@ -965,12 +910,9 @@ tBleStatus aci_gatt_set_security_permission( uint16_t Serv_Handle,
  * @param Char_Desc_Value Descriptor value
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_set_desc_value( uint16_t Serv_Handle,
-                                    uint16_t Char_Handle,
-                                    uint16_t Char_Desc_Handle,
-                                    uint16_t Val_Offset,
-                                    uint8_t Char_Desc_Value_Length,
-                                    const uint8_t* Char_Desc_Value );
+tBleStatus aci_gatt_set_desc_value(uint16_t Serv_Handle, uint16_t Char_Handle,
+		uint16_t Char_Desc_Handle, uint16_t Val_Offset,
+		uint8_t Char_Desc_Value_Length, const uint8_t *Char_Desc_Value);
 
 /**
  * @brief ACI_GATT_READ_HANDLE_VALUE
@@ -986,12 +928,9 @@ tBleStatus aci_gatt_set_desc_value( uint16_t Serv_Handle,
  * @param[out] Value Attribute value
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_read_handle_value( uint16_t Attr_Handle,
-                                       uint16_t Offset,
-                                       uint16_t Value_Length_Requested,
-                                       uint16_t* Length,
-                                       uint16_t* Value_Length,
-                                       uint8_t* Value );
+tBleStatus aci_gatt_read_handle_value(uint16_t Attr_Handle, uint16_t Offset,
+		uint16_t Value_Length_Requested, uint16_t *Length,
+		uint16_t *Value_Length, uint8_t *Value);
 
 /**
  * @brief ACI_GATT_UPDATE_CHAR_VALUE_EXT
@@ -1019,14 +958,10 @@ tBleStatus aci_gatt_read_handle_value( uint16_t Attr_Handle,
  * @param Value Updated characteristic value
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_update_char_value_ext( uint16_t Conn_Handle_To_Notify,
-                                           uint16_t Service_Handle,
-                                           uint16_t Char_Handle,
-                                           uint8_t Update_Type,
-                                           uint16_t Char_Length,
-                                           uint16_t Value_Offset,
-                                           uint8_t Value_Length,
-                                           const uint8_t* Value );
+tBleStatus aci_gatt_update_char_value_ext(uint16_t Conn_Handle_To_Notify,
+		uint16_t Service_Handle, uint16_t Char_Handle, uint8_t Update_Type,
+		uint16_t Char_Length, uint16_t Value_Offset, uint8_t Value_Length,
+		const uint8_t *Value);
 
 /**
  * @brief ACI_GATT_DENY_READ
@@ -1051,8 +986,7 @@ tBleStatus aci_gatt_update_char_value_ext( uint16_t Conn_Handle_To_Notify,
  *        - 0x80 ... 0x9F: Application Error
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_deny_read( uint16_t Connection_Handle,
-                               uint8_t Error_Code );
+tBleStatus aci_gatt_deny_read(uint16_t Connection_Handle, uint8_t Error_Code);
 
 /**
  * @brief ACI_GATT_SET_ACCESS_PERMISSION
@@ -1071,9 +1005,7 @@ tBleStatus aci_gatt_deny_read( uint16_t Connection_Handle,
  *        - 0x08: SIGNED_WRITE
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gatt_set_access_permission( uint16_t Serv_Handle,
-                                           uint16_t Attr_Handle,
-                                           uint8_t Access_Permissions );
-
+tBleStatus aci_gatt_set_access_permission(uint16_t Serv_Handle,
+		uint16_t Attr_Handle, uint8_t Access_Permissions);
 
 #endif /* BLE_GATT_ACI_H__ */

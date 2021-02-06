@@ -1,11 +1,11 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    dis_app.c
-  * @author  MCD Application Team
-  * @brief   Device Information Service Application
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dis_app.c
+ * @author  MCD Application Team
+ * @brief   Device Information Service Application
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -87,22 +87,21 @@ static const uint8_t pnp_id[BLE_CFG_DIS_PNP_ID_LEN_MAX] =
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
-void DISAPP_Init(void)
-{
-/* USER CODE BEGIN DISAPP_Init */
-  DIS_Data_t dis_information_data;
+void DISAPP_Init(void) {
+	/* USER CODE BEGIN DISAPP_Init */
+	DIS_Data_t dis_information_data;
 
 #if ((BLE_CFG_DIS_MANUFACTURER_NAME_STRING != 0) || (CFG_MENU_DEVICE_INFORMATION != 0))
-  /**
-   * Update MANUFACTURER NAME Information
-   *
-   * @param UUID
-   * @param pPData
-   * @return
-   */
-  dis_information_data.pPayload = (uint8_t*)DISAPP_MANUFACTURER_NAME;
-  dis_information_data.Length = sizeof(DISAPP_MANUFACTURER_NAME);
-  DIS_UpdateChar(MANUFACTURER_NAME_UUID, &dis_information_data);
+	/**
+	 * Update MANUFACTURER NAME Information
+	 *
+	 * @param UUID
+	 * @param pPData
+	 * @return
+	 */
+	dis_information_data.pPayload = (uint8_t*) DISAPP_MANUFACTURER_NAME;
+	dis_information_data.Length = sizeof(DISAPP_MANUFACTURER_NAME);
+	DIS_UpdateChar(MANUFACTURER_NAME_UUID, &dis_information_data);
 #endif
 
 #if ((BLE_CFG_DIS_MODEL_NUMBER_STRING != 0) || (CFG_MENU_DEVICE_INFORMATION != 0))
@@ -211,7 +210,7 @@ void DISAPP_Init(void)
   dis_information_data.Length = BLE_CFG_DIS_PNP_ID_LEN_MAX;
   DIS_UpdateChar(PNP_ID_UUID, &dis_information_data);
 #endif
-/* USER CODE END DISAPP_Init */
+	/* USER CODE END DISAPP_Init */
 }
 
 /* USER CODE BEGIN FD */

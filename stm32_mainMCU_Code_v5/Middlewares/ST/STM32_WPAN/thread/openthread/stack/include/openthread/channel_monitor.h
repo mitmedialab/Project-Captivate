@@ -153,7 +153,8 @@ uint32_t otChannelMonitorGetSampleCount(otInstance *aInstance);
  * @returns The current channel occupancy for the given channel.
  *
  */
-uint16_t otChannelMonitorGetChannelOccupancy(otInstance *aInstance, uint8_t aChannel);
+uint16_t otChannelMonitorGetChannelOccupancy(otInstance *aInstance,
+		uint8_t aChannel);
 
 /**
  * @}

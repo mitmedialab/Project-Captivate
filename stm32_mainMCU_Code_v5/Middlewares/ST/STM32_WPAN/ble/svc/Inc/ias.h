@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    ias.h
-  * @author  MCD Application Team
-  * @brief   Header for ias.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    ias.h
+ * @author  MCD Application Team
+ * @brief   Header for ias.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,33 +17,24 @@
  ******************************************************************************
  */
 
-
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __IAS_H
 #define __IAS_H
 
 #ifdef __cplusplus
-extern "C" 
-{
+extern "C" {
 #endif
-
 
 /* Includes ------------------------------------------------------------------*/
 
 /* Exported types ------------------------------------------------------------*/
-typedef enum
-{
-  IAS_NO_ALERT_EVT,
-  IAS_MID_ALERT_EVT,
-  IAS_HIGH_ALERT_EVT
+typedef enum {
+	IAS_NO_ALERT_EVT, IAS_MID_ALERT_EVT, IAS_HIGH_ALERT_EVT
 } IAS_App_Opcode_Notification_evt_t;
 
-typedef struct
-{
-  IAS_App_Opcode_Notification_evt_t  IAS_Evt_Opcode;
-}IAS_App_Notification_evt_t;
-
+typedef struct {
+	IAS_App_Opcode_Notification_evt_t IAS_Evt_Opcode;
+} IAS_App_Notification_evt_t;
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
@@ -52,7 +43,6 @@ typedef struct
 void IAS_Init(void);
 tBleStatus IAS_Update_Char(uint16_t UUID, uint8_t *pPayload);
 void IAS_App_Notification(IAS_App_Notification_evt_t *pNotification);
-
 
 #ifdef __cplusplus
 }

@@ -68,7 +68,8 @@ void otDiagInit(otInstance *aInstance);
  * @param[in]   aOutputMaxLen   The output buffer size.
  *
  */
-void otDiagProcessCmd(int aArgCount, char *aArgVector[], char *aOutput, size_t aOutputMaxLen);
+void otDiagProcessCmd(int aArgCount, char *aArgVector[], char *aOutput,
+		size_t aOutputMaxLen);
 
 /**
  * This function processes a factory diagnostics command line.
@@ -78,7 +79,8 @@ void otDiagProcessCmd(int aArgCount, char *aArgVector[], char *aOutput, size_t a
  * @param[in]   aOutputMaxLen   The output buffer size.
  *
  */
-void otDiagProcessCmdLine(const char *aString, char *aOutput, size_t aOutputMaxLen);
+void otDiagProcessCmdLine(const char *aString, char *aOutput,
+		size_t aOutputMaxLen);
 
 /**
  * This function indicates whether or not the factory diagnostics mode is enabled.

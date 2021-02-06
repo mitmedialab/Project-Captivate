@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    ble_common.h
-  * @author  MCD Application Team
-  * @brief   Common file to BLE Middleware
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    ble_common.h
+ * @author  MCD Application Team
+ * @brief   Common file to BLE Middleware
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2018 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -16,7 +16,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __BLE_COMMON_H
@@ -48,7 +47,6 @@ extern "C" {
 #undef TRUE
 #define TRUE                    (!0)
 
-
 /* -------------------------------- *
  *  Macro delimiters                *
  * -------------------------------- */
@@ -56,7 +54,6 @@ extern "C" {
 #define M_BEGIN     do {
 
 #define M_END       } while(0)
-
 
 /* -------------------------------- *
  *  Some useful macro definitions   *
@@ -101,12 +98,10 @@ extern "C" {
 
 #define BITNSET( w, n, b )   M_BEGIN (w)[(n)/32] |= ((U32)(b))<<((n)%32); M_END
 
-  /* -------------------------------- *
-   *  Compiler                         *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Compiler                         *
+ * -------------------------------- */
 #define PLACE_IN_SECTION( __x__ )  __attribute__((section (__x__)))
-
-
 
 #ifdef __cplusplus
 }

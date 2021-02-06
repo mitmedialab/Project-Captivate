@@ -56,9 +56,9 @@ extern "C" {
  *
  */
 typedef enum otNetworkTimeStatus {
-    OT_NETWORK_TIME_UNSYNCHRONIZED = -1, ///< The device hasn't attached to a network.
-    OT_NETWORK_TIME_RESYNC_NEEDED  = 0,  ///< The device hasn’t received time sync for more than two periods time.
-    OT_NETWORK_TIME_SYNCHRONIZED   = 1,  ///< The device network time is synchronized.
+	OT_NETWORK_TIME_UNSYNCHRONIZED = -1, ///< The device hasn't attached to a network.
+	OT_NETWORK_TIME_RESYNC_NEEDED = 0, ///< The device hasn’t received time sync for more than two periods time.
+	OT_NETWORK_TIME_SYNCHRONIZED = 1, ///< The device network time is synchronized.
 } otNetworkTimeStatus;
 
 /**
@@ -76,7 +76,8 @@ typedef enum otNetworkTimeStatus {
  * @returns The time synchronization status.
  *
  */
-otNetworkTimeStatus otNetworkTimeGet(otInstance *aInstance, uint64_t &aNetworkTime);
+otNetworkTimeStatus otNetworkTimeGet(otInstance *aInstance,
+		uint64_t &aNetworkTime);
 
 /**
  * Set the time synchronization period.
@@ -90,7 +91,8 @@ otNetworkTimeStatus otNetworkTimeGet(otInstance *aInstance, uint64_t &aNetworkTi
  * @retval OT_ERROR_INVALID_STATE  Thread protocols are enabled.
  *
  */
-otError otNetworkTimeSetSyncPeriod(otInstance *aInstance, uint16_t aTimeSyncPeriod);
+otError otNetworkTimeSetSyncPeriod(otInstance *aInstance,
+		uint16_t aTimeSyncPeriod);
 
 /**
  * Get the time synchronization period.
@@ -114,7 +116,8 @@ uint16_t otNetworkTimeGetSyncPeriod(otInstance *aInstance);
  * @retval OT_ERROR_INVALID_STATE  Thread protocols are enabled.
  *
  */
-otError otNetworkTimeSetXtalThreshold(otInstance *aInstance, uint16_t aXTALThreshold);
+otError otNetworkTimeSetXtalThreshold(otInstance *aInstance,
+		uint16_t aXTALThreshold);
 
 /**
  * Get the time synchronization XTAL accuracy threshold for Router.

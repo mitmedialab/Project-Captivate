@@ -1,21 +1,21 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_pka.h
-  * @author  MCD Application Team
-  * @brief   Header file of PKA HAL module.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    stm32wbxx_hal_pka.h
+ * @author  MCD Application Team
+ * @brief   Header file of PKA HAL module.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32WBxx_HAL_PKA_H
@@ -555,8 +555,8 @@ uint32_t             HAL_PKA_GetError(PKA_HandleTypeDef *hpka);
 #endif /* defined(PKA) && defined(HAL_PKA_MODULE_ENABLED) */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #ifdef __cplusplus
 }

@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : app_conf.h
-  * Description        : Application configuration file for STM32WPAN Middleware.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : app_conf.h
+ * Description        : Application configuration file for STM32WPAN Middleware.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -169,12 +169,11 @@
 /** tick timer value in us */
 #define CFG_TS_TICK_VAL           DIVR( (CFG_RTCCLK_DIV * 1000000), LSE_VALUE )
 
-typedef enum
-{
-  CFG_TIM_PROC_ID_ISR,
-  /* USER CODE BEGIN CFG_TimProcID_t */
+typedef enum {
+	CFG_TIM_PROC_ID_ISR,
+/* USER CODE BEGIN CFG_TimProcID_t */
 
-  /* USER CODE END CFG_TimProcID_t */
+/* USER CODE END CFG_TimProcID_t */
 } CFG_TimProcID_t;
 
 /******************************************************************************
@@ -280,7 +279,6 @@ typedef enum
 #define CFG_BLE_PERIPHERAL  1
 #endif
 
-
 //todo: REMOVE TRACES IN FINAL PROJECT
 /**
  * When set to 1, the traces are enabled in the BLE services
@@ -372,17 +370,16 @@ typedef enum
 #define TX_1M_PREFERRED                                 0x01
 
 /**
-*   Identity root key used to derive LTK and CSRK
-*/
+ *   Identity root key used to derive LTK and CSRK
+ */
 #define CFG_BLE_IRK     {0x12,0x34,0x56,0x78,0x9a,0xbc,0xde,0xf0,0x12,0x34,0x56,0x78,0x9a,0xbc,0xde,0xf0}
 
 /**
-* Encryption root key used to derive LTK and CSRK
-*/
+ * Encryption root key used to derive LTK and CSRK
+ */
 #define CFG_BLE_ERK     {0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21,0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21}
 
 /* USER CODE BEGIN Generic_Parameters */
-
 
 /**
  * Define Secure Connections Support
@@ -401,14 +398,12 @@ typedef enum
 
 #define CFG_KEYPRESS_NOTIFICATION_SUPPORT             CFG_KEYPRESS_NOT_SUPPORTED
 
-
 /**
  * SMPS supply
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
 #define CFG_USE_SMPS    0
-
 
 /**
  * TX PHY configuration
@@ -450,7 +445,6 @@ typedef enum
 #define PUSH_BUTTON_SW2_EXTI_IRQHandler     EXTI0_IRQHandler
 #define PUSH_BUTTON_SW3_EXTI_IRQHandler     EXTI1_IRQHandler
 
-
 #define P2P_SERVER1    0    /*1 = Device is Peripherique*/
 #define P2P_SERVER2    0
 #define P2P_SERVER3    0
@@ -469,8 +463,8 @@ typedef enum
 #define  RADIO_ACTIVITY_EVENT   0          /* 1 for OOB Demo */
 
 /**
-* AD Element - Group B Feature
-*/
+ * AD Element - Group B Feature
+ */
 /* LSB - First Byte */
 #define CFG_FEATURE_THREAD_SWITCH               (0x40)
 
@@ -480,15 +474,13 @@ typedef enum
 #define CONN_L(x) ((int)((x)/0.625f))
 #define CONN_P(x) ((int)((x)/1.25f))
 
-  /*  L2CAP Connection Update request parameters used for test only with smart Phone */
+/*  L2CAP Connection Update request parameters used for test only with smart Phone */
 #define L2CAP_REQUEST_NEW_CONN_PARAM             1
 
 #define L2CAP_INTERVAL_MIN              CONN_P(1000) /* 1s */
 #define L2CAP_INTERVAL_MAX              CONN_P(1000) /* 1s */
 #define L2CAP_SLAVE_LATENCY             0x0000
 #define L2CAP_TIMEOUT_MULTIPLIER        0x1F4
-
-
 
 /******************************************************************************
  * BLE Stack
@@ -595,10 +587,6 @@ typedef enum
  */
 #define CFG_BLE_LL_ONLY  0
 
-
-
-
-
 /******************************************************************************
  * User interaction
  * When CFG_LED_SUPPORTED is set, LEDS are activated if requested
@@ -693,7 +681,6 @@ typedef enum
 //  CFG_IDLEEVT_GATT_PROC_COMPLETE,
 //} CFG_IdleEvt_Id_t;
 
-
 #define EVENT_ACK_FROM_M0_EVT            (1U << CFG_EVT_ACK_FROM_M0_EVT)
 #define EVENT_SYNCHRO_BYPASS_IDLE        (1U << CFG_EVT_SYNCHRO_BYPASS_IDLE)
 
@@ -768,7 +755,6 @@ typedef enum
 #define CFG_DEV_ID_PERIPH_SERVER                    (0x88)
 #define CFG_FEATURE_DT                              (0x70)
 
-
 /* USER CODE END Defines */
 
 /******************************************************************************
@@ -809,13 +795,11 @@ typedef enum
  * Supported requester to the MCU Low Power Manager - can be increased up  to 32
  * It lits a bit mapping of all user of the Low Power Manager
  */
-typedef enum
-{
-    CFG_LPM_APP,
-    CFG_LPM_APP_THREAD,
-  /* USER CODE BEGIN CFG_LPM_Id_t */
+typedef enum {
+	CFG_LPM_APP, CFG_LPM_APP_THREAD,
+	/* USER CODE BEGIN CFG_LPM_Id_t */
 	CFG_LPM_APP_BLE
-  /* USER CODE END CFG_LPM_Id_t */
+/* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
 /******************************************************************************

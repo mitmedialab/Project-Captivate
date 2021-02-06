@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    dataset.c
-  * @author  MCD Application Team
-  * @brief   This file contains the Dataset interface shared between M0 and M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dataset.c
+ * @author  MCD Application Team
+ * @brief   This file contains the Dataset interface shared between M0 and M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -29,53 +28,51 @@
 
 #include "dataset.h"
 
+OTAPI bool OTCALL otDatasetIsCommissioned(otInstance *aInstance) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-OTAPI bool OTCALL otDatasetIsCommissioned(otInstance *aInstance)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+	p_ot_req->ID = MSG_M4TOM0_OT_DATASET_IS_COMMISSIONED;
 
-    p_ot_req->ID = MSG_M4TOM0_OT_DATASET_IS_COMMISSIONED;
+	p_ot_req->Size = 0;
 
-    p_ot_req->Size=0;
+	Ot_Cmd_Transfer();
 
-    Ot_Cmd_Transfer();
-
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (bool)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (bool) p_ot_req->Data[0];
 }
 
-OTAPI otError OTCALL otDatasetGetActive(otInstance *aInstance, otOperationalDataset *aDataset)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI otError OTCALL otDatasetGetActive(otInstance *aInstance,
+		otOperationalDataset *aDataset) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_DATASET_GET_ACTIVE;
+	p_ot_req->ID = MSG_M4TOM0_OT_DATASET_GET_ACTIVE;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aDataset;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aDataset;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }
 
-OTAPI otError OTCALL otDatasetGetPending(otInstance *aInstance, otOperationalDataset *aDataset)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+OTAPI otError OTCALL otDatasetGetPending(otInstance *aInstance,
+		otOperationalDataset *aDataset) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-    p_ot_req->ID = MSG_M4TOM0_OT_DATASET_GET_PENDING;
+	p_ot_req->ID = MSG_M4TOM0_OT_DATASET_GET_PENDING;
 
-    p_ot_req->Size=1;
-    p_ot_req->Data[0] = (uint32_t) aDataset;
+	p_ot_req->Size = 1;
+	p_ot_req->Data[0] = (uint32_t) aDataset;
 
-    Ot_Cmd_Transfer();
+	Ot_Cmd_Transfer();
 
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
-    return (otError)p_ot_req->Data[0];
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	return (otError) p_ot_req->Data[0];
 }

@@ -29,7 +29,7 @@
 #define STACK_MACROS_H
 
 #ifndef _MSC_VER /* Visual Studio doesn't support #warning. */
-	#warning The name of this file has changed to stack_macros.h.  Please update your code accordingly.  This source file (which has the original name) will be removed in future released.
+#warning The name of this file has changed to stack_macros.h.  Please update your code accordingly.  This source file (which has the original name) will be removed in future released.
 #endif
 
 /*
@@ -124,10 +124,8 @@
 
 /* Remove stack overflow macro if not being used. */
 #ifndef taskCHECK_FOR_STACK_OVERFLOW
-	#define taskCHECK_FOR_STACK_OVERFLOW()
+#define taskCHECK_FOR_STACK_OVERFLOW()
 #endif
-
-
 
 #endif /* STACK_MACROS_H */
 

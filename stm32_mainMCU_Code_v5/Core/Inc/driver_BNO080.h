@@ -1,16 +1,14 @@
 /**
  ******************************************************************************
  * File Name          : driver_BNO080.h
-  * Description        : Header for Lights.
-  ******************************************************************************
+ * Description        : Header for Lights.
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef DRIVER_BNO080_H
 #define DRIVER_BNO080_H
-
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +21,6 @@ extern "C" {
 #include "driver_BNO080.h"
 #include <stdbool.h>
 /* typedef -----------------------------------------------------------*/
-
 
 /* defines -----------------------------------------------------------*/
 //0x4B is also possible.
@@ -95,8 +92,9 @@ extern "C" {
 //class BNO080
 //{
 //public:
-bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef* intPort); //By default use the default I2C addres, and use Wire port, and don't declare an INT pin
-bool IMU_beginSPI(uint8_t user_CSPin, uint8_t user_WAKPin, uint8_t user_INTPin, uint8_t user_RSTPin, uint32_t spiPortSpeed);
+bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef *intPort); //By default use the default I2C addres, and use Wire port, and don't declare an INT pin
+bool IMU_beginSPI(uint8_t user_CSPin, uint8_t user_WAKPin, uint8_t user_INTPin,
+		uint8_t user_RSTPin, uint32_t spiPortSpeed);
 
 //	void enableDebugging(Stream &debugPort = Serial); //Turn on debug printing. If user doesn't specify then Serial will be used.
 
@@ -120,7 +118,8 @@ void IMU_enableGyro(uint16_t timeBetweenReports);
 void IMU_enableMagnetometer(uint16_t timeBetweenReports);
 void IMU_enableStepCounter(uint16_t timeBetweenReports);
 void IMU_enableStabilityClassifier(uint16_t timeBetweenReports);
-void IMU_enableActivityClassifier(uint16_t timeBetweenReports, uint32_t activitiesToEnable, uint8_t* activityConfidences);
+void IMU_enableActivityClassifier(uint16_t timeBetweenReports,
+		uint32_t activitiesToEnable, uint8_t *activityConfidences);
 void IMU_enableRawAccelerometer(uint16_t timeBetweenReports);
 void IMU_enableRawGyro(uint16_t timeBetweenReports);
 void IMU_enableRawMagnetometer(uint16_t timeBetweenReports);
@@ -164,7 +163,7 @@ void IMU_calibrateAll();
 void IMU_endCalibration();
 void IMU_saveCalibration();
 void IMU_requestCalibrationStatus(); //Sends command to get status
-bool IMU_calibrationComplete();   //Checks ME Cal response for byte 5, R0 - Status
+bool IMU_calibrationComplete(); //Checks ME Cal response for byte 5, R0 - Status
 
 uint32_t IMU_getTimeStamp();
 uint16_t IMU_getStepCount();
@@ -187,7 +186,8 @@ void IMU_sendTareNow(void);
 void IMU_sendPersistTare(void);
 
 void IMU_setFeatureCommand_2(uint8_t reportID, uint16_t timeBetweenReports);
-void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports, uint32_t specificConfig);
+void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports,
+		uint32_t specificConfig);
 void IMU_sendCommand(uint8_t command);
 void IMU_sendCalibrateCommand(uint8_t thingToCalibrate);
 
@@ -198,26 +198,22 @@ int16_t IMU_getQ3(uint16_t recordID);
 float IMU_getResolution(uint16_t recordID);
 float IMU_getRange(uint16_t recordID);
 uint32_t IMU_readFRSword(uint16_t recordID, uint8_t wordNumber);
-void IMU_frsReadRequest(uint16_t recordID, uint16_t readOffset, uint16_t blockSize);
-bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation, uint8_t wordsToRead);
-
-
+void IMU_frsReadRequest(uint16_t recordID, uint16_t readOffset,
+		uint16_t blockSize);
+bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation,
+		uint8_t wordsToRead);
 
 //};
 
 /* macros ------------------------------------------------------------*/
 
-
 /* function prototypes -----------------------------------------------*/
-
 
 /* variables -----------------------------------------------*/
 
 /* Functions Definition ------------------------------------------------------*/
 //void InertialSensingTask(void);
 //void Setup_BNO080(void);
-
-
 
 /*************************************************************
  *
@@ -235,11 +231,7 @@ bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation, uint8_t wordsToRe
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-
-
-
-
+ *************************************************************/
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -1,13 +1,12 @@
 /**
  ******************************************************************************
  * File Name           : intertial_sensing.c
-  * Description        : Header for Lights.
-  ******************************************************************************
+ * Description        : Header for Lights.
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
-
 
 /* includes -----------------------------------------------------------*/
 #include <inertial_sensing.h>
@@ -20,15 +19,11 @@
 
 /* typedef -----------------------------------------------------------*/
 
-
 /* defines -----------------------------------------------------------*/
-
 
 /* macros ------------------------------------------------------------*/
 
-
 /* function prototypes -----------------------------------------------*/
-
 
 /* variables -----------------------------------------------*/
 float quatI;
@@ -42,7 +37,6 @@ float y;
 float z;
 
 /* Functions Definition ------------------------------------------------------*/
-
 
 /*************************************************************
  *
@@ -62,7 +56,7 @@ uint8_t inertialEnabled = 0;
 
 struct inertialData inertialPacket;
 
-void InertialSensingTask(void *argument){
+void InertialSensingTask(void *argument) {
 	inertialEnabled = 1;
 #ifndef DONGLE_CODE
 	IMU_begin(BNO080_ADDRESS, IMU_INT_Pin, IMU_INT_GPIO_Port);
@@ -70,36 +64,42 @@ void InertialSensingTask(void *argument){
 
 	uint32_t evt = 0;
 
-	while(1){
+	while (1) {
 
 		/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
-		osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
+		osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 
 		// configure IMU
 		osDelay(500);
 		IMU_enableRotationVector(ROT_VEC_PERIOD);
 		osDelay(100);
-		IMU_enableActivityClassifier(ACT_CLASS_PERIOD , enableActivities, activityClasses);
+		IMU_enableActivityClassifier(ACT_CLASS_PERIOD, enableActivities,
+				activityClasses);
 
 		// give some time for things to buffer
 		// TODO: remove this to see if it still works fine
 		osDelay(400);
 
-		while(1){
+		while (1) {
 
 			// grab packets
 			osDelay(100);
-			osMessageQueueGet(rotationSampleQueueHandle, &inertialPacket.rotationMatrix, 0U, 100);
-			osMessageQueueGet(activitySampleQueueHandle, &inertialPacket.activity, 0U, 0);
-			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U, 0);
+			osMessageQueueGet(rotationSampleQueueHandle,
+					&inertialPacket.rotationMatrix, 0U, 100);
+			osMessageQueueGet(activitySampleQueueHandle,
+					&inertialPacket.activity, 0U, 0);
+			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U,
+					0);
 
-			if( HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin) == GPIO_PIN_RESET) IMU_dataAvailable();
+			if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin)
+					== GPIO_PIN_RESET)
+				IMU_dataAvailable();
 
 			// check for break condition
-			evt = osThreadFlagsWait (0x00000002U, osFlagsWaitAny, 0);
+			evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
 
 			// stop timer and put thread in idle if signal was reset
-			if( (evt & 0x00000002U) == 0x00000002U){
+			if ((evt & 0x00000002U) == 0x00000002U) {
 
 				// reset IMU
 				IMU_softReset();
@@ -153,11 +153,10 @@ void InertialSensingTask(void *argument){
 //
 //}
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    // if interrupt is triggered, sample!
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	// if interrupt is triggered, sample!
 	// todo: only do when inertial measurements are enabled?
-	if((GPIO_Pin == IMU_INT_Pin) && (inertialEnabled == 1)){
+	if ((GPIO_Pin == IMU_INT_Pin) && (inertialEnabled == 1)) {
 		IMU_dataAvailable();
 	}
 }
@@ -167,13 +166,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  * @param  None
  * @retval None
  */
-void Setup_BNO080(void){
+void Setup_BNO080(void) {
 
 }
-
 
 /*************************************************************
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
+ *************************************************************/

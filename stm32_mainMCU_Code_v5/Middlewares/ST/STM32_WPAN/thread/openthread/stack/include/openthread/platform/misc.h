@@ -68,17 +68,17 @@ void otPlatReset(otInstance *aInstance);
  *
  */
 typedef enum {
-    OT_PLAT_RESET_REASON_POWER_ON = 0,
-    OT_PLAT_RESET_REASON_EXTERNAL = 1,
-    OT_PLAT_RESET_REASON_SOFTWARE = 2,
-    OT_PLAT_RESET_REASON_FAULT    = 3,
-    OT_PLAT_RESET_REASON_CRASH    = 4,
-    OT_PLAT_RESET_REASON_ASSERT   = 5,
-    OT_PLAT_RESET_REASON_OTHER    = 6,
-    OT_PLAT_RESET_REASON_UNKNOWN  = 7,
-    OT_PLAT_RESET_REASON_WATCHDOG = 8,
+	OT_PLAT_RESET_REASON_POWER_ON = 0,
+	OT_PLAT_RESET_REASON_EXTERNAL = 1,
+	OT_PLAT_RESET_REASON_SOFTWARE = 2,
+	OT_PLAT_RESET_REASON_FAULT = 3,
+	OT_PLAT_RESET_REASON_CRASH = 4,
+	OT_PLAT_RESET_REASON_ASSERT = 5,
+	OT_PLAT_RESET_REASON_OTHER = 6,
+	OT_PLAT_RESET_REASON_UNKNOWN = 7,
+	OT_PLAT_RESET_REASON_WATCHDOG = 8,
 
-    OT_PLAT_RESET_REASON_COUNT,
+	OT_PLAT_RESET_REASON_COUNT,
 } otPlatResetReason;
 
 /**
@@ -121,43 +121,43 @@ void otPlatWakeHost(void);
  *
  */
 typedef enum {
-    /**
-     * NCP's MCU stays on and active all the time.
-     *
-     * When the NCP's desired power state is set to `ON`, host can send messages to NCP without requiring any "poke" or
-     * external triggers.
-     *
-     * @note The `ON` power state only determines the MCU's power mode and is not related to radio's state.
-     *
-     */
-    OT_PLAT_MCU_POWER_STATE_ON = 0,
+	/**
+	 * NCP's MCU stays on and active all the time.
+	 *
+	 * When the NCP's desired power state is set to `ON`, host can send messages to NCP without requiring any "poke" or
+	 * external triggers.
+	 *
+	 * @note The `ON` power state only determines the MCU's power mode and is not related to radio's state.
+	 *
+	 */
+	OT_PLAT_MCU_POWER_STATE_ON = 0,
 
-    /**
-     * NCP's MCU can enter low-power (energy-saving) state.
-     *
-     * When the NCP's desired power state is set to `LOW_POWER`, host is expected to "poke" the NCP (e.g., an external
-     * trigger like an interrupt) before it can communicate with the NCP (send a message to the NCP). The "poke"
-     * mechanism is determined by the platform code (based on NCP's interface to the host).
-     *
-     * While power state is set to `LOW_POWER`, NCP can still (at any time) send messages to host. Note that receiving
-     * a message from the NCP does NOT indicate that the NCP's power state has changed, i.e., host is expected to
-     * continue to "poke" when it wants to talk to the NCP until the power state is explicitly changed (by a successful
-     * call to `otPlatSetMcuPowerState()` changing the state to `ON`).
-     *
-     * @note The `LOW_POWER` power state only determines the MCU's power mode and is not related to radio's state
-     * (radio is managed by OpenThread core and device role, e.g., device being sleepy or not.
-     *
-     */
-    OT_PLAT_MCU_POWER_STATE_LOW_POWER = 1,
+	/**
+	 * NCP's MCU can enter low-power (energy-saving) state.
+	 *
+	 * When the NCP's desired power state is set to `LOW_POWER`, host is expected to "poke" the NCP (e.g., an external
+	 * trigger like an interrupt) before it can communicate with the NCP (send a message to the NCP). The "poke"
+	 * mechanism is determined by the platform code (based on NCP's interface to the host).
+	 *
+	 * While power state is set to `LOW_POWER`, NCP can still (at any time) send messages to host. Note that receiving
+	 * a message from the NCP does NOT indicate that the NCP's power state has changed, i.e., host is expected to
+	 * continue to "poke" when it wants to talk to the NCP until the power state is explicitly changed (by a successful
+	 * call to `otPlatSetMcuPowerState()` changing the state to `ON`).
+	 *
+	 * @note The `LOW_POWER` power state only determines the MCU's power mode and is not related to radio's state
+	 * (radio is managed by OpenThread core and device role, e.g., device being sleepy or not.
+	 *
+	 */
+	OT_PLAT_MCU_POWER_STATE_LOW_POWER = 1,
 
-    /**
-     * NCP is fully off.
-     *
-     * An NCP hardware reset (via a RESET pin) is required to bring the NCP back to `SPINEL_MCU_POWER_STATE_ON`.
-     * RAM is not retained after reset.
-     *
-     */
-    OT_PLAT_MCU_POWER_STATE_OFF = 2,
+	/**
+	 * NCP is fully off.
+	 *
+	 * An NCP hardware reset (via a RESET pin) is required to bring the NCP back to `SPINEL_MCU_POWER_STATE_ON`.
+	 * RAM is not retained after reset.
+	 *
+	 */
+	OT_PLAT_MCU_POWER_STATE_OFF = 2,
 } otPlatMcuPowerState;
 
 /**
@@ -173,7 +173,8 @@ typedef enum {
  * @retval OT_ERROR_FAILED   The given MCU power state is not supported by the platform.
  *
  */
-otError otPlatSetMcuPowerState(otInstance *aInstance, otPlatMcuPowerState aState);
+otError otPlatSetMcuPowerState(otInstance *aInstance,
+		otPlatMcuPowerState aState);
 
 /**
  * This function gets the current desired MCU power state.

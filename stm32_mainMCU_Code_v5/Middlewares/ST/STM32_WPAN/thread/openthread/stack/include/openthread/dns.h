@@ -61,11 +61,10 @@ extern "C" {
  * This structure implements DNS Query parameters.
  *
  */
-typedef struct otDnsQuery
-{
-    const char *         mHostname;    ///< Identifies hostname to be found. It shall not change during resolving.
-    const otMessageInfo *mMessageInfo; ///< A reference to the message info related with DNS Server.
-    bool                 mNoRecursion; ///< If cleared, it directs name server to pursue the query recursively.
+typedef struct otDnsQuery {
+	const char *mHostname; ///< Identifies hostname to be found. It shall not change during resolving.
+	const otMessageInfo *mMessageInfo; ///< A reference to the message info related with DNS Server.
+	bool mNoRecursion; ///< If cleared, it directs name server to pursue the query recursively.
 } otDnsQuery;
 
 /**
@@ -85,11 +84,8 @@ typedef struct otDnsQuery
  * @retval  OT_ERROR_FAILED            A response was received but status code is different than success.
  *
  */
-typedef void (*otDnsResponseHandler)(void *        aContext,
-                                     const char *  aHostname,
-                                     otIp6Address *aAddress,
-                                     uint32_t      aTtl,
-                                     otError       aResult);
+typedef void (*otDnsResponseHandler)(void *aContext, const char *aHostname,
+		otIp6Address *aAddress, uint32_t aTtl, otError aResult);
 
 /**
  * This function sends a DNS query for AAAA (IPv6) record.
@@ -102,10 +98,8 @@ typedef void (*otDnsResponseHandler)(void *        aContext,
  * @param[in]  aContext    A pointer to arbitrary context information.
  *
  */
-otError otDnsClientQuery(otInstance *         aInstance,
-                         const otDnsQuery *   aQuery,
-                         otDnsResponseHandler aHandler,
-                         void *               aContext);
+otError otDnsClientQuery(otInstance *aInstance, const otDnsQuery *aQuery,
+		otDnsResponseHandler aHandler, void *aContext);
 
 /**
  * @}

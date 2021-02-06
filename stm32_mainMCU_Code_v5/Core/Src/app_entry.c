@@ -1,19 +1,19 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
-  * File Name          : app_entry.c
-  * Description        : Entry application source file for STM32WPAN Middleware
+ * File Name          : app_entry.c
+ * Description        : Entry application source file for STM32WPAN Middleware
  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
  ******************************************************************************
  */
 /* USER CODE END Header */
@@ -59,10 +59,12 @@ extern RTC_HandleTypeDef hrtc;
 /* Private variables ---------------------------------------------------------*/
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t EvtPool[POOL_SIZE];
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static TL_CmdPacket_t SystemCmdBuffer;
-PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255U];
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(TL_PacketHeader_t)
+		+ TL_EVT_HDR_SIZE + 255U];
 
 /* USER CODE BEGIN PV */
-PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t	BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t)
+		+ TL_EVT_HDR_SIZE + 255];
 
 /* USER CODE END PV */
 
@@ -71,15 +73,14 @@ osMutexId_t MtxShciId;
 osSemaphoreId_t SemShciId;
 osThreadId_t ShciUserEvtProcessId;
 
-const osThreadAttr_t ShciUserEvtProcess_attr = {
-    .name = CFG_SHCI_USER_EVT_PROCESS_NAME,
-    .attr_bits = CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS,
-    .cb_mem = CFG_SHCI_USER_EVT_PROCESS_CB_MEM,
-    .cb_size = CFG_SHCI_USER_EVT_PROCESS_CB_SIZE,
-    .stack_mem = CFG_SHCI_USER_EVT_PROCESS_STACK_MEM,
-    .priority = CFG_SHCI_USER_EVT_PROCESS_PRIORITY,
-    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE * 2
-};
+const osThreadAttr_t ShciUserEvtProcess_attr = { .name =
+		CFG_SHCI_USER_EVT_PROCESS_NAME, .attr_bits =
+		CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS, .cb_mem =
+		CFG_SHCI_USER_EVT_PROCESS_CB_MEM, .cb_size =
+		CFG_SHCI_USER_EVT_PROCESS_CB_SIZE, .stack_mem =
+		CFG_SHCI_USER_EVT_PROCESS_STACK_MEM, .priority =
+		CFG_SHCI_USER_EVT_PROCESS_PRIORITY, .stack_size =
+		CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE * 2 };
 
 /* Global function prototypes -----------------------------------------------*/
 #if(CFG_DEBUG_TRACE != 0)
@@ -92,13 +93,13 @@ size_t DbgTraceWrite(int handle, const unsigned char * buf, size_t bufSize);
 
 /* Private functions prototypes-----------------------------------------------*/
 static void ShciUserEvtProcess(void *argument);
-static void SystemPower_Config( void );
-static void Init_Debug( void );
-static void appe_Tl_Init( void );
-static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
-static void APPE_SysUserEvtRx( void * pPayload );
-static void APPE_SysEvtReadyProcessing( void );
-static void APPE_SysEvtError( SCHI_SystemErrCode_t ErrorCode);
+static void SystemPower_Config(void);
+static void Init_Debug(void);
+static void appe_Tl_Init(void);
+static void APPE_SysStatusNot(SHCI_TL_CmdStatus_t status);
+static void APPE_SysUserEvtRx(void *pPayload);
+static void APPE_SysEvtReadyProcessing(void);
+static void APPE_SysEvtError(SCHI_SystemErrCode_t ErrorCode);
 
 #if (CFG_HW_LPUART1_ENABLED == 1)
 extern void MX_LPUART1_UART_Init(void);
@@ -112,39 +113,37 @@ extern void MX_USART1_UART_Init(void);
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
-void APPE_Init( void )
-{
-  SystemPower_Config(); /**< Configure the system Power Mode */
+void APPE_Init(void) {
+	SystemPower_Config(); /**< Configure the system Power Mode */
 
-  HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
+	HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
-/* USER CODE BEGIN APPE_Init_1 */
-  /* initialize debugger module if supported and debug trace if activated */
+	/* USER CODE BEGIN APPE_Init_1 */
+	/* initialize debugger module if supported and debug trace if activated */
 //  Init_Debug();
-
-  /**
-   * The Standby mode should not be entered before the initialization is over
-   * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
-   */
-  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
+	/**
+	 * The Standby mode should not be entered before the initialization is over
+	 * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
+	 */
+	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 
 #ifdef NUCLEO_LED_ACTIVE
    BSP_LED_Init(LED_BLUE);
    BSP_LED_Init(LED_GREEN);
    BSP_LED_Init(LED_RED);
 #endif
-/* USER CODE END APPE_Init_1 */
-  appe_Tl_Init();	/* Initialize all transport layers */
+	/* USER CODE END APPE_Init_1 */
+	appe_Tl_Init(); /* Initialize all transport layers */
 
-  /**
-   * From now, the application is waiting for the ready event ( VS_HCI_C2_Ready )
-   * received on the system channel before starting the Stack
-   * This system event is received with APPE_SysUserEvtRx()
-   */
-/* USER CODE BEGIN APPE_Init_2 */
+	/**
+	 * From now, the application is waiting for the ready event ( VS_HCI_C2_Ready )
+	 * received on the system channel before starting the Stack
+	 * This system event is received with APPE_SysUserEvtRx()
+	 */
+	/* USER CODE BEGIN APPE_Init_2 */
 
-/* USER CODE END APPE_Init_2 */
-   return;
+	/* USER CODE END APPE_Init_2 */
+	return;
 }
 /* USER CODE BEGIN FD */
 
@@ -155,8 +154,7 @@ void APPE_Init( void )
  * LOCAL FUNCTIONS
  *
  *************************************************************/
-static void Init_Debug( void )
-{
+static void Init_Debug(void) {
 #if (CFG_DEBUGGER_SUPPORTED == 1)
   /**
    * Keep debugger enabled while in any low power mode
@@ -169,24 +167,24 @@ static void Init_Debug( void )
 
 #else
 
-  GPIO_InitTypeDef gpio_config = {0};
+	GPIO_InitTypeDef gpio_config = { 0 };
 
-  gpio_config.Pull = GPIO_NOPULL;
-  gpio_config.Mode = GPIO_MODE_ANALOG;
+	gpio_config.Pull = GPIO_NOPULL;
+	gpio_config.Mode = GPIO_MODE_ANALOG;
 
-  gpio_config.Pin = GPIO_PIN_15 | GPIO_PIN_14 | GPIO_PIN_13;
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  HAL_GPIO_Init(GPIOA, &gpio_config);
-  __HAL_RCC_GPIOA_CLK_DISABLE();
+	gpio_config.Pin = GPIO_PIN_15 | GPIO_PIN_14 | GPIO_PIN_13;
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	HAL_GPIO_Init(GPIOA, &gpio_config);
+	__HAL_RCC_GPIOA_CLK_DISABLE();
 
-  gpio_config.Pin = GPIO_PIN_4 | GPIO_PIN_3;
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  HAL_GPIO_Init(GPIOB, &gpio_config);
-  __HAL_RCC_GPIOB_CLK_DISABLE();
+	gpio_config.Pin = GPIO_PIN_4 | GPIO_PIN_3;
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	HAL_GPIO_Init(GPIOB, &gpio_config);
+	__HAL_RCC_GPIOB_CLK_DISABLE();
 
-  HAL_DBGMCU_DisableDBGSleepMode();
-  HAL_DBGMCU_DisableDBGStopMode();
-  HAL_DBGMCU_DisableDBGStandbyMode();
+	HAL_DBGMCU_DisableDBGSleepMode();
+	HAL_DBGMCU_DisableDBGStopMode();
+	HAL_DBGMCU_DisableDBGStandbyMode();
 
 #endif /* (CFG_DEBUGGER_SUPPORTED == 1) */
 
@@ -194,7 +192,7 @@ static void Init_Debug( void )
   DbgTraceInit();
 #endif
 
-  return;
+	return;
 }
 
 /**
@@ -205,17 +203,16 @@ static void Init_Debug( void )
  * @param  None
  * @retval None
  */
-static void SystemPower_Config(void)
-{
-  /**
-   * Select HSI as system clock source after Wake Up from Stop mode
-   */
-  LL_RCC_SetClkAfterWakeFromStop(LL_RCC_STOP_WAKEUPCLOCK_HSI);
+static void SystemPower_Config(void) {
+	/**
+	 * Select HSI as system clock source after Wake Up from Stop mode
+	 */
+	LL_RCC_SetClkAfterWakeFromStop(LL_RCC_STOP_WAKEUPCLOCK_HSI);
 
-  /* Initialize low power manager */
-  UTIL_LPM_Init();
-  /* Initialize the CPU2 reset value before starting CPU2 with C2BOOT */
-  LL_C2_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+	/* Initialize low power manager */
+	UTIL_LPM_Init();
+	/* Initialize the CPU2 reset value before starting CPU2 with C2BOOT */
+	LL_C2_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
 
 #if (CFG_USB_INTERFACE_ENABLE != 0)
   /**
@@ -224,55 +221,53 @@ static void SystemPower_Config(void)
   HAL_PWREx_EnableVddUSB();
 #endif
 
-  return;
+	return;
 }
 
-static void appe_Tl_Init( void )
-{
-  TL_MM_Config_t tl_mm_config;
-  SHCI_TL_HciInitConf_t SHci_Tl_Init_Conf;
-  /**< Reference table initialization */
-  TL_Init();
+static void appe_Tl_Init(void) {
+	TL_MM_Config_t tl_mm_config;
+	SHCI_TL_HciInitConf_t SHci_Tl_Init_Conf;
+	/**< Reference table initialization */
+	TL_Init();
 
-  MtxShciId = osMutexNew( NULL );
-  SemShciId = osSemaphoreNew( 1, 0, NULL ); /*< Create the semaphore and make it busy at initialization */
+	MtxShciId = osMutexNew( NULL);
+	SemShciId = osSemaphoreNew(1, 0, NULL); /*< Create the semaphore and make it busy at initialization */
 
-  /** FreeRTOS system task creation */
-  ShciUserEvtProcessId = osThreadNew(ShciUserEvtProcess, NULL, &ShciUserEvtProcess_attr);
+	/** FreeRTOS system task creation */
+	ShciUserEvtProcessId = osThreadNew(ShciUserEvtProcess, NULL,
+			&ShciUserEvtProcess_attr);
 
-  /**< System channel initialization */
-  SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*)&SystemCmdBuffer;
-  SHci_Tl_Init_Conf.StatusNotCallBack = APPE_SysStatusNot;
-  shci_init(APPE_SysUserEvtRx, (void*) &SHci_Tl_Init_Conf);
+	/**< System channel initialization */
+	SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*) &SystemCmdBuffer;
+	SHci_Tl_Init_Conf.StatusNotCallBack = APPE_SysStatusNot;
+	shci_init(APPE_SysUserEvtRx, (void*) &SHci_Tl_Init_Conf);
 
-  /**< Memory Manager channel initialization */
-  tl_mm_config.p_BleSpareEvtBuffer = BleSpareEvtBuffer;
-  tl_mm_config.p_SystemSpareEvtBuffer = SystemSpareEvtBuffer;
-  tl_mm_config.p_AsynchEvtPool = EvtPool;
-  tl_mm_config.AsynchEvtPoolSize = POOL_SIZE;
-  TL_MM_Init( &tl_mm_config );
+	/**< Memory Manager channel initialization */
+	tl_mm_config.p_BleSpareEvtBuffer = BleSpareEvtBuffer;
+	tl_mm_config.p_SystemSpareEvtBuffer = SystemSpareEvtBuffer;
+	tl_mm_config.p_AsynchEvtPool = EvtPool;
+	tl_mm_config.AsynchEvtPoolSize = POOL_SIZE;
+	TL_MM_Init(&tl_mm_config);
 
-  TL_Enable();
+	TL_Enable();
 
-  return;
+	return;
 }
 
-static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )
-{
-  switch (status)
-  {
-    case SHCI_TL_CmdBusy:
-      osMutexAcquire( MtxShciId, osWaitForever );
-      break;
+static void APPE_SysStatusNot(SHCI_TL_CmdStatus_t status) {
+	switch (status) {
+	case SHCI_TL_CmdBusy:
+		osMutexAcquire(MtxShciId, osWaitForever);
+		break;
 
-    case SHCI_TL_CmdAvailable:
-      osMutexRelease( MtxShciId );
-      break;
+	case SHCI_TL_CmdAvailable:
+		osMutexRelease(MtxShciId);
+		break;
 
-    default:
-      break;
-  }
-  return;
+	default:
+		break;
+	}
+	return;
 }
 
 /**
@@ -284,23 +279,22 @@ static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status )
  * ( eg ((tSHCI_UserEvtRxParam*)pPayload)->status shall be set to SHCI_TL_UserEventFlow_Disable )
  * When the status is not filled, the buffer is released by default
  */
-static void APPE_SysUserEvtRx( void * pPayload )
-{
-  TL_AsynchEvt_t *p_sys_event;
-  p_sys_event = (TL_AsynchEvt_t*)(((tSHCI_UserEvtRxParam*)pPayload)->pckt->evtserial.evt.payload);
+static void APPE_SysUserEvtRx(void *pPayload) {
+	TL_AsynchEvt_t *p_sys_event;
+	p_sys_event =
+			(TL_AsynchEvt_t*) (((tSHCI_UserEvtRxParam*) pPayload)->pckt->evtserial.evt.payload);
 
-  switch(p_sys_event->subevtcode)
-  {
-     case SHCI_SUB_EVT_CODE_READY:
-         APPE_SysEvtReadyProcessing();
-         break;
-     case SHCI_SUB_EVT_ERROR_NOTIF:
-         APPE_SysEvtError((SCHI_SystemErrCode_t) (p_sys_event->payload[0]));
-         break;
-     default:
-         break;
-  }
-  return;
+	switch (p_sys_event->subevtcode) {
+	case SHCI_SUB_EVT_CODE_READY:
+		APPE_SysEvtReadyProcessing();
+		break;
+	case SHCI_SUB_EVT_ERROR_NOTIF:
+		APPE_SysEvtError((SCHI_SystemErrCode_t) (p_sys_event->payload[0]));
+		break;
+	default:
+		break;
+	}
+	return;
 }
 
 /**
@@ -309,75 +303,74 @@ static void APPE_SysUserEvtRx( void * pPayload )
  *
  * @retval None
  */
-static void APPE_SysEvtError( SCHI_SystemErrCode_t ErrorCode)
-{
-  switch(ErrorCode)
-  {
-  case ERR_THREAD_LLD_FATAL_ERROR:
-       APP_DBG("** ERR_THREAD : LLD_FATAL_ERROR \n");
-       break;
-  case ERR_THREAD_UNKNOWN_CMD:
-       APP_DBG("** ERR_THREAD : UNKNOWN_CMD \n");
-       break;
-  default:
-       APP_DBG("** ERR_THREAD : ErroCode=%d \n",ErrorCode);
-       break;
-  }
-  return;
+static void APPE_SysEvtError(SCHI_SystemErrCode_t ErrorCode) {
+	switch (ErrorCode) {
+	case ERR_THREAD_LLD_FATAL_ERROR:
+		APP_DBG("** ERR_THREAD : LLD_FATAL_ERROR \n")
+		;
+		break;
+	case ERR_THREAD_UNKNOWN_CMD:
+		APP_DBG("** ERR_THREAD : UNKNOWN_CMD \n")
+		;
+		break;
+	default:
+		APP_DBG("** ERR_THREAD : ErroCode=%d \n", ErrorCode)
+		;
+		break;
+	}
+	return;
 }
 
-static void APPE_SysEvtReadyProcessing( void )
-{
-  /* Traces channel initialization */
-  TL_TRACES_Init( );
+static void APPE_SysEvtReadyProcessing(void) {
+	/* Traces channel initialization */
+	TL_TRACES_Init();
 
-  //APP_THREAD_Init();
-  /* In the Context of Dynamic Concurrent mode, the Init and start of each stack must be split and executed
-   * in the following order :
-   * APP_BLE_Init_Dyn_1()    : BLE Stack Init until it's ready to start ADV
-   * APP_THREAD_Init_Dyn_1() : Thread Stack Init until it's ready to be configured (default channel, PID, etc...)
-   * APP_BLE_Init_Dyn_2()    : Start ADV
-   * APP_THREAD_Init_Dyn_2() : Thread Stack configuration (default channel, PID, etc...) to be able to start scanning
-   *                           or joining a Thread Network
-   */
-  APP_DBG("1- Initialisation of BLE Stack...");
-  APP_BLE_Init_Dyn_1();
-  APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
-  APP_THREAD_Init_Dyn_1();
+	//APP_THREAD_Init();
+	/* In the Context of Dynamic Concurrent mode, the Init and start of each stack must be split and executed
+	 * in the following order :
+	 * APP_BLE_Init_Dyn_1()    : BLE Stack Init until it's ready to start ADV
+	 * APP_THREAD_Init_Dyn_1() : Thread Stack Init until it's ready to be configured (default channel, PID, etc...)
+	 * APP_BLE_Init_Dyn_2()    : Start ADV
+	 * APP_THREAD_Init_Dyn_2() : Thread Stack configuration (default channel, PID, etc...) to be able to start scanning
+	 *                           or joining a Thread Network
+	 */
+	APP_DBG("1- Initialisation of BLE Stack...");
+	APP_BLE_Init_Dyn_1();
+	APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
+	APP_THREAD_Init_Dyn_1();
 
-  APP_DBG("3- Start BLE ADV...");
-  APP_BLE_Init_Dyn_2();
-  APP_DBG("4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
-  APP_THREAD_Init_Dyn_2();
-  UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
+	APP_DBG("3- Start BLE ADV...");
+	APP_BLE_Init_Dyn_2();
+	APP_DBG(
+			"4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
+	APP_THREAD_Init_Dyn_2();
+	UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
 
 #if ( CFG_LPM_SUPPORTED == 1)
   /* Thread stack is initialized, low power mode can be enabled */
   UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
   UTIL_LPM_SetStopMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
 #endif
-  return;
+	return;
 }
 
 /*************************************************************
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-static void ShciUserEvtProcess(void *argument)
-{
-  UNUSED(argument);
-  for(;;)
-  {
-    /* USER CODE BEGIN SHCI_USER_EVT_PROCESS_1 */
+ *************************************************************/
+static void ShciUserEvtProcess(void *argument) {
+	UNUSED(argument);
+	for (;;) {
+		/* USER CODE BEGIN SHCI_USER_EVT_PROCESS_1 */
 
-    /* USER CODE END SHCI_USER_EVT_PROCESS_1 */
-     osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
-     shci_user_evt_proc();
-    /* USER CODE BEGIN SHCI_USER_EVT_PROCESS_2 */
+		/* USER CODE END SHCI_USER_EVT_PROCESS_1 */
+		osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
+		shci_user_evt_proc();
+		/* USER CODE BEGIN SHCI_USER_EVT_PROCESS_2 */
 
-    /* USER CODE END SHCI_USER_EVT_PROCESS_2 */
-    }
+		/* USER CODE END SHCI_USER_EVT_PROCESS_2 */
+	}
 }
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
@@ -390,44 +383,40 @@ static void ShciUserEvtProcess(void *argument)
  *
  *************************************************************/
 
-void shci_notify_asynch_evt(void* pdata)
-{
-  UNUSED(pdata);
-  osThreadFlagsSet(ShciUserEvtProcessId,1);
-  return;
+void shci_notify_asynch_evt(void *pdata) {
+	UNUSED(pdata);
+	osThreadFlagsSet(ShciUserEvtProcessId, 1);
+	return;
 }
 
-void shci_cmd_resp_release(uint32_t flag)
-{
-  UNUSED(flag);
-  osSemaphoreRelease( SemShciId );
-  return;
+void shci_cmd_resp_release(uint32_t flag) {
+	UNUSED(flag);
+	osSemaphoreRelease(SemShciId);
+	return;
 }
 
-void shci_cmd_resp_wait(uint32_t timeout)
-{
-  UNUSED(timeout);
-  osSemaphoreAcquire( SemShciId, osWaitForever );
-  return;
+void shci_cmd_resp_wait(uint32_t timeout) {
+	UNUSED(timeout);
+	osSemaphoreAcquire(SemShciId, osWaitForever);
+	return;
 }
 
 /* Received trace buffer from M0 */
-void TL_TRACES_EvtReceived( TL_EvtPacket_t * hcievt )
-{
+void TL_TRACES_EvtReceived(TL_EvtPacket_t *hcievt) {
 #if(CFG_DEBUG_TRACE != 0)
   /* Call write/print function using DMA from dbg_trace */
   /* - Cast to TL_AsynchEvt_t* to get "real" payload (without Sub Evt code 2bytes),
      - (-2) to size to remove Sub Evt Code */
   DbgTraceWrite(1U, (const unsigned char *) ((TL_AsynchEvt_t *)(hcievt->evtserial.evt.payload))->payload, hcievt->evtserial.evt.plen - 2U);
 #endif /* CFG_DEBUG_TRACE */
-  /* Release buffer */
-  TL_MM_EvtDone( hcievt );
+	/* Release buffer */
+	TL_MM_EvtDone(hcievt);
 }
 /**
-  * @brief  Initialisation of the trace mechanism
-  * @param  None
-  * @retval None
-  */
+ * @brief  Initialisation of the trace mechanism
+ * @param  None
+ * @retval None
+ */
 #if(CFG_DEBUG_TRACE != 0)
 //void DbgOutputInit( void )
 //{

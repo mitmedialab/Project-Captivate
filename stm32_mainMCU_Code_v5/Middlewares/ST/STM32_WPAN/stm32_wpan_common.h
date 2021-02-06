@@ -17,7 +17,6 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32_WPAN_COMMON_H
 #define __STM32_WPAN_COMMON_H
@@ -35,9 +34,9 @@ extern "C" {
  #define __INLINE         inline                                     /*!< inline keyword for IAR Compiler. Only available in High optimization mode! */
  #define __STATIC_INLINE  static inline
 #elif defined ( __GNUC__ )
- #define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
- #define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
- #define __STATIC_INLINE  static inline
+#define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
+#define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
+#define __STATIC_INLINE  static inline
 #endif
 
 #include <stdint.h>
@@ -47,9 +46,9 @@ extern "C" {
 #include <stdarg.h>
 #include "cmsis_compiler.h"
 
-  /* -------------------------------- *
-   *  Basic definitions               *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Basic definitions               *
+ * -------------------------------- */
 
 #undef NULL
 #define NULL                    0U
@@ -60,9 +59,9 @@ extern "C" {
 #undef TRUE
 #define TRUE                    (!0U)
 
-  /* -------------------------------- *
-   *  Critical Section definition     *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Critical Section definition     *
+ * -------------------------------- */
 #undef BACKUP_PRIMASK
 #define BACKUP_PRIMASK()    uint32_t primask_bit= __get_PRIMASK()
 
@@ -72,18 +71,18 @@ extern "C" {
 #undef RESTORE_PRIMASK
 #define RESTORE_PRIMASK()   __set_PRIMASK(primask_bit)
 
-  /* -------------------------------- *
-   *  Macro delimiters                *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Macro delimiters                *
+ * -------------------------------- */
 #undef M_BEGIN
 #define M_BEGIN     do {
 
 #undef  M_END
 #define M_END       } while(0)
 
-  /* -------------------------------- *
-   *  Some useful macro definitions   *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Some useful macro definitions   *
+ * -------------------------------- */
 #undef MAX
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
@@ -153,8 +152,8 @@ extern "C" {
     #define PACKED_STRUCT PACKED__(struct)
   #endif
 #elif defined   ( __GNUC__ )
-  #define PACKED__ __attribute__((packed))
-  #define PACKED_STRUCT struct PACKED__
+#define PACKED__ __attribute__((packed))
+#define PACKED_STRUCT struct PACKED__
 #elif defined (__ICCARM__)
   #define PACKED_STRUCT __packed struct
 #elif

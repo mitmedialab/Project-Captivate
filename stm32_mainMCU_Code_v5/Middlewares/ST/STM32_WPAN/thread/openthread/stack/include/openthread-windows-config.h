@@ -28,12 +28,10 @@
 
 /* Define to 1 to enable the NCP UART interface. */
 // On the command line: #define OPENTHREAD_ENABLE_NCP_UART 0
-
 /* Define to 1 to enable the NCP SPI interface. */
 // On the command line: #define OPENTHREAD_ENABLE_NCP_SPI  1
-
 /* Define to 1 if you want to enable support for multiple OpenThread
-   instances. */
+ instances. */
 #define OPENTHREAD_ENABLE_MULTIPLE_INSTANCES 1
 
 /* Define to 1 if you want to enable default log output. */

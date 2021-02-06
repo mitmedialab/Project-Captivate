@@ -1,29 +1,29 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal.h
-  * @author  MCD Application Team
-  * @brief   This file contains all the functions prototypes for the HAL
-  *          module driver.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the 
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    stm32wbxx_hal.h
+ * @author  MCD Application Team
+ * @brief   This file contains all the functions prototypes for the HAL
+ *          module driver.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the 
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32WBxx_HAL_H
 #define STM32WBxx_HAL_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -31,40 +31,39 @@
 #include "stm32wbxx_ll_system.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup HAL HAL
-  * @{
-  */
-  
+ * @{
+ */
+
 /** @defgroup HAL_TICK_FREQ Tick Frequency
-  * @{
-  */
-typedef enum
-{
-  HAL_TICK_FREQ_10HZ         = 100U,
-  HAL_TICK_FREQ_100HZ        = 10U,
-  HAL_TICK_FREQ_1KHZ         = 1U,
-  HAL_TICK_FREQ_DEFAULT      = HAL_TICK_FREQ_1KHZ
+ * @{
+ */
+typedef enum {
+	HAL_TICK_FREQ_10HZ = 100U,
+	HAL_TICK_FREQ_100HZ = 10U,
+	HAL_TICK_FREQ_1KHZ = 1U,
+	HAL_TICK_FREQ_DEFAULT = HAL_TICK_FREQ_1KHZ
 } HAL_TickFreqTypeDef;
 
 /**
-  * @}
-  */
-  
+ * @}
+ */
+
 /* Exported constants --------------------------------------------------------*/
 /** @defgroup HAL_Exported_Constants HAL Exported Constants
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup SYSCFG_Exported_Constants SYSCFG Exported Constants
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup SYSCFG_BootMode BOOT Mode
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_BOOT_MAINFLASH           LL_SYSCFG_REMAP_FLASH           /*!< Main Flash memory mapped at 0x00000000   */
 #define SYSCFG_BOOT_SYSTEMFLASH         LL_SYSCFG_REMAP_SYSTEMFLASH     /*!< System Flash memory mapped at 0x00000000 */
 #define SYSCFG_BOOT_SRAM                LL_SYSCFG_REMAP_SRAM            /*!< SRAM1 mapped at 0x00000000               */
@@ -72,12 +71,12 @@ typedef enum
 #define SYSCFG_BOOT_QUADSPI             LL_SYSCFG_REMAP_QUADSPI         /*!< QUADSPI memory mapped at 0x00000000      */
 #endif
 /**
-  * @}
-  */
-    
+ * @}
+ */
+
 /** @defgroup SYSCFG_FPU_Interrupts FPU Interrupts
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_IT_FPU_IOC               SYSCFG_CFGR1_FPU_IE_0           /*!< Floating Point Unit Invalid operation Interrupt */
 #define SYSCFG_IT_FPU_DZC               SYSCFG_CFGR1_FPU_IE_1           /*!< Floating Point Unit Divide-by-zero Interrupt    */
 #define SYSCFG_IT_FPU_UFC               SYSCFG_CFGR1_FPU_IE_2           /*!< Floating Point Unit Underflow Interrupt         */
@@ -86,12 +85,12 @@ typedef enum
 #define SYSCFG_IT_FPU_IXC               SYSCFG_CFGR1_FPU_IE_5           /*!< Floating Point Unit Inexact Interrupt           */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SYSCFG_SRAM2WRP SRAM2 Page Write protection (0 to 31)
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_SRAM2WRP_PAGE0           LL_SYSCFG_SRAM2WRP_PAGE0        /*!< SRAM2A Write protection page 0  */
 #define SYSCFG_SRAM2WRP_PAGE1           LL_SYSCFG_SRAM2WRP_PAGE1        /*!< SRAM2A Write protection page 1  */
 #define SYSCFG_SRAM2WRP_PAGE2           LL_SYSCFG_SRAM2WRP_PAGE2        /*!< SRAM2A Write protection page 2  */
@@ -126,12 +125,12 @@ typedef enum
 #define SYSCFG_SRAM2WRP_PAGE31          LL_SYSCFG_SRAM2WRP_PAGE31       /*!< SRAM2A Write protection page 31 */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SYSCFG_SRAM2WRP_32_63 SRAM2 Page Write protection (32 to 63)
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_SRAM2WRP_PAGE32          LL_SYSCFG_SRAM2WRP_PAGE32       /*!< SRAM2B Write protection page 32 */
 #define SYSCFG_SRAM2WRP_PAGE33          LL_SYSCFG_SRAM2WRP_PAGE33       /*!< SRAM2B Write protection page 33 */
 #define SYSCFG_SRAM2WRP_PAGE34          LL_SYSCFG_SRAM2WRP_PAGE34       /*!< SRAM2B Write protection page 34 */
@@ -168,60 +167,60 @@ typedef enum
 #endif /* LL_SYSCFG_SRAM2WRP_PAGE36 */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #if defined(VREFBUF)
 /** @defgroup SYSCFG_VREFBUF_VoltageScale VREFBUF Voltage Scale
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_VREFBUF_VOLTAGE_SCALE0   LL_VREFBUF_VOLTAGE_SCALE0       /*!< Voltage reference scale 0 (VREF_OUT1) */
 #define SYSCFG_VREFBUF_VOLTAGE_SCALE1   LL_VREFBUF_VOLTAGE_SCALE1       /*!< Voltage reference scale 1 (VREF_OUT2) */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SYSCFG_VREFBUF_HighImpedance VREFBUF High Impedance
-  * @{
-  */
+ * @{
+ */
 #define SYSCFG_VREFBUF_HIGH_IMPEDANCE_DISABLE   0x00000000U             /*!< VREF_plus pin is internally connected to Voltage reference buffer output */
 #define SYSCFG_VREFBUF_HIGH_IMPEDANCE_ENABLE    VREFBUF_CSR_HIZ         /*!< VREF_plus pin is high impedance */
 
 /**
-  * @}
-  */
+ * @}
+ */
 #endif /* VREFBUF */
 
 /** @defgroup SYSCFG_SRAM_flags_definition SRAM Flags
-  * @{
-  */
+ * @{
+ */
 
 #define SYSCFG_FLAG_SRAM2_PE            SYSCFG_CFGR2_SPF                /*!< SRAM2 parity error */
 #define SYSCFG_FLAG_SRAM2_BUSY          SYSCFG_SCSR_SRAM2BSY            /*!< SRAM2 busy by erase operation */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SYSCFG_FastModePlus_GPIO Fast-mode Plus on GPIO
-  * @{
-  */
+ * @{
+ */
 
 /** @brief  Fast-mode Plus driving capability on a specific GPIO
-  */  
+ */
 #define SYSCFG_FASTMODEPLUS_PB6         SYSCFG_CFGR1_I2C_PB6_FMP        /*!< Enable Fast-mode Plus on PB6 */
 #define SYSCFG_FASTMODEPLUS_PB7         SYSCFG_CFGR1_I2C_PB7_FMP        /*!< Enable Fast-mode Plus on PB7 */
 #define SYSCFG_FASTMODEPLUS_PB8         SYSCFG_CFGR1_I2C_PB8_FMP        /*!< Enable Fast-mode Plus on PB8 */
 #define SYSCFG_FASTMODEPLUS_PB9         SYSCFG_CFGR1_I2C_PB9_FMP        /*!< Enable Fast-mode Plus on PB9 */
-   
+
 /**
  * @}
  */
-    
+
 /** @defgroup Secure_IP_Write_Access Secure IP Write Access
-  * @{
-  */
+ * @{
+ */
 #if defined(LL_SYSCFG_SECURE_ACCESS_AES1)
 #define HAL_SYSCFG_SECURE_ACCESS_AES1   LL_SYSCFG_SECURE_ACCESS_AES1    /*!< Enabling the security access of Advanced Encryption Standard 1 KEY[7:0] */
 #endif
@@ -229,32 +228,32 @@ typedef enum
 #define HAL_SYSCFG_SECURE_ACCESS_PKA    LL_SYSCFG_SECURE_ACCESS_PKA     /*!< Enabling the security access of Public Key Accelerator                  */
 #define HAL_SYSCFG_SECURE_ACCESS_RNG    LL_SYSCFG_SECURE_ACCESS_RNG     /*!< Enabling the security access of Random Number Generator                 */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported macros -----------------------------------------------------------*/
 /** @defgroup HAL_Exported_Macros HAL Exported Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup DBGMCU_Exported_Macros DBGMCU Exported Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @brief  Freeze and Unfreeze Peripherals in Debug mode
-  */
+ */
 
 /** @defgroup DBGMCU_APBx_GRPx_STOP_IP DBGMCU CPU1 APBx GRPx STOP IP
-  * @{
-  */
+ * @{
+ */
 #if defined(LL_DBGMCU_APB1_GRP1_TIM2_STOP)
 #define __HAL_DBGMCU_FREEZE_TIM2()              LL_DBGMCU_APB1_GRP1_FreezePeriph(LL_DBGMCU_APB1_GRP1_TIM2_STOP)
 #define __HAL_DBGMCU_UNFREEZE_TIM2()            LL_DBGMCU_APB1_GRP1_UnFreezePeriph(LL_DBGMCU_APB1_GRP1_TIM2_STOP)
@@ -311,12 +310,12 @@ typedef enum
 #endif
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup DBGMCU_C2_APBx_GRPx_STOP_IP DBGMCU CPU2 APBx GRPx STOP IP
-  * @{
-  */
+ * @{
+ */
 #if defined(LL_C2_DBGMCU_APB1_GRP1_TIM2_STOP)
 #define __HAL_C2_DBGMCU_FREEZE_TIM2()           LL_C2_DBGMCU_APB1_GRP1_FreezePeriph(LL_C2_DBGMCU_APB1_GRP1_TIM2_STOP)
 #define __HAL_C2_DBGMCU_UNFREEZE_TIM2()         LL_C2_DBGMCU_APB1_GRP1_UnFreezePeriph(LL_C2_DBGMCU_APB1_GRP1_TIM2_STOP)
@@ -368,52 +367,52 @@ typedef enum
 #endif
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SYSCFG_Exported_Macros SYSCFG Exported Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @brief  Main Flash memory mapped at 0x00000000
-  */
+ */
 #define __HAL_SYSCFG_REMAPMEMORY_FLASH()        LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_FLASH)
 
 /** @brief  System Flash memory mapped at 0x00000000
-  */
+ */
 #define __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH()  LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SYSTEMFLASH)
 
 /** @brief  Embedded SRAM mapped at 0x00000000
-  */
+ */
 #define __HAL_SYSCFG_REMAPMEMORY_SRAM()         LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SRAM)
 
 #if defined(LL_SYSCFG_REMAP_QUADSPI)
 /** @brief  QUADSPI mapped at 0x00000000.
-  */
+ */
 #define __HAL_SYSCFG_REMAPMEMORY_QUADSPI()      LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_QUADSPI)
 #endif
 
 /**
-  * @brief  Return the boot mode as configured by user.
-  * @retval The boot mode as configured by user. The returned value can be one
-  *         of the following values:
-  *           @arg @ref SYSCFG_BOOT_MAINFLASH
-  *           @arg @ref SYSCFG_BOOT_SYSTEMFLASH
-  *           @arg @ref SYSCFG_BOOT_SRAM
-#if defined(LL_SYSCFG_REMAP_QUADSPI)
-  *           @arg @ref SYSCFG_BOOT_QUADSPI
-#endif
-  */
+ * @brief  Return the boot mode as configured by user.
+ * @retval The boot mode as configured by user. The returned value can be one
+ *         of the following values:
+ *           @arg @ref SYSCFG_BOOT_MAINFLASH
+ *           @arg @ref SYSCFG_BOOT_SYSTEMFLASH
+ *           @arg @ref SYSCFG_BOOT_SRAM
+ #if defined(LL_SYSCFG_REMAP_QUADSPI)
+ *           @arg @ref SYSCFG_BOOT_QUADSPI
+ #endif
+ */
 #define __HAL_SYSCFG_GET_BOOT_MODE()            LL_SYSCFG_GetRemapMemory()
 
 /** @brief  SRAM2 page 0 to 31 write protection enable macro
-  * @param  __SRAM2WRP__  This parameter can be a combination of values of @ref SYSCFG_SRAM2WRP
-  * @note   Write protection can only be disabled by a system reset
-  */
+ * @param  __SRAM2WRP__  This parameter can be a combination of values of @ref SYSCFG_SRAM2WRP
+ * @note   Write protection can only be disabled by a system reset
+ */
 /* Legacy define */
 #define __HAL_SYSCFG_SRAM2_WRP_1_31_ENABLE      __HAL_SYSCFG_SRAM2_WRP_0_31_ENABLE
 #define __HAL_SYSCFG_SRAM2_WRP_0_31_ENABLE(__SRAM2WRP__)    do {assert_param(IS_SYSCFG_SRAM2WRP_PAGE((__SRAM2WRP__)));\
@@ -421,26 +420,26 @@ typedef enum
                                                             }while(0)
 
 /** @brief  SRAM2 page 32 to 63 write protection enable macro
-  * @param  __SRAM2WRP__  This parameter can be a combination of values of @ref SYSCFG_SRAM2WRP_32_63
-  * @note   Write protection can only be disabled by a system reset
-  */
+ * @param  __SRAM2WRP__  This parameter can be a combination of values of @ref SYSCFG_SRAM2WRP_32_63
+ * @note   Write protection can only be disabled by a system reset
+ */
 #define __HAL_SYSCFG_SRAM2_WRP_32_63_ENABLE(__SRAM2WRP__)   do {assert_param(IS_SYSCFG_SRAM2WRP2_PAGE((__SRAM2WRP__)));\
                                                                 LL_SYSCFG_EnableSRAM2PageWRP_32_63(__SRAM2WRP__);\
                                                             }while(0)
 
 /** @brief  SRAM2 page write protection unlock prior to erase
-  * @note   Writing a wrong key reactivates the write protection
-  */
+ * @note   Writing a wrong key reactivates the write protection
+ */
 #define __HAL_SYSCFG_SRAM2_WRP_UNLOCK()         LL_SYSCFG_UnlockSRAM2WRP()
 
 /** @brief  SRAM2 erase
-  * @note   __SYSCFG_GET_FLAG(SYSCFG_FLAG_SRAM2_BUSY) may be used to check end of erase
-  */
+ * @note   __SYSCFG_GET_FLAG(SYSCFG_FLAG_SRAM2_BUSY) may be used to check end of erase
+ */
 #define __HAL_SYSCFG_SRAM2_ERASE()              LL_SYSCFG_EnableSRAM2Erase()
 
 /** @brief  Floating Point Unit interrupt enable/disable macros
-  * @param __INTERRUPT__  This parameter can be a value of @ref SYSCFG_FPU_Interrupts
-  */
+ * @param __INTERRUPT__  This parameter can be a value of @ref SYSCFG_FPU_Interrupts
+ */
 #define __HAL_SYSCFG_FPU_INTERRUPT_ENABLE(__INTERRUPT__)    do {assert_param(IS_SYSCFG_FPU_INTERRUPT((__INTERRUPT__)));\
                                                                 SET_BIT(SYSCFG->CFGR1, (__INTERRUPT__));\
                                                             }while(0)
@@ -450,45 +449,45 @@ typedef enum
                                                             }while(0)
 
 /** @brief  SYSCFG Break ECC lock.
-  *         Enable and lock the connection of Flash ECC error connection to TIM1/16/17 Break input.
-  * @note   The selected configuration is locked and can be unlocked only by system reset.
-  */
+ *         Enable and lock the connection of Flash ECC error connection to TIM1/16/17 Break input.
+ * @note   The selected configuration is locked and can be unlocked only by system reset.
+ */
 #define __HAL_SYSCFG_BREAK_ECC_LOCK()           LL_SYSCFG_SetTIMBreakInputs(LL_SYSCFG_TIMBREAK_ECC)
 
 /** @brief  SYSCFG Break Cortex-M4 Lockup lock.
-  *         Enable and lock the connection of Cortex-M4 LOCKUP (Hardfault) output to TIM1/16/17 Break input.
-  * @note   The selected configuration is locked and can be unlocked only by system reset.
-  */
+ *         Enable and lock the connection of Cortex-M4 LOCKUP (Hardfault) output to TIM1/16/17 Break input.
+ * @note   The selected configuration is locked and can be unlocked only by system reset.
+ */
 #define __HAL_SYSCFG_BREAK_LOCKUP_LOCK()        LL_SYSCFG_SetTIMBreakInputs(LL_SYSCFG_TIMBREAK_LOCKUP)
 
 /** @brief  SYSCFG Break PVD lock.
-  *         Enable and lock the PVD connection to Timer1/16/17 Break input, as well as the PVDE and PLS[2:0] in the PWR_CR2 register.
-  * @note   The selected configuration is locked and can be unlocked only by system reset.
-  */
+ *         Enable and lock the PVD connection to Timer1/16/17 Break input, as well as the PVDE and PLS[2:0] in the PWR_CR2 register.
+ * @note   The selected configuration is locked and can be unlocked only by system reset.
+ */
 #define __HAL_SYSCFG_BREAK_PVD_LOCK()           LL_SYSCFG_SetTIMBreakInputs(LL_SYSCFG_TIMBREAK_PVD)
 
 /** @brief  SYSCFG Break SRAM2 parity lock.
-  *         Enable and lock the SRAM2 parity error signal connection to TIM1/16/17 Break input.
-  * @note   The selected configuration is locked and can be unlocked by system reset.
-  */
+ *         Enable and lock the SRAM2 parity error signal connection to TIM1/16/17 Break input.
+ * @note   The selected configuration is locked and can be unlocked by system reset.
+ */
 #define __HAL_SYSCFG_BREAK_SRAM2PARITY_LOCK()   LL_SYSCFG_SetTIMBreakInputs(LL_SYSCFG_TIMBREAK_SRAM2_PARITY)
 
 /** @brief  Check SYSCFG flag is set or not.
-  * @param  __FLAG__  specifies the flag to check.
-  *         This parameter can be one of the following values:
-  *            @arg @ref SYSCFG_FLAG_SRAM2_PE   SRAM2 Parity Error Flag
-  *            @arg @ref SYSCFG_FLAG_SRAM2_BUSY SRAM2 Erase Ongoing
-  * @retval The new state of __FLAG__ (TRUE or FALSE).
-  */
+ * @param  __FLAG__  specifies the flag to check.
+ *         This parameter can be one of the following values:
+ *            @arg @ref SYSCFG_FLAG_SRAM2_PE   SRAM2 Parity Error Flag
+ *            @arg @ref SYSCFG_FLAG_SRAM2_BUSY SRAM2 Erase Ongoing
+ * @retval The new state of __FLAG__ (TRUE or FALSE).
+ */
 #define __HAL_SYSCFG_GET_FLAG(__FLAG__)         ((((((__FLAG__) == SYSCFG_SCSR_SRAM2BSY)? SYSCFG->SCSR : SYSCFG->CFGR2) & (__FLAG__))!= 0U) ? 1U : 0U)
 
 /** @brief  Set the SPF bit to clear the SRAM Parity Error Flag.
-  */
+ */
 #define __HAL_SYSCFG_CLEAR_FLAG()               LL_SYSCFG_ClearFlag_SP()
 
 /** @brief  Fast mode Plus driving capability enable/disable macros
-  * @param __FASTMODEPLUS__ This parameter can be a value of @ref SYSCFG_FastModePlus_GPIO
-  */
+ * @param __FASTMODEPLUS__ This parameter can be a value of @ref SYSCFG_FastModePlus_GPIO
+ */
 #define __HAL_SYSCFG_FASTMODEPLUS_ENABLE(__FASTMODEPLUS__)  do {assert_param(IS_SYSCFG_FASTMODEPLUS((__FASTMODEPLUS__))); \
                                                                 LL_SYSCFG_EnableFastModePlus(__FASTMODEPLUS__);           \
                                                                }while(0)
@@ -498,21 +497,21 @@ typedef enum
                                                                }while(0)
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
-  
+ * @}
+ */
+
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup HAL_Private_Macros HAL Private Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup SYSCFG_Private_Macros SYSCFG Private Macros
-  * @{
-  */
+ * @{
+ */
 
 #define IS_SYSCFG_FPU_INTERRUPT(__INTERRUPT__)          ((((__INTERRUPT__) & SYSCFG_IT_FPU_IOC) == SYSCFG_IT_FPU_IOC) || \
                                                          (((__INTERRUPT__) & SYSCFG_IT_FPU_DZC) == SYSCFG_IT_FPU_DZC) || \
@@ -551,33 +550,32 @@ typedef enum
 #endif
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup HAL_Private_Macros HAL Private Macros
-  * @{
-  */
+ * @{
+ */
 #define IS_TICKFREQ(FREQ) (((FREQ) == HAL_TICK_FREQ_10HZ)  || \
                            ((FREQ) == HAL_TICK_FREQ_100HZ) || \
                            ((FREQ) == HAL_TICK_FREQ_1KHZ))
 /**
-  * @}
-  */
-
+ * @}
+ */
 
 /* Exported functions --------------------------------------------------------*/
 
 /** @defgroup HAL_Exported_Functions HAL Exported Functions
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup HAL_Exported_Functions_Group1 HAL Initialization and Configuration functions
-  * @{
-  */
+ * @{
+ */
 
 /* Initialization and Configuration functions  ******************************/
 HAL_StatusTypeDef HAL_Init(void);
@@ -585,15 +583,15 @@ HAL_StatusTypeDef HAL_DeInit(void);
 void HAL_MspInit(void);
 void HAL_MspDeInit(void);
 
-HAL_StatusTypeDef HAL_InitTick (uint32_t TickPriority);
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup HAL_Exported_Functions_Group2 HAL Control functions
-  * @{
-  */
+ * @{
+ */
 
 /* Peripheral Control functions  ************************************************/
 void HAL_IncTick(void);
@@ -612,12 +610,12 @@ uint32_t HAL_GetUIDw1(void);
 uint32_t HAL_GetUIDw2(void);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup HAL_Exported_Functions_Group3 HAL Debug functions
-  * @{
-  */
+ * @{
+ */
 
 /* DBGMCU Peripheral Control functions  *****************************************/
 void HAL_DBGMCU_EnableDBGSleepMode(void);
@@ -627,23 +625,23 @@ void HAL_DBGMCU_DisableDBGStopMode(void);
 void HAL_DBGMCU_EnableDBGStandbyMode(void);
 void HAL_DBGMCU_DisableDBGStandbyMode(void);
 /**
-  * @}
-  */
-  
+ * @}
+ */
+
 /* Exported variables ---------------------------------------------------------*/
 /** @addtogroup HAL_Exported_Variables
-  * @{
-  */
+ * @{
+ */
 extern __IO uint32_t uwTick;
 extern uint32_t uwTickPrio;
 extern HAL_TickFreqTypeDef uwTickFreq;
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @addtogroup HAL_Exported_Functions_Group4 HAL System Configuration functions
-  * @{
-  */
+ * @{
+ */
 
 /* SYSCFG Control functions  ****************************************************/
 void HAL_SYSCFG_SRAM2Erase(void);
@@ -670,20 +668,20 @@ void HAL_SYSCFG_DisableSecurityAccess(uint32_t SecurityAccess);
 uint32_t HAL_SYSCFG_IsEnabledSecurityAccess(uint32_t SecurityAccess);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #ifdef __cplusplus
 }

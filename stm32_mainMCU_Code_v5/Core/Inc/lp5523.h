@@ -1,11 +1,11 @@
 /**
  ******************************************************************************
  * File Name          : template.h
-  * Description        : Header for Lights.
-  ******************************************************************************
+ * Description        : Header for Lights.
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef LP5523_H
 #define LP5523_H
@@ -22,16 +22,15 @@
 
 /* typedef -----------------------------------------------------------*/
 
-typedef union ColorComplex
-{
-    struct colors_indiv {
-        uint8_t left_front_b;
-        uint8_t left_front_g;
-        uint8_t left_top_b;
-        uint8_t left_top_g;
-        uint8_t left_side_b;
-        uint8_t left_side_g;
-        uint8_t left_front_r;
+typedef union ColorComplex {
+	struct colors_indiv {
+		uint8_t left_front_b;
+		uint8_t left_front_g;
+		uint8_t left_top_b;
+		uint8_t left_top_g;
+		uint8_t left_side_b;
+		uint8_t left_side_g;
+		uint8_t left_front_r;
 		uint8_t left_top_r;
 		uint8_t left_side_r;
 
@@ -44,8 +43,8 @@ typedef union ColorComplex
 		uint8_t right_front_r;
 		uint8_t right_top_r;
 		uint8_t right_side_r;
-    };
-    uint8_t color[18];
+	};
+	uint8_t color[18];
 };
 
 /* defines -----------------------------------------------------------*/
@@ -155,7 +154,6 @@ typedef union ColorComplex
                                                 if ((__INDEX__) == LED3) LED3_GPIO_CLK_DISABLE();} while(0)
 #endif
 
-
 /* typedefs ------------------------------------------------------------*/
 #ifdef DONGLE_CODE
 typedef enum
@@ -181,13 +179,10 @@ void             BSP_LED_Toggle(Led_TypeDef Led);
 
 /* variables -----------------------------------------------*/
 
-
 /* variables that hold received messages */
-uint32_t 			lightsSimpleMessage;
+uint32_t lightsSimpleMessage;
 
 /* Functions Definition ------------------------------------------------------*/
-
-
 
 /*************************************************************
  *
@@ -253,9 +248,6 @@ void FrontLightsSet(union ColorComplex *setColors);
 ////
 ////  int32_t _sensorID;
 //};
-
-
-
 
 //#ifdef __cplusplus
 //} /* extern "C" */

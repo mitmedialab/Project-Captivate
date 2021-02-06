@@ -1,28 +1,27 @@
 /**
  ******************************************************************************
-  * File Name          : App/ble_conf.h
-  * Description        : Configuration file for BLE Middleware.
-  *
+ * File Name          : App/ble_conf.h
+ * Description        : Configuration file for BLE Middleware.
+ *
  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef BLE_CONF_H
 #define BLE_CONF_H
 
 #include "app_conf.h"
-
 
 /******************************************************************************
  *
@@ -31,7 +30,7 @@
  *
  ******************************************************************************/
 
- /**
+/**
  * This setting shall be set to '1' if the device needs to support the Peripheral Role
  * In the MS configuration, both BLE_CFG_PERIPHERAL and BLE_CFG_CENTRAL shall be set to '1'
  */
@@ -81,7 +80,6 @@
 #define BLE_CFG_DIS_IEEE_CERTIFICATION_LEN_MAX                              (32)
 #define BLE_CFG_DIS_PNP_ID_LEN_MAX                                          (7)
 
-
 /******************************************************************************
  * Human Interface Device Service (HIDS)
  ******************************************************************************/
@@ -112,8 +110,6 @@
   BLE_CFG_HIDS_FEATURE_REPORT_NB
 #define BLE_CFG_HIDS_PROTOCOL_MODE                                             1 /**< Report Protocol Mode */
 
-
-
 /******************************************************************************
  * GAP Service - Apprearance
  ******************************************************************************/
@@ -129,7 +125,6 @@
 #define CRS_STM_UUID128    0x00, 0x00, 0xfe, 0x60, 0xcc, 0x7a, 0x48, 0x2a, 0x98, 0x4a, 0x7f, 0x2e, 0xd5, 0xb3, 0xe5, 0x8f
 #define CRS_STM_TX_UUID128 0x00, 0x00, 0xfe, 0x61, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
 #define CRS_STM_RX_UUID128 0x00, 0x00, 0xfe, 0x62, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
-
 
 /******************************************************************************
  * Over The Air Feature (OTA) - STM Proprietary

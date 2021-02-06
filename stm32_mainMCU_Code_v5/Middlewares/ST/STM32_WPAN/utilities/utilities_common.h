@@ -4,19 +4,18 @@
  * @author  MCD Application Team
  * @brief   Common file to utilities
  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the 
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the 
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
  */
-
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __UTILITIES_COMMON_H
@@ -34,9 +33,9 @@ extern "C" {
 
 #include "app_conf.h"
 
-  /* -------------------------------- *
-   *  Basic definitions               *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Basic definitions               *
+ * -------------------------------- */
 
 #undef NULL
 #define NULL                    0
@@ -47,9 +46,9 @@ extern "C" {
 #undef TRUE
 #define TRUE                    (!0)
 
-  /* -------------------------------- *
-   *  Critical Section definition     *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Critical Section definition     *
+ * -------------------------------- */
 #undef BACKUP_PRIMASK
 #define BACKUP_PRIMASK()    uint32_t primask_bit= __get_PRIMASK()
 
@@ -59,18 +58,18 @@ extern "C" {
 #undef RESTORE_PRIMASK
 #define RESTORE_PRIMASK()   __set_PRIMASK(primask_bit)
 
-  /* -------------------------------- *
-   *  Macro delimiters                *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Macro delimiters                *
+ * -------------------------------- */
 #undef M_BEGIN
 #define M_BEGIN     do {
 
 #undef  M_END
 #define M_END       } while(0)
 
-  /* -------------------------------- *
-   *  Some useful macro definitions   *
-   * -------------------------------- */
+/* -------------------------------- *
+ *  Some useful macro definitions   *
+ * -------------------------------- */
 #undef MAX
 #define MAX( x, y )          (((x)>(y))?(x):(y))
 
@@ -139,8 +138,8 @@ extern "C" {
     #define PACKED_STRUCT PACKED__(struct)
   #endif
 #elif defined   ( __GNUC__ )
-  #define PACKED__ __attribute__((packed))
-  #define PACKED_STRUCT struct PACKED__
+#define PACKED__ __attribute__((packed))
+#define PACKED_STRUCT struct PACKED__
 #elif defined (__ICCARM__)
   #define PACKED_STRUCT __packed struct
 #elif

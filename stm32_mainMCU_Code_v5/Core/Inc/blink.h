@@ -1,11 +1,11 @@
 /**
  ******************************************************************************
  * File Name          : blink.h
-  * Description        : Header for Lights.
-  ******************************************************************************
+ * Description        : Header for Lights.
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef BLINK_H
 #define BLINK_H
@@ -20,36 +20,28 @@ extern "C" {
 #include "stm32wbxx_hal.h"
 
 /* typedef -----------------------------------------------------------*/
-struct blinkData{
-	uint8_t			data[100];
-	uint32_t		tick_ms;
-	uint32_t		payload_ID;
+struct blinkData {
+	uint8_t data[100];
+	uint32_t tick_ms;
+	uint32_t payload_ID;
 };
 
 /* defines -----------------------------------------------------------*/
 
-
 /* macros ------------------------------------------------------------*/
-
 
 /* function prototypes -----------------------------------------------*/
 
-
 /* variables -----------------------------------------------*/
-
 
 //osSemaphoreDef(blinkSemDef);
 //osSemaphoreId (blinkSemaphore);
-
 //osSemaphoreId osSemaphoreCreate (blinkSemDef, 0);
 //
 //osSemaphoreWait(multiplex_id, osWaitForever);
 //        // do something
 //        osSemaphoreRelease(blinkSemaphore);
-
 /* Functions Definition ------------------------------------------------------*/
-
-
 
 /*************************************************************
  *
@@ -82,13 +74,7 @@ void SetupBlinkSensing(void);
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-
-
-
-
-
-
+ *************************************************************/
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -16,7 +16,7 @@ float ts1_threshold;
 float ts2_threshold;
 uint16_t calibration_0 = 0;
 uint16_t calibration_1 = 0;
-union ColorComplex lightMessageComplexTouch = {0};
+union ColorComplex lightMessageComplexTouch = { 0 };
 uint32_t lightsSimpleMessageReceivedTouch;
 uint32_t prev_msg = 0;
 
@@ -32,12 +32,12 @@ void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp) {
 //		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
 	} else if (input0.rise_valid_ && pin_state == COMP_OUTPUT_LEVEL_LOW) {
 		//Falling edge
-		enqueue_pulse(&input0, input0.rise_time_, timestamp - input0.rise_time_);
+		enqueue_pulse(&input0, input0.rise_time_,
+				timestamp - input0.rise_time_);
 		input0.rise_valid_ = 0;
 //		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 	}
 }
-
 
 uint32_t temp = 0x01;
 // TODO: make threshold update if "touch" is active for too long
@@ -47,7 +47,8 @@ void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc) {
 	/* Note: a delay can be added here */
 
 	uint32_t uhTSCAcquisitionValue;
-	TSC_GroupStatusTypeDef status = HAL_TSC_GroupGetStatus(htsc, TSC_GROUP2_IDX);
+	TSC_GroupStatusTypeDef status = HAL_TSC_GroupGetStatus(htsc,
+			TSC_GROUP2_IDX);
 	uint32_t cur_time;
 	/*##-6- Check if the acquisition is correct (no max count) #################*/
 	if (status == TSC_GROUP_COMPLETED) {
@@ -55,40 +56,44 @@ void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc) {
 		uhTSCAcquisitionValue = HAL_TSC_GroupGetValue(htsc, TSC_GROUP2_IDX);
 		uint8_t touch;
 		if (cap_sensor == 0) {
-			if(calibration_0 <= CALIBRATION_SAMPLES){
+			if (calibration_0 <= CALIBRATION_SAMPLES) {
 				touch = 0;
-				if(calibration_0 == 0){
+				if (calibration_0 == 0) {
 					ts1_threshold = uhTSCAcquisitionValue;
-				}else{
-					ts1_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT + ts1_threshold * (1-ALPHA_WEIGHT);
+				} else {
+					ts1_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT
+							+ ts1_threshold * (1 - ALPHA_WEIGHT);
 				}
 				calibration_0 += 1;
-			}
-			else{
-				touch = (uhTSCAcquisitionValue <= (ts1_threshold - THRESHOLD_TOLERANCE));
+			} else {
+				touch = (uhTSCAcquisitionValue
+						<= (ts1_threshold - THRESHOLD_TOLERANCE));
 
 				// if not touched, update threshold
-				if(touch == 0){
-					ts1_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT + ts1_threshold * (1-ALPHA_WEIGHT);
+				if (touch == 0) {
+					ts1_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT
+							+ ts1_threshold * (1 - ALPHA_WEIGHT);
 				}
 			}
 		} else {
-			if(calibration_1 <= CALIBRATION_SAMPLES){
+			if (calibration_1 <= CALIBRATION_SAMPLES) {
 				touch = 0;
-				if(calibration_1 == 0){
+				if (calibration_1 == 0) {
 					ts2_threshold = uhTSCAcquisitionValue;
-				}else{
-					ts2_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT + ts2_threshold * (1-ALPHA_WEIGHT);
+				} else {
+					ts2_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT
+							+ ts2_threshold * (1 - ALPHA_WEIGHT);
 				}
 				calibration_1 += 1;
 
-			}
-			else{
-				touch = (uhTSCAcquisitionValue <= (ts2_threshold - THRESHOLD_TOLERANCE));
+			} else {
+				touch = (uhTSCAcquisitionValue
+						<= (ts2_threshold - THRESHOLD_TOLERANCE));
 
 				// if not touched, update threshold
-				if(touch == 0){
-					ts2_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT + ts2_threshold * (1-ALPHA_WEIGHT);
+				if (touch == 0) {
+					ts2_threshold = uhTSCAcquisitionValue * ALPHA_WEIGHT
+							+ ts2_threshold * (1 - ALPHA_WEIGHT);
 				}
 			}
 		}
@@ -119,7 +124,6 @@ void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc) {
 	}
 
 }
-
 
 void touchSensingStart(void) {
 	ts1_threshold = 0;
@@ -204,8 +208,10 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 			self->touches[1].cap_idx = (1 - self->touches[0].cap_idx);
 			self->touches[1].start_t = cur_time;
 		} else if (cur_time - self->touches[0].end_t > MIN_SWIPE_GAP) {
-			uint32_t touch_duration = self->touches[0].end_t - self->touches[0].start_t;
-			if (TAP_MIN_THRESHOLD < touch_duration && touch_duration < TAP_MAX_THRESHOLD) {
+			uint32_t touch_duration = self->touches[0].end_t
+					- self->touches[0].start_t;
+			if (TAP_MIN_THRESHOLD
+					< touch_duration&& touch_duration < TAP_MAX_THRESHOLD) {
 				//Register a tap
 				action = BothRelease;
 			}
@@ -217,20 +223,27 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 			self->touch_state = Idle;
 			self->touches[1].end_t = cur_time;
 			action = None;
-			uint32_t touches_start_diff = self->touches[1].start_t - self->touches[0].start_t;
-			uint32_t touches_end_diff = self->touches[1].end_t - self->touches[0].end_t;
-			uint32_t touch_duration = self->touches[1].end_t - self->touches[0].start_t;
+			uint32_t touches_start_diff = self->touches[1].start_t
+					- self->touches[0].start_t;
+			uint32_t touches_end_diff = self->touches[1].end_t
+					- self->touches[0].end_t;
+			uint32_t touch_duration = self->touches[1].end_t
+					- self->touches[0].start_t;
 
 			//If touch start and touch end differences were small, then it was likely just a tap
-			if ((touches_start_diff <= TAP_MIN_THRESHOLD) && (touches_end_diff <= TAP_MIN_THRESHOLD)
-					&& (TAP_MIN_THRESHOLD < touch_duration) && (touch_duration < TAP_MAX_THRESHOLD)) {
+			if ((touches_start_diff <= TAP_MIN_THRESHOLD)
+					&& (touches_end_diff <= TAP_MIN_THRESHOLD)
+					&& (TAP_MIN_THRESHOLD < touch_duration)
+					&& (touch_duration < TAP_MAX_THRESHOLD)) {
 				//Register a tap
 				action = BothRelease;
 			}
 			//Otherwise, it was a swipe. Might have to adjust these thresholds to allow swipe detection
-			else if (touches_start_diff > TAP_MIN_THRESHOLD && touches_end_diff > TAP_MIN_THRESHOLD) {
+			else if (touches_start_diff > TAP_MIN_THRESHOLD
+					&& touches_end_diff > TAP_MIN_THRESHOLD) {
 				//Register a swipe
-				action = (self->touches[0].cap_idx << 1) | self->touches[1].cap_idx;
+				action = (self->touches[0].cap_idx << 1)
+						| self->touches[1].cap_idx;
 			}
 
 			self->touch_state = Idle;
@@ -240,13 +253,18 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 			self->touch_state = Idle;
 			self->touches[0].end_t = cur_time;
 
-			uint32_t touches_start_diff = self->touches[1].start_t - self->touches[0].start_t;
-			uint32_t touches_end_diff = self->touches[0].end_t - self->touches[1].end_t;
-			uint32_t touch_duration = self->touches[0].end_t - self->touches[0].start_t;
+			uint32_t touches_start_diff = self->touches[1].start_t
+					- self->touches[0].start_t;
+			uint32_t touches_end_diff = self->touches[0].end_t
+					- self->touches[1].end_t;
+			uint32_t touch_duration = self->touches[0].end_t
+					- self->touches[0].start_t;
 
 			//If touch start and touch end differences were small, then it was likely just a tap
-			if ((touches_start_diff <= TAP_MIN_THRESHOLD) && (touches_end_diff <= TAP_MIN_THRESHOLD)
-					&& (TAP_MIN_THRESHOLD < touch_duration) && (touch_duration < TAP_MAX_THRESHOLD)) {
+			if ((touches_start_diff <= TAP_MIN_THRESHOLD)
+					&& (touches_end_diff <= TAP_MIN_THRESHOLD)
+					&& (TAP_MIN_THRESHOLD < touch_duration)
+					&& (touch_duration < TAP_MAX_THRESHOLD)) {
 				//Register a tap
 				action = BothRelease;
 			}
@@ -255,46 +273,47 @@ void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time) {
 		}
 	}
 
-	if( action == None){
+	if (action == None) {
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 
-	}else if(action == SwipeForward){
+	} else if (action == SwipeForward) {
 		lightsSimpleMessageReceivedTouch = 0x03; // cyan (green + blue)
 
 //		lightsSimpleMessageReceivedTouch |= 0x03 << 2;
 //		lightsSimpleMessageReceivedTouch |= 0x03 << 4;
-	}else if(action == SwipeBackward){
+	} else if (action == SwipeBackward) {
 		lightsSimpleMessageReceivedTouch = (0x01 << 6) | 0x01; // orange (green + red)
 
 //		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 2;
 //		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 4;
-	}else if(action == FrontRelease){
+	} else if (action == FrontRelease) {
 		lightsSimpleMessageReceivedTouch = 0x00; // off
-	}else if(action == BackRelease){
+	} else if (action == BackRelease) {
 		lightsSimpleMessageReceivedTouch = 0x00; // off
-	}else if(action == FrontHold){
+	} else if (action == FrontHold) {
 		lightsSimpleMessageReceivedTouch = 0x01; // green
 
 //		lightsSimpleMessageReceivedTouch |= 0x01 << 2;
 //		lightsSimpleMessageReceivedTouch |= 0x01 << 4;
-	}else if(action == BackHold){
+	} else if (action == BackHold) {
 		lightsSimpleMessageReceivedTouch = 0x02; // blue
 
 //		lightsSimpleMessageReceivedTouch |= 0x02 << 2;
 //		lightsSimpleMessageReceivedTouch |= 0x02 << 4;
-	}else if(action == BothHold){
+	} else if (action == BothHold) {
 		lightsSimpleMessageReceivedTouch = 0x01 << 6; // red
 
 //		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 2;
 //		lightsSimpleMessageReceivedTouch |= lightsSimpleMessageReceivedTouch << 4;
-	}else if(action == BothRelease){
+	} else if (action == BothRelease) {
 		lightsSimpleMessageReceivedTouch = 0x00; // off
 	}
 
-	if(prev_msg != lightsSimpleMessageReceivedTouch ){
+	if (prev_msg != lightsSimpleMessageReceivedTouch) {
 		prev_msg = lightsSimpleMessageReceivedTouch;
 
-		osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageReceivedTouch, 0U, 0);
+		osMessageQueuePut(lightsSimpleQueueHandle,
+				&lightsSimpleMessageReceivedTouch, 0U, 0);
 
 	}
 

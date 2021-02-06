@@ -72,7 +72,8 @@ typedef void (*otJamDetectionCallback)(bool aJamState, void *aContext);
  * @retval OT_ERROR_NONE    Successfully set the threshold.
  *
  */
-otError otJamDetectionSetRssiThreshold(otInstance *aInstance, int8_t aRssiThreshold);
+otError otJamDetectionSetRssiThreshold(otInstance *aInstance,
+		int8_t aRssiThreshold);
 
 /**
  * Get the Jam Detection RSSI Threshold (in dBm).
@@ -113,7 +114,7 @@ uint8_t otJamDetectionGetWindow(otInstance *aInstance);
  *
  * @param[in]  aInstance            A pointer to an OpenThread instance.
  * @param[in]  aBusyPeriod          The Jam Detection busy period (should be non-zero and
-                                    less than or equal to Jam Detection Window)
+ less than or equal to Jam Detection Window)
  *
  * @retval OT_ERROR_NONE          Successfully set the window.
  * @retval OT_ERROR_INVALID_ARGS  The given input is not within the valid range.
@@ -142,7 +143,8 @@ uint8_t otJamDetectionGetBusyPeriod(otInstance *aInstance);
  * @retval OT_ERROR_ALREADY      Jam detection has been started before.
  *
  */
-otError otJamDetectionStart(otInstance *aInstance, otJamDetectionCallback aCallback, void *aContext);
+otError otJamDetectionStart(otInstance *aInstance,
+		otJamDetectionCallback aCallback, void *aContext);
 
 /**
  * Stop the jamming detection.

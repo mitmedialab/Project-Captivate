@@ -78,7 +78,7 @@
 #define HAVE__BOOL 1
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+ */
 #define LT_OBJDIR ".libs/"
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
@@ -139,7 +139,7 @@
 #define OPENTHREAD_ENABLE_MTD_NETWORK_DIAGNOSTIC 0
 
 /* Define to 1 if you want to enable support for multiple OpenThread
-   instances. */
+ instances. */
 #define OPENTHREAD_ENABLE_MULTIPLE_INSTANCES 0
 
 /* Define to 1 to enable the NCP SPI interface. */
@@ -227,50 +227,50 @@
 #define VERSION "gcf8d4ec"
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
-   #define below would cause a syntax error. */
+ <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+ #define below would cause a syntax error. */
 /* #undef _UINT32_T */
 
 /* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
-   #define below would cause a syntax error. */
+ <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+ #define below would cause a syntax error. */
 /* #undef _UINT64_T */
 
 /* Define for Solaris 2.5.1 so the uint8_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
-   #define below would cause a syntax error. */
+ <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+ #define below would cause a syntax error. */
 /* #undef _UINT8_T */
 
 /* Define to the type of a signed integer type of width exactly 16 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef int16_t */
 
 /* Define to the type of a signed integer type of width exactly 32 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef int32_t */
 
 /* Define to the type of a signed integer type of width exactly 64 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef int64_t */
 
 /* Define to the type of a signed integer type of width exactly 8 bits if such
-   a type exists and the standard includes do not define it. */
+ a type exists and the standard includes do not define it. */
 /* #undef int8_t */
 
 /* Define to the type of an unsigned integer type of width exactly 16 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef uint16_t */
 
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef uint32_t */
 
 /* Define to the type of an unsigned integer type of width exactly 64 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef uint64_t */
 
 /* Define to the type of an unsigned integer type of width exactly 8 bits if
-   such a type exists and the standard includes do not define it. */
+ such a type exists and the standard includes do not define it. */
 /* #undef uint8_t */
 
 /* The settings storage path on android. */

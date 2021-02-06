@@ -1,11 +1,10 @@
-
 /**
-  ******************************************************************************
-  *  @file    p2p_stm.h
-  * @author  MCD Application Team
-  * @brief   Header for p2p_stm.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ *  @file    p2p_stm.h
+ * @author  MCD Application Team
+ * @brief   Header for p2p_stm.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,7 +17,6 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __P2PS_STM_H
 #define __P2PS_STM_H
@@ -29,41 +27,34 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 
- 
-  
 /* Exported types ------------------------------------------------------------*/
-typedef enum
-{
-  P2PS_STM__NOTIFY_ENABLED_EVT,
-  P2PS_STM_NOTIFY_DISABLED_EVT,
-  P2PS_STM_READ_EVT,
-  P2PS_STM_WRITE_EVT,
-  P2PS_STM_BOOT_REQUEST_EVT,
+typedef enum {
+	P2PS_STM__NOTIFY_ENABLED_EVT,
+	P2PS_STM_NOTIFY_DISABLED_EVT,
+	P2PS_STM_READ_EVT,
+	P2PS_STM_WRITE_EVT,
+	P2PS_STM_BOOT_REQUEST_EVT,
 } P2PS_STM_Opcode_evt_t;
 
-typedef struct
-{
-  uint8_t * pPayload;
-  uint8_t     Length;
-}P2PS_STM_Data_t;  
+typedef struct {
+	uint8_t *pPayload;
+	uint8_t Length;
+} P2PS_STM_Data_t;
 
-typedef struct
-{
-  P2PS_STM_Opcode_evt_t     P2P_Evt_Opcode;
-  P2PS_STM_Data_t           DataTransfered;
-  uint16_t                  ConnectionHandle;
-  uint8_t                   ServiceInstance;
-}P2PS_STM_App_Notification_evt_t;
-
+typedef struct {
+	P2PS_STM_Opcode_evt_t P2P_Evt_Opcode;
+	P2PS_STM_Data_t DataTransfered;
+	uint16_t ConnectionHandle;
+	uint8_t ServiceInstance;
+} P2PS_STM_App_Notification_evt_t;
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void P2PS_STM_Init( void );
+void P2PS_STM_Init(void);
 void P2PS_STM_App_Notification(P2PS_STM_App_Notification_evt_t *pNotification);
-tBleStatus P2PS_STM_App_Update_Char(uint16_t UUID,  uint8_t *pPayload);
-
+tBleStatus P2PS_STM_App_Update_Char(uint16_t UUID, uint8_t *pPayload);
 
 #ifdef __cplusplus
 }

@@ -43,7 +43,8 @@ struct LogMessage statusMessage;
 
 static const struct LogMessage nullStatusMessage = { 0 };
 static const struct blinkData nullBlinkMsg = { 0 };
-static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived = { 0 };
+static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived =
+		{ 0 };
 static const struct inertialData nullInertialMsgReceived = { 0 };
 static const struct VIVEVars nullViveMsgReceived = { 0 };
 
@@ -116,7 +117,6 @@ void MasterThreadTask(void *argument) {
 		togLogMessageReceived.intertialEnabled = 0;
 #endif
 
-
 #ifndef TEST_RUN_ON_START
 		// pass variable to share system state
 		osMessageQueueReset(statusQueueHandle);
@@ -132,7 +132,8 @@ void MasterThreadTask(void *argument) {
 			logEnabled = 1;
 
 			// keep record of this message so new message doesn't overwrite
-			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
+			memcpy(&prevLogMessage, &togLogMessageReceived,
+					sizeof(struct LogMessage));
 
 			// start all sensor subsystems
 			masterEnterRoutine();
@@ -151,17 +152,17 @@ void MasterThreadTask(void *argument) {
 				grabSensorData();
 
 				// add all sensor data into a packet
-				packetizeData(&sensorPacket, &blinkMsgReceived, &secondaryProcessorMsgReceived, &inertialMsgReceived,
+				packetizeData(&sensorPacket, &blinkMsgReceived,
+						&secondaryProcessorMsgReceived, &inertialMsgReceived,
 						&vive_loc);
 
 				/**********************************************************************************/
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
 				/**********************************************************************************/
 
-				if( togLogMessageReceived.status == SEND_VIA_BLE ){ //send via BLE
+				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
 					SendDataBLE(&sensorPacket);
-				}
-				else{ //send via OpenThread
+				} else { //send via OpenThread
 					APP_THREAD_SendBorderPacket(&sensorPacket);
 				}
 				/**********************************************************************************/
@@ -170,7 +171,8 @@ void MasterThreadTask(void *argument) {
 
 				// check if the queue has a new message (potentially a command to stop logging)
 				//   otherwise, timeout
-				if (osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, 0) == osOK) {
+				if (osMessageQueueGet(togLoggingQueueHandle,
+						&togLogMessageReceived, 0U, 0) == osOK) {
 					// disable threads
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
 
@@ -180,9 +182,10 @@ void MasterThreadTask(void *argument) {
 						break;
 					}
 
-					else if (togLogMessageReceived.status == TARE_NOW){
+					else if (togLogMessageReceived.status == TARE_NOW) {
 						lightsSimpleMessageAck = 0x03; // cyan (green + blue)
-						osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageAck, 0U, 0);
+						osMessageQueuePut(lightsSimpleQueueHandle,
+								&lightsSimpleMessageAck, 0U, 0);
 
 						IMU_sendTareNow();
 
@@ -193,7 +196,8 @@ void MasterThreadTask(void *argument) {
 						osDelay(100);
 
 						lightsSimpleMessageAck = 0;
-						osMessageQueuePut(lightsSimpleQueueHandle, &lightsSimpleMessageAck, 0U, 0);
+						osMessageQueuePut(lightsSimpleQueueHandle,
+								&lightsSimpleMessageAck, 0U, 0);
 					}
 				}
 
@@ -201,25 +205,25 @@ void MasterThreadTask(void *argument) {
 				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
 				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
 				// or greater than the allotted PACKET_SEND_PERIOD
-				if( (waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)){
+				if ((waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)) {
 					waitTime = 0; //set to zero (i.e. dont wait)
-				}
-				else{
+				} else {
 					osDelay(waitTime);
 				}
 
 			}
-		}
-		else if (logEnabled == 1 && togLogMessageReceived.logStatus == DISABLE_LOG) {
+		} else if (logEnabled
+				== 1&& togLogMessageReceived.logStatus == DISABLE_LOG) {
 			logEnabled = 0;
 			masterExitRoutine();
-		}
-		else if (lightLabDemoEnabled == 0 && (togLogMessageReceived.status == LIGHT_LAB_DEMO)){
+		} else if (lightLabDemoEnabled == 0
+				&& (togLogMessageReceived.status == LIGHT_LAB_DEMO)) {
 			// keep record of this message so new message doesn't overwrite
-			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
+			memcpy(&prevLogMessage, &togLogMessageReceived,
+					sizeof(struct LogMessage));
 
 			// if requesting another feature to be enabled but the logging is still enabled
-			if(logEnabled == 1){
+			if (logEnabled == 1) {
 				logEnabled = 0;
 				masterExitRoutine();
 			}
@@ -236,8 +240,9 @@ void MasterThreadTask(void *argument) {
 			// add a delay to ensure all threads are given enough time to collect initial samples
 			osDelay(500);
 
-			while(1){
-				if (osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever) == osOK) {
+			while (1) {
+				if (osMessageQueueGet(togLoggingQueueHandle,
+						&togLogMessageReceived, 0U, osWaitForever) == osOK) {
 					// disable threads
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
 
@@ -249,14 +254,12 @@ void MasterThreadTask(void *argument) {
 					}
 				}
 			}
-		}
-		else if ((lightLabDemoEnabled == LIGHT_LAB_DEMO) && (togLogMessageReceived.status == DISABLE_SENSING)){
+		} else if ((lightLabDemoEnabled == LIGHT_LAB_DEMO)
+				&& (togLogMessageReceived.status == DISABLE_SENSING)) {
 
 			osSemaphoreRelease(lightingLabDemoEndHandle);
 
-
 			lightLabDemoEnabled = 0;
-
 
 		}
 
@@ -265,14 +268,19 @@ void MasterThreadTask(void *argument) {
 
 void grabSensorData(void) {
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
-		if (osOK != osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U, 0)) {
+		if (osOK
+				!= osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U,
+						0)) {
 			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
 		}
 	}
 
 	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {
-		if (osOK != osMessageQueueGet(interProcessorMsgQueueHandle, &secondaryProcessorMsgReceived, 0U, 0)) {
-			memcpy(&secondaryProcessorMsgReceived, &nullSecondaryProcessorMsgReceived,
+		if (osOK
+				!= osMessageQueueGet(interProcessorMsgQueueHandle,
+						&secondaryProcessorMsgReceived, 0U, 0)) {
+			memcpy(&secondaryProcessorMsgReceived,
+					&nullSecondaryProcessorMsgReceived,
 					sizeof(struct parsedSecondaryProcessorPacket));
 		}
 	}
@@ -285,8 +293,11 @@ void grabSensorData(void) {
 	}
 
 	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
-		if (osOK != osMessageQueueGet(inertialSensingQueueHandle, &inertialMsgReceived, 0U, 0)) {
-			memcpy(&inertialMsgReceived, &nullInertialMsgReceived, sizeof(struct inertialData));
+		if (osOK
+				!= osMessageQueueGet(inertialSensingQueueHandle,
+						&inertialMsgReceived, 0U, 0)) {
+			memcpy(&inertialMsgReceived, &nullInertialMsgReceived,
+					sizeof(struct inertialData));
 		}
 	}
 }
@@ -336,10 +347,9 @@ void masterExitRoutine(void) {
 
 }
 
-
-
 void packetizeData(struct LogPacket *packet, struct blinkData *blink,
-		struct parsedSecondaryProcessorPacket *processorMsg, struct inertialData *inertialMsg, VIVEVars *posMsg) {
+		struct parsedSecondaryProcessorPacket *processorMsg,
+		struct inertialData *inertialMsg, VIVEVars *posMsg) {
 	// get processor tick counts (in terms of ms)
 	packet->tick_ms = HAL_GetTick();
 
@@ -350,7 +360,8 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 
 	// add sensor data
 	memcpy(&(packet->blink), blink, sizeof(struct blinkData));
-	memcpy(&(packet->procData), processorMsg, sizeof(struct parsedSecondaryProcessorPacket));
+	memcpy(&(packet->procData), processorMsg,
+			sizeof(struct parsedSecondaryProcessorPacket));
 	memcpy(&(packet->inertial), inertialMsg, sizeof(struct inertialData));
 	memcpy(&(packet->pos), posMsg, sizeof(struct VIVEVars));
 }

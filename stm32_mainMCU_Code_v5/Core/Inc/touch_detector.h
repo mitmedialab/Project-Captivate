@@ -13,7 +13,7 @@
 
 //.1 MF is ideal for capacitor
 
-enum TouchType{
+enum TouchType {
 	None = 0,
 	SwipeForward = 1,
 	SwipeBackward = 2,
@@ -25,7 +25,7 @@ enum TouchType{
 	BothRelease = 8
 };
 
-enum TouchState{
+enum TouchState {
 	Idle = 0,
 	OnePressed = 1,
 	TwoPressed = 2,
@@ -34,18 +34,18 @@ enum TouchState{
 	SecondReleasedFirstPressed = 5
 };
 
-typedef struct Touch{
+typedef struct Touch {
 	uint8_t cap_idx;
 	uint32_t start_t;	//ms
 	uint32_t end_t;	//ms
 } Touch;
 
-typedef struct TouchDetector{
+typedef struct TouchDetector {
 	Touch touches[2];
 	uint8_t touch_state;
 } TouchDetector;
 
-typedef struct Debouncer{
+typedef struct Debouncer {
 	uint32_t start_t;
 	uint8_t input;
 	uint8_t clean_out;
@@ -53,7 +53,7 @@ typedef struct Debouncer{
 
 void process_touches(TouchDetector *self, Debouncer *dbs, uint32_t cur_time);
 void debounce(Debouncer *self, uint8_t noisy_in, uint32_t cur_time);
-void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef* htsc);
+void HAL_TSC_ConvCpltCallback(TSC_HandleTypeDef *htsc);
 void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp);
 void touchSensingStart(void);
 void touchSensingStop(void);

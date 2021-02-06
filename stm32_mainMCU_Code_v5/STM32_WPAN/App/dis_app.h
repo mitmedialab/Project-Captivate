@@ -1,11 +1,11 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    dis_app.h
-  * @author  MCD Application Team
-  * @brief   Header for dis_application.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dis_app.h
+ * @author  MCD Application Team
+ * @brief   Header for dis_application.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>

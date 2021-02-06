@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -30,7 +29,6 @@
 
 #include "instance.h"
 #include "network_time.h"
-
 
 #if OPENTHREAD_CONFIG_ENABLE_TIME_SYNC
 

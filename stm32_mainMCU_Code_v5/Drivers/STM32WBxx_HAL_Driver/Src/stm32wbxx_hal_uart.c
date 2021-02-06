@@ -1,169 +1,169 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_uart.c
-  * @author  MCD Application Team
-  * @brief   UART HAL module driver.
-  *          This file provides firmware functions to manage the following
-  *          functionalities of the Universal Asynchronous Receiver Transmitter Peripheral (UART).
-  *           + Initialization and de-initialization functions
-  *           + IO operation functions
-  *           + Peripheral Control functions
-  *
-  *
-  @verbatim
+ ******************************************************************************
+ * @file    stm32wbxx_hal_uart.c
+ * @author  MCD Application Team
+ * @brief   UART HAL module driver.
+ *          This file provides firmware functions to manage the following
+ *          functionalities of the Universal Asynchronous Receiver Transmitter Peripheral (UART).
+ *           + Initialization and de-initialization functions
+ *           + IO operation functions
+ *           + Peripheral Control functions
+ *
+ *
+ @verbatim
  ===============================================================================
-                        ##### How to use this driver #####
+ ##### How to use this driver #####
  ===============================================================================
-  [..]
-    The UART HAL driver can be used as follows:
+ [..]
+ The UART HAL driver can be used as follows:
 
-    (#) Declare a UART_HandleTypeDef handle structure (eg. UART_HandleTypeDef huart).
-    (#) Initialize the UART low level resources by implementing the HAL_UART_MspInit() API:
-        (++) Enable the USARTx interface clock.
-        (++) UART pins configuration:
-            (+++) Enable the clock for the UART GPIOs.
-            (+++) Configure these UART pins as alternate function pull-up.
-        (++) NVIC configuration if you need to use interrupt process (HAL_UART_Transmit_IT()
-             and HAL_UART_Receive_IT() APIs):
-            (+++) Configure the USARTx interrupt priority.
-            (+++) Enable the NVIC USART IRQ handle.
-        (++) UART interrupts handling:
-              -@@-  The specific UART interrupts (Transmission complete interrupt,
-                RXNE interrupt, RX/TX FIFOs related interrupts and Error Interrupts)
-                are managed using the macros __HAL_UART_ENABLE_IT() and __HAL_UART_DISABLE_IT()
-                inside the transmit and receive processes.
-        (++) DMA Configuration if you need to use DMA process (HAL_UART_Transmit_DMA()
-             and HAL_UART_Receive_DMA() APIs):
-            (+++) Declare a DMA handle structure for the Tx/Rx channel.
-            (+++) Enable the DMAx interface clock.
-            (+++) Configure the declared DMA handle structure with the required Tx/Rx parameters.
-            (+++) Configure the DMA Tx/Rx channel.
-            (+++) Associate the initialized DMA handle to the UART DMA Tx/Rx handle.
-            (+++) Configure the priority and enable the NVIC for the transfer complete interrupt on the DMA Tx/Rx channel.
+ (#) Declare a UART_HandleTypeDef handle structure (eg. UART_HandleTypeDef huart).
+ (#) Initialize the UART low level resources by implementing the HAL_UART_MspInit() API:
+ (++) Enable the USARTx interface clock.
+ (++) UART pins configuration:
+ (+++) Enable the clock for the UART GPIOs.
+ (+++) Configure these UART pins as alternate function pull-up.
+ (++) NVIC configuration if you need to use interrupt process (HAL_UART_Transmit_IT()
+ and HAL_UART_Receive_IT() APIs):
+ (+++) Configure the USARTx interrupt priority.
+ (+++) Enable the NVIC USART IRQ handle.
+ (++) UART interrupts handling:
+ -@@-  The specific UART interrupts (Transmission complete interrupt,
+ RXNE interrupt, RX/TX FIFOs related interrupts and Error Interrupts)
+ are managed using the macros __HAL_UART_ENABLE_IT() and __HAL_UART_DISABLE_IT()
+ inside the transmit and receive processes.
+ (++) DMA Configuration if you need to use DMA process (HAL_UART_Transmit_DMA()
+ and HAL_UART_Receive_DMA() APIs):
+ (+++) Declare a DMA handle structure for the Tx/Rx channel.
+ (+++) Enable the DMAx interface clock.
+ (+++) Configure the declared DMA handle structure with the required Tx/Rx parameters.
+ (+++) Configure the DMA Tx/Rx channel.
+ (+++) Associate the initialized DMA handle to the UART DMA Tx/Rx handle.
+ (+++) Configure the priority and enable the NVIC for the transfer complete interrupt on the DMA Tx/Rx channel.
 
-    (#) Program the Baud Rate, Word Length, Stop Bit, Parity, Prescaler value , Hardware
-        flow control and Mode (Receiver/Transmitter) in the huart handle Init structure.
+ (#) Program the Baud Rate, Word Length, Stop Bit, Parity, Prescaler value , Hardware
+ flow control and Mode (Receiver/Transmitter) in the huart handle Init structure.
 
-    (#) If required, program UART advanced features (TX/RX pins swap, auto Baud rate detection,...)
-        in the huart handle AdvancedInit structure.
+ (#) If required, program UART advanced features (TX/RX pins swap, auto Baud rate detection,...)
+ in the huart handle AdvancedInit structure.
 
-    (#) For the UART asynchronous mode, initialize the UART registers by calling
-        the HAL_UART_Init() API.
+ (#) For the UART asynchronous mode, initialize the UART registers by calling
+ the HAL_UART_Init() API.
 
-    (#) For the UART Half duplex mode, initialize the UART registers by calling
-        the HAL_HalfDuplex_Init() API.
+ (#) For the UART Half duplex mode, initialize the UART registers by calling
+ the HAL_HalfDuplex_Init() API.
 
-    (#) For the UART LIN (Local Interconnection Network) mode, initialize the UART registers
-        by calling the HAL_LIN_Init() API.
+ (#) For the UART LIN (Local Interconnection Network) mode, initialize the UART registers
+ by calling the HAL_LIN_Init() API.
 
-    (#) For the UART Multiprocessor mode, initialize the UART registers
-        by calling the HAL_MultiProcessor_Init() API.
+ (#) For the UART Multiprocessor mode, initialize the UART registers
+ by calling the HAL_MultiProcessor_Init() API.
 
-    (#) For the UART RS485 Driver Enabled mode, initialize the UART registers
-        by calling the HAL_RS485Ex_Init() API.
+ (#) For the UART RS485 Driver Enabled mode, initialize the UART registers
+ by calling the HAL_RS485Ex_Init() API.
 
-    [..]
-    (@) These API's (HAL_UART_Init(), HAL_HalfDuplex_Init(), HAL_LIN_Init(), HAL_MultiProcessor_Init(),
-        also configure the low level Hardware GPIO, CLOCK, CORTEX...etc) by
-        calling the customized HAL_UART_MspInit() API.
+ [..]
+ (@) These API's (HAL_UART_Init(), HAL_HalfDuplex_Init(), HAL_LIN_Init(), HAL_MultiProcessor_Init(),
+ also configure the low level Hardware GPIO, CLOCK, CORTEX...etc) by
+ calling the customized HAL_UART_MspInit() API.
 
-    ##### Callback registration #####
-    ==================================
+ ##### Callback registration #####
+ ==================================
 
-    [..]
-    The compilation define USE_HAL_UART_REGISTER_CALLBACKS when set to 1
-    allows the user to configure dynamically the driver callbacks.
+ [..]
+ The compilation define USE_HAL_UART_REGISTER_CALLBACKS when set to 1
+ allows the user to configure dynamically the driver callbacks.
 
-    [..]
-    Use Function @ref HAL_UART_RegisterCallback() to register a user callback.
-    Function @ref HAL_UART_RegisterCallback() allows to register following callbacks:
-    (+) TxHalfCpltCallback        : Tx Half Complete Callback.
-    (+) TxCpltCallback            : Tx Complete Callback.
-    (+) RxHalfCpltCallback        : Rx Half Complete Callback.
-    (+) RxCpltCallback            : Rx Complete Callback.
-    (+) ErrorCallback             : Error Callback.
-    (+) AbortCpltCallback         : Abort Complete Callback.
-    (+) AbortTransmitCpltCallback : Abort Transmit Complete Callback.
-    (+) AbortReceiveCpltCallback  : Abort Receive Complete Callback.
-    (+) WakeupCallback            : Wakeup Callback.
-    (+) RxFifoFullCallback        : Rx Fifo Full Callback.
-    (+) TxFifoEmptyCallback       : Tx Fifo Empty Callback.
-    (+) MspInitCallback           : UART MspInit.
-    (+) MspDeInitCallback         : UART MspDeInit.
-    This function takes as parameters the HAL peripheral handle, the Callback ID
-    and a pointer to the user callback function.
+ [..]
+ Use Function @ref HAL_UART_RegisterCallback() to register a user callback.
+ Function @ref HAL_UART_RegisterCallback() allows to register following callbacks:
+ (+) TxHalfCpltCallback        : Tx Half Complete Callback.
+ (+) TxCpltCallback            : Tx Complete Callback.
+ (+) RxHalfCpltCallback        : Rx Half Complete Callback.
+ (+) RxCpltCallback            : Rx Complete Callback.
+ (+) ErrorCallback             : Error Callback.
+ (+) AbortCpltCallback         : Abort Complete Callback.
+ (+) AbortTransmitCpltCallback : Abort Transmit Complete Callback.
+ (+) AbortReceiveCpltCallback  : Abort Receive Complete Callback.
+ (+) WakeupCallback            : Wakeup Callback.
+ (+) RxFifoFullCallback        : Rx Fifo Full Callback.
+ (+) TxFifoEmptyCallback       : Tx Fifo Empty Callback.
+ (+) MspInitCallback           : UART MspInit.
+ (+) MspDeInitCallback         : UART MspDeInit.
+ This function takes as parameters the HAL peripheral handle, the Callback ID
+ and a pointer to the user callback function.
 
-    [..]
-    Use function @ref HAL_UART_UnRegisterCallback() to reset a callback to the default
-    weak (surcharged) function.
-    @ref HAL_UART_UnRegisterCallback() takes as parameters the HAL peripheral handle,
-    and the Callback ID.
-    This function allows to reset following callbacks:
-    (+) TxHalfCpltCallback        : Tx Half Complete Callback.
-    (+) TxCpltCallback            : Tx Complete Callback.
-    (+) RxHalfCpltCallback        : Rx Half Complete Callback.
-    (+) RxCpltCallback            : Rx Complete Callback.
-    (+) ErrorCallback             : Error Callback.
-    (+) AbortCpltCallback         : Abort Complete Callback.
-    (+) AbortTransmitCpltCallback : Abort Transmit Complete Callback.
-    (+) AbortReceiveCpltCallback  : Abort Receive Complete Callback.
-    (+) WakeupCallback            : Wakeup Callback.
-    (+) RxFifoFullCallback        : Rx Fifo Full Callback.
-    (+) TxFifoEmptyCallback       : Tx Fifo Empty Callback.
-    (+) MspInitCallback           : UART MspInit.
-    (+) MspDeInitCallback         : UART MspDeInit.
+ [..]
+ Use function @ref HAL_UART_UnRegisterCallback() to reset a callback to the default
+ weak (surcharged) function.
+ @ref HAL_UART_UnRegisterCallback() takes as parameters the HAL peripheral handle,
+ and the Callback ID.
+ This function allows to reset following callbacks:
+ (+) TxHalfCpltCallback        : Tx Half Complete Callback.
+ (+) TxCpltCallback            : Tx Complete Callback.
+ (+) RxHalfCpltCallback        : Rx Half Complete Callback.
+ (+) RxCpltCallback            : Rx Complete Callback.
+ (+) ErrorCallback             : Error Callback.
+ (+) AbortCpltCallback         : Abort Complete Callback.
+ (+) AbortTransmitCpltCallback : Abort Transmit Complete Callback.
+ (+) AbortReceiveCpltCallback  : Abort Receive Complete Callback.
+ (+) WakeupCallback            : Wakeup Callback.
+ (+) RxFifoFullCallback        : Rx Fifo Full Callback.
+ (+) TxFifoEmptyCallback       : Tx Fifo Empty Callback.
+ (+) MspInitCallback           : UART MspInit.
+ (+) MspDeInitCallback         : UART MspDeInit.
 
-    [..]
-    By default, after the @ref HAL_UART_Init() and when the state is HAL_UART_STATE_RESET
-    all callbacks are set to the corresponding weak (surcharged) functions:
-    examples @ref HAL_UART_TxCpltCallback(), @ref HAL_UART_RxHalfCpltCallback().
-    Exception done for MspInit and MspDeInit functions that are respectively
-    reset to the legacy weak (surcharged) functions in the @ref HAL_UART_Init()
-    and @ref HAL_UART_DeInit() only when these callbacks are null (not registered beforehand).
-    If not, MspInit or MspDeInit are not null, the @ref HAL_UART_Init() and @ref HAL_UART_DeInit()
-    keep and use the user MspInit/MspDeInit callbacks (registered beforehand).
+ [..]
+ By default, after the @ref HAL_UART_Init() and when the state is HAL_UART_STATE_RESET
+ all callbacks are set to the corresponding weak (surcharged) functions:
+ examples @ref HAL_UART_TxCpltCallback(), @ref HAL_UART_RxHalfCpltCallback().
+ Exception done for MspInit and MspDeInit functions that are respectively
+ reset to the legacy weak (surcharged) functions in the @ref HAL_UART_Init()
+ and @ref HAL_UART_DeInit() only when these callbacks are null (not registered beforehand).
+ If not, MspInit or MspDeInit are not null, the @ref HAL_UART_Init() and @ref HAL_UART_DeInit()
+ keep and use the user MspInit/MspDeInit callbacks (registered beforehand).
 
-    [..]
-    Callbacks can be registered/unregistered in HAL_UART_STATE_READY state only.
-    Exception done MspInit/MspDeInit that can be registered/unregistered
-    in HAL_UART_STATE_READY or HAL_UART_STATE_RESET state, thus registered (user)
-    MspInit/DeInit callbacks can be used during the Init/DeInit.
-    In that case first register the MspInit/MspDeInit user callbacks
-    using @ref HAL_UART_RegisterCallback() before calling @ref HAL_UART_DeInit()
-    or @ref HAL_UART_Init() function.
+ [..]
+ Callbacks can be registered/unregistered in HAL_UART_STATE_READY state only.
+ Exception done MspInit/MspDeInit that can be registered/unregistered
+ in HAL_UART_STATE_READY or HAL_UART_STATE_RESET state, thus registered (user)
+ MspInit/DeInit callbacks can be used during the Init/DeInit.
+ In that case first register the MspInit/MspDeInit user callbacks
+ using @ref HAL_UART_RegisterCallback() before calling @ref HAL_UART_DeInit()
+ or @ref HAL_UART_Init() function.
 
-    [..]
-    When The compilation define USE_HAL_UART_REGISTER_CALLBACKS is set to 0 or
-    not defined, the callback registration feature is not available
-    and weak (surcharged) callbacks are used.
+ [..]
+ When The compilation define USE_HAL_UART_REGISTER_CALLBACKS is set to 0 or
+ not defined, the callback registration feature is not available
+ and weak (surcharged) callbacks are used.
 
 
-  @endverbatim
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ @endverbatim
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup UART UART
-  * @brief HAL UART module driver
-  * @{
-  */
+ * @brief HAL UART module driver
+ * @{
+ */
 
 #ifdef HAL_UART_MODULE_ENABLED
 
@@ -4056,11 +4056,11 @@ static void UART_RxISR_16BIT_FIFOEN(UART_HandleTypeDef *huart)
 
 #endif /* HAL_UART_MODULE_ENABLED */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

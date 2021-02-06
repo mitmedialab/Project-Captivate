@@ -19,7 +19,6 @@
 #ifndef BLE_BUFSIZE_H__
 #define BLE_BUFSIZE_H__
 
-
 /*
  * BLE_DEFAULT_ATT_MTU: minimum MTU value that GATT must support.
  */
@@ -89,7 +88,7 @@
  *   and which value is explicited by the following macro;
  * - a part, that may be considered "fixed", i.e. independent from the above
  *   mentioned parameters.
-*/
+ */
 #if (BEACON_ONLY != 0)
 #define BLE_FIXED_BUFFER_SIZE_BYTES  6212   /* Beacon only */
 #elif (LL_ONLY != 0)
@@ -144,10 +143,9 @@
  * added so this parameter should be 2 plus the number of user services
  *
  * @param att_value_array_size: Size of the storage area for Attribute values.
-  */
+ */
 #define BLE_TOTAL_BUFFER_SIZE_GATT(num_gatt_attributes, num_gatt_services, att_value_array_size) \
           (((((att_value_array_size) - 1) | 3) + 1) + \
            (40 * (num_gatt_attributes)) + (48 * (num_gatt_services)))
-
 
 #endif /* BLE_BUFSIZE_H__ */

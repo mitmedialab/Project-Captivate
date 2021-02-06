@@ -1,21 +1,21 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_irda_ex.h
-  * @author  MCD Application Team
-  * @brief   Header file of IRDA HAL Extended module.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    stm32wbxx_hal_irda_ex.h
+ * @author  MCD Application Team
+ * @brief   Header file of IRDA HAL Extended module.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32WBxx_HAL_IRDA_EX_H
@@ -29,12 +29,12 @@ extern "C" {
 #include "stm32wbxx_hal_def.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup IRDAEx IRDAEx
-  * @{
-  */
+ * @{
+ */
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -44,14 +44,14 @@ extern "C" {
 /* Private macros ------------------------------------------------------------*/
 
 /** @defgroup IRDAEx_Private_Macros IRDAEx Private Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @brief  Report the IRDA clock source.
-  * @param  __HANDLE__ specifies the IRDA Handle.
-  * @param  __CLOCKSOURCE__ output variable.
-  * @retval IRDA clocking source, written in __CLOCKSOURCE__.
-  */
+ * @param  __HANDLE__ specifies the IRDA Handle.
+ * @param  __CLOCKSOURCE__ output variable.
+ * @retval IRDA clocking source, written in __CLOCKSOURCE__.
+ */
 #define IRDA_GETCLOCKSOURCE(__HANDLE__,__CLOCKSOURCE__)        \
   do {                                                         \
     if((__HANDLE__)->Instance == USART1)                       \
@@ -82,18 +82,18 @@ extern "C" {
   } while(0U)
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported functions --------------------------------------------------------*/
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #ifdef __cplusplus
 }

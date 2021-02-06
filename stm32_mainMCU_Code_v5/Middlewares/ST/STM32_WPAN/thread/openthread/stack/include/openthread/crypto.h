@@ -64,11 +64,8 @@ extern "C" {
  * @param[out]    aHash          A pointer to the output hash buffer.
  *
  */
-void otCryptoHmacSha256(const uint8_t *aKey,
-                        uint16_t       aKeyLength,
-                        const uint8_t *aBuf,
-                        uint16_t       aBufLength,
-                        uint8_t *      aHash);
+void otCryptoHmacSha256(const uint8_t *aKey, uint16_t aKeyLength,
+		const uint8_t *aBuf, uint16_t aBufLength, uint8_t *aHash);
 
 /**
  * This method performs AES CCM computation.
@@ -90,18 +87,10 @@ void otCryptoHmacSha256(const uint8_t *aKey,
  * @param[out]    aTag           A pointer to the tag.
  *
  */
-void otCryptoAesCcm(const uint8_t *aKey,
-                    uint16_t       aKeyLength,
-                    uint8_t        aTagLength,
-                    const void *   aNonce,
-                    uint8_t        aNonceLength,
-                    const void *   aHeader,
-                    uint32_t       aHeaderLength,
-                    void *         aPlainText,
-                    void *         aCipherText,
-                    uint32_t       aLength,
-                    bool           aEncrypt,
-                    void *         aTag);
+void otCryptoAesCcm(const uint8_t *aKey, uint16_t aKeyLength,
+		uint8_t aTagLength, const void *aNonce, uint8_t aNonceLength,
+		const void *aHeader, uint32_t aHeaderLength, void *aPlainText,
+		void *aCipherText, uint32_t aLength, bool aEncrypt, void *aTag);
 
 /**
  * @}

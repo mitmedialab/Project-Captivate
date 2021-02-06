@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -29,7 +28,6 @@
 #include OPENTHREAD_CONFIG_FILE
 
 #include "channel_monitor.h"
-
 
 #if OPENTHREAD_ENABLE_CHANNEL_MONITOR
 

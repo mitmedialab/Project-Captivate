@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    dns.c
-  * @author  MCD Application Team
-  * @brief   This file contains the DNS interface shared between M0 and
-  *          M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dns.c
+ * @author  MCD Application Team
+ * @brief   This file contains the DNS interface shared between M0 and
+ *          M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,7 +18,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -29,7 +28,6 @@
 #include OPENTHREAD_CONFIG_FILE
 
 #include "dns.h"
-
 
 #if OPENTHREAD_ENABLE_DNS_CLIENT
 

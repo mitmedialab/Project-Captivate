@@ -66,7 +66,8 @@ extern "C" {
  * @param[in]  aChannel           The new channel for the Thread network.
  *
  */
-void otChannelManagerRequestChannelChange(otInstance *aInstance, uint8_t aChannel);
+void otChannelManagerRequestChannelChange(otInstance *aInstance,
+		uint8_t aChannel);
 
 /**
  * This function gets the channel from the last successful call to `otChannelManagerRequestChannelChange()`
@@ -131,7 +132,8 @@ otError otChannelManagerSetDelay(otInstance *aInstance, uint16_t aDelay);
  * @retval OT_ERROR_DISABLED_FEATURE   `ChannelMonintor` feature is disabled by build-time configuration options.
  *
  */
-otError otChannelManagerRequestChannelSelect(otInstance *aInstance, bool aSkipQualityCheck);
+otError otChannelManagerRequestChannelSelect(otInstance *aInstance,
+		bool aSkipQualityCheck);
 
 /**
  * This function enables/disables the auto-channel-selection functionality.
@@ -143,7 +145,8 @@ otError otChannelManagerRequestChannelSelect(otInstance *aInstance, bool aSkipQu
  * @param[in]  aEnabled     Indicates whether to enable or disable this functionality.
  *
  */
-void otChannelManagerSetAutoChannelSelectionEnabled(otInstance *aInstance, bool aEnabled);
+void otChannelManagerSetAutoChannelSelectionEnabled(otInstance *aInstance,
+		bool aEnabled);
 
 /**
  * This function indicates whether the auto-channel-selection functionality is enabled or not.
@@ -165,7 +168,8 @@ bool otChannelManagerGetAutoChannelSelectionEnabled(otInstance *aInstance);
  * @retval OT_ERROR_INVALID_ARGS   The @p aInterval is not valid (zero).
  *
  */
-otError otChannelManagerSetAutoChannelSelectionInterval(otInstance *aInstance, uint32_t aInterval);
+otError otChannelManagerSetAutoChannelSelectionInterval(otInstance *aInstance,
+		uint32_t aInterval);
 
 /**
  * This function gets the period interval (in seconds) used by auto-channel-selection functionality.
@@ -194,7 +198,8 @@ uint32_t otChannelManagerGetSupportedChannels(otInstance *aInstance);
  * @param[in]  aChannelMask  A channel mask.
  *
  */
-void otChannelManagerSetSupportedChannels(otInstance *aInstance, uint32_t aChannelMask);
+void otChannelManagerSetSupportedChannels(otInstance *aInstance,
+		uint32_t aChannelMask);
 
 /**
  * This function gets the favored channel mask.
@@ -213,7 +218,8 @@ uint32_t otChannelManagerGetFavoredChannels(otInstance *aInstance);
  * @param[in]  aChannelMask  A channel mask.
  *
  */
-void otChannelManagerSetFavoredChannels(otInstance *aInstance, uint32_t aChannelMask);
+void otChannelManagerSetFavoredChannels(otInstance *aInstance,
+		uint32_t aChannelMask);
 
 /**
  * @}

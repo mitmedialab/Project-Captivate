@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    dhcp6_client.c
-  * @author  MCD Application Team
-  * @brief   This file contains the dhcp6_client interface shared between M0 and M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    dhcp6_client.c
+ * @author  MCD Application Team
+ * @brief   This file contains the dhcp6_client interface shared between M0 and M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wbxx_hal.h"
 
@@ -29,21 +28,20 @@
 
 #include "dhcp6_client.h"
 
+void otDhcp6ClientUpdate(otInstance *aInstance, otDhcpAddress *aAddresses,
+		uint32_t aNumAddresses, void *aContext) {
+	Pre_OtCmdProcessing();
+	/* prepare buffer */
+	Thread_OT_Cmd_Request_t *p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
 
-void otDhcp6ClientUpdate(otInstance *aInstance, otDhcpAddress *aAddresses, uint32_t aNumAddresses, void *aContext)
-{
-    Pre_OtCmdProcessing();
-    /* prepare buffer */
-    Thread_OT_Cmd_Request_t* p_ot_req = THREAD_Get_OTCmdPayloadBuffer();
+	p_ot_req->ID = MSG_M4TOM0_OT_DHCP6_CLIENT_UPDATE;
 
-    p_ot_req->ID = MSG_M4TOM0_OT_DHCP6_CLIENT_UPDATE;
+	p_ot_req->Size = 3;
+	p_ot_req->Data[0] = (uint32_t) aAddresses;
+	p_ot_req->Data[1] = (uint32_t) aNumAddresses;
+	p_ot_req->Data[2] = (uint32_t) aContext;
 
-    p_ot_req->Size=3;
-    p_ot_req->Data[0] = (uint32_t) aAddresses;
-    p_ot_req->Data[1] = (uint32_t) aNumAddresses;
-    p_ot_req->Data[2] = (uint32_t) aContext;
+	Ot_Cmd_Transfer();
 
-    Ot_Cmd_Transfer();
-
-    p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
+	p_ot_req = THREAD_Get_OTCmdRspPayloadBuffer();
 }

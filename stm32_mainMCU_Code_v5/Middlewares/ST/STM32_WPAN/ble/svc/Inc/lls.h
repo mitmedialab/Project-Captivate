@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    lls.h
-  * @author  MCD Application Team
-  * @brief   Header for lls.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    lls.h
+ * @author  MCD Application Team
+ * @brief   Header for lls.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,34 +17,28 @@
  ******************************************************************************
  */
 
-
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __LLS_H
 #define __LLS_H
 
 #ifdef __cplusplus
-extern "C" 
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 
 /* Exported types ------------------------------------------------------------*/
-typedef enum
-{
-  LLS_NO_ALERT_EVT,
-  LLS_MID_ALERT_EVT,
-  LLS_HIGH_ALERT_EVT,
-  LLS_DISCONNECT_EVT,
-  LLS_CONNECT_EVT
+typedef enum {
+	LLS_NO_ALERT_EVT,
+	LLS_MID_ALERT_EVT,
+	LLS_HIGH_ALERT_EVT,
+	LLS_DISCONNECT_EVT,
+	LLS_CONNECT_EVT
 } LLS_App_Opcode_Notification_evt_t;
 
-typedef struct
-{
-  LLS_App_Opcode_Notification_evt_t  LLS_Evt_Opcode;
-}LLS_App_Notification_evt_t;
-
+typedef struct {
+	LLS_App_Opcode_Notification_evt_t LLS_Evt_Opcode;
+} LLS_App_Notification_evt_t;
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
@@ -53,7 +47,6 @@ typedef struct
 void LLS_Init(void);
 tBleStatus LLS_Update_Char(uint16_t UUID, uint8_t *pPayload);
 void LLS_App_Notification(LLS_App_Notification_evt_t *pNotification);
-
 
 #ifdef __cplusplus
 }

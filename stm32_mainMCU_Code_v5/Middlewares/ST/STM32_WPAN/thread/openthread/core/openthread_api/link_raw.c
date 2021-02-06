@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    link_raw.c
-  * @author  MCD Application Team
-  * @brief   This file contains the link_raw interface shared between M0 and
-  *          M4.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    link_raw.c
+ * @author  MCD Application Team
+ * @brief   This file contains the link_raw interface shared between M0 and
+ *          M4.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -34,7 +33,6 @@
 extern otLinkRawReceiveDone otLinkRawReceiveDoneCb;
 extern otLinkRawTransmitDone otLinkRawTransmitDoneCb;
 extern otLinkRawEnergyScanDone otLinkRawEnergyScanDoneCb;
-
 
 #if OPENTHREAD_ENABLE_RAW_LINK_API
 

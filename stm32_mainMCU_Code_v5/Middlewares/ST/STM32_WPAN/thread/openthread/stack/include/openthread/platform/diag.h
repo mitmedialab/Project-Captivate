@@ -66,7 +66,8 @@ extern "C" {
  * @param[in]   aOutputMaxLen   The output buffer size.
  *
  */
-void otPlatDiagProcess(otInstance *aInstance, int argc, char *argv[], char *aOutput, size_t aOutputMaxLen);
+void otPlatDiagProcess(otInstance *aInstance, int argc, char *argv[],
+		char *aOutput, size_t aOutputMaxLen);
 
 /**
  * This function enables/disables the factory diagnostics mode.
@@ -108,7 +109,8 @@ void otPlatDiagTxPowerSet(int8_t aTxPower);
  * @param[in]   aError      The received radio frame status.
  *
  */
-void otPlatDiagRadioReceived(otInstance *aInstance, otRadioFrame *aFrame, otError aError);
+void otPlatDiagRadioReceived(otInstance *aInstance, otRadioFrame *aFrame,
+		otError aError);
 
 /**
  * This function processes the alarm event.

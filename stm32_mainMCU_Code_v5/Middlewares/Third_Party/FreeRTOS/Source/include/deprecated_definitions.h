@@ -28,15 +28,14 @@
 #ifndef DEPRECATED_DEFINITIONS_H
 #define DEPRECATED_DEFINITIONS_H
 
-
 /* Each FreeRTOS port has a unique portmacro.h header file.  Originally a
-pre-processor definition was used to ensure the pre-processor found the correct
-portmacro.h file for the port being used.  That scheme was deprecated in favour
-of setting the compiler's include path such that it found the correct
-portmacro.h file - removing the need for the constant and allowing the
-portmacro.h file to be located anywhere in relation to the port being used.  The
-definitions below remain in the code for backward compatibility only.  New
-projects should not use them. */
+ pre-processor definition was used to ensure the pre-processor found the correct
+ portmacro.h file for the port being used.  That scheme was deprecated in favour
+ of setting the compiler's include path such that it found the correct
+ portmacro.h file - removing the need for the constant and allowing the
+ portmacro.h file to be located anywhere in relation to the port being used.  The
+ definitions below remain in the code for backward compatibility only.  New
+ projects should not use them. */
 
 #ifdef OPEN_WATCOM_INDUSTRIAL_PC_PORT
 	#include "..\..\Source\portable\owatcom\16bitdos\pc\portmacro.h"
@@ -225,7 +224,7 @@ projects should not use them. */
 #endif
 
 #ifdef __GNUC__
-   #ifdef __AVR32_AVR32A__
+#ifdef __AVR32_AVR32A__
 	   #include "portmacro.h"
    #endif
 #endif
@@ -245,7 +244,6 @@ projects should not use them. */
 #ifdef __96340
 	#include "portmacro.h"
 #endif
-
 
 #ifdef __IAR_V850ES_Fx3__
 	#include "../../Source/portable/IAR/V850ES/portmacro.h"

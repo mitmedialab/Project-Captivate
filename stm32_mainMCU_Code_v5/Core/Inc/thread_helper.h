@@ -1,11 +1,11 @@
 /**
  ******************************************************************************
  * File Name          : thread_helper.h
-  * Description        :
-  ******************************************************************************
+ * Description        :
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
 #ifndef THREAD_HELPER_H
 #define THREAD_HELPER_H
@@ -21,23 +21,19 @@ extern "C" {
 
 /* typedef -----------------------------------------------------------*/
 
-
 /* defines -----------------------------------------------------------*/
-
 
 /* macros ------------------------------------------------------------*/
 
-
 /* function prototypes -----------------------------------------------*/
-OTAPI otError OTCALL otThreadSetChildSupervisionCheckTimeout(otInstance *aInstance, uint16_t timeout);
-OTAPI otError OTCALL otThreadSetChildSupervisionInterval(otInstance *aInstance, uint16_t interval);
+OTAPI otError OTCALL otThreadSetChildSupervisionCheckTimeout(
+		otInstance *aInstance, uint16_t timeout);
+OTAPI otError OTCALL otThreadSetChildSupervisionInterval(otInstance *aInstance,
+		uint16_t interval);
 
 /* variables -----------------------------------------------*/
 
-
 /* Functions Definition ------------------------------------------------------*/
-
-
 
 /*************************************************************
  *
@@ -55,11 +51,7 @@ OTAPI otError OTCALL otThreadSetChildSupervisionInterval(otInstance *aInstance, 
  *
  * FREERTOS WRAPPER FUNCTIONS
  *
-*************************************************************/
-
-
-
-
+ *************************************************************/
 
 #ifdef __cplusplus
 } /* extern "C" */

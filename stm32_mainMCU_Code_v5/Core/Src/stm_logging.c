@@ -1,22 +1,22 @@
 /**
  ******************************************************************************
-  * File Name          : stm_logging.c
-  * Description        : This file contains all the defines and functions used
-  *                     for logging on Application examples.
-  *
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * File Name          : stm_logging.c
+ * Description        : This file contains all the defines and functions used
+ *                     for logging on Application examples.
+ *
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 
 /**
  * @file
@@ -168,8 +168,8 @@ static inline uint16_t logTimestamp(char *aLogString, uint16_t aMaxSize)
  *
  * @returns  Number of bytes successfully written to the log buffer.
  */
-void logApplication(appliLogLevel_t aLogLevel, appliLogRegion_t aLogRegion, const char *aFormat, ...)
-{
+void logApplication(appliLogLevel_t aLogLevel, appliLogRegion_t aLogRegion,
+		const char *aFormat, ...) {
 #if (CFG_DEBUG_TRACE != 0) /* Since the traces are disabled, there is nothing to print */
   uint16_t length = 0;
   char logString[LOG_PARSE_BUFFER_SIZE + 1U];

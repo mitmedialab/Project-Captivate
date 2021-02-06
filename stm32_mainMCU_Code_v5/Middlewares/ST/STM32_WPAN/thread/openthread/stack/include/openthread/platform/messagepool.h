@@ -61,7 +61,8 @@ extern "C" {
  * @param[in] aBufferSize          The size in bytes of a Buffer object.
  *
  */
-void otPlatMessagePoolInit(otInstance *aInstance, uint16_t aMinNumFreeBuffers, size_t aBufferSize);
+void otPlatMessagePoolInit(otInstance *aInstance, uint16_t aMinNumFreeBuffers,
+		size_t aBufferSize);
 
 /**
  * Allocate a buffer from the platform managed buffer pool.
@@ -71,7 +72,7 @@ void otPlatMessagePoolInit(otInstance *aInstance, uint16_t aMinNumFreeBuffers, s
  * @returns A pointer to the Buffer or NULL if no Buffers are available.
  *
  */
-otMessage *otPlatMessagePoolNew(otInstance *aInstance);
+otMessage* otPlatMessagePoolNew(otInstance *aInstance);
 
 /**
  * This function is used to free a Buffer back to the platform managed buffer pool.

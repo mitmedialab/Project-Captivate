@@ -16,14 +16,14 @@ Pulse vector_pop(vector *self);
 Pulse vector_get(vector *self, int index);
 void vector_clear(vector *self);
 
-typedef struct PulseProcessor{
+typedef struct PulseProcessor {
 	uint32_t num_inputs_;
 
 	// Fix level - increased when everything's right (up to a limit); decreases on errors. See CycleFixLevels
 	uint32_t cycle_fix_level_;
 
 	// Current cycle params
-	uint16_t cycle_start_time_;  // Current cycle start time.  TODO: We should track cycle period more precisely.
+	uint16_t cycle_start_time_; // Current cycle start time.  TODO: We should track cycle period more precisely.
 	uint32_t cycle_idx_;          // Index of current cycle.
 
 	// Classified pulses for current cycle: long (x2, by base stations), short, unclassified.
@@ -40,11 +40,9 @@ typedef struct PulseProcessor{
 	GeometryBuilder *next;
 } PulseProcessor;
 
-
-
 void _PulseProcessor(PulseProcessor *self, uint32_t num_inputs);
-void consume_pulse(PulseProcessor *self, Pulse* p);
-void process_long_pulse(PulseProcessor *self, Pulse* p);
+void consume_pulse(PulseProcessor *self, Pulse *p);
+void process_long_pulse(PulseProcessor *self, Pulse *p);
 void process_short_pulse(PulseProcessor *self, Pulse *p);
 void process_cycle_fix(PulseProcessor *self);
 void reset_cycle_long_pulses(PulseProcessor *self);

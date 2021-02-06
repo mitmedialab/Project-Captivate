@@ -172,7 +172,8 @@ otError otPlatSettingsAbandonChange(otInstance *aInstance);
  *  @retval OT_ERROR_NOT_IMPLEMENTED
  *          This function is not implemented on this platform.
  */
-otError otPlatSettingsGet(otInstance *aInstance, uint16_t aKey, int aIndex, uint8_t *aValue, uint16_t *aValueLength);
+otError otPlatSettingsGet(otInstance *aInstance, uint16_t aKey, int aIndex,
+		uint8_t *aValue, uint16_t *aValueLength);
 
 /// Sets or replaces the value of a setting
 /** This function sets or replaces the value of a setting
@@ -200,7 +201,8 @@ otError otPlatSettingsGet(otInstance *aInstance, uint16_t aKey, int aIndex, uint
  *  @retval OT_ERROR_NOT_IMPLEMENTED
  *          This function is not implemented on this platform.
  */
-otError otPlatSettingsSet(otInstance *aInstance, uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
+otError otPlatSettingsSet(otInstance *aInstance, uint16_t aKey,
+		const uint8_t *aValue, uint16_t aValueLength);
 
 /// Adds a value to a setting
 /** This function adds the value to a setting
@@ -233,7 +235,8 @@ otError otPlatSettingsSet(otInstance *aInstance, uint16_t aKey, const uint8_t *a
  * @retval OT_ERROR_NOT_IMPLEMENTED
  *         This function is not implemented on this platform.
  */
-otError otPlatSettingsAdd(otInstance *aInstance, uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
+otError otPlatSettingsAdd(otInstance *aInstance, uint16_t aKey,
+		const uint8_t *aValue, uint16_t aValueLength);
 
 /// Removes a setting from the setting store
 /** This function deletes a specific value from the

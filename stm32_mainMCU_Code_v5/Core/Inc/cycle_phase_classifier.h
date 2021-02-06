@@ -4,7 +4,7 @@
 
 // Reference to a pair of DataFrameBit-s
 
-typedef struct CyclePhaseClassifier{
+typedef struct CyclePhaseClassifier {
 	uint32_t prev_full_cycle_idx_;
 	uint32_t phase_history_;
 
@@ -16,7 +16,9 @@ typedef struct CyclePhaseClassifier{
 	float average_error_;
 } CyclePhaseClassifier;
 
-void process_pulse_lengths(CyclePhaseClassifier * self, uint32_t cycle_idx, const uint16_t *pulse_lens);
-float expected_pulse_len(CyclePhaseClassifier * self, uint8_t skip, uint8_t data, uint8_t axis);
-int get_phase(CyclePhaseClassifier * self, uint32_t cycle_idx);
-void reset(CyclePhaseClassifier * self);
+void process_pulse_lengths(CyclePhaseClassifier *self, uint32_t cycle_idx,
+		const uint16_t *pulse_lens);
+float expected_pulse_len(CyclePhaseClassifier *self, uint8_t skip, uint8_t data,
+		uint8_t axis);
+int get_phase(CyclePhaseClassifier *self, uint32_t cycle_idx);
+void reset(CyclePhaseClassifier *self);

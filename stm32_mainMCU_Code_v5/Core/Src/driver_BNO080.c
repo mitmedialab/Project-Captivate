@@ -1,13 +1,12 @@
 /**
  ******************************************************************************
  * File Name           : driver_BNO080.hpp
-  * Description        : Header for Lights.
-  ******************************************************************************
+ * Description        : Header for Lights.
+ ******************************************************************************
 
-  *
-  ******************************************************************************
+ *
+ ******************************************************************************
  */
-
 
 /* includes -----------------------------------------------------------*/
 #include <driver_BNO080.h>
@@ -25,7 +24,6 @@
 
 /* typedef -----------------------------------------------------------*/
 
-
 /* defines -----------------------------------------------------------*/
 #define PACKET_LSB		0
 #define PACKET_MSB		1
@@ -36,14 +34,11 @@
 
 /* function prototypes -----------------------------------------------*/
 
-
 /* variables -----------------------------------------------*/
-struct stepData	stepSample;
+struct stepData stepSample;
 struct stabilityData stabilitySample;
 struct activityData activitySample;
 struct rotationData rotSample;
-
-
 
 //Registers
 const uint8_t CHANNEL_COMMAND = 0;
@@ -56,11 +51,11 @@ const uint8_t CHANNEL_GYRO = 5;
 //Global Variables
 uint8_t shtpHeader[4]; //Each packet has a header of 4 bytes
 uint8_t shtpData[MAX_PACKET_SIZE];
-uint8_t sequenceNumber[6] = {0, 0, 0, 0, 0, 0}; //There are 6 com channels. Each channel has its own seqnum
-uint8_t commandSequenceNumber = 0;				//Commands have a seqNum as well. These are inside command packet, the header uses its own seqNum per channel
-uint32_t metaData[MAX_METADATA_SIZE];			//There is more than 10 words in a metadata record but we'll stop at Q point 3
+uint8_t sequenceNumber[6] = { 0, 0, 0, 0, 0, 0 }; //There are 6 com channels. Each channel has its own seqnum
+uint8_t commandSequenceNumber = 0;//Commands have a seqNum as well. These are inside command packet, the header uses its own seqNum per channel
+uint32_t metaData[MAX_METADATA_SIZE];//There is more than 10 words in a metadata record but we'll stop at Q point 3
 
-uint8_t receiveBuffer[I2C_BUFFER_LENGTH] = {0};
+uint8_t receiveBuffer[I2C_BUFFER_LENGTH] = { 0 };
 
 //These Q values are defined in the datasheet but can also be obtained by querying the meta data records
 //See the read metadata example for more info
@@ -85,7 +80,7 @@ unsigned long _spiPortSpeed; //Optional user defined port speed
 uint8_t _cs;				 //Pins needed for SPI
 uint8_t _wake;
 uint8_t _int;
-GPIO_TypeDef* _intPort;
+GPIO_TypeDef *_intPort;
 uint8_t _rst;
 
 //These are the raw sensor values (without Q applied) pulled from the user requested Input Report
@@ -93,31 +88,30 @@ uint16_t rawAccelX, rawAccelY, rawAccelZ, accelAccuracy;
 uint16_t rawLinAccelX, rawLinAccelY, rawLinAccelZ, accelLinAccuracy;
 uint16_t rawGyroX, rawGyroY, rawGyroZ, gyroAccuracy;
 uint16_t rawMagX, rawMagY, rawMagZ, magAccuracy;
-uint16_t rawQuatI, rawQuatJ, rawQuatK, rawQuatReal, rawQuatRadianAccuracy, quatAccuracy;
+uint16_t rawQuatI, rawQuatJ, rawQuatK, rawQuatReal, rawQuatRadianAccuracy,
+		quatAccuracy;
 uint16_t stepCount;
 uint32_t timeStamp;
 uint8_t stabilityClassifier;
 uint8_t activityClassifier;
-uint8_t *_activityConfidences;						  //Array that store the confidences of the 9 possible activities
-uint8_t calibrationStatus;							  //Byte R0 of ME Calibration Response
+uint8_t *_activityConfidences;//Array that store the confidences of the 9 possible activities
+uint8_t calibrationStatus;					//Byte R0 of ME Calibration Response
 uint16_t memsRawAccelX, memsRawAccelY, memsRawAccelZ; //Raw readings from MEMS sensor
-uint16_t memsRawGyroX, memsRawGyroY, memsRawGyroZ;	//Raw readings from MEMS sensor
-uint16_t memsRawMagX, memsRawMagY, memsRawMagZ;		  //Raw readings from MEMS sensor
+uint16_t memsRawGyroX, memsRawGyroY, memsRawGyroZ;//Raw readings from MEMS sensor
+uint16_t memsRawMagX, memsRawMagY, memsRawMagZ;	//Raw readings from MEMS sensor
 
 /* Functions Definition ------------------------------------------------------*/
 //Attempt communication with the device
 //Return true if we got a 'Polo' back from Marco
-bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef* intPort)
-{
+bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef *intPort) {
 	_deviceAddress = deviceAddress << 1; //If provided, store the I2C address from user
 //	_i2cPort = &wirePort;			//Grab which port the user wants us to use
-	_int = intPin;					//Get the pin that the user wants to use for interrupts. By default, it's NULL and we'll not use it in dataAvailable() function.
+	_int = intPin;//Get the pin that the user wants to use for interrupts. By default, it's NULL and we'll not use it in dataAvailable() function.
 	_intPort = intPort;
 
 	//We expect caller to begin their I2C port, with the speed of their choice external to the library
 	//But if they forget, we start the hardware here.
 	//_i2cPort->begin();
-
 
 	//Begin by resetting the IMU
 	IMU_softReset();
@@ -126,15 +120,12 @@ bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef* intPort)
 	shtpData[0] = SHTP_REPORT_PRODUCT_ID_REQUEST; //Request the product ID and reset info
 	shtpData[1] = 0;							  //Reserved
 
-
 	//Transmit packet on channel 2, 2 bytes
 	IMU_sendPacket(CHANNEL_CONTROL, 2);
 
 	//Now we wait for response
-	if (IMU_receivePacket() == true)
-	{
-		if (shtpData[0] == SHTP_REPORT_PRODUCT_ID_RESPONSE)
-		{
+	if (IMU_receivePacket() == true) {
+		if (shtpData[0] == SHTP_REPORT_PRODUCT_ID_RESPONSE) {
 			return (true);
 		}
 	}
@@ -218,14 +209,12 @@ bool IMU_begin(uint8_t deviceAddress, uint8_t intPin, GPIO_TypeDef* intPort)
 
 //Updates the latest variables if possible
 //Returns false if new readings are not available
-bool IMU_dataAvailable(void)
-{
+bool IMU_dataAvailable(void) {
 	//If we have an interrupt pin connection available, check if data is available.
 	//If int pin is not set, then we'll rely on receivePacket() to timeout
 	//See issue 13: https://github.com/sparkfun/SparkFun_BNO080_Arduino_Library/issues/13
-	if (_int != 255)
-	{
-		if( HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
+	if (_int != 255) {
+		if (HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
 			return (false);
 //		if (digitalRead(_int) == HIGH)
 //			return (false);
@@ -233,16 +222,13 @@ bool IMU_dataAvailable(void)
 
 //	if(HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
 //	{
-	if (IMU_receivePacket() == true)
-	{
+	if (IMU_receivePacket() == true) {
 		//Check to see if this packet is a sensor reporting its data to us
-		if (shtpHeader[2] == CHANNEL_REPORTS && shtpData[0] == SHTP_REPORT_BASE_TIMESTAMP)
-		{
+		if (shtpHeader[2]
+				== CHANNEL_REPORTS&& shtpData[0] == SHTP_REPORT_BASE_TIMESTAMP) {
 			IMU_parseInputReport(); //This will update the rawAccelX, etc variables depending on which feature report is found
 			return (true);
-		}
-		else if (shtpHeader[2] == CHANNEL_CONTROL)
-		{
+		} else if (shtpHeader[2] == CHANNEL_CONTROL) {
 			IMU_parseCommandReport(); //This will update responses to commands, calibrationStatus, etc.
 			return (true);
 		}
@@ -269,20 +255,15 @@ bool IMU_dataAvailable(void)
 //shtpData[5 + 6]: R6
 //shtpData[5 + 7]: R7
 //shtpData[5 + 8]: R8
-void IMU_parseCommandReport(void)
-{
-	if (shtpData[0] == SHTP_REPORT_COMMAND_RESPONSE)
-	{
+void IMU_parseCommandReport(void) {
+	if (shtpData[0] == SHTP_REPORT_COMMAND_RESPONSE) {
 		//The BNO080 responds with this report to command requests. It's up to use to remember which command we issued.
 		uint8_t command = shtpData[2]; //This is the Command byte of the response
 
-		if (command == COMMAND_ME_CALIBRATE)
-		{
+		if (command == COMMAND_ME_CALIBRATE) {
 			calibrationStatus = shtpData[5 + 0]; //R0 - Status (0 = success, non-zero = fail)
 		}
-	}
-	else
-	{
+	} else {
 		//This sensor report ID is unhandled.
 		//See reference manual to add additional feature reports as needed
 	}
@@ -305,69 +286,64 @@ void IMU_parseCommandReport(void)
 //shtpData[8:9]: k/accel z/gyro z/etc
 //shtpData[10:11]: real/gyro temp/etc
 //shtpData[12:13]: Accuracy estimate
-void IMU_parseInputReport(void)
-{
+void IMU_parseInputReport(void) {
 	//Calculate the number of data bytes in this packet
-	int16_t dataLength = ((uint16_t)shtpHeader[1] << 8 | shtpHeader[0]);
+	int16_t dataLength = ((uint16_t) shtpHeader[1] << 8 | shtpHeader[0]);
 	dataLength &= ~(1 << 15); //Clear the MSbit. This bit indicates if this package is a continuation of the last.
 	//Ignore it for now. TODO catch this as an error and exit
 
 	dataLength -= 4; //Remove the header bytes from the data count
 
-	timeStamp = ((uint32_t)shtpData[4] << (8 * 3)) | ((uint32_t)shtpData[3] << (8 * 2)) | ((uint32_t)shtpData[2] << (8 * 1)) | ((uint32_t)shtpData[1] << (8 * 0));
+	timeStamp = ((uint32_t) shtpData[4] << (8 * 3))
+			| ((uint32_t) shtpData[3] << (8 * 2))
+			| ((uint32_t) shtpData[2] << (8 * 1))
+			| ((uint32_t) shtpData[1] << (8 * 0));
 
 	uint8_t status = shtpData[5 + 2] & 0x03; //Get status bits
-	uint16_t data1 = (uint16_t)shtpData[5 + 5] << 8 | shtpData[5 + 4];
-	uint16_t data2 = (uint16_t)shtpData[5 + 7] << 8 | shtpData[5 + 6];
-	uint16_t data3 = (uint16_t)shtpData[5 + 9] << 8 | shtpData[5 + 8];
+	uint16_t data1 = (uint16_t) shtpData[5 + 5] << 8 | shtpData[5 + 4];
+	uint16_t data2 = (uint16_t) shtpData[5 + 7] << 8 | shtpData[5 + 6];
+	uint16_t data3 = (uint16_t) shtpData[5 + 9] << 8 | shtpData[5 + 8];
 	uint16_t data4 = 0;
 	uint16_t data5 = 0; //We would need to change this to uin32_t to capture time stamp value on Raw Accel/Gyro/Mag reports
 
-	if (dataLength - 5 > 9)
-	{
-		data4 = (uint16_t)shtpData[5 + 11] << 8 | shtpData[5 + 10];
+	if (dataLength - 5 > 9) {
+		data4 = (uint16_t) shtpData[5 + 11] << 8 | shtpData[5 + 10];
 	}
-	if (dataLength - 5 > 11)
-	{
-		data5 = (uint16_t)shtpData[5 + 13] << 8 | shtpData[5 + 12];
+	if (dataLength - 5 > 11) {
+		data5 = (uint16_t) shtpData[5 + 13] << 8 | shtpData[5 + 12];
 	}
 
 	//Store these generic values to their proper global variable
-	if (shtpData[5] == SENSOR_REPORTID_ACCELEROMETER)
-	{
+	if (shtpData[5] == SENSOR_REPORTID_ACCELEROMETER) {
 		accelAccuracy = status;
 		rawAccelX = data1;
 		rawAccelY = data2;
 		rawAccelZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_LINEAR_ACCELERATION)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_LINEAR_ACCELERATION) {
 		accelLinAccuracy = status;
 		rawLinAccelX = data1;
 		rawLinAccelY = data2;
 		rawLinAccelZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_GYROSCOPE)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_GYROSCOPE) {
 		gyroAccuracy = status;
 		rawGyroX = data1;
 		rawGyroY = data2;
 		rawGyroZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_MAGNETIC_FIELD)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_MAGNETIC_FIELD) {
 		magAccuracy = status;
 		rawMagX = data1;
 		rawMagY = data2;
 		rawMagZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_ROTATION_VECTOR || shtpData[5] == SENSOR_REPORTID_GAME_ROTATION_VECTOR)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_ROTATION_VECTOR
+			|| shtpData[5] == SENSOR_REPORTID_GAME_ROTATION_VECTOR) {
 		// put rotation sample in queue for message packing
 		rotSample.tick_ms = HAL_GetTick();
-		rotSample.quatI =  IMU_qToFloat(data1, rotationVector_Q1);;
-		rotSample.quatJ =  IMU_qToFloat(data2, rotationVector_Q1);;
-		rotSample.quatK =  IMU_qToFloat(data3, rotationVector_Q1);;
+		rotSample.quatI = IMU_qToFloat(data1, rotationVector_Q1);
+		;
+		rotSample.quatJ = IMU_qToFloat(data2, rotationVector_Q1);
+		;
+		rotSample.quatK = IMU_qToFloat(data3, rotationVector_Q1);
+		;
 		rotSample.quatReal = IMU_qToFloat(data4, rotationVector_Q1);
 		rotSample.quatRadianAccuracy = IMU_qToFloat(data5, 12);
 
@@ -379,9 +355,7 @@ void IMU_parseInputReport(void)
 		rawQuatK = data3;
 		rawQuatReal = data4;
 		rawQuatRadianAccuracy = data5; //Only available on rotation vector, not game rot vector
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_STEP_COUNTER)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_STEP_COUNTER) {
 		// put step cnt sample in queue for message packing
 		stepSample.tick_ms = HAL_GetTick();
 		stepSample.stepCount = data3;
@@ -389,9 +363,7 @@ void IMU_parseInputReport(void)
 //		osMessageQueuePut(stepSampleQueueHandle, &stepSample, 0U, osWaitForever);
 
 		stepCount = data3; //Bytes 8/9
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_STABILITY_CLASSIFIER)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_STABILITY_CLASSIFIER) {
 
 		// put stability sample in queue for message packing
 		stabilitySample.tick_ms = HAL_GetTick();
@@ -400,13 +372,11 @@ void IMU_parseInputReport(void)
 //		osMessageQueuePut(stabilitySampleQueueHandle, &stabilitySample, 0U, osWaitForever);
 
 		stabilityClassifier = shtpData[5 + 4]; //Byte 4 only
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_PERSONAL_ACTIVITY_CLASSIFIER)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_PERSONAL_ACTIVITY_CLASSIFIER) {
 		activitySample.tick_ms = HAL_GetTick();
 
 		//Load activity classification confidences into the array
-		for (uint8_t x = 0; x < 9; x++)					   //Hardcoded to max of 9. TODO - bring in array size
+		for (uint8_t x = 0; x < 9; x++)	//Hardcoded to max of 9. TODO - bring in array size
 			_activityConfidences[x] = shtpData[5 + 6 + x]; //5 bytes of timestamp, byte 6 is first confidence byte
 
 		activityClassifier = shtpData[5 + 5]; //Most likely state
@@ -418,40 +388,28 @@ void IMU_parseInputReport(void)
 		osMessageQueuePut(activitySampleQueueHandle, &activitySample, 0U, 0);
 //		test = osMessageQueueGetCount(activitySampleQueueHandle);
 
-
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_RAW_ACCELEROMETER)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_RAW_ACCELEROMETER) {
 		memsRawAccelX = data1;
 		memsRawAccelY = data2;
 		memsRawAccelZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_RAW_GYROSCOPE)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_RAW_GYROSCOPE) {
 		memsRawGyroX = data1;
 		memsRawGyroY = data2;
 		memsRawGyroZ = data3;
-	}
-	else if (shtpData[5] == SENSOR_REPORTID_RAW_MAGNETOMETER)
-	{
+	} else if (shtpData[5] == SENSOR_REPORTID_RAW_MAGNETOMETER) {
 		memsRawMagX = data1;
 		memsRawMagY = data2;
 		memsRawMagZ = data3;
-	}
-	else if (shtpData[5] == SHTP_REPORT_COMMAND_RESPONSE)
-	{
+	} else if (shtpData[5] == SHTP_REPORT_COMMAND_RESPONSE) {
 //		Serial.println("!");
 		//The BNO080 responds with this report to command requests. It's up to use to remember which command we issued.
 		uint8_t command = shtpData[5 + 2]; //This is the Command byte of the response
 
-		if (command == COMMAND_ME_CALIBRATE)
-		{
+		if (command == COMMAND_ME_CALIBRATE) {
 			//Serial.println("ME Cal report found!");
 			calibrationStatus = shtpData[5 + 5]; //R0 - Status (0 = success, non-zero = fail)
 		}
-	}
-	else
-	{
+	} else {
 		//This sensor report ID is unhandled.
 		//See reference manual to add additional feature reports as needed
 	}
@@ -460,228 +418,192 @@ void IMU_parseInputReport(void)
 }
 
 //Return the rotation vector quaternion I
-float IMU_getQuatI()
-{
+float IMU_getQuatI() {
 	float quat = IMU_qToFloat(rawQuatI, rotationVector_Q1);
 	return (quat);
 }
 
 //Return the rotation vector quaternion J
-float IMU_getQuatJ()
-{
+float IMU_getQuatJ() {
 	float quat = IMU_qToFloat(rawQuatJ, rotationVector_Q1);
 	return (quat);
 }
 
 //Return the rotation vector quaternion K
-float IMU_getQuatK()
-{
+float IMU_getQuatK() {
 	float quat = IMU_qToFloat(rawQuatK, rotationVector_Q1);
 	return (quat);
 }
 
 //Return the rotation vector quaternion Real
-float IMU_getQuatReal()
-{
+float IMU_getQuatReal() {
 	float quat = IMU_qToFloat(rawQuatReal, rotationVector_Q1);
 	return (quat);
 }
 
 //Return the rotation vector accuracy
-float IMU_getQuatRadianAccuracy()
-{
+float IMU_getQuatRadianAccuracy() {
 	float quat = IMU_qToFloat(rawQuatRadianAccuracy, 12);
 	return (quat);
 }
 
 //Return the acceleration component
-uint8_t IMU_getQuatAccuracy()
-{
+uint8_t IMU_getQuatAccuracy() {
 	return (quatAccuracy);
 }
 
 //Return the acceleration component
-float IMU_getAccelX()
-{
+float IMU_getAccelX() {
 	float accel = IMU_qToFloat(rawAccelX, accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-float IMU_getAccelY()
-{
+float IMU_getAccelY() {
 	float accel = IMU_qToFloat(rawAccelY, accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-float IMU_getAccelZ()
-{
+float IMU_getAccelZ() {
 	float accel = IMU_qToFloat(rawAccelZ, accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-uint8_t IMU_getAccelAccuracy()
-{
+uint8_t IMU_getAccelAccuracy() {
 	return (accelAccuracy);
 }
 
 // linear acceleration, i.e. minus gravity
 
 //Return the acceleration component
-float IMU_getLinAccelX()
-{
+float IMU_getLinAccelX() {
 	float accel = IMU_qToFloat(rawLinAccelX, linear_accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-float IMU_getLinAccelY()
-{
+float IMU_getLinAccelY() {
 	float accel = IMU_qToFloat(rawLinAccelY, linear_accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-float IMU_getLinAccelZ()
-{
+float IMU_getLinAccelZ() {
 	float accel = IMU_qToFloat(rawLinAccelZ, linear_accelerometer_Q1);
 	return (accel);
 }
 
 //Return the acceleration component
-uint8_t IMU_getLinAccelAccuracy()
-{
+uint8_t IMU_getLinAccelAccuracy() {
 	return (accelLinAccuracy);
 }
 
 //Return the gyro component
-float IMU_getGyroX()
-{
+float IMU_getGyroX() {
 	float gyro = IMU_qToFloat(rawGyroX, gyro_Q1);
 	return (gyro);
 }
 
 //Return the gyro component
-float IMU_getGyroY()
-{
+float IMU_getGyroY() {
 	float gyro = IMU_qToFloat(rawGyroY, gyro_Q1);
 	return (gyro);
 }
 
 //Return the gyro component
-float IMU_getGyroZ()
-{
+float IMU_getGyroZ() {
 	float gyro = IMU_qToFloat(rawGyroZ, gyro_Q1);
 	return (gyro);
 }
 
 //Return the gyro component
-uint8_t IMU_getGyroAccuracy()
-{
+uint8_t IMU_getGyroAccuracy() {
 	return (gyroAccuracy);
 }
 
 //Return the magnetometer component
-float IMU_getMagX()
-{
+float IMU_getMagX() {
 	float mag = IMU_qToFloat(rawMagX, magnetometer_Q1);
 	return (mag);
 }
 
 //Return the magnetometer component
-float IMU_getMagY()
-{
+float IMU_getMagY() {
 	float mag = IMU_qToFloat(rawMagY, magnetometer_Q1);
 	return (mag);
 }
 
 //Return the magnetometer component
-float IMU_getMagZ()
-{
+float IMU_getMagZ() {
 	float mag = IMU_qToFloat(rawMagZ, magnetometer_Q1);
 	return (mag);
 }
 
 //Return the mag component
-uint8_t IMU_getMagAccuracy()
-{
+uint8_t IMU_getMagAccuracy() {
 	return (magAccuracy);
 }
 
 //Return the step count
-uint16_t IMU_getStepCount()
-{
+uint16_t IMU_getStepCount() {
 	return (stepCount);
 }
 
 //Return the stability classifier
-uint8_t IMU_getStabilityClassifier()
-{
+uint8_t IMU_getStabilityClassifier() {
 	return (stabilityClassifier);
 }
 
 //Return the activity classifier
-uint8_t IMU_getActivityClassifier()
-{
+uint8_t IMU_getActivityClassifier() {
 	return (activityClassifier);
 }
 
 //Return the time stamp
-uint32_t IMU_getTimeStamp()
-{
+uint32_t IMU_getTimeStamp() {
 	return (timeStamp);
 }
 
 //Return raw mems value for the accel
-int16_t IMU_getRawAccelX()
-{
+int16_t IMU_getRawAccelX() {
 	return (memsRawAccelX);
 }
 //Return raw mems value for the accel
-int16_t IMU_getRawAccelY()
-{
+int16_t IMU_getRawAccelY() {
 	return (memsRawAccelY);
 }
 //Return raw mems value for the accel
-int16_t IMU_getRawAccelZ()
-{
+int16_t IMU_getRawAccelZ() {
 	return (memsRawAccelZ);
 }
 
 //Return raw mems value for the gyro
-int16_t IMU_getRawGyroX()
-{
+int16_t IMU_getRawGyroX() {
 	return (memsRawGyroX);
 }
-int16_t IMU_getRawGyroY()
-{
+int16_t IMU_getRawGyroY() {
 	return (memsRawGyroY);
 }
-int16_t IMU_getRawGyroZ()
-{
+int16_t IMU_getRawGyroZ() {
 	return (memsRawGyroZ);
 }
 
 //Return raw mems value for the mag
-int16_t IMU_getRawMagX()
-{
+int16_t IMU_getRawMagX() {
 	return (memsRawMagX);
 }
-int16_t IMU_getRawMagY()
-{
+int16_t IMU_getRawMagY() {
 	return (memsRawMagY);
 }
-int16_t IMU_getRawMagZ()
-{
+int16_t IMU_getRawMagZ() {
 	return (memsRawMagZ);
 }
 
 //Given a record ID, read the Q1 value from the metaData record in the FRS (ya, it's complicated)
 //Q1 is used for all sensor data calculations
-int16_t IMU_getQ1(uint16_t recordID)
-{
+int16_t IMU_getQ1(uint16_t recordID) {
 	//Q1 is always the lower 16 bits of word 7
 	uint16_t q = IMU_readFRSword(recordID, 7) & 0xFFFF; //Get word 7, lower 16 bits
 	return (q);
@@ -689,8 +611,7 @@ int16_t IMU_getQ1(uint16_t recordID)
 
 //Given a record ID, read the Q2 value from the metaData record in the FRS
 //Q2 is used in sensor bias
-int16_t IMU_getQ2(uint16_t recordID)
-{
+int16_t IMU_getQ2(uint16_t recordID) {
 	//Q2 is always the upper 16 bits of word 7
 	uint16_t q = IMU_readFRSword(recordID, 7) >> 16; //Get word 7, upper 16 bits
 	return (q);
@@ -698,16 +619,14 @@ int16_t IMU_getQ2(uint16_t recordID)
 
 //Given a record ID, read the Q3 value from the metaData record in the FRS
 //Q3 is used in sensor change sensitivity
-int16_t IMU_getQ3(uint16_t recordID)
-{
+int16_t IMU_getQ3(uint16_t recordID) {
 	//Q3 is always the upper 16 bits of word 8
 	uint16_t q = IMU_readFRSword(recordID, 8) >> 16; //Get word 8, upper 16 bits
 	return (q);
 }
 
 //Given a record ID, read the resolution value from the metaData record in the FRS for a given sensor
-float IMU_getResolution(uint16_t recordID)
-{
+float IMU_getResolution(uint16_t recordID) {
 	//The resolution Q value are 'the same as those used in the sensor's input report'
 	//This should be Q1.
 	int16_t Q = IMU_getQ1(recordID);
@@ -721,8 +640,7 @@ float IMU_getResolution(uint16_t recordID)
 }
 
 //Given a record ID, read the range value from the metaData record in the FRS for a given sensor
-float IMU_getRange(uint16_t recordID)
-{
+float IMU_getRange(uint16_t recordID) {
 	//The resolution Q value are 'the same as those used in the sensor's input report'
 	//This should be Q1.
 	int16_t Q = IMU_getQ1(recordID);
@@ -738,8 +656,7 @@ float IMU_getRange(uint16_t recordID)
 //Given a record ID and a word number, look up the word data
 //Helpful for pulling out a Q value, range, etc.
 //Use readFRSdata for pulling out multi-word objects for a sensor (Vendor data for example)
-uint32_t IMU_readFRSword(uint16_t recordID, uint8_t wordNumber)
-{
+uint32_t IMU_readFRSword(uint16_t recordID, uint8_t wordNumber) {
 	if (IMU_readFRSdata(recordID, wordNumber, 1) == true) //Get word number, just one word in length from FRS
 		return (metaData[0]);						  //Return this one word
 
@@ -748,8 +665,8 @@ uint32_t IMU_readFRSword(uint16_t recordID, uint8_t wordNumber)
 
 //Ask the sensor for data from the Flash Record System
 //See 6.3.6 page 40, FRS Read Request
-void IMU_frsReadRequest(uint16_t recordID, uint16_t readOffset, uint16_t blockSize)
-{
+void IMU_frsReadRequest(uint16_t recordID, uint16_t readOffset,
+		uint16_t blockSize) {
 	shtpData[0] = SHTP_REPORT_FRS_READ_REQUEST; //FRS Read Request
 	shtpData[1] = 0;							//Reserved
 	shtpData[2] = (readOffset >> 0) & 0xFF;		//Read Offset LSB
@@ -766,22 +683,19 @@ void IMU_frsReadRequest(uint16_t recordID, uint16_t readOffset, uint16_t blockSi
 //Given a sensor or record ID, and a given start/stop bytes, read the data from the Flash Record System (FRS) for this sensor
 //Returns true if metaData array is loaded successfully
 //Returns false if failure
-bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation, uint8_t wordsToRead)
-{
+bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation,
+		uint8_t wordsToRead) {
 	uint8_t spot = 0;
 
 	//First we send a Flash Record System (FRS) request
 	IMU_frsReadRequest(recordID, startLocation, wordsToRead); //From startLocation of record, read a # of words
 
 	//Read bytes until FRS reports that the read is complete
-	while (1)
-	{
+	while (1) {
 		//Now we wait for response
-		while (1)
-		{
+		while (1) {
 			uint8_t counter = 0;
-			while (IMU_receivePacket() == false)
-			{
+			while (IMU_receivePacket() == false) {
 				if (counter++ > 100)
 					return (false); //Give up
 				HAL_Delay(1);
@@ -790,35 +704,35 @@ bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation, uint8_t wordsToRe
 			//We have the packet, inspect it for the right contents
 			//See page 40. Report ID should be 0xF3 and the FRS types should match the thing we requested
 			if (shtpData[0] == SHTP_REPORT_FRS_READ_RESPONSE)
-				if (((uint16_t)shtpData[13] << 8 | shtpData[12]) == recordID)
+				if (((uint16_t) shtpData[13] << 8 | shtpData[12]) == recordID)
 					break; //This packet is one we are looking for
 		}
 
 		uint8_t dataLength = shtpData[1] >> 4;
 		uint8_t frsStatus = shtpData[1] & 0x0F;
 
-		uint32_t data0 = (uint32_t)shtpData[7] << 24 | (uint32_t)shtpData[6] << 16 | (uint32_t)shtpData[5] << 8 | (uint32_t)shtpData[4];
-		uint32_t data1 = (uint32_t)shtpData[11] << 24 | (uint32_t)shtpData[10] << 16 | (uint32_t)shtpData[9] << 8 | (uint32_t)shtpData[8];
+		uint32_t data0 = (uint32_t) shtpData[7] << 24
+				| (uint32_t) shtpData[6] << 16 | (uint32_t) shtpData[5] << 8
+				| (uint32_t) shtpData[4];
+		uint32_t data1 = (uint32_t) shtpData[11] << 24
+				| (uint32_t) shtpData[10] << 16 | (uint32_t) shtpData[9] << 8
+				| (uint32_t) shtpData[8];
 
 		//Record these words to the metaData array
-		if (dataLength > 0)
-		{
+		if (dataLength > 0) {
 			metaData[spot++] = data0;
 		}
-		if (dataLength > 1)
-		{
+		if (dataLength > 1) {
 			metaData[spot++] = data1;
 		}
 
-		if (spot >= MAX_METADATA_SIZE)
-		{
+		if (spot >= MAX_METADATA_SIZE) {
 //			if (_printDebug == true)
 //				_debugPort->println(F("metaData array over run. Returning."));
 			return (true); //We have run out of space in our array. Bail.
 		}
 
-		if (frsStatus == 3 || frsStatus == 6 || frsStatus == 7)
-		{
+		if (frsStatus == 3 || frsStatus == 6 || frsStatus == 7) {
 			return (true); //FRS status is read completed! We're done!
 		}
 	}
@@ -828,8 +742,7 @@ bool IMU_readFRSdata(uint16_t recordID, uint8_t startLocation, uint8_t wordsToRe
 //Read all advertisement packets from sensor
 //The sensor has been seen to reset twice if we attempt too much too quickly.
 //This seems to work reliably.
-void IMU_softReset(void)
-{
+void IMU_softReset(void) {
 	shtpData[0] = 1; //Reset
 
 	//Attempt to start communication with sensor
@@ -846,8 +759,7 @@ void IMU_softReset(void)
 
 //Get the reason for the last reset
 //1 = POR, 2 = Internal reset, 3 = Watchdog, 4 = External reset, 5 = Other
-uint8_t IMU_resetReason()
-{
+uint8_t IMU_resetReason() {
 	shtpData[0] = SHTP_REPORT_PRODUCT_ID_REQUEST; //Request the product ID and reset info
 	shtpData[1] = 0;							  //Reserved
 
@@ -855,10 +767,8 @@ uint8_t IMU_resetReason()
 	IMU_sendPacket(CHANNEL_CONTROL, 2);
 
 	//Now we wait for response
-	if (IMU_receivePacket() == true)
-	{
-		if (shtpData[0] == SHTP_REPORT_PRODUCT_ID_RESPONSE)
-		{
+	if (IMU_receivePacket() == true) {
+		if (shtpData[0] == SHTP_REPORT_PRODUCT_ID_RESPONSE) {
 			return (shtpData[1]);
 		}
 	}
@@ -868,152 +778,139 @@ uint8_t IMU_resetReason()
 
 //Given a register value and a Q point, convert to float
 //See https://en.wikipedia.org/wiki/Q_(number_format)
-float IMU_qToFloat(int16_t fixedPointValue, uint8_t qPoint)
-{
+float IMU_qToFloat(int16_t fixedPointValue, uint8_t qPoint) {
 	float qFloat = fixedPointValue;
 	qFloat *= pow(2, qPoint * -1);
 	return (qFloat);
 }
 
 //Sends the packet to enable the rotation vector
-void IMU_enableRotationVector(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_ROTATION_VECTOR, timeBetweenReports);
+void IMU_enableRotationVector(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_ROTATION_VECTOR,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the rotation vector
-void IMU_enableGameRotationVector(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_GAME_ROTATION_VECTOR, timeBetweenReports);
+void IMU_enableGameRotationVector(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_GAME_ROTATION_VECTOR,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the accelerometer
-void IMU_enableAccelerometer(uint16_t timeBetweenReports)
-{
+void IMU_enableAccelerometer(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_ACCELEROMETER, timeBetweenReports);
 }
 
 //Sends the packet to enable the accelerometer
-void IMU_enableLinearAccelerometer(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_LINEAR_ACCELERATION, timeBetweenReports);
+void IMU_enableLinearAccelerometer(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_LINEAR_ACCELERATION,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the gyro
-void IMU_enableGyro(uint16_t timeBetweenReports)
-{
+void IMU_enableGyro(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_GYROSCOPE, timeBetweenReports);
 }
 
 //Sends the packet to enable the magnetometer
-void IMU_enableMagnetometer(uint16_t timeBetweenReports)
-{
+void IMU_enableMagnetometer(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_MAGNETIC_FIELD, timeBetweenReports);
 }
 
 //Sends the packet to enable the step counter
-void IMU_enableStepCounter(uint16_t timeBetweenReports)
-{
+void IMU_enableStepCounter(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_STEP_COUNTER, timeBetweenReports);
 }
 
 //Sends the packet to enable the Stability Classifier
-void IMU_enableStabilityClassifier(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_STABILITY_CLASSIFIER, timeBetweenReports);
+void IMU_enableStabilityClassifier(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_STABILITY_CLASSIFIER,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the raw accel readings
 //Note you must enable basic reporting on the sensor as well
-void IMU_enableRawAccelerometer(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_RAW_ACCELEROMETER, timeBetweenReports);
+void IMU_enableRawAccelerometer(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_RAW_ACCELEROMETER,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the raw accel readings
 //Note you must enable basic reporting on the sensor as well
-void IMU_enableRawGyro(uint16_t timeBetweenReports)
-{
+void IMU_enableRawGyro(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_RAW_GYROSCOPE, timeBetweenReports);
 }
 
 //Sends the packet to enable the raw accel readings
 //Note you must enable basic reporting on the sensor as well
-void IMU_enableRawMagnetometer(uint16_t timeBetweenReports)
-{
-	IMU_setFeatureCommand_2(SENSOR_REPORTID_RAW_MAGNETOMETER, timeBetweenReports);
+void IMU_enableRawMagnetometer(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_RAW_MAGNETOMETER,
+			timeBetweenReports);
 }
 
 //Sends the packet to enable the various activity classifiers
-void IMU_enableActivityClassifier(uint16_t timeBetweenReports, uint32_t activitiesToEnable, uint8_t *activityConfidences)
-{
+void IMU_enableActivityClassifier(uint16_t timeBetweenReports,
+		uint32_t activitiesToEnable, uint8_t *activityConfidences) {
 	_activityConfidences = activityConfidences; //Store pointer to array
 
-	IMU_setFeatureCommand_3(SENSOR_REPORTID_PERSONAL_ACTIVITY_CLASSIFIER, timeBetweenReports, activitiesToEnable);
+	IMU_setFeatureCommand_3(SENSOR_REPORTID_PERSONAL_ACTIVITY_CLASSIFIER,
+			timeBetweenReports, activitiesToEnable);
 }
 
 //Sends the commands to begin calibration of the accelerometer
-void IMU_calibrateAccelerometer()
-{
+void IMU_calibrateAccelerometer() {
 	IMU_sendCalibrateCommand(CALIBRATE_ACCEL);
 }
 
 //Sends the commands to begin calibration of the gyro
-void IMU_calibrateGyro()
-{
+void IMU_calibrateGyro() {
 	IMU_sendCalibrateCommand(CALIBRATE_GYRO);
 }
 
 //Sends the commands to begin calibration of the magnetometer
-void IMU_calibrateMagnetometer()
-{
+void IMU_calibrateMagnetometer() {
 	IMU_sendCalibrateCommand(CALIBRATE_MAG);
 }
 
 //Sends the commands to begin calibration of the planar accelerometer
-void IMU_calibratePlanarAccelerometer()
-{
+void IMU_calibratePlanarAccelerometer() {
 	IMU_sendCalibrateCommand(CALIBRATE_PLANAR_ACCEL);
 }
 
 //See 2.2 of the Calibration Procedure document 1000-4044
-void IMU_calibrateAll()
-{
+void IMU_calibrateAll() {
 	IMU_sendCalibrateCommand(CALIBRATE_ACCEL_GYRO_MAG);
 }
 
-void IMU_endCalibration()
-{
+void IMU_endCalibration() {
 	IMU_sendCalibrateCommand(CALIBRATE_STOP); //Disables all calibrations
 }
 
 //See page 51 of reference manual - ME Calibration Response
 //Byte 5 is parsed during the readPacket and stored in calibrationStatus
-bool IMU_calibrationComplete()
-{
+bool IMU_calibrationComplete() {
 	if (calibrationStatus == 0)
 		return (true);
 	return (false);
 }
 
 //Given a sensor's report ID, this tells the BNO080 to begin reporting the values
-void IMU_setFeatureCommand_2(uint8_t reportID, uint16_t timeBetweenReports)
-{
+void IMU_setFeatureCommand_2(uint8_t reportID, uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_3(reportID, timeBetweenReports, 0); //No specific config
 }
 
 //Given a sensor's report ID, this tells the BNO080 to begin reporting the values
 //Also sets the specific config word. Useful for personal activity classifier
-void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports, uint32_t specificConfig)
-{
-	long microsBetweenReports = (long)timeBetweenReports * 1000L;
+void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports,
+		uint32_t specificConfig) {
+	long microsBetweenReports = (long) timeBetweenReports * 1000L;
 
-	shtpData[0] = SHTP_REPORT_SET_FEATURE_COMMAND;	 //Set feature command. Reference page 55
-	shtpData[1] = reportID;							   //Feature Report ID. 0x01 = Accelerometer, 0x05 = Rotation vector
+	shtpData[0] = SHTP_REPORT_SET_FEATURE_COMMAND;//Set feature command. Reference page 55
+	shtpData[1] = reportID;	//Feature Report ID. 0x01 = Accelerometer, 0x05 = Rotation vector
 	shtpData[2] = 0;								   //Feature flags
-	shtpData[3] = 0;								   //Change sensitivity (LSB)
-	shtpData[4] = 0;								   //Change sensitivity (MSB)
-	shtpData[5] = (microsBetweenReports >> 0) & 0xFF;  //Report interval (LSB) in microseconds. 0x7A120 = 500ms
+	shtpData[3] = 0;								  //Change sensitivity (LSB)
+	shtpData[4] = 0;								  //Change sensitivity (MSB)
+	shtpData[5] = (microsBetweenReports >> 0) & 0xFF; //Report interval (LSB) in microseconds. 0x7A120 = 500ms
 	shtpData[6] = (microsBetweenReports >> 8) & 0xFF;  //Report interval
 	shtpData[7] = (microsBetweenReports >> 16) & 0xFF; //Report interval
 	shtpData[8] = (microsBetweenReports >> 24) & 0xFF; //Report interval (MSB)
@@ -1021,10 +918,10 @@ void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports, uint
 	shtpData[10] = 0;								   //Batch Interval
 	shtpData[11] = 0;								   //Batch Interval
 	shtpData[12] = 0;								   //Batch Interval (MSB)
-	shtpData[13] = (specificConfig >> 0) & 0xFF;	   //Sensor-specific config (LSB)
+	shtpData[13] = (specificConfig >> 0) & 0xFF;//Sensor-specific config (LSB)
 	shtpData[14] = (specificConfig >> 8) & 0xFF;	   //Sensor-specific config
 	shtpData[15] = (specificConfig >> 16) & 0xFF;	  //Sensor-specific config
-	shtpData[16] = (specificConfig >> 24) & 0xFF;	  //Sensor-specific config (MSB)
+	shtpData[16] = (specificConfig >> 24) & 0xFF;//Sensor-specific config (MSB)
 
 	//Transmit packet on channel 2, 17 bytes
 	IMU_sendPacket(CHANNEL_CONTROL, 17);
@@ -1033,36 +930,33 @@ void IMU_setFeatureCommand_3(uint8_t reportID, uint16_t timeBetweenReports, uint
 //Tell the sensor to do a command
 //See 6.3.8 page 41, Command request
 //The caller is expected to set P0 through P8 prior to calling
-void IMU_sendCommand(uint8_t command)
-{
+void IMU_sendCommand(uint8_t command) {
 	shtpData[0] = SHTP_REPORT_COMMAND_REQUEST; //Command Request
-	shtpData[1] = commandSequenceNumber++;	 //Increments automatically each function call
+	shtpData[1] = commandSequenceNumber++;//Increments automatically each function call
 	shtpData[2] = command;					   //Command
 
 	//Caller must set these
 	/*shtpData[3] = 0; //P0
-	shtpData[4] = 0; //P1
-	shtpData[5] = 0; //P2
-	shtpData[6] = 0;
-	shtpData[7] = 0;
-	shtpData[8] = 0;
-	shtpData[9] = 0;
-	shtpData[10] = 0;
-	shtpData[11] = 0;*/
+	 shtpData[4] = 0; //P1
+	 shtpData[5] = 0; //P2
+	 shtpData[6] = 0;
+	 shtpData[7] = 0;
+	 shtpData[8] = 0;
+	 shtpData[9] = 0;
+	 shtpData[10] = 0;
+	 shtpData[11] = 0;*/
 
 	//Transmit packet on channel 2, 12 bytes
 	IMU_sendPacket(CHANNEL_CONTROL, 12);
 }
 
-void IMU_sendTareNow(void)
-{
+void IMU_sendTareNow(void) {
 	shtpData[0] = SHTP_REPORT_COMMAND_REQUEST; //Command Request
-	shtpData[1] = commandSequenceNumber++;	 //Increments automatically each function call
+	shtpData[1] = commandSequenceNumber++;//Increments automatically each function call
 	shtpData[2] = 0x03;					   // TareCommand
 	shtpData[3] = 0; // Tare Now
 	shtpData[4] = 0x07; // All 3 axes
 	shtpData[5] = 0; // Rotation Vector
-
 
 	// RESERVED
 	shtpData[6] = 0;
@@ -1076,13 +970,11 @@ void IMU_sendTareNow(void)
 	IMU_sendPacket(CHANNEL_CONTROL, 12);
 }
 
-void IMU_sendPersistTare(void)
-{
+void IMU_sendPersistTare(void) {
 	shtpData[0] = SHTP_REPORT_COMMAND_REQUEST; //Command Request
-	shtpData[1] = commandSequenceNumber++;	 //Increments automatically each function call
+	shtpData[1] = commandSequenceNumber++;//Increments automatically each function call
 	shtpData[2] = 0x03;					   // TareCommand
 	shtpData[3] = 0x01; // Persist Tare
-
 
 	// RESERVED
 	shtpData[4] = 0;
@@ -1100,17 +992,16 @@ void IMU_sendPersistTare(void)
 
 //This tells the BNO080 to begin calibrating
 //See page 50 of reference manual and the 1000-4044 calibration doc
-void IMU_sendCalibrateCommand(uint8_t thingToCalibrate)
-{
+void IMU_sendCalibrateCommand(uint8_t thingToCalibrate) {
 	/*shtpData[3] = 0; //P0 - Accel Cal Enable
-	shtpData[4] = 0; //P1 - Gyro Cal Enable
-	shtpData[5] = 0; //P2 - Mag Cal Enable
-	shtpData[6] = 0; //P3 - Subcommand 0x00
-	shtpData[7] = 0; //P4 - Planar Accel Cal Enable
-	shtpData[8] = 0; //P5 - Reserved
-	shtpData[9] = 0; //P6 - Reserved
-	shtpData[10] = 0; //P7 - Reserved
-	shtpData[11] = 0; //P8 - Reserved*/
+	 shtpData[4] = 0; //P1 - Gyro Cal Enable
+	 shtpData[5] = 0; //P2 - Mag Cal Enable
+	 shtpData[6] = 0; //P3 - Subcommand 0x00
+	 shtpData[7] = 0; //P4 - Planar Accel Cal Enable
+	 shtpData[8] = 0; //P5 - Reserved
+	 shtpData[9] = 0; //P6 - Reserved
+	 shtpData[10] = 0; //P7 - Reserved
+	 shtpData[11] = 0; //P8 - Reserved*/
 
 	for (uint8_t x = 3; x < 12; x++) //Clear this section of the shtpData array
 		shtpData[x] = 0;
@@ -1123,13 +1014,11 @@ void IMU_sendCalibrateCommand(uint8_t thingToCalibrate)
 		shtpData[5] = 1;
 	else if (thingToCalibrate == CALIBRATE_PLANAR_ACCEL)
 		shtpData[7] = 1;
-	else if (thingToCalibrate == CALIBRATE_ACCEL_GYRO_MAG)
-	{
+	else if (thingToCalibrate == CALIBRATE_ACCEL_GYRO_MAG) {
 		shtpData[3] = 1;
 		shtpData[4] = 1;
 		shtpData[5] = 1;
-	}
-	else if (thingToCalibrate == CALIBRATE_STOP)
+	} else if (thingToCalibrate == CALIBRATE_STOP)
 		; //Do nothing, bytes are set to zero
 
 	//Make the internal calStatus variable non-zero (operation failed) so that user can test while we wait
@@ -1141,17 +1030,16 @@ void IMU_sendCalibrateCommand(uint8_t thingToCalibrate)
 
 //Request ME Calibration Status from BNO080
 //See page 51 of reference manual
-void IMU_requestCalibrationStatus()
-{
+void IMU_requestCalibrationStatus() {
 	/*shtpData[3] = 0; //P0 - Reserved
-	shtpData[4] = 0; //P1 - Reserved
-	shtpData[5] = 0; //P2 - Reserved
-	shtpData[6] = 0; //P3 - 0x01 - Subcommand: Get ME Calibration
-	shtpData[7] = 0; //P4 - Reserved
-	shtpData[8] = 0; //P5 - Reserved
-	shtpData[9] = 0; //P6 - Reserved
-	shtpData[10] = 0; //P7 - Reserved
-	shtpData[11] = 0; //P8 - Reserved*/
+	 shtpData[4] = 0; //P1 - Reserved
+	 shtpData[5] = 0; //P2 - Reserved
+	 shtpData[6] = 0; //P3 - 0x01 - Subcommand: Get ME Calibration
+	 shtpData[7] = 0; //P4 - Reserved
+	 shtpData[8] = 0; //P5 - Reserved
+	 shtpData[9] = 0; //P6 - Reserved
+	 shtpData[10] = 0; //P7 - Reserved
+	 shtpData[11] = 0; //P8 - Reserved*/
 
 	for (uint8_t x = 3; x < 12; x++) //Clear this section of the shtpData array
 		shtpData[x] = 0;
@@ -1164,17 +1052,16 @@ void IMU_requestCalibrationStatus()
 
 //This tells the BNO080 to save the Dynamic Calibration Data (DCD) to flash
 //See page 49 of reference manual and the 1000-4044 calibration doc
-void IMU_saveCalibration()
-{
+void IMU_saveCalibration() {
 	/*shtpData[3] = 0; //P0 - Reserved
-	shtpData[4] = 0; //P1 - Reserved
-	shtpData[5] = 0; //P2 - Reserved
-	shtpData[6] = 0; //P3 - Reserved
-	shtpData[7] = 0; //P4 - Reserved
-	shtpData[8] = 0; //P5 - Reserved
-	shtpData[9] = 0; //P6 - Reserved
-	shtpData[10] = 0; //P7 - Reserved
-	shtpData[11] = 0; //P8 - Reserved*/
+	 shtpData[4] = 0; //P1 - Reserved
+	 shtpData[5] = 0; //P2 - Reserved
+	 shtpData[6] = 0; //P3 - Reserved
+	 shtpData[7] = 0; //P4 - Reserved
+	 shtpData[8] = 0; //P5 - Reserved
+	 shtpData[9] = 0; //P6 - Reserved
+	 shtpData[10] = 0; //P7 - Reserved
+	 shtpData[11] = 0; //P8 - Reserved*/
 
 	for (uint8_t x = 3; x < 12; x++) //Clear this section of the shtpData array
 		shtpData[x] = 0;
@@ -1220,15 +1107,15 @@ void IMU_saveCalibration()
 
 //Check to see if there is any new data available
 //Read the contents of the incoming packet into the shtpData array
-bool IMU_receivePacket(void)
-{
-	if( HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
+bool IMU_receivePacket(void) {
+	if (HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
 		return (false);
 
 	//Ask for four bytes to find out how much data we need to read
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //	taskENTER_CRITICAL();
-	HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100);
+	HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4,
+			100);
 //	while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, shtpHeader, (uint8_t) 4, 100) != HAL_OK){
 //		osSemaphoreRelease(messageI2C_LockSem);
 //		osDelay(100);
@@ -1238,12 +1125,12 @@ bool IMU_receivePacket(void)
 	osSemaphoreRelease(messageI2C_LockHandle);
 
 	//Calculate the number of data bytes in this packet
-	int16_t dataLength = ( ((uint16_t)shtpHeader[PACKET_MSB] << 8) | shtpHeader[PACKET_LSB]);
+	int16_t dataLength = (((uint16_t) shtpHeader[PACKET_MSB] << 8)
+			| shtpHeader[PACKET_LSB]);
 	dataLength &= ~(1 << 15); //Clear the MSbit.
 	//This bit indicates if this package is a continuation of the last. Ignore it for now.
 	//TODO catch this as an error and exit
-	if (dataLength == 0)
-	{
+	if (dataLength == 0) {
 		//Packet is empty
 		return (false); //All done
 	}
@@ -1251,31 +1138,28 @@ bool IMU_receivePacket(void)
 
 	IMU_getData(dataLength);
 
-
 	return (true); //We're done!
 }
 
 //Sends multiple requests to sensor until all data bytes are received from sensor
 //The shtpData buffer has max capacity of MAX_PACKET_SIZE. Any bytes over this amount will be lost.
 //Arduino I2C read limit is 32 bytes. Header is 4 bytes, so max data we can read per interation is 28 bytes
-bool IMU_getData(uint16_t bytesRemaining)
-{
+bool IMU_getData(uint16_t bytesRemaining) {
 	uint16_t dataSpot = 0; //Start at the beginning of shtpData array
 
 //	uint8_t receiveBuffer[28] = {0};
 //	uint8_t receivePacket[I2C_BUFFER_LENGTH - 4] = {0};
 
-
 	//Setup a series of chunked 32 byte reads
-	while (bytesRemaining > 0)
-	{
+	while (bytesRemaining > 0) {
 		uint16_t numberOfBytesToRead = bytesRemaining;
 		if (numberOfBytesToRead > (I2C_BUFFER_LENGTH - 4))
 			numberOfBytesToRead = (I2C_BUFFER_LENGTH - 4);
 
 		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //		taskENTER_CRITICAL();
-		HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100);
+		HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer,
+				(uint8_t) (numberOfBytesToRead + 4), 100);
 //		while( HAL_I2C_Master_Receive(&hi2c1, _deviceAddress, receiveBuffer, (uint8_t)(numberOfBytesToRead + 4), 100) != HAL_OK){
 //			osSemaphoreRelease(messageI2C_LockSem);
 //			osDelay(100);
@@ -1284,17 +1168,15 @@ bool IMU_getData(uint16_t bytesRemaining)
 //		taskEXIT_CRITICAL();
 		osSemaphoreRelease(messageI2C_LockHandle);
 
-
 //		_i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)(numberOfBytesToRead + 4));
 //		if (waitForI2C() == false)
 //			return (0); //Error
 
 		// first four bytes are header bytes and can be thrown away
-		if ( (dataSpot + numberOfBytesToRead) < MAX_PACKET_SIZE){
-			memcpy(&(shtpData[dataSpot]), &(receiveBuffer[4]), numberOfBytesToRead);
-		}
-		else
-		{
+		if ((dataSpot + numberOfBytesToRead) < MAX_PACKET_SIZE) {
+			memcpy(&(shtpData[dataSpot]), &(receiveBuffer[4]),
+					numberOfBytesToRead);
+		} else {
 			// Do nothing with the data
 		}
 
@@ -1310,8 +1192,7 @@ bool IMU_getData(uint16_t bytesRemaining)
 //Given the data packet, send the header then the data
 //Returns false if sensor does not ACK
 //TODO - Arduino has a max 32 byte send. Break sending into multi packets if needed.
-bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
-{
+bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength) {
 	uint8_t packetLength = dataLength + 4; //Add four bytes for the header
 
 	/*  *********** POPULATE HEADER ****************************** */
@@ -1326,7 +1207,8 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 	/*  *********** SEND TO IMU ********************************** */
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 //	taskENTER_CRITICAL();
-	HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100);
+	HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength,
+			100);
 //	while( HAL_I2C_Master_Transmit(&hi2c1, _deviceAddress, outPacket, packetLength, 100) != HAL_OK){
 //		osSemaphoreRelease(messageI2C_LockSem);
 //		osDelay(100);
@@ -1396,6 +1278,4 @@ bool IMU_sendPacket(uint8_t channelNumber, uint8_t dataLength)
 ////		_debugPort->println();
 ////	}
 //}
-
-
 

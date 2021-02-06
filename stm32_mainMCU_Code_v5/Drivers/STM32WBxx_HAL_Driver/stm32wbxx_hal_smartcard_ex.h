@@ -1,21 +1,21 @@
 /**
-  ******************************************************************************
-  * @file    stm32wbxx_hal_smartcard_ex.h
-  * @author  MCD Application Team
-  * @brief   Header file of SMARTCARD HAL Extended module.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    stm32wbxx_hal_smartcard_ex.h
+ * @author  MCD Application Team
+ * @brief   Header file of SMARTCARD HAL Extended module.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32WBxx_HAL_SMARTCARD_EX_H
@@ -29,32 +29,32 @@ extern "C" {
 #include "stm32wbxx_hal_def.h"
 
 /** @addtogroup STM32WBxx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @addtogroup SMARTCARDEx
-  * @{
-  */
+ * @{
+ */
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
 /** @addtogroup SMARTCARDEx_Exported_Constants  SMARTCARD Extended Exported Constants
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup SMARTCARDEx_Transmission_Completion_Indication SMARTCARD Transmission Completion Indication
-  * @{
-  */
+ * @{
+ */
 #define SMARTCARD_TCBGT      SMARTCARD_IT_TCBGT /*!< SMARTCARD transmission complete before guard time */
 #define SMARTCARD_TC         SMARTCARD_IT_TC    /*!< SMARTCARD transmission complete (flag raised when guard time has elapsed) */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_Advanced_Features_Initialization_Type SMARTCARD advanced feature initialization type
-  * @{
-  */
+ * @{
+ */
 #define SMARTCARD_ADVFEATURE_NO_INIT                 0x00000000U    /*!< No advanced feature initialization                  */
 #define SMARTCARD_ADVFEATURE_TXINVERT_INIT           0x00000001U    /*!< TX pin active level inversion                       */
 #define SMARTCARD_ADVFEATURE_RXINVERT_INIT           0x00000002U    /*!< RX pin active level inversion                       */
@@ -65,23 +65,23 @@ extern "C" {
 #define SMARTCARD_ADVFEATURE_MSBFIRST_INIT           0x00000080U    /*!< Most significant bit sent/received first            */
 #define SMARTCARD_ADVFEATURE_TXCOMPLETION            0x00000100U    /*!< TX completion indication before of after guard time */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_FIFO_mode SMARTCARD FIFO mode
-  * @brief    SMARTCARD FIFO mode
-  * @{
-  */
+ * @brief    SMARTCARD FIFO mode
+ * @{
+ */
 #define SMARTCARD_FIFOMODE_DISABLE        0x00000000U                   /*!< FIFO mode disable */
 #define SMARTCARD_FIFOMODE_ENABLE         USART_CR1_FIFOEN              /*!< FIFO mode enable  */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_TXFIFO_threshold_level SMARTCARD TXFIFO threshold level
-  * @brief    SMARTCARD TXFIFO level
-  * @{
-  */
+ * @brief    SMARTCARD TXFIFO level
+ * @{
+ */
 #define SMARTCARD_TXFIFO_THRESHOLD_1_8    0x00000000U                               /*!< TXFIFO reaches 1/8 of its depth */
 #define SMARTCARD_TXFIFO_THRESHOLD_1_4   USART_CR3_TXFTCFG_0                        /*!< TXFIFO reaches 1/4 of its depth */
 #define SMARTCARD_TXFIFO_THRESHOLD_1_2   USART_CR3_TXFTCFG_1                        /*!< TXFIFO reaches 1/2 of its depth */
@@ -89,13 +89,13 @@ extern "C" {
 #define SMARTCARD_TXFIFO_THRESHOLD_7_8   USART_CR3_TXFTCFG_2                        /*!< TXFIFO reaches 7/8 of its depth */
 #define SMARTCARD_TXFIFO_THRESHOLD_8_8   (USART_CR3_TXFTCFG_2|USART_CR3_TXFTCFG_0)  /*!< TXFIFO becomes empty            */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_RXFIFO_threshold_level SMARTCARD RXFIFO threshold level
-  * @brief    SMARTCARD RXFIFO level
-  * @{
-  */
+ * @brief    SMARTCARD RXFIFO level
+ * @{
+ */
 #define SMARTCARD_RXFIFO_THRESHOLD_1_8   0x00000000U                                /*!< RXFIFO FIFO reaches 1/8 of its depth */
 #define SMARTCARD_RXFIFO_THRESHOLD_1_4   USART_CR3_RXFTCFG_0                        /*!< RXFIFO FIFO reaches 1/4 of its depth */
 #define SMARTCARD_RXFIFO_THRESHOLD_1_2   USART_CR3_RXFTCFG_1                        /*!< RXFIFO FIFO reaches 1/2 of its depth */
@@ -103,14 +103,14 @@ extern "C" {
 #define SMARTCARD_RXFIFO_THRESHOLD_7_8   USART_CR3_RXFTCFG_2                        /*!< RXFIFO FIFO reaches 7/8 of its depth */
 #define SMARTCARD_RXFIFO_THRESHOLD_8_8   (USART_CR3_RXFTCFG_2|USART_CR3_RXFTCFG_0)  /*!< RXFIFO FIFO becomes full             */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_Flags SMARTCARD Flags
-  *        Elements values convention: 0xXXXX
-  *           - 0xXXXX  : Flag mask in the ISR register
-  * @{
-  */
+ *        Elements values convention: 0xXXXX
+ *           - 0xXXXX  : Flag mask in the ISR register
+ * @{
+ */
 #define SMARTCARD_FLAG_TCBGT          USART_ISR_TCBGT         /*!< SMARTCARD transmission complete before guard time completion */
 #define SMARTCARD_FLAG_REACK          USART_ISR_REACK         /*!< SMARTCARD receive enable acknowledge flag  */
 #define SMARTCARD_FLAG_TEACK          USART_ISR_TEACK         /*!< SMARTCARD transmit enable acknowledge flag */
@@ -132,19 +132,19 @@ extern "C" {
 #define SMARTCARD_FLAG_RXFT           USART_ISR_RXFT          /*!< SMARTCARD RXFIFO threshold flag            */
 #define SMARTCARD_FLAG_TXFT           USART_ISR_TXFT          /*!< SMARTCARD TXFIFO threshold flag            */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_Interrupt_definition SMARTCARD Interrupts Definition
-  *        Elements values convention: 000ZZZZZ0XXYYYYYb
-  *           - YYYYY  : Interrupt source position in the XX register (5 bits)
-  *           - XX  : Interrupt source register (2 bits)
-  *                 - 01: CR1 register
-  *                 - 10: CR2 register
-  *                 - 11: CR3 register
-  *           - ZZZZZ  : Flag position in the ISR register(5 bits)
-  * @{
-  */
+ *        Elements values convention: 000ZZZZZ0XXYYYYYb
+ *           - YYYYY  : Interrupt source position in the XX register (5 bits)
+ *           - XX  : Interrupt source register (2 bits)
+ *                 - 01: CR1 register
+ *                 - 10: CR2 register
+ *                 - 11: CR3 register
+ *           - ZZZZZ  : Flag position in the ISR register(5 bits)
+ * @{
+ */
 #define SMARTCARD_IT_PE                     0x0028U           /*!< SMARTCARD parity error interruption                 */
 #define SMARTCARD_IT_TXE                    0x0727U           /*!< SMARTCARD transmit data register empty interruption */
 #define SMARTCARD_IT_TXFNF                  0x0727U           /*!< SMARTCARD TX FIFO not full interruption             */
@@ -167,12 +167,12 @@ extern "C" {
 #define SMARTCARD_IT_RXFT                    0x1A7CU          /*!< SMARTCARD RXFIFO threshold reached interruption     */
 #define SMARTCARD_IT_TXFT                    0x1B77U          /*!< SMARTCARD TXFIFO threshold reached interruption     */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup SMARTCARDEx_IT_CLEAR_Flags SMARTCARD Interruption Clear Flags
-  * @{
-  */
+ * @{
+ */
 #define SMARTCARD_CLEAR_PEF                 USART_ICR_PECF    /*!< SMARTCARD parity error clear flag          */
 #define SMARTCARD_CLEAR_FEF                 USART_ICR_FECF    /*!< SMARTCARD framing error clear flag         */
 #define SMARTCARD_CLEAR_NEF                 USART_ICR_NECF    /*!< SMARTCARD noise error detected clear flag  */
@@ -184,25 +184,25 @@ extern "C" {
 #define SMARTCARD_CLEAR_RTOF                USART_ICR_RTOCF   /*!< SMARTCARD receiver time out clear flag     */
 #define SMARTCARD_CLEAR_EOBF                USART_ICR_EOBCF   /*!< SMARTCARD end of block clear flag          */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 /* Exported macros -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup SMARTCARDEx_Private_Macros SMARTCARD Extended Private Macros
-  * @{
-  */
+ * @{
+ */
 
 /** @brief  Set the Transmission Completion flag
-  * @param  __HANDLE__ specifies the SMARTCARD Handle.
-  * @note  If TCBGT (Transmission Complete Before Guard Time) flag is not available or if
-  *        AdvancedInit.TxCompletionIndication is not already filled, the latter is forced
-  *        to SMARTCARD_TC (transmission completion indication when guard time has elapsed).
-  * @retval None
-  */
+ * @param  __HANDLE__ specifies the SMARTCARD Handle.
+ * @note  If TCBGT (Transmission Complete Before Guard Time) flag is not available or if
+ *        AdvancedInit.TxCompletionIndication is not already filled, the latter is forced
+ *        to SMARTCARD_TC (transmission completion indication when guard time has elapsed).
+ * @retval None
+ */
 #define SMARTCARD_TRANSMISSION_COMPLETION_SETTING(__HANDLE__)                                                \
   do {                                                                                                       \
     if (HAL_IS_BIT_CLR((__HANDLE__)->AdvancedInit.AdvFeatureInit, SMARTCARD_ADVFEATURE_TXCOMPLETION))        \
@@ -216,34 +216,33 @@ extern "C" {
   } while(0U)
 
 /** @brief  Return the transmission completion flag.
-  * @param  __HANDLE__ specifies the SMARTCARD Handle.
-  * @note  Based on AdvancedInit.TxCompletionIndication setting, return TC or TCBGT flag.
-  *        When TCBGT flag (Transmission Complete Before Guard Time) is not available, TC flag is
-  *        reported.
-  * @retval Transmission completion flag
-  */
+ * @param  __HANDLE__ specifies the SMARTCARD Handle.
+ * @note  Based on AdvancedInit.TxCompletionIndication setting, return TC or TCBGT flag.
+ *        When TCBGT flag (Transmission Complete Before Guard Time) is not available, TC flag is
+ *        reported.
+ * @retval Transmission completion flag
+ */
 #define SMARTCARD_TRANSMISSION_COMPLETION_FLAG(__HANDLE__)  \
   (((__HANDLE__)->AdvancedInit.TxCompletionIndication == SMARTCARD_TC) ? (SMARTCARD_FLAG_TC) :  (SMARTCARD_FLAG_TCBGT))
 
-
 /** @brief Ensure that SMARTCARD frame transmission completion used flag is valid.
-  * @param __TXCOMPLETE__ SMARTCARD frame transmission completion used flag.
-  * @retval SET (__TXCOMPLETE__ is valid) or RESET (__TXCOMPLETE__ is invalid)
-  */
+ * @param __TXCOMPLETE__ SMARTCARD frame transmission completion used flag.
+ * @retval SET (__TXCOMPLETE__ is valid) or RESET (__TXCOMPLETE__ is invalid)
+ */
 #define IS_SMARTCARD_TRANSMISSION_COMPLETION(__TXCOMPLETE__) (((__TXCOMPLETE__) == SMARTCARD_TCBGT) || \
                                                               ((__TXCOMPLETE__) == SMARTCARD_TC))
 
 /** @brief Ensure that SMARTCARD FIFO mode is valid.
-  * @param __STATE__ SMARTCARD FIFO mode.
-  * @retval SET (__STATE__ is valid) or RESET (__STATE__ is invalid)
-  */
+ * @param __STATE__ SMARTCARD FIFO mode.
+ * @retval SET (__STATE__ is valid) or RESET (__STATE__ is invalid)
+ */
 #define IS_SMARTCARD_FIFOMODE_STATE(__STATE__) (((__STATE__) == SMARTCARD_FIFOMODE_DISABLE ) || \
                                                 ((__STATE__) == SMARTCARD_FIFOMODE_ENABLE))
 
 /** @brief Ensure that SMARTCARD TXFIFO threshold level is valid.
-  * @param __THRESHOLD__ SMARTCARD TXFIFO threshold level.
-  * @retval SET (__THRESHOLD__ is valid) or RESET (__THRESHOLD__ is invalid)
-  */
+ * @param __THRESHOLD__ SMARTCARD TXFIFO threshold level.
+ * @retval SET (__THRESHOLD__ is valid) or RESET (__THRESHOLD__ is invalid)
+ */
 #define IS_SMARTCARD_TXFIFO_THRESHOLD(__THRESHOLD__) (((__THRESHOLD__) == SMARTCARD_TXFIFO_THRESHOLD_1_8) || \
                                                       ((__THRESHOLD__) == SMARTCARD_TXFIFO_THRESHOLD_1_4) || \
                                                       ((__THRESHOLD__) == SMARTCARD_TXFIFO_THRESHOLD_1_2) || \
@@ -252,9 +251,9 @@ extern "C" {
                                                       ((__THRESHOLD__) == SMARTCARD_TXFIFO_THRESHOLD_8_8))
 
 /** @brief Ensure that SMARTCARD RXFIFO threshold level is valid.
-  * @param __THRESHOLD__ SMARTCARD RXFIFO threshold level.
-  * @retval SET (__THRESHOLD__ is valid) or RESET (__THRESHOLD__ is invalid)
-  */
+ * @param __THRESHOLD__ SMARTCARD RXFIFO threshold level.
+ * @retval SET (__THRESHOLD__ is valid) or RESET (__THRESHOLD__ is invalid)
+ */
 #define IS_SMARTCARD_RXFIFO_THRESHOLD(__THRESHOLD__) (((__THRESHOLD__) == SMARTCARD_RXFIFO_THRESHOLD_1_8) || \
                                                       ((__THRESHOLD__) == SMARTCARD_RXFIFO_THRESHOLD_1_4) || \
                                                       ((__THRESHOLD__) == SMARTCARD_RXFIFO_THRESHOLD_1_2) || \
@@ -263,71 +262,79 @@ extern "C" {
                                                       ((__THRESHOLD__) == SMARTCARD_RXFIFO_THRESHOLD_8_8))
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup SMARTCARDEx_Exported_Functions
-  * @{
-  */
+ * @{
+ */
 
 /* Initialization and de-initialization functions  ****************************/
 /* IO operation methods *******************************************************/
 
 /** @addtogroup SMARTCARDEx_Exported_Functions_Group1
-  * @{
-  */
+ * @{
+ */
 
 /* Peripheral Control functions ***********************************************/
-void              HAL_SMARTCARDEx_BlockLength_Config(SMARTCARD_HandleTypeDef *hsmartcard, uint8_t BlockLength);
-void              HAL_SMARTCARDEx_TimeOut_Config(SMARTCARD_HandleTypeDef *hsmartcard, uint32_t TimeOutValue);
-HAL_StatusTypeDef HAL_SMARTCARDEx_EnableReceiverTimeOut(SMARTCARD_HandleTypeDef *hsmartcard);
-HAL_StatusTypeDef HAL_SMARTCARDEx_DisableReceiverTimeOut(SMARTCARD_HandleTypeDef *hsmartcard);
+void HAL_SMARTCARDEx_BlockLength_Config(SMARTCARD_HandleTypeDef *hsmartcard,
+		uint8_t BlockLength);
+void HAL_SMARTCARDEx_TimeOut_Config(SMARTCARD_HandleTypeDef *hsmartcard,
+		uint32_t TimeOutValue);
+HAL_StatusTypeDef HAL_SMARTCARDEx_EnableReceiverTimeOut(
+		SMARTCARD_HandleTypeDef *hsmartcard);
+HAL_StatusTypeDef HAL_SMARTCARDEx_DisableReceiverTimeOut(
+		SMARTCARD_HandleTypeDef *hsmartcard);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup SMARTCARDEx_Exported_Functions_Group2
-  * @{
-  */
+ * @{
+ */
 
 /* IO operation functions *****************************************************/
 void HAL_SMARTCARDEx_RxFifoFullCallback(SMARTCARD_HandleTypeDef *hsmartcard);
 void HAL_SMARTCARDEx_TxFifoEmptyCallback(SMARTCARD_HandleTypeDef *hsmartcard);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @addtogroup SMARTCARDEx_Exported_Functions_Group3
-  * @{
-  */
+ * @{
+ */
 
 /* Peripheral Control functions ***********************************************/
-HAL_StatusTypeDef HAL_SMARTCARDEx_EnableFifoMode(SMARTCARD_HandleTypeDef *hsmartcard);
-HAL_StatusTypeDef HAL_SMARTCARDEx_DisableFifoMode(SMARTCARD_HandleTypeDef *hsmartcard);
-HAL_StatusTypeDef HAL_SMARTCARDEx_SetTxFifoThreshold(SMARTCARD_HandleTypeDef *hsmartcard, uint32_t Threshold);
-HAL_StatusTypeDef HAL_SMARTCARDEx_SetRxFifoThreshold(SMARTCARD_HandleTypeDef *hsmartcard, uint32_t Threshold);
+HAL_StatusTypeDef HAL_SMARTCARDEx_EnableFifoMode(
+		SMARTCARD_HandleTypeDef *hsmartcard);
+HAL_StatusTypeDef HAL_SMARTCARDEx_DisableFifoMode(
+		SMARTCARD_HandleTypeDef *hsmartcard);
+HAL_StatusTypeDef HAL_SMARTCARDEx_SetTxFifoThreshold(
+		SMARTCARD_HandleTypeDef *hsmartcard, uint32_t Threshold);
+HAL_StatusTypeDef HAL_SMARTCARDEx_SetRxFifoThreshold(
+		SMARTCARD_HandleTypeDef *hsmartcard, uint32_t Threshold);
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #ifdef __cplusplus
 }

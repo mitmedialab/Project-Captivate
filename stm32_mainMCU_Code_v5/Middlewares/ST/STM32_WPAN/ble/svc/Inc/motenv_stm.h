@@ -1,11 +1,10 @@
-
 /**
-  ******************************************************************************
-  * @file    motenv_stm.h
-  * @author  SRA/AST
-  * @brief   Header for motenv_stm.c module
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    motenv_stm.h
+ * @author  SRA/AST
+ * @brief   Header for motenv_stm.c module
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +16,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef MOTENV_STM_H
@@ -33,69 +31,65 @@ extern "C" {
 /**
  * @brief  MOTENV Event Opcode definition
  */
-typedef enum
-{
-  /* HW Service Chars related events */
-  HW_MOTION_NOTIFY_ENABLED_EVT,
-  HW_MOTION_NOTIFY_DISABLED_EVT,
-  HW_ENV_NOTIFY_ENABLED_EVT,
-  HW_ENV_NOTIFY_DISABLED_EVT,
-  HW_ENV_READ_EVT,
-  HW_ACC_EVENT_NOTIFY_ENABLED_EVT,
-  HW_ACC_EVENT_NOTIFY_DISABLED_EVT,
-  HW_ACC_EVENT_READ_EVT,
-  /* SW Service Chars related events */
-  SW_MOTIONFX_NOTIFY_ENABLED_EVT,
-  SW_MOTIONFX_NOTIFY_DISABLED_EVT,
-  SW_ECOMPASS_NOTIFY_ENABLED_EVT,
-  SW_ECOMPASS_NOTIFY_DISABLED_EVT,
-  SW_ACTIVITY_REC_NOTIFY_ENABLED_EVT,
-  SW_ACTIVITY_REC_NOTIFY_DISABLED_EVT,
-  SW_ACTIVITY_REC_READ_EVT,
-  SW_CARRY_POSITION_NOTIFY_ENABLED_EVT,
-  SW_CARRY_POSITION_NOTIFY_DISABLED_EVT,
-  SW_CARRY_POSITION_READ_EVT,
-  SW_GESTURE_REC_NOTIFY_ENABLED_EVT,
-  SW_GESTURE_REC_NOTIFY_DISABLED_EVT,
-  SW_GESTURE_REC_READ_EVT,
-  SW_PEDOMETER_NOTIFY_ENABLED_EVT,
-  SW_PEDOMETER_NOTIFY_DISABLED_EVT,
-  SW_PEDOMETER_READ_EVT,
-  SW_INTENSITY_DET_NOTIFY_ENABLED_EVT,
-  SW_INTENSITY_DET_NOTIFY_DISABLED_EVT,
-  /* Config Service Chars related events */
-  CONFIG_NOTIFY_ENABLED_EVT,
-  CONFIG_NOTIFY_DISABLED_EVT,
-  CONFIG_WRITE_EVT,
-  /* Console Service Chars related events */
-  CONSOLE_TERM_NOTIFY_ENABLED_EVT,
-  CONSOLE_TERM_NOTIFY_DISABLED_EVT,
-  CONSOLE_STDERR_NOTIFY_ENABLED_EVT,
-  CONSOLE_STDERR_NOTIFY_DISABLED_EVT,
-  CONSOLE_TERM_READ_EVT,
-  CONSOLE_STDERR_READ_EVT
+typedef enum {
+	/* HW Service Chars related events */
+	HW_MOTION_NOTIFY_ENABLED_EVT,
+	HW_MOTION_NOTIFY_DISABLED_EVT,
+	HW_ENV_NOTIFY_ENABLED_EVT,
+	HW_ENV_NOTIFY_DISABLED_EVT,
+	HW_ENV_READ_EVT,
+	HW_ACC_EVENT_NOTIFY_ENABLED_EVT,
+	HW_ACC_EVENT_NOTIFY_DISABLED_EVT,
+	HW_ACC_EVENT_READ_EVT,
+	/* SW Service Chars related events */
+	SW_MOTIONFX_NOTIFY_ENABLED_EVT,
+	SW_MOTIONFX_NOTIFY_DISABLED_EVT,
+	SW_ECOMPASS_NOTIFY_ENABLED_EVT,
+	SW_ECOMPASS_NOTIFY_DISABLED_EVT,
+	SW_ACTIVITY_REC_NOTIFY_ENABLED_EVT,
+	SW_ACTIVITY_REC_NOTIFY_DISABLED_EVT,
+	SW_ACTIVITY_REC_READ_EVT,
+	SW_CARRY_POSITION_NOTIFY_ENABLED_EVT,
+	SW_CARRY_POSITION_NOTIFY_DISABLED_EVT,
+	SW_CARRY_POSITION_READ_EVT,
+	SW_GESTURE_REC_NOTIFY_ENABLED_EVT,
+	SW_GESTURE_REC_NOTIFY_DISABLED_EVT,
+	SW_GESTURE_REC_READ_EVT,
+	SW_PEDOMETER_NOTIFY_ENABLED_EVT,
+	SW_PEDOMETER_NOTIFY_DISABLED_EVT,
+	SW_PEDOMETER_READ_EVT,
+	SW_INTENSITY_DET_NOTIFY_ENABLED_EVT,
+	SW_INTENSITY_DET_NOTIFY_DISABLED_EVT,
+	/* Config Service Chars related events */
+	CONFIG_NOTIFY_ENABLED_EVT,
+	CONFIG_NOTIFY_DISABLED_EVT,
+	CONFIG_WRITE_EVT,
+	/* Console Service Chars related events */
+	CONSOLE_TERM_NOTIFY_ENABLED_EVT,
+	CONSOLE_TERM_NOTIFY_DISABLED_EVT,
+	CONSOLE_STDERR_NOTIFY_ENABLED_EVT,
+	CONSOLE_STDERR_NOTIFY_DISABLED_EVT,
+	CONSOLE_TERM_READ_EVT,
+	CONSOLE_STDERR_READ_EVT
 } MOTENV_STM_Opcode_evt_t;
 
 /**
  * @brief  MOTENV Event data structure definition
  */
-typedef struct
-{
-  uint8_t *pPayload;
-  uint8_t  Length;
-} MOTENV_STM_Data_t;  
+typedef struct {
+	uint8_t *pPayload;
+	uint8_t Length;
+} MOTENV_STM_Data_t;
 
 /**
  * @brief  MOTENV Notification structure definition
  */
-typedef struct
-{
-  MOTENV_STM_Opcode_evt_t Motenv_Evt_Opcode;
-  MOTENV_STM_Data_t       DataTransfered;
-  uint16_t                ConnectionHandle;
-  uint8_t                 ServiceInstance;
+typedef struct {
+	MOTENV_STM_Opcode_evt_t Motenv_Evt_Opcode;
+	MOTENV_STM_Data_t DataTransfered;
+	uint16_t ConnectionHandle;
+	uint8_t ServiceInstance;
 } MOTENV_STM_App_Notification_evt_t;
-
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
@@ -155,9 +149,10 @@ typedef struct
 
 /* Exported functions ------------------------------------------------------- */
 void MOTENV_STM_Init(void);
-void MOTENV_STM_App_Notification(MOTENV_STM_App_Notification_evt_t *pNotification);
-tBleStatus MOTENV_STM_App_Update_Char(uint16_t UUID, uint8_t payloadLen, uint8_t *pPayload);
-
+void MOTENV_STM_App_Notification(
+		MOTENV_STM_App_Notification_evt_t *pNotification);
+tBleStatus MOTENV_STM_App_Update_Char(uint16_t UUID, uint8_t payloadLen,
+		uint8_t *pPayload);
 
 #ifdef __cplusplus
 }

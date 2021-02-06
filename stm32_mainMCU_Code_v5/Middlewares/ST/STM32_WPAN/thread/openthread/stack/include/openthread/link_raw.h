@@ -119,7 +119,8 @@ otError otLinkRawSleep(otInstance *aInstance);
  *                          OT_ERROR_ABORT when reception was aborted and a frame was not received.
  *
  */
-typedef void(OTCALL *otLinkRawReceiveDone)(otInstance *aInstance, otRadioFrame *aFrame, otError aError);
+typedef void (OTCALL *otLinkRawReceiveDone)(otInstance *aInstance,
+		otRadioFrame *aFrame, otError aError);
 
 /**
  * Transitioning the radio from Sleep to Receive.
@@ -146,7 +147,7 @@ otError otLinkRawReceive(otInstance *aInstance, otLinkRawReceiveDone aCallback);
  * @returns A pointer to the transmit buffer or NULL if the raw link-layer isn't enabled.
  *
  */
-otRadioFrame *otLinkRawGetTransmitBuffer(otInstance *aInstance);
+otRadioFrame* otLinkRawGetTransmitBuffer(otInstance *aInstance);
 
 /**
  * This function pointer on receipt of a IEEE 802.15.4 frame.
@@ -157,14 +158,12 @@ otRadioFrame *otLinkRawGetTransmitBuffer(otInstance *aInstance);
  * @param[in]  aError           OT_ERROR_NONE when the frame was transmitted.
  *                              OT_ERROR_NO_ACK when the frame was transmitted but no ACK was received
  *                              OT_ERROR_CHANNEL_ACCESS_FAILURE when the transmission could not take place
-                                    due to activity on the channel.
+ due to activity on the channel.
  *                              OT_ERROR_ABORT when transmission was aborted for other reasons.
  *
  */
-typedef void (*otLinkRawTransmitDone)(otInstance *  aInstance,
-                                      otRadioFrame *aFrame,
-                                      otRadioFrame *aAckFrame,
-                                      otError       aError);
+typedef void (*otLinkRawTransmitDone)(otInstance *aInstance,
+		otRadioFrame *aFrame, otRadioFrame *aAckFrame, otError aError);
 
 /**
  * This method begins the transmit sequence on the radio.
@@ -184,7 +183,8 @@ typedef void (*otLinkRawTransmitDone)(otInstance *  aInstance,
  * @retval OT_ERROR_INVALID_STATE The radio was not in the Receive state.
  *
  */
-otError otLinkRawTransmit(otInstance *aInstance, otRadioFrame *aFrame, otLinkRawTransmitDone aCallback);
+otError otLinkRawTransmit(otInstance *aInstance, otRadioFrame *aFrame,
+		otLinkRawTransmitDone aCallback);
 
 /**
  * Get the most recent RSSI measurement.
@@ -213,7 +213,8 @@ otRadioCaps otLinkRawGetCaps(otInstance *aInstance);
  * @param[in]  aEnergyScanMaxRssi   The maximum RSSI encountered on the scanned channel.
  *
  */
-typedef void (*otLinkRawEnergyScanDone)(otInstance *aInstance, int8_t aEnergyScanMaxRssi);
+typedef void (*otLinkRawEnergyScanDone)(otInstance *aInstance,
+		int8_t aEnergyScanMaxRssi);
 
 /**
  * This method begins the energy scan sequence on the radio.
@@ -228,10 +229,8 @@ typedef void (*otLinkRawEnergyScanDone)(otInstance *aInstance, int8_t aEnergySca
  * @retval OT_ERROR_INVALID_STATE    If the raw link-layer isn't enabled.
  *
  */
-otError otLinkRawEnergyScan(otInstance *            aInstance,
-                            uint8_t                 aScanChannel,
-                            uint16_t                aScanDuration,
-                            otLinkRawEnergyScanDone aCallback);
+otError otLinkRawEnergyScan(otInstance *aInstance, uint8_t aScanChannel,
+		uint16_t aScanDuration, otLinkRawEnergyScanDone aCallback);
 
 /**
  * Enable/Disable source match for AutoPend.
@@ -256,7 +255,8 @@ otError otLinkRawSrcMatchEnable(otInstance *aInstance, bool aEnable);
  * @retval OT_ERROR_INVALID_STATE    If the raw link-layer isn't enabled.
  *
  */
-otError otLinkRawSrcMatchAddShortEntry(otInstance *aInstance, const uint16_t aShortAddress);
+otError otLinkRawSrcMatchAddShortEntry(otInstance *aInstance,
+		const uint16_t aShortAddress);
 
 /**
  * Adding extended address to the source match table.
@@ -269,7 +269,8 @@ otError otLinkRawSrcMatchAddShortEntry(otInstance *aInstance, const uint16_t aSh
  * @retval OT_ERROR_INVALID_STATE    If the raw link-layer isn't enabled.
  *
  */
-otError otLinkRawSrcMatchAddExtEntry(otInstance *aInstance, const otExtAddress *aExtAddress);
+otError otLinkRawSrcMatchAddExtEntry(otInstance *aInstance,
+		const otExtAddress *aExtAddress);
 
 /**
  * Removing short address to the source match table.
@@ -282,7 +283,8 @@ otError otLinkRawSrcMatchAddExtEntry(otInstance *aInstance, const otExtAddress *
  * @retval OT_ERROR_INVALID_STATE    If the raw link-layer isn't enabled.
  *
  */
-otError otLinkRawSrcMatchClearShortEntry(otInstance *aInstance, const uint16_t aShortAddress);
+otError otLinkRawSrcMatchClearShortEntry(otInstance *aInstance,
+		const uint16_t aShortAddress);
 
 /**
  * Removing extended address to the source match table of the radio.
@@ -295,7 +297,8 @@ otError otLinkRawSrcMatchClearShortEntry(otInstance *aInstance, const uint16_t a
  * @retval OT_ERROR_INVALID_STATE    If the raw link-layer isn't enabled.
  *
  */
-otError otLinkRawSrcMatchClearExtEntry(otInstance *aInstance, const otExtAddress *aExtAddress);
+otError otLinkRawSrcMatchClearExtEntry(otInstance *aInstance,
+		const otExtAddress *aExtAddress);
 
 /**
  * Removing all the short addresses from the source match table.

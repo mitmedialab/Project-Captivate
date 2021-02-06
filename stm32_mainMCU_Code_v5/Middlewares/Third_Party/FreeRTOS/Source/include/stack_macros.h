@@ -120,10 +120,8 @@
 
 /* Remove stack overflow macro if not being used. */
 #ifndef taskCHECK_FOR_STACK_OVERFLOW
-	#define taskCHECK_FOR_STACK_OVERFLOW()
+#define taskCHECK_FOR_STACK_OVERFLOW()
 #endif
-
-
 
 #endif /* STACK_MACROS_H */
 

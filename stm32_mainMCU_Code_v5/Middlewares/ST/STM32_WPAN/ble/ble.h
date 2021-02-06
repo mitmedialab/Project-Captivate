@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    ble.h
-  * @author  MCD Application Team
-  * @brief   BLE interface
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    ble.h
+ * @author  MCD Application Team
+ * @brief   BLE interface
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +17,6 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __BLE_H
 #define __BLE_H
@@ -25,7 +24,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /* Includes ------------------------------------------------------------------*/
 #include "ble_conf.h"
@@ -54,11 +52,10 @@ extern "C" {
 #include "svc/Inc/otas_stm.h"
 #include "svc/Inc/mesh.h"  
 #include "svc/Inc/template_stm.h"  
-  
+
 #include "svc/Inc/svc_ctl.h"
 
 #include "svc/Inc/uuid.h"
-
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

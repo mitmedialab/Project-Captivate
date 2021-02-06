@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * @file    p2p_stm.c
-  * @author  MCD Application Team
-  * @brief   Peer to Peer Service (Custom STM)
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    p2p_stm.c
+ * @author  MCD Application Team
+ * @brief   Peer to Peer Service (Custom STM)
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,19 +17,18 @@
  ******************************************************************************
  */
 
-
 /* Includes ------------------------------------------------------------------*/
 #include "common_blesvc.h"
 
 /* Private typedef -----------------------------------------------------------*/
-typedef struct{
-  uint16_t	PeerToPeerSvcHdle;				        /**< Service handle */
-  uint16_t	P2PWriteClientToServerCharHdle;	  /**< Characteristic handle */
-  uint16_t	P2PNotifyServerToClientCharHdle;	/**< Characteristic handle */
+typedef struct {
+	uint16_t PeerToPeerSvcHdle; /**< Service handle */
+	uint16_t P2PWriteClientToServerCharHdle; /**< Characteristic handle */
+	uint16_t P2PNotifyServerToClientCharHdle; /**< Characteristic handle */
 #if(BLE_CFG_OTA_REBOOT_CHAR != 0)
   uint16_t  RebootReqCharHdle;                /**< Characteristic handle */
 #endif
-}PeerToPeerContext_t;
+} PeerToPeerContext_t;
 
 /* Private defines -----------------------------------------------------------*/
 #define UUID_128_SUPPORTED  1
@@ -42,7 +41,6 @@ typedef struct{
 
 #define BM_REQ_CHAR_SIZE    (3)
 
-
 /* Private macros ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,9 +51,9 @@ typedef struct{
 #if(BLE_CFG_OTA_REBOOT_CHAR != 0)
 #if (UUID_128_SUPPORTED == 1)
 static const uint8_t BM_REQ_CHAR_UUID[16] = {0x19, 0xed, 0x82, 0xae,
-                                       0xed, 0x21, 0x4c, 0x9d,
-                                       0x41, 0x45, 0x22, 0x8e,
-                                       0x11, 0xFE, 0x00, 0x00};
+	0xed, 0x21, 0x4c, 0x9d,
+	0x41, 0x45, 0x22, 0x8e,
+	0x11, 0xFE, 0x00, 0x00};
 #else
 static const uint8_t BM_REQ_CHAR_UUID[2] = {0x11, 0xFE};
 #endif
@@ -71,7 +69,6 @@ PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static PeerToPeerContext_t aPeerToPeerCon
  */
 /* Private function prototypes -----------------------------------------------*/
 static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *pckt);
-
 
 /* Functions Definition ------------------------------------------------------*/
 /* Private functions ----------------------------------------------------------*/
@@ -96,63 +93,56 @@ do {\
 #define COPY_P2P_WRITE_CHAR_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0x00,0x00,0xfe,0x41,0x8e,0x22,0x45,0x41,0x9d,0x4c,0x21,0xed,0xae,0x82,0xed,0x19)
 #define COPY_P2P_NOTIFY_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0x00,0x00,0xfe,0x42,0x8e,0x22,0x45,0x41,0x9d,0x4c,0x21,0xed,0xae,0x82,0xed,0x19)
 
-
-
 /**
  * @brief  Event handler
  * @param  Event: Address of the buffer holding the Event
  * @retval Ack: Return whether the Event has been managed or not
  */
-static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
-{
-  SVCCTL_EvtAckStatus_t return_value;
-  hci_event_pckt *event_pckt;
-  evt_blue_aci *blue_evt;
-  aci_gatt_attribute_modified_event_rp0    * attribute_modified;
-  P2PS_STM_App_Notification_evt_t Notification;
+static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event) {
+	SVCCTL_EvtAckStatus_t return_value;
+	hci_event_pckt *event_pckt;
+	evt_blue_aci *blue_evt;
+	aci_gatt_attribute_modified_event_rp0 *attribute_modified;
+	P2PS_STM_App_Notification_evt_t Notification;
 
-  return_value = SVCCTL_EvtNotAck;
-  event_pckt = (hci_event_pckt *)(((hci_uart_pckt*)Event)->data);
+	return_value = SVCCTL_EvtNotAck;
+	event_pckt = (hci_event_pckt*) (((hci_uart_pckt*) Event)->data);
 
-  switch(event_pckt->evt)
-  {
-    case EVT_VENDOR:
-    {
-      blue_evt = (evt_blue_aci*)event_pckt->data;
-      switch(blue_evt->ecode)
-      {
-        case EVT_BLUE_GATT_ATTRIBUTE_MODIFIED:
-       {
-          attribute_modified = (aci_gatt_attribute_modified_event_rp0*)blue_evt->data;
-            if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PNotifyServerToClientCharHdle + 2))
-            {
-              /**
-               * Descriptor handle
-               */
-              return_value = SVCCTL_EvtAckFlowEnable;
-              /**
-               * Notify to application
-               */
-              if(attribute_modified->Attr_Data[0] & COMSVC_Notification)
-              {
-                Notification.P2P_Evt_Opcode = P2PS_STM__NOTIFY_ENABLED_EVT;
-                P2PS_STM_App_Notification(&Notification);
-              }
-              else
-              {
-                Notification.P2P_Evt_Opcode = P2PS_STM_NOTIFY_DISABLED_EVT;
-                P2PS_STM_App_Notification(&Notification);
-              }
-            }
-            
-            else if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1))
-            {
-              BLE_DBG_P2P_STM_MSG("-- GATT : LED CONFIGURATION RECEIVED\n");
-              Notification.P2P_Evt_Opcode = P2PS_STM_WRITE_EVT;
-              Notification.DataTransfered.Length=attribute_modified->Attr_Data_Length;
-              Notification.DataTransfered.pPayload=attribute_modified->Attr_Data;
-              P2PS_STM_App_Notification(&Notification);  
-            }
+	switch (event_pckt->evt) {
+	case EVT_VENDOR: {
+		blue_evt = (evt_blue_aci*) event_pckt->data;
+		switch (blue_evt->ecode) {
+		case EVT_BLUE_GATT_ATTRIBUTE_MODIFIED: {
+			attribute_modified =
+					(aci_gatt_attribute_modified_event_rp0*) blue_evt->data;
+			if (attribute_modified->Attr_Handle
+					== (aPeerToPeerContext.P2PNotifyServerToClientCharHdle + 2)) {
+				/**
+				 * Descriptor handle
+				 */
+				return_value = SVCCTL_EvtAckFlowEnable;
+				/**
+				 * Notify to application
+				 */
+				if (attribute_modified->Attr_Data[0] & COMSVC_Notification) {
+					Notification.P2P_Evt_Opcode = P2PS_STM__NOTIFY_ENABLED_EVT;
+					P2PS_STM_App_Notification(&Notification);
+				} else {
+					Notification.P2P_Evt_Opcode = P2PS_STM_NOTIFY_DISABLED_EVT;
+					P2PS_STM_App_Notification(&Notification);
+				}
+			}
+
+			else if (attribute_modified->Attr_Handle
+					== (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1)) {
+				BLE_DBG_P2P_STM_MSG("-- GATT : LED CONFIGURATION RECEIVED\n");
+				Notification.P2P_Evt_Opcode = P2PS_STM_WRITE_EVT;
+				Notification.DataTransfered.Length =
+						attribute_modified->Attr_Data_Length;
+				Notification.DataTransfered.pPayload =
+						attribute_modified->Attr_Data;
+				P2PS_STM_App_Notification(&Notification);
+			}
 #if(BLE_CFG_OTA_REBOOT_CHAR != 0)
             else if(attribute_modified->Attr_Handle == (aPeerToPeerContext.RebootReqCharHdle + 1))
             {
@@ -163,22 +153,21 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
               P2PS_STM_App_Notification(&Notification);
             }
 #endif
-        }
-        break;
+		}
+			break;
 
-        default:
-          break;
-      }
-    }
-    break; /* HCI_EVT_VENDOR_SPECIFIC */
+		default:
+			break;
+		}
+	}
+		break; /* HCI_EVT_VENDOR_SPECIFIC */
 
-    default:
-      break;
-  }
+	default:
+		break;
+	}
 
-  return(return_value);
+	return (return_value);
 }/* end SVCCTL_EvtAckStatus_t */
-
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -187,8 +176,7 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
  * @param  None
  * @retval None
  */
-void P2PS_STM_Init(void)
-{
+void P2PS_STM_Init(void) {
 	return;
 }
 //void P2PS_STM_Init(void)
@@ -272,26 +260,24 @@ void P2PS_STM_Init(void)
  * @param  Service_Instance: Instance of the service to which the characteristic belongs
  * 
  */
-tBleStatus P2PS_STM_App_Update_Char(uint16_t UUID, uint8_t *pPayload) 
-{
-  tBleStatus result = BLE_STATUS_INVALID_PARAMS;
-  switch(UUID)
-  {
-    case P2P_NOTIFY_CHAR_UUID:
-      
-     result = aci_gatt_update_char_value(aPeerToPeerContext.PeerToPeerSvcHdle,
-                             aPeerToPeerContext.P2PNotifyServerToClientCharHdle,
-                              0, /* charValOffset */
-                             2, /* charValueLen */
-                             (uint8_t *)  pPayload);
-    
-      break;
+tBleStatus P2PS_STM_App_Update_Char(uint16_t UUID, uint8_t *pPayload) {
+	tBleStatus result = BLE_STATUS_INVALID_PARAMS;
+	switch (UUID) {
+	case P2P_NOTIFY_CHAR_UUID:
 
-    default:
-      break;
-  }
+		result = aci_gatt_update_char_value(
+				aPeerToPeerContext.PeerToPeerSvcHdle,
+				aPeerToPeerContext.P2PNotifyServerToClientCharHdle, 0, /* charValOffset */
+				2, /* charValueLen */
+				(uint8_t*) pPayload);
 
-  return result;
+		break;
+
+	default:
+		break;
+	}
+
+	return result;
 }/* end P2PS_STM_Init() */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

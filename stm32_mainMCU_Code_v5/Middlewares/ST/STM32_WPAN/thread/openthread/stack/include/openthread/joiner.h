@@ -57,12 +57,12 @@ extern "C" {
  *
  */
 typedef enum otJoinerState {
-    OT_JOINER_STATE_IDLE      = 0,
-    OT_JOINER_STATE_DISCOVER  = 1,
-    OT_JOINER_STATE_CONNECT   = 2,
-    OT_JOINER_STATE_CONNECTED = 3,
-    OT_JOINER_STATE_ENTRUST   = 4,
-    OT_JOINER_STATE_JOINED    = 5,
+	OT_JOINER_STATE_IDLE = 0,
+	OT_JOINER_STATE_DISCOVER = 1,
+	OT_JOINER_STATE_CONNECT = 2,
+	OT_JOINER_STATE_CONNECTED = 3,
+	OT_JOINER_STATE_ENTRUST = 4,
+	OT_JOINER_STATE_JOINED = 5,
 } otJoinerState;
 
 /**
@@ -75,7 +75,7 @@ typedef enum otJoinerState {
  * @param[in]  aContext  A pointer to application-specific context.
  *
  */
-typedef void(OTCALL *otJoinerCallback)(otError aError, void *aContext);
+typedef void (OTCALL *otJoinerCallback)(otError aError, void *aContext);
 
 /**
  * This function enables the Thread Joiner role.
@@ -95,15 +95,10 @@ typedef void(OTCALL *otJoinerCallback)(otError aError, void *aContext);
  * @retval OT_ERROR_DISABLED_FEATURE  The Joiner feature is not enabled in this build.
  *
  */
-OTAPI otError OTCALL otJoinerStart(otInstance *     aInstance,
-                                   const char *     aPSKd,
-                                   const char *     aProvisioningUrl,
-                                   const char *     aVendorName,
-                                   const char *     aVendorModel,
-                                   const char *     aVendorSwVersion,
-                                   const char *     aVendorData,
-                                   otJoinerCallback aCallback,
-                                   void *           aContext);
+OTAPI otError OTCALL otJoinerStart(otInstance *aInstance, const char *aPSKd,
+		const char *aProvisioningUrl, const char *aVendorName,
+		const char *aVendorModel, const char *aVendorSwVersion,
+		const char *aVendorData, otJoinerCallback aCallback, void *aContext);
 
 /**
  * This function disables the Thread Joiner role.
@@ -144,7 +139,8 @@ OTAPI otJoinerState OTCALL otJoinerGetState(otInstance *aInstance);
  * @retval OT_ERROR_DISABLED_FEATURE  The Joiner feature is not enabled in this build.
  *
  */
-OTAPI otError OTCALL otJoinerGetId(otInstance *aInstance, otExtAddress *aJoinerId);
+OTAPI otError OTCALL otJoinerGetId(otInstance *aInstance,
+		otExtAddress *aJoinerId);
 
 /**
  * @}

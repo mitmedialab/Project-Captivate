@@ -1,22 +1,21 @@
 /**
-  ******************************************************************************
-  * @file    dbg_trace.c
-  * @author  MCD Application Team
-  * @brief   This file contains the Interface with BLE Drivers functions.
-  ******************************************************************************
-   * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the 
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
+ ******************************************************************************
+ * @file    dbg_trace.c
+ * @author  MCD Application Team
+ * @brief   This file contains the Interface with BLE Drivers functions.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the 
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
  */
-
 
 /* Includes ------------------------------------------------------------------*/
 #include "utilities_common.h"
@@ -31,7 +30,6 @@ size_t __write(int handle, const unsigned char * buf, size_t bufSize);
 /** @addtogroup TRACE
  * @{
  */
-
 
 /** @defgroup TRACE_LOG
  * @brief TRACE Logging functions
@@ -95,17 +93,14 @@ __IO ITStatus DbgTracePeripheralReady = SET;
 static void DbgTrace_TxCpltCallback(void);
 #endif
 
-
 /**
  * @}
  */
-
 
 /* Private Functions Definition ------------------------------------------------------*/
 /** @defgroup TRACE Log Private function 
  * @{
  */
-
 
 /* Functions Definition ------------------------------------------------------*/
 /** @defgroup TRACE Log APIs 
@@ -118,20 +113,16 @@ static void DbgTrace_TxCpltCallback(void);
  * @retval char* Pointer on filename string
  */
 
-const char *DbgTraceGetFileName(const char *fullpath)
-{
-  const char *ret = fullpath;
+const char* DbgTraceGetFileName(const char *fullpath) {
+	const char *ret = fullpath;
 
-  if (strrchr(fullpath, '\\') != NULL)
-  {
-    ret = strrchr(fullpath, '\\') + 1;
-  }
-  else if (strrchr(fullpath, '/') != NULL)
-  {
-    ret = strrchr(fullpath, '/') + 1;
-  }
+	if (strrchr(fullpath, '\\') != NULL) {
+		ret = strrchr(fullpath, '\\') + 1;
+	} else if (strrchr(fullpath, '/') != NULL) {
+		ret = strrchr(fullpath, '/') + 1;
+	}
 
-  return ret;
+	return ret;
 }
 
 /**
@@ -143,17 +134,16 @@ const char *DbgTraceGetFileName(const char *fullpath)
  * @retval None
  */
 
-void DbgTraceBuffer(const void *pBuffer, uint32_t u32Length, const char *strFormat, ...)
-{
-  va_list vaArgs;
-  uint32_t u32Index;
-  va_start(vaArgs, strFormat);
-  vprintf(strFormat, vaArgs);
-  va_end(vaArgs);
-  for (u32Index = 0; u32Index < u32Length; u32Index ++)
-  {
-    printf(" %02X", ((const uint8_t *) pBuffer)[u32Index]);
-  }
+void DbgTraceBuffer(const void *pBuffer, uint32_t u32Length,
+		const char *strFormat, ...) {
+	va_list vaArgs;
+	uint32_t u32Index;
+	va_start(vaArgs, strFormat);
+	vprintf(strFormat, vaArgs);
+	va_end(vaArgs);
+	for (u32Index = 0; u32Index < u32Length; u32Index++) {
+		printf(" %02X", ((const uint8_t*) pBuffer)[u32Index]);
+	}
 }
 
 #if (( CFG_DEBUG_TRACE_FULL != 0 ) || ( CFG_DEBUG_TRACE_LIGHT != 0 ))
@@ -203,17 +193,15 @@ static void DbgTrace_TxCpltCallback(void)
 }
 #endif
 
-void DbgTraceInit( void )
-{
+void DbgTraceInit(void) {
 #if (( CFG_DEBUG_TRACE_FULL != 0 ) || ( CFG_DEBUG_TRACE_LIGHT != 0 ))
   DbgOutputInit();
 #if (DBG_TRACE_USE_CIRCULAR_QUEUE != 0)
   CircularQueue_Init(&MsgDbgTraceQueue, MsgDbgTraceQueueBuff, DBG_TRACE_MSG_QUEUE_SIZE, 0, CIRCULAR_QUEUE_SPLIT_IF_WRAPPING_FLAG);
 #endif 
 #endif
-  return;
+	return;
 }
-
 
 #if (( CFG_DEBUG_TRACE_FULL != 0 ) || ( CFG_DEBUG_TRACE_LIGHT != 0 ))
 #if defined(__GNUC__)  /* SW4STM32 (GCC) */

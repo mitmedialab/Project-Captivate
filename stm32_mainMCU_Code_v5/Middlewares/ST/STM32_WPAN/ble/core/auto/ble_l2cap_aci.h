@@ -20,7 +20,6 @@
 #ifndef BLE_L2CAP_ACI_H__
 #define BLE_L2CAP_ACI_H__
 
-
 #include "ble_types.h"
 
 /**
@@ -51,11 +50,9 @@
  *        following manner: Timeout Multiplier * 10ms.
  * @return Value indicating success or error code.
  */
-tBleStatus aci_l2cap_connection_parameter_update_req( uint16_t Connection_Handle,
-                                                      uint16_t Conn_Interval_Min,
-                                                      uint16_t Conn_Interval_Max,
-                                                      uint16_t Slave_latency,
-                                                      uint16_t Timeout_Multiplier );
+tBleStatus aci_l2cap_connection_parameter_update_req(uint16_t Connection_Handle,
+		uint16_t Conn_Interval_Min, uint16_t Conn_Interval_Max,
+		uint16_t Slave_latency, uint16_t Timeout_Multiplier);
 
 /**
  * @brief ACI_L2CAP_CONNECTION_PARAMETER_UPDATE_RESP
@@ -101,15 +98,10 @@ tBleStatus aci_l2cap_connection_parameter_update_req( uint16_t Connection_Handle
  *        - 0x01: Accept
  * @return Value indicating success or error code.
  */
-tBleStatus aci_l2cap_connection_parameter_update_resp( uint16_t Connection_Handle,
-                                                       uint16_t Conn_Interval_Min,
-                                                       uint16_t Conn_Interval_Max,
-                                                       uint16_t Slave_latency,
-                                                       uint16_t Timeout_Multiplier,
-                                                       uint16_t Minimum_CE_Length,
-                                                       uint16_t Maximum_CE_Length,
-                                                       uint8_t Identifier,
-                                                       uint8_t Accept );
-
+tBleStatus aci_l2cap_connection_parameter_update_resp(
+		uint16_t Connection_Handle, uint16_t Conn_Interval_Min,
+		uint16_t Conn_Interval_Max, uint16_t Slave_latency,
+		uint16_t Timeout_Multiplier, uint16_t Minimum_CE_Length,
+		uint16_t Maximum_CE_Length, uint8_t Identifier, uint8_t Accept);
 
 #endif /* BLE_L2CAP_ACI_H__ */

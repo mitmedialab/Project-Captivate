@@ -59,25 +59,23 @@ extern "C" {
  * This structure represents a Server configuration.
  *
  */
-typedef struct otServerConfig
-{
-    bool     mStable : 1;       ///< TRUE, if this configuration is considered Stable Network Data. FALSE, otherwise.
-    uint8_t  mServerDataLength; ///< Length of server data.
-    uint8_t  mServerData[OT_SERVER_DATA_MAX_SIZE]; ///< Server data bytes.
-    uint16_t mRloc16;                              ///< The Server RLOC16.
+typedef struct otServerConfig {
+	bool mStable :1; ///< TRUE, if this configuration is considered Stable Network Data. FALSE, otherwise.
+	uint8_t mServerDataLength; ///< Length of server data.
+	uint8_t mServerData[OT_SERVER_DATA_MAX_SIZE]; ///< Server data bytes.
+	uint16_t mRloc16;                              ///< The Server RLOC16.
 } otServerConfig;
 
 /**
  * This structure represents a Service configuration.
  *
  */
-typedef struct otServiceConfig
-{
-    uint8_t        mServiceID;         ///< Used to return service ID when iterating over network data from leader.
-    uint32_t       mEnterpriseNumber;  ///< IANA Enterprise Number.
-    uint8_t        mServiceDataLength; ///< Length of service data.
-    uint8_t        mServiceData[OT_SERVICE_DATA_MAX_SIZE]; ///< Service data bytes.
-    otServerConfig mServerConfig;                          ///< The Server configuration.
+typedef struct otServiceConfig {
+	uint8_t mServiceID; ///< Used to return service ID when iterating over network data from leader.
+	uint32_t mEnterpriseNumber;  ///< IANA Enterprise Number.
+	uint8_t mServiceDataLength; ///< Length of service data.
+	uint8_t mServiceData[OT_SERVICE_DATA_MAX_SIZE]; ///< Service data bytes.
+	otServerConfig mServerConfig;                 ///< The Server configuration.
 } otServiceConfig;
 
 /**
@@ -90,7 +88,8 @@ typedef struct otServiceConfig
  *                             On exit, number of copied bytes.
  *
  */
-OTAPI otError OTCALL otServerGetNetDataLocal(otInstance *aInstance, bool aStable, uint8_t *aData, uint8_t *aDataLength);
+OTAPI otError OTCALL otServerGetNetDataLocal(otInstance *aInstance,
+		bool aStable, uint8_t *aData, uint8_t *aDataLength);
 
 /**
  * Add a service configuration to the local network data.
@@ -106,7 +105,8 @@ OTAPI otError OTCALL otServerGetNetDataLocal(otInstance *aInstance, bool aStable
  * @sa otServerRegister
  *
  */
-OTAPI otError OTCALL otServerAddService(otInstance *aInstance, const otServiceConfig *aConfig);
+OTAPI otError OTCALL otServerAddService(otInstance *aInstance,
+		const otServiceConfig *aConfig);
 
 /**
  * Remove a service configuration from the local network data.
@@ -124,41 +124,38 @@ OTAPI otError OTCALL otServerAddService(otInstance *aInstance, const otServiceCo
  *
  */
 OTAPI otError OTCALL otServerRemoveService(otInstance *aInstance,
-                                           uint32_t    aEnterpriseNumber,
-                                           uint8_t *   aServiceData,
-                                           uint8_t     aServiceDataLength);
+		uint32_t aEnterpriseNumber, uint8_t *aServiceData,
+		uint8_t aServiceDataLength);
 
 /**
  * This function gets the next service in the local Network Data.
  *
  * @param[in]     aInstance  A pointer to an OpenThread instance.
  * @param[inout]  aIterator  A pointer to the Network Data iterator context. To get the first service entry
-                             it should be set to OT_NETWORK_DATA_ITERATOR_INIT.
+ it should be set to OT_NETWORK_DATA_ITERATOR_INIT.
  * @param[out]    aConfig    A pointer to where the service information will be placed.
  *
  * @retval OT_ERROR_NONE       Successfully found the next service.
  * @retval OT_ERROR_NOT_FOUND  No subsequent service exists in the Thread Network Data.
  *
  */
-OTAPI otError OTCALL otServerGetNextService(otInstance *           aInstance,
-                                            otNetworkDataIterator *aIterator,
-                                            otServiceConfig *      aConfig);
+OTAPI otError OTCALL otServerGetNextService(otInstance *aInstance,
+		otNetworkDataIterator *aIterator, otServiceConfig *aConfig);
 
 /**
  * This function gets the next service in the leader Network Data.
  *
  * @param[in]     aInstance  A pointer to an OpenThread instance.
  * @param[inout]  aIterator  A pointer to the Network Data iterator context. To get the first service entry
-                             it should be set to OT_NETWORK_DATA_ITERATOR_INIT.
+ it should be set to OT_NETWORK_DATA_ITERATOR_INIT.
  * @param[out]    aConfig    A pointer to where the service information will be placed.
  *
  * @retval OT_ERROR_NONE       Successfully found the next service.
  * @retval OT_ERROR_NOT_FOUND  No subsequent service exists in the leader Network Data.
  *
  */
-OTAPI otError OTCALL otServerGetNextLeaderService(otInstance *           aInstance,
-                                                  otNetworkDataIterator *aIterator,
-                                                  otServiceConfig *      aConfig);
+OTAPI otError OTCALL otServerGetNextLeaderService(otInstance *aInstance,
+		otNetworkDataIterator *aIterator, otServiceConfig *aConfig);
 
 /**
  * Immediately register the local network data with the Leader.

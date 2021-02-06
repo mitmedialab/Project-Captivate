@@ -29,7 +29,7 @@
 #define MPU_WRAPPERS_H
 
 /* This file redefines API functions to be called through a wrapper macro, but
-only for ports that are using the MPU. */
+ only for ports that are using the MPU. */
 #ifdef portUSING_MPU_WRAPPERS
 
 	/* MPU_WRAPPERS_INCLUDED_FROM_API_FILE will be defined when this file is
@@ -174,13 +174,12 @@ only for ports that are using the MPU. */
 
 #else /* portUSING_MPU_WRAPPERS */
 
-	#define PRIVILEGED_FUNCTION
-	#define PRIVILEGED_DATA
-	#define FREERTOS_SYSTEM_CALL
-	#define portUSING_MPU_WRAPPERS 0
+#define PRIVILEGED_FUNCTION
+#define PRIVILEGED_DATA
+#define FREERTOS_SYSTEM_CALL
+#define portUSING_MPU_WRAPPERS 0
 
 #endif /* portUSING_MPU_WRAPPERS */
-
 
 #endif /* MPU_WRAPPERS_H */
 

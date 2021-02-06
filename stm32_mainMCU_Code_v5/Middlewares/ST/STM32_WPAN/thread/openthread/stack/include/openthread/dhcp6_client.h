@@ -52,11 +52,10 @@ extern "C" {
  * This structure represents a DHCPv6 address.
  *
  */
-typedef struct otDhcpAddress
-{
-    otNetifAddress mAddress;           ///< The network interface address.
-    uint32_t       mPreferredLifetime; ///< The preferred lifetime.
-    uint32_t       mValidLifetime;     ///< The valid lifetime.
+typedef struct otDhcpAddress {
+	otNetifAddress mAddress;           ///< The network interface address.
+	uint32_t mPreferredLifetime; ///< The preferred lifetime.
+	uint32_t mValidLifetime;     ///< The valid lifetime.
 } otDhcpAddress;
 
 /**
@@ -68,7 +67,8 @@ typedef struct otDhcpAddress
  * @param[in]     aContext       A pointer to data passed to aIidCreate function.
  *
  */
-void otDhcp6ClientUpdate(otInstance *aInstance, otDhcpAddress *aAddresses, uint32_t aNumAddresses, void *aContext);
+void otDhcp6ClientUpdate(otInstance *aInstance, otDhcpAddress *aAddresses,
+		uint32_t aNumAddresses, void *aContext);
 
 /**
  * @}

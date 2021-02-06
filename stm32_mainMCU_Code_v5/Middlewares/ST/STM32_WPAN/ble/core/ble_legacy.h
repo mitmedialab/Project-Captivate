@@ -19,9 +19,7 @@
 #ifndef BLE_LEGACY_H__
 #define BLE_LEGACY_H__
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /*
  * The event code in the @ref hci_event_pckt structure.
@@ -41,32 +39,31 @@
 
 typedef PACKED(struct) _hci_uart_pckt
 {
-  uint8_t type;
-  uint8_t data[1];
-} hci_uart_pckt;
+	uint8_t type;
+	uint8_t data[1];
+}hci_uart_pckt;
 
 typedef PACKED(struct) _hci_event_pckt
 {
-  uint8_t         evt;
-  uint8_t         plen;
-  uint8_t         data[1];
-} hci_event_pckt;
+	uint8_t evt;
+	uint8_t plen;
+	uint8_t data[1];
+}hci_event_pckt;
 
 typedef PACKED(struct) _evt_le_meta_event
 {
-  uint8_t         subevent;
-  uint8_t         data[1];
-} evt_le_meta_event;
+	uint8_t subevent;
+	uint8_t data[1];
+}evt_le_meta_event;
 
 /**
  * Vendor specific event for BLE core.
  */
 typedef PACKED(struct) _evt_blue_aci
 {
-  uint16_t ecode; /**< One of the BLE core event codes. */
-  uint8_t  data[1];
-} evt_blue_aci;
-
+	uint16_t ecode; /**< One of the BLE core event codes. */
+	uint8_t data[1];
+}evt_blue_aci;
 
 /* BLE core event codes */
 #define EVT_BLUE_GATT_ATTRIBUTE_MODIFIED          (0x0C01)
@@ -106,7 +103,6 @@ typedef PACKED(struct) _evt_blue_aci
 #define EVT_BLUE_L2CAP_CONNECTION_UPDATE_REQ      (0x0802)
 #define EVT_BLUE_L2CAP_CONNECTION_UPDATE_RESP     (0x0800)
 
-
 /* Macro to get RSSI from advertising report #0.
  * "p" must be a pointer to the event parameters buffer
  */
@@ -116,17 +112,13 @@ typedef PACKED(struct) _evt_blue_aci
                     ((hci_le_advertising_report_event_rp0*)(p))-> \
                     Advertising_Report[0].Length_Data))
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /* Bluetooth 48 bit address (in little-endian order).
  */
-typedef	uint8_t	tBDAddr[6];
-
+typedef uint8_t tBDAddr[6];
 
 /* ------------------------------------------------------------------------- */
-
 
 /* Error Codes as specified by the specification 
  */
@@ -156,9 +148,7 @@ typedef	uint8_t	tBDAddr[6];
 #define ERR_CONN_END_WITH_MIC_FAILURE                0x3D
 #define ERR_CONN_FAILED_TO_ESTABLISH                 0x3E
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /* Bluetooth address types
  */
@@ -168,15 +158,12 @@ typedef	uint8_t	tBDAddr[6];
 #define RESOLVABLE_PRIVATE_ADDR                0X02U
 #define NON_RESOLVABLE_PRIVATE_ADDR            0X03U
 
-
 /* Scan_types Scan types
  */
 #define PASSIVE_SCAN                           0x00U
 #define ACTIVE_SCAN                            0x01U
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /* Various obsolete definitions
  */
@@ -229,9 +216,7 @@ typedef	uint8_t	tBDAddr[6];
 #define ADV_INTERVAL_HIGHEST                         0X4000
 #define ADV_INTERVAL_LOWEST_NONCONN                  0X00A0
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /*
  * BLE_DEFAULT_MAX_ATT_MTU: maximum supported ATT MTU size.
@@ -245,12 +230,9 @@ typedef	uint8_t	tBDAddr[6];
           BLE_MBLOCKS_CALC(BLE_DEFAULT_PREP_WRITE_LIST_SIZE, \
                            BLE_DEFAULT_MAX_ATT_MTU, n_link)
 
-
 #define TOTAL_DEVICE_ID_DATA_SIZE 56
 
-
 /* ------------------------------------------------------------------------- */
-
 
 /* Deprecative name for LE Read Remote Features command
  */
@@ -258,15 +240,12 @@ typedef	uint8_t	tBDAddr[6];
 #define hci_le_read_remote_used_features_complete_event_rp0 \
           hci_le_read_remote_features_complete_event_rp0
 
-
 /* ------------------------------------------------------------------------- */
 
-
 /* Byte order conversions
-*/
+ */
 #define htob( d, n )  (d)     /* LE */
 #define btoh( d, n )  (d)     /* LE */
-
 
 /* Events table
  */
@@ -275,8 +254,6 @@ typedef	uint8_t	tBDAddr[6];
 #define hci_le_meta_event_table hci_le_event_table
 #define hci_vendor_specific_event_table hci_vs_event_table
 
-
 /* ------------------------------------------------------------------------- */
-
 
 #endif /* BLE_LEGACY_H__ */

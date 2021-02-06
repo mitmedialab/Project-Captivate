@@ -20,7 +20,6 @@
 #ifndef BLE_GAP_ACI_H__
 #define BLE_GAP_ACI_H__
 
-
 #include "ble_types.h"
 
 /**
@@ -30,7 +29,7 @@
  * 
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_non_discoverable( void );
+tBleStatus aci_gap_set_non_discoverable(void);
 
 /**
  * @brief ACI_GAP_SET_LIMITED_DISCOVERABLE
@@ -115,17 +114,12 @@ tBleStatus aci_gap_set_non_discoverable( void );
  *        - 0x0006 (7.50 ms)  ... 0x0C80 (4000.00 ms)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_limited_discoverable( uint8_t Advertising_Type,
-                                             uint16_t Advertising_Interval_Min,
-                                             uint16_t Advertising_Interval_Max,
-                                             uint8_t Own_Address_Type,
-                                             uint8_t Advertising_Filter_Policy,
-                                             uint8_t Local_Name_Length,
-                                             const uint8_t* Local_Name,
-                                             uint8_t Service_Uuid_length,
-                                             const uint8_t* Service_Uuid_List,
-                                             uint16_t Slave_Conn_Interval_Min,
-                                             uint16_t Slave_Conn_Interval_Max );
+tBleStatus aci_gap_set_limited_discoverable(uint8_t Advertising_Type,
+		uint16_t Advertising_Interval_Min, uint16_t Advertising_Interval_Max,
+		uint8_t Own_Address_Type, uint8_t Advertising_Filter_Policy,
+		uint8_t Local_Name_Length, const uint8_t *Local_Name,
+		uint8_t Service_Uuid_length, const uint8_t *Service_Uuid_List,
+		uint16_t Slave_Conn_Interval_Min, uint16_t Slave_Conn_Interval_Max);
 
 /**
  * @brief ACI_GAP_SET_DISCOVERABLE
@@ -214,17 +208,12 @@ tBleStatus aci_gap_set_limited_discoverable( uint8_t Advertising_Type,
  *        - 0x0006 (7.50 ms)  ... 0x0C80 (4000.00 ms)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_discoverable( uint8_t Advertising_Type,
-                                     uint16_t Advertising_Interval_Min,
-                                     uint16_t Advertising_Interval_Max,
-                                     uint8_t Own_Address_Type,
-                                     uint8_t Advertising_Filter_Policy,
-                                     uint8_t Local_Name_Length,
-                                     const uint8_t* Local_Name,
-                                     uint8_t Service_Uuid_length,
-                                     const uint8_t* Service_Uuid_List,
-                                     uint16_t Slave_Conn_Interval_Min,
-                                     uint16_t Slave_Conn_Interval_Max );
+tBleStatus aci_gap_set_discoverable(uint8_t Advertising_Type,
+		uint16_t Advertising_Interval_Min, uint16_t Advertising_Interval_Max,
+		uint8_t Own_Address_Type, uint8_t Advertising_Filter_Policy,
+		uint8_t Local_Name_Length, const uint8_t *Local_Name,
+		uint8_t Service_Uuid_length, const uint8_t *Service_Uuid_List,
+		uint16_t Slave_Conn_Interval_Min, uint16_t Slave_Conn_Interval_Max);
 
 /**
  * @brief ACI_GAP_SET_DIRECT_CONNECTABLE
@@ -277,12 +266,10 @@ tBleStatus aci_gap_set_discoverable( uint8_t Advertising_Type,
  *          Directed Advertising
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_direct_connectable( uint8_t Own_Address_Type,
-                                           uint8_t Directed_Advertising_Type,
-                                           uint8_t Direct_Address_Type,
-                                           const uint8_t* Direct_Address,
-                                           uint16_t Advertising_Interval_Min,
-                                           uint16_t Advertising_Interval_Max );
+tBleStatus aci_gap_set_direct_connectable(uint8_t Own_Address_Type,
+		uint8_t Directed_Advertising_Type, uint8_t Direct_Address_Type,
+		const uint8_t *Direct_Address, uint16_t Advertising_Interval_Min,
+		uint16_t Advertising_Interval_Max);
 
 /**
  * @brief ACI_GAP_SET_IO_CAPABILITY
@@ -298,7 +285,7 @@ tBleStatus aci_gap_set_direct_connectable( uint8_t Own_Address_Type,
  *        - 0x04: IO_CAP_KEYBOARD_DISPLAY
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_io_capability( uint8_t IO_Capability );
+tBleStatus aci_gap_set_io_capability(uint8_t IO_Capability);
 
 /**
  * @brief ACI_GAP_SET_AUTHENTICATION_REQUIREMENT
@@ -349,15 +336,11 @@ tBleStatus aci_gap_set_io_capability( uint8_t IO_Capability );
  *        - 0x01: Random (static) Identity Address
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_authentication_requirement( uint8_t Bonding_Mode,
-                                                   uint8_t MITM_Mode,
-                                                   uint8_t SC_Support,
-                                                   uint8_t KeyPress_Notification_Support,
-                                                   uint8_t Min_Encryption_Key_Size,
-                                                   uint8_t Max_Encryption_Key_Size,
-                                                   uint8_t Use_Fixed_Pin,
-                                                   uint32_t Fixed_Pin,
-                                                   uint8_t Identity_Address_Type );
+tBleStatus aci_gap_set_authentication_requirement(uint8_t Bonding_Mode,
+		uint8_t MITM_Mode, uint8_t SC_Support,
+		uint8_t KeyPress_Notification_Support, uint8_t Min_Encryption_Key_Size,
+		uint8_t Max_Encryption_Key_Size, uint8_t Use_Fixed_Pin,
+		uint32_t Fixed_Pin, uint8_t Identity_Address_Type);
 
 /**
  * @brief ACI_GAP_SET_AUTHORIZATION_REQUIREMENT
@@ -379,8 +362,8 @@ tBleStatus aci_gap_set_authentication_requirement( uint8_t Bonding_Mode,
  *        - 0x01: Authorization required
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_authorization_requirement( uint16_t Connection_Handle,
-                                                  uint8_t Authorization_Enable );
+tBleStatus aci_gap_set_authorization_requirement(uint16_t Connection_Handle,
+		uint8_t Authorization_Enable);
 
 /**
  * @brief ACI_GAP_PASS_KEY_RESP
@@ -397,8 +380,7 @@ tBleStatus aci_gap_set_authorization_requirement( uint16_t Connection_Handle,
  *        - 0 ... 999999
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_pass_key_resp( uint16_t Connection_Handle,
-                                  uint32_t Pass_Key );
+tBleStatus aci_gap_pass_key_resp(uint16_t Connection_Handle, uint32_t Pass_Key);
 
 /**
  * @brief ACI_GAP_AUTHORIZATION_RESP
@@ -414,8 +396,8 @@ tBleStatus aci_gap_pass_key_resp( uint16_t Connection_Handle,
  *        - 0x02: Reject
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_authorization_resp( uint16_t Connection_Handle,
-                                       uint8_t Authorize );
+tBleStatus aci_gap_authorization_resp(uint16_t Connection_Handle,
+		uint8_t Authorize);
 
 /**
  * @brief ACI_GAP_INIT
@@ -445,12 +427,9 @@ tBleStatus aci_gap_authorization_resp( uint16_t Connection_Handle,
  * @param[out] Appearance_Char_Handle Appearance Characteristic handle
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_init( uint8_t Role,
-                         uint8_t privacy_enabled,
-                         uint8_t device_name_char_len,
-                         uint16_t* Service_Handle,
-                         uint16_t* Dev_Name_Char_Handle,
-                         uint16_t* Appearance_Char_Handle );
+tBleStatus aci_gap_init(uint8_t Role, uint8_t privacy_enabled,
+		uint8_t device_name_char_len, uint16_t *Service_Handle,
+		uint16_t *Dev_Name_Char_Handle, uint16_t *Appearance_Char_Handle);
 
 /**
  * @brief ACI_GAP_SET_NON_CONNECTABLE
@@ -475,8 +454,8 @@ tBleStatus aci_gap_init( uint8_t Role,
  *          (only if privacy is enabled)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_non_connectable( uint8_t Advertising_Event_Type,
-                                        uint8_t Own_Address_Type );
+tBleStatus aci_gap_set_non_connectable(uint8_t Advertising_Event_Type,
+		uint8_t Own_Address_Type);
 
 /**
  * @brief ACI_GAP_SET_UNDIRECTED_CONNECTABLE
@@ -510,10 +489,9 @@ tBleStatus aci_gap_set_non_connectable( uint8_t Advertising_Event_Type,
  *          Request from White List Only
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_undirected_connectable( uint16_t Advertising_Interval_Min,
-                                               uint16_t Advertising_Interval_Max,
-                                               uint8_t Own_Address_Type,
-                                               uint8_t Adv_Filter_Policy );
+tBleStatus aci_gap_set_undirected_connectable(uint16_t Advertising_Interval_Min,
+		uint16_t Advertising_Interval_Max, uint8_t Own_Address_Type,
+		uint8_t Adv_Filter_Policy);
 
 /**
  * @brief ACI_GAP_SLAVE_SECURITY_REQ
@@ -527,7 +505,7 @@ tBleStatus aci_gap_set_undirected_connectable( uint16_t Advertising_Interval_Min
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_slave_security_req( uint16_t Connection_Handle );
+tBleStatus aci_gap_slave_security_req(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GAP_UPDATE_ADV_DATA
@@ -541,8 +519,7 @@ tBleStatus aci_gap_slave_security_req( uint16_t Connection_Handle );
  * @param AdvData Advertising data used by the device while advertising.
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_update_adv_data( uint8_t AdvDataLen,
-                                    const uint8_t* AdvData );
+tBleStatus aci_gap_update_adv_data(uint8_t AdvDataLen, const uint8_t *AdvData);
 
 /**
  * @brief ACI_GAP_DELETE_AD_TYPE
@@ -553,7 +530,7 @@ tBleStatus aci_gap_update_adv_data( uint8_t AdvDataLen,
  *        volume 3, Part C, 11.1)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_delete_ad_type( uint8_t ADType );
+tBleStatus aci_gap_delete_ad_type(uint8_t ADType);
 
 /**
  * @brief ACI_GAP_GET_SECURITY_LEVEL
@@ -574,9 +551,8 @@ tBleStatus aci_gap_delete_ad_type( uint8_t ADType );
  *        - 0x04: Security Level 4
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_get_security_level( uint16_t Connection_Handle,
-                                       uint8_t* Security_Mode,
-                                       uint8_t* Security_Level );
+tBleStatus aci_gap_get_security_level(uint16_t Connection_Handle,
+		uint8_t *Security_Mode, uint8_t *Security_Level);
 
 /**
  * @brief ACI_GAP_SET_EVENT_MASK
@@ -599,7 +575,7 @@ tBleStatus aci_gap_get_security_level( uint16_t Connection_Handle,
  *        - 0x0800: ACI_GAP_ADDR_NOT_RESOLVED_EVENT
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_event_mask( uint16_t GAP_Evt_Mask );
+tBleStatus aci_gap_set_event_mask(uint16_t GAP_Evt_Mask);
 
 /**
  * @brief ACI_GAP_CONFIGURE_WHITELIST
@@ -609,7 +585,7 @@ tBleStatus aci_gap_set_event_mask( uint16_t GAP_Evt_Mask );
  * 
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_configure_whitelist( void );
+tBleStatus aci_gap_configure_whitelist(void);
 
 /**
  * @brief ACI_GAP_TERMINATE
@@ -630,8 +606,7 @@ tBleStatus aci_gap_configure_whitelist( void );
  *        - 0x3B: Unacceptable Connection Parameters
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_terminate( uint16_t Connection_Handle,
-                              uint8_t Reason );
+tBleStatus aci_gap_terminate(uint16_t Connection_Handle, uint8_t Reason);
 
 /**
  * @brief ACI_GAP_CLEAR_SECURITY_DB
@@ -640,7 +615,7 @@ tBleStatus aci_gap_terminate( uint16_t Connection_Handle,
  * 
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_clear_security_db( void );
+tBleStatus aci_gap_clear_security_db(void);
 
 /**
  * @brief ACI_GAP_ALLOW_REBOND
@@ -655,7 +630,7 @@ tBleStatus aci_gap_clear_security_db( void );
  *        - 0x0000 ... 0x0EFF
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_allow_rebond( uint16_t Connection_Handle );
+tBleStatus aci_gap_allow_rebond(uint16_t Connection_Handle);
 
 /**
  * @brief ACI_GAP_START_LIMITED_DISCOVERY_PROC
@@ -699,10 +674,9 @@ tBleStatus aci_gap_allow_rebond( uint16_t Connection_Handle );
  *        - 0x01: Duplicate filtering enabled
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_limited_discovery_proc( uint16_t LE_Scan_Interval,
-                                                 uint16_t LE_Scan_Window,
-                                                 uint8_t Own_Address_Type,
-                                                 uint8_t Filter_Duplicates );
+tBleStatus aci_gap_start_limited_discovery_proc(uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t Own_Address_Type,
+		uint8_t Filter_Duplicates);
 
 /**
  * @brief ACI_GAP_START_GENERAL_DISCOVERY_PROC
@@ -742,10 +716,9 @@ tBleStatus aci_gap_start_limited_discovery_proc( uint16_t LE_Scan_Interval,
  *        - 0x01: Duplicate filtering enabled
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_general_discovery_proc( uint16_t LE_Scan_Interval,
-                                                 uint16_t LE_Scan_Window,
-                                                 uint8_t Own_Address_Type,
-                                                 uint8_t Filter_Duplicates );
+tBleStatus aci_gap_start_general_discovery_proc(uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t Own_Address_Type,
+		uint8_t Filter_Duplicates);
 
 /**
  * @brief ACI_GAP_START_NAME_DISCOVERY_PROC
@@ -817,17 +790,12 @@ tBleStatus aci_gap_start_general_discovery_proc( uint16_t LE_Scan_Interval,
  *        - 0x0000 (0.000 ms)  ... 0xFFFF (40959.375 ms)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_name_discovery_proc( uint16_t LE_Scan_Interval,
-                                              uint16_t LE_Scan_Window,
-                                              uint8_t Peer_Address_Type,
-                                              const uint8_t* Peer_Address,
-                                              uint8_t Own_Address_Type,
-                                              uint16_t Conn_Interval_Min,
-                                              uint16_t Conn_Interval_Max,
-                                              uint16_t Conn_Latency,
-                                              uint16_t Supervision_Timeout,
-                                              uint16_t Minimum_CE_Length,
-                                              uint16_t Maximum_CE_Length );
+tBleStatus aci_gap_start_name_discovery_proc(uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address, uint8_t Own_Address_Type,
+		uint16_t Conn_Interval_Min, uint16_t Conn_Interval_Max,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout,
+		uint16_t Minimum_CE_Length, uint16_t Maximum_CE_Length);
 
 /**
  * @brief ACI_GAP_START_AUTO_CONNECTION_ESTABLISH_PROC
@@ -903,17 +871,13 @@ tBleStatus aci_gap_start_name_discovery_proc( uint16_t LE_Scan_Interval,
  * @param Whitelist_Entry See @ref Whitelist_Entry_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_auto_connection_establish_proc( uint16_t LE_Scan_Interval,
-                                                         uint16_t LE_Scan_Window,
-                                                         uint8_t Own_Address_Type,
-                                                         uint16_t Conn_Interval_Min,
-                                                         uint16_t Conn_Interval_Max,
-                                                         uint16_t Conn_Latency,
-                                                         uint16_t Supervision_Timeout,
-                                                         uint16_t Minimum_CE_Length,
-                                                         uint16_t Maximum_CE_Length,
-                                                         uint8_t Num_of_Whitelist_Entries,
-                                                         const Whitelist_Entry_t* Whitelist_Entry );
+tBleStatus aci_gap_start_auto_connection_establish_proc(
+		uint16_t LE_Scan_Interval, uint16_t LE_Scan_Window,
+		uint8_t Own_Address_Type, uint16_t Conn_Interval_Min,
+		uint16_t Conn_Interval_Max, uint16_t Conn_Latency,
+		uint16_t Supervision_Timeout, uint16_t Minimum_CE_Length,
+		uint16_t Maximum_CE_Length, uint8_t Num_of_Whitelist_Entries,
+		const Whitelist_Entry_t *Whitelist_Entry);
 
 /**
  * @brief ACI_GAP_START_GENERAL_CONNECTION_ESTABLISH_PROC
@@ -990,12 +954,10 @@ tBleStatus aci_gap_start_auto_connection_establish_proc( uint16_t LE_Scan_Interv
  *        - 0x01: Duplicate filtering enabled
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_general_connection_establish_proc( uint8_t LE_Scan_Type,
-                                                            uint16_t LE_Scan_Interval,
-                                                            uint16_t LE_Scan_Window,
-                                                            uint8_t Own_Address_Type,
-                                                            uint8_t Scanning_Filter_Policy,
-                                                            uint8_t Filter_Duplicates );
+tBleStatus aci_gap_start_general_connection_establish_proc(uint8_t LE_Scan_Type,
+		uint16_t LE_Scan_Interval, uint16_t LE_Scan_Window,
+		uint8_t Own_Address_Type, uint8_t Scanning_Filter_Policy,
+		uint8_t Filter_Duplicates);
 
 /**
  * @brief ACI_GAP_START_SELECTIVE_CONNECTION_ESTABLISH_PROC
@@ -1072,14 +1034,12 @@ tBleStatus aci_gap_start_general_connection_establish_proc( uint8_t LE_Scan_Type
  * @param Whitelist_Entry See @ref Whitelist_Entry_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_selective_connection_establish_proc( uint8_t LE_Scan_Type,
-                                                              uint16_t LE_Scan_Interval,
-                                                              uint16_t LE_Scan_Window,
-                                                              uint8_t Own_Address_Type,
-                                                              uint8_t Scanning_Filter_Policy,
-                                                              uint8_t Filter_Duplicates,
-                                                              uint8_t Num_of_Whitelist_Entries,
-                                                              const Whitelist_Entry_t* Whitelist_Entry );
+tBleStatus aci_gap_start_selective_connection_establish_proc(
+		uint8_t LE_Scan_Type, uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t Own_Address_Type,
+		uint8_t Scanning_Filter_Policy, uint8_t Filter_Duplicates,
+		uint8_t Num_of_Whitelist_Entries,
+		const Whitelist_Entry_t *Whitelist_Entry);
 
 /**
  * @brief ACI_GAP_CREATE_CONNECTION
@@ -1157,17 +1117,12 @@ tBleStatus aci_gap_start_selective_connection_establish_proc( uint8_t LE_Scan_Ty
  *        - 0x0000 (0.000 ms)  ... 0xFFFF (40959.375 ms)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_create_connection( uint16_t LE_Scan_Interval,
-                                      uint16_t LE_Scan_Window,
-                                      uint8_t Peer_Address_Type,
-                                      const uint8_t* Peer_Address,
-                                      uint8_t Own_Address_Type,
-                                      uint16_t Conn_Interval_Min,
-                                      uint16_t Conn_Interval_Max,
-                                      uint16_t Conn_Latency,
-                                      uint16_t Supervision_Timeout,
-                                      uint16_t Minimum_CE_Length,
-                                      uint16_t Maximum_CE_Length );
+tBleStatus aci_gap_create_connection(uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address, uint8_t Own_Address_Type,
+		uint16_t Conn_Interval_Min, uint16_t Conn_Interval_Max,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout,
+		uint16_t Minimum_CE_Length, uint16_t Maximum_CE_Length);
 
 /**
  * @brief ACI_GAP_TERMINATE_GAP_PROC
@@ -1187,7 +1142,7 @@ tBleStatus aci_gap_create_connection( uint16_t LE_Scan_Interval,
  *        - 0x80: GAP_OBSERVATION_PROC
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_terminate_gap_proc( uint8_t Procedure_Code );
+tBleStatus aci_gap_terminate_gap_proc(uint8_t Procedure_Code);
 
 /**
  * @brief ACI_GAP_START_CONNECTION_UPDATE
@@ -1231,13 +1186,10 @@ tBleStatus aci_gap_terminate_gap_proc( uint8_t Procedure_Code );
  *        - 0x0000 (0.000 ms)  ... 0xFFFF (40959.375 ms)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_connection_update( uint16_t Connection_Handle,
-                                            uint16_t Conn_Interval_Min,
-                                            uint16_t Conn_Interval_Max,
-                                            uint16_t Conn_Latency,
-                                            uint16_t Supervision_Timeout,
-                                            uint16_t Minimum_CE_Length,
-                                            uint16_t Maximum_CE_Length );
+tBleStatus aci_gap_start_connection_update(uint16_t Connection_Handle,
+		uint16_t Conn_Interval_Min, uint16_t Conn_Interval_Max,
+		uint16_t Conn_Latency, uint16_t Supervision_Timeout,
+		uint16_t Minimum_CE_Length, uint16_t Maximum_CE_Length);
 
 /**
  * @brief ACI_GAP_SEND_PAIRING_REQ
@@ -1259,8 +1211,8 @@ tBleStatus aci_gap_start_connection_update( uint16_t Connection_Handle,
  *        - 0x01: YES
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_send_pairing_req( uint16_t Connection_Handle,
-                                     uint8_t Force_Rebond );
+tBleStatus aci_gap_send_pairing_req(uint16_t Connection_Handle,
+		uint8_t Force_Rebond);
 
 /**
  * @brief ACI_GAP_RESOLVE_PRIVATE_ADDR
@@ -1274,8 +1226,8 @@ tBleStatus aci_gap_send_pairing_req( uint16_t Connection_Handle,
  *        device, distributed during pairing phase.
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_resolve_private_addr( const uint8_t* Address,
-                                         uint8_t* Actual_Address );
+tBleStatus aci_gap_resolve_private_addr(const uint8_t *Address,
+		uint8_t *Actual_Address);
 
 /**
  * @brief ACI_GAP_SET_BROADCAST_MODE
@@ -1312,14 +1264,11 @@ tBleStatus aci_gap_resolve_private_addr( const uint8_t* Address,
  * @param Whitelist_Entry See @ref Whitelist_Entry_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_broadcast_mode( uint16_t Advertising_Interval_Min,
-                                       uint16_t Advertising_Interval_Max,
-                                       uint8_t Advertising_Type,
-                                       uint8_t Own_Address_Type,
-                                       uint8_t Adv_Data_Length,
-                                       const uint8_t* Adv_Data,
-                                       uint8_t Num_of_Whitelist_Entries,
-                                       const Whitelist_Entry_t* Whitelist_Entry );
+tBleStatus aci_gap_set_broadcast_mode(uint16_t Advertising_Interval_Min,
+		uint16_t Advertising_Interval_Max, uint8_t Advertising_Type,
+		uint8_t Own_Address_Type, uint8_t Adv_Data_Length,
+		const uint8_t *Adv_Data, uint8_t Num_of_Whitelist_Entries,
+		const Whitelist_Entry_t *Whitelist_Entry);
 
 /**
  * @brief ACI_GAP_START_OBSERVATION_PROC
@@ -1385,12 +1334,9 @@ tBleStatus aci_gap_set_broadcast_mode( uint16_t Advertising_Interval_Min,
  *        - 0x03: Ignore devices not in the White List (use resolving list)
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_start_observation_proc( uint16_t LE_Scan_Interval,
-                                           uint16_t LE_Scan_Window,
-                                           uint8_t LE_Scan_Type,
-                                           uint8_t Own_Address_Type,
-                                           uint8_t Filter_Duplicates,
-                                           uint8_t Scanning_Filter_Policy );
+tBleStatus aci_gap_start_observation_proc(uint16_t LE_Scan_Interval,
+		uint16_t LE_Scan_Window, uint8_t LE_Scan_Type, uint8_t Own_Address_Type,
+		uint8_t Filter_Duplicates, uint8_t Scanning_Filter_Policy);
 
 /**
  * @brief ACI_GAP_GET_BONDED_DEVICES
@@ -1401,8 +1347,8 @@ tBleStatus aci_gap_start_observation_proc( uint16_t LE_Scan_Interval,
  * @param[out] Bonded_Device_Entry See @ref Bonded_Device_Entry_t
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_get_bonded_devices( uint8_t* Num_of_Addresses,
-                                       Bonded_Device_Entry_t* Bonded_Device_Entry );
+tBleStatus aci_gap_get_bonded_devices(uint8_t *Num_of_Addresses,
+		Bonded_Device_Entry_t *Bonded_Device_Entry);
 
 /**
  * @brief ACI_GAP_IS_DEVICE_BONDED
@@ -1418,8 +1364,8 @@ tBleStatus aci_gap_get_bonded_devices( uint8_t* Num_of_Addresses,
  *        device
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_is_device_bonded( uint8_t Peer_Address_Type,
-                                     const uint8_t* Peer_Address );
+tBleStatus aci_gap_is_device_bonded(uint8_t Peer_Address_Type,
+		const uint8_t *Peer_Address);
 
 /**
  * @brief ACI_GAP_NUMERIC_COMPARISON_VALUE_CONFIRM_YESNO
@@ -1438,8 +1384,8 @@ tBleStatus aci_gap_is_device_bonded( uint8_t Peer_Address_Type,
  *        - 0x01: YES
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_numeric_comparison_value_confirm_yesno( uint16_t Connection_Handle,
-                                                           uint8_t Confirm_Yes_No );
+tBleStatus aci_gap_numeric_comparison_value_confirm_yesno(
+		uint16_t Connection_Handle, uint8_t Confirm_Yes_No);
 
 /**
  * @brief ACI_GAP_PASSKEY_INPUT
@@ -1458,8 +1404,8 @@ tBleStatus aci_gap_numeric_comparison_value_confirm_yesno( uint16_t Connection_H
  *        - 0x04: Passkey entry completed
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_passkey_input( uint16_t Connection_Handle,
-                                  uint8_t Input_Type );
+tBleStatus aci_gap_passkey_input(uint16_t Connection_Handle,
+		uint8_t Input_Type);
 
 /**
  * @brief ACI_GAP_GET_OOB_DATA
@@ -1481,11 +1427,8 @@ tBleStatus aci_gap_passkey_input( uint16_t Connection_Handle,
  *        sent via OOB.
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_get_oob_data( uint8_t OOB_Data_Type,
-                                 uint8_t* Address_Type,
-                                 uint8_t* Address,
-                                 uint8_t* OOB_Data_Len,
-                                 uint8_t* OOB_Data );
+tBleStatus aci_gap_get_oob_data(uint8_t OOB_Data_Type, uint8_t *Address_Type,
+		uint8_t *Address, uint8_t *OOB_Data_Len, uint8_t *OOB_Data);
 
 /**
  * @brief ACI_GAP_SET_OOB_DATA
@@ -1510,12 +1453,9 @@ tBleStatus aci_gap_get_oob_data( uint8_t OOB_Data_Type,
  * @param OOB_Data Pairing Data received through OOB from remote device
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_set_oob_data( uint8_t Device_Type,
-                                 uint8_t Address_Type,
-                                 const uint8_t* Address,
-                                 uint8_t OOB_Data_Type,
-                                 uint8_t OOB_Data_Len,
-                                 const uint8_t* OOB_Data );
+tBleStatus aci_gap_set_oob_data(uint8_t Device_Type, uint8_t Address_Type,
+		const uint8_t *Address, uint8_t OOB_Data_Type, uint8_t OOB_Data_Len,
+		const uint8_t *OOB_Data);
 
 /**
  * @brief ACI_GAP_ADD_DEVICES_TO_RESOLVING_LIST
@@ -1528,9 +1468,10 @@ tBleStatus aci_gap_set_oob_data( uint8_t Device_Type,
  * @param Clear_Resolving_List Clear the resolving list
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_add_devices_to_resolving_list( uint8_t Num_of_Resolving_list_Entries,
-                                                  const Whitelist_Identity_Entry_t* Whitelist_Identity_Entry,
-                                                  uint8_t Clear_Resolving_List );
+tBleStatus aci_gap_add_devices_to_resolving_list(
+		uint8_t Num_of_Resolving_list_Entries,
+		const Whitelist_Identity_Entry_t *Whitelist_Identity_Entry,
+		uint8_t Clear_Resolving_List);
 
 /**
  * @brief ACI_GAP_REMOVE_BONDED_DEVICE
@@ -1544,8 +1485,7 @@ tBleStatus aci_gap_add_devices_to_resolving_list( uint8_t Num_of_Resolving_list_
  *        the peer device
  * @return Value indicating success or error code.
  */
-tBleStatus aci_gap_remove_bonded_device( uint8_t Peer_Identity_Address_Type,
-                                         const uint8_t* Peer_Identity_Address );
-
+tBleStatus aci_gap_remove_bonded_device(uint8_t Peer_Identity_Address_Type,
+		const uint8_t *Peer_Identity_Address);
 
 #endif /* BLE_GAP_ACI_H__ */

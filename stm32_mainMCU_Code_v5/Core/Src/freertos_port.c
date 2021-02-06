@@ -5,18 +5,18 @@
  * Description        : Custom porting of FreeRTOS functionalities
  *
  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -27,11 +27,10 @@
 #include "stm32_lpm.h"
 
 /* Private typedef -----------------------------------------------------------*/
-typedef struct
-{
-  uint64_t LpTimeDiffVal;
-  uint32_t LpTimeLeftOnEntry;
-  uint8_t LpTimerFreeRTOS_Id;
+typedef struct {
+	uint64_t LpTimeDiffVal;
+	uint32_t LpTimeLeftOnEntry;
+	uint8_t LpTimerFreeRTOS_Id;
 } LpTimerContext_t;
 
 /* Private defines -----------------------------------------------------------*/
@@ -85,9 +84,8 @@ void vPortSetupTimerInterrupt( void );
  * @param: xExpectedIdleTime is given in number of FreeRTOS Ticks
  * @retval: None
  */
-void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
-{
-  /* If low power is not used, do not stop the SysTick and continue execution */
+void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime) {
+	/* If low power is not used, do not stop the SysTick and continue execution */
 #if ( CFG_LPM_SUPPORTED != 0)
   /**
    * Although this is not documented as such, when xExpectedIdleTime = 0xFFFFFFFF = (~0),

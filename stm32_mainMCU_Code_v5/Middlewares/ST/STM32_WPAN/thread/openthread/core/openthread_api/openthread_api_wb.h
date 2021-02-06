@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
-  * @file    openthread_api_wb.h
-  * @author  MCD Application Team
-  * @brief   Contains STM32WB specificities requested to control the OpenThread
-  *          interface.
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    openthread_api_wb.h
+ * @author  MCD Application Team
+ * @brief   Contains STM32WB specificities requested to control the OpenThread
+ *          interface.
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -18,13 +18,12 @@
  ******************************************************************************
  */
 
-
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef OPENTHREAD_API_WB
 #define OPENTHREAD_API_WB
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -54,19 +53,18 @@
 
 #include "dbg_trace.h"
 
-
 /**
-  * @brief  This function is used to manage all the callbacks used by the
-  *         OpenThread interface. These callbacks are used for example to
-  *         notify the application as soon as the state of a device has been
-  *         modified.
-  *
-  *         Important Note: This function must be called each time a message
-  *         is sent from the M0 to the M4.
-  *
-  * @param  None
-  * @retval None
-  */
+ * @brief  This function is used to manage all the callbacks used by the
+ *         OpenThread interface. These callbacks are used for example to
+ *         notify the application as soon as the state of a device has been
+ *         modified.
+ *
+ *         Important Note: This function must be called each time a message
+ *         is sent from the M0 to the M4.
+ *
+ * @param  None
+ * @retval None
+ */
 
 HAL_StatusTypeDef OpenThread_CallBack_Processing(void);
 

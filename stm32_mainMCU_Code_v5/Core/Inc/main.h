@@ -1,22 +1,22 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -43,16 +43,11 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-typedef enum
-{
-  LED1 = 0,
-  LED2 = 1,
-  LED3 = 2,
-  /* Color led aliases */
-  LED_BLUE   = LED1,
-  LED_GREEN  = LED2,
-  LED_RED    = LED3
-}Led_TypeDef;
+typedef enum {
+	LED1 = 0, LED2 = 1, LED3 = 2,
+	/* Color led aliases */
+	LED_BLUE = LED1, LED_GREEN = LED2, LED_RED = LED3
+} Led_TypeDef;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -93,7 +88,6 @@ void BSP_LED_Toggle(Led_TypeDef Led);
 //#define LED1_Pin	GPIO_PIN_4
 //#define LED2_Pin	GPIO_PIN_0
 //#define LED3_Pin	GPIO_PIN_1
-
 #define LEDn                                    3
 
 #define LED1_PIN                                GPIO_PIN_5

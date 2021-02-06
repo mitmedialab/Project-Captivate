@@ -19,8 +19,6 @@
  ******************************************************************************
  */
 
-
-
 #ifndef _UUID_H_
 #define _UUID_H_
 
@@ -112,7 +110,7 @@
 #define RINGER_CNTRL_POINT_CHARAC_UUID                                 (0x2A40)
 #define RINGER_SETTING_CHARAC_UUID                                     (0x2A41)
 
-/* UUIDs for battery service */ 
+/* UUIDs for battery service */
 #define BATTERY_SERVICE_UUID                                           (0x180F)
 #define BATTERY_LEVEL_CHAR_UUID                                        (0x2A19)
 
@@ -199,12 +197,12 @@
 #define MAGNETIC_DECLINATION_UUID                                      (0x2A2C)
 #define MAGNETIC_FLUX_DENSITY_2D_UUID                                  (0x2AA0)
 #define MAGNETIC_FLUX_DENSITY_3D_UUID                                  (0x2AA1)
-   
+
 /* UUIDs for body composition service */
 #define BODY_COMPOSITION_SERVICE_UUID                                  (0x181B)
 #define BODY_COMPOSITION_MEASUREMENT_CHAR_UUID                         (0x2A9C)
 #define BODY_COMPOSITION_FEATURE_CHARAC                                (0x2A9B)      
-   
+
 /* UUIDs for user data service */
 #define USER_DATA_SERVICE_UUID                                         (0x181C)
 #define AERO_HR_LOWER_LIMIT_CHAR_UUID                                  (0x2A7E)
@@ -238,26 +236,26 @@
 #define USER_INDEX_CHAR_UUID                                           (0x2A9A)
 #define USER_CONTROL_POINT_CHAR_UUID                                   (0x2A9F)
 #define LANGUAGE_CHAR_UUID                                             (0x2AA2)
-   
+
 /* UUIDs for weight scale profile */
 #define WEIGHT_SCALE_SERVICE_UUID                                      (0x181D)
 #define WEIGHT_SCALE_MEASUREMENT_CHAR_UUID                             (0x2A9D)
 #define WEIGHT_SCALE_FEATURE_CHAR_UUID                                 (0x2A9E)  
-   
+
 /* UUIDs for weight scale profile */
 #define BOND_MANAGEMENT_SERVICE_UUID                                   (0x181E)
 #define BM_CONTROL_POINT_CHAR_UUID                                     (0x2AA4)
 #define BM_FEATURE_CHAR_UUID                                           (0x2AA5)  
-   
+
 /* UUIDs for Internet Support Service */
 #define INTERNET_SUPPORT_SERVICE_UUID                                  (0x1820)
-   
+
 /* UUIDs for Indoor Positioning Service */
 #define INDOOR_POSITIONING_SERVICE_UUID                                (0x1821)
 #define IP_CONFIGURATION_CHAR_UUID                                     (0x2AAD)
 #define IP_LATITUDE_CHAR_UUID                                          (0x2AAE)  
 #define IP_LONGITUDE_CHAR_UUID                                         (0x2AAF)  
-   
+
 /* UUIDs for HTTP proxy Service */
 #define HTTP_PROXY_SERVICE_UUID                                        (0x1823)
 #define HTTP_URI_CHAR_UUID                                             (0x2AB6)
@@ -266,7 +264,7 @@
 #define HTTP_ENTITY_BODY_CHAR_UUID                                     (0x2AB9)
 #define HTTP_CONTROL_POINT_CHAR_UUID                                   (0x2ABA)
 #define HTTP_SECURITY_CHAR_UUID                                        (0x2ABB)
-   
+
 /* UUIDs for Object Transfer Service */
 #define OBJECT_TRANSFER_SERVICE_UUID                                   (0x1825)
 #define OTS_FEATURE_CHAR_UUID                                          (0x2ABD)
@@ -276,14 +274,14 @@
 #define OBJECT_PROPERTIES_CHAR_UUID                                    (0x2AC4)
 #define OBJECT_ACTION_CONTROL_POINT_CHAR_UUID                          (0x2AC5)
 #define OBJECT_LIST_CONTROL_POINT_CHAR_UUID                            (0x2AC6)
-   
+
 /* Custom Services*/
 /* UUIDs for data transfer service */
 #define DATA_TRANSFER_SERVICE_UUID                                     (0xFE80)
 #define DATA_TRANSFER_TX_CHAR_UUID                                     (0xFE81)
 #define DATA_TRANSFER_RX_CHAR_UUID                                     (0xFE82)    
 
-/* UUIDs for custom battery service */ 
+/* UUIDs for custom battery service */
 #define CUSTOM_BATTERY_SERVICE_UUID                                    (0xF2F0)
 #define CUSTOM_BATTERY_LEVEL_CHAR_UUID                                 (0xF2F1)
 

@@ -49,10 +49,9 @@ extern "C" {
  * This structure represents a CLI command.
  *
  */
-typedef struct otCliCommand
-{
-    const char *mName;                        ///< A pointer to the command string.
-    void (*mCommand)(int argc, char *argv[]); ///< A function pointer to process the command.
+typedef struct otCliCommand {
+	const char *mName;                     ///< A pointer to the command string.
+	void (*mCommand)(int argc, char *argv[]); ///< A function pointer to process the command.
 } otCliCommand;
 
 /**
@@ -75,7 +74,8 @@ typedef struct otCliCommand
  * @returns                Number of bytes processed by the callback.
  *
  */
-typedef int (*otCliConsoleOutputCallback)(const char *aBuf, uint16_t aBufLength, void *aContext);
+typedef int (*otCliConsoleOutputCallback)(const char *aBuf, uint16_t aBufLength,
+		void *aContext);
 
 /**
  * Initialize the CLI CONSOLE module.
@@ -85,7 +85,8 @@ typedef int (*otCliConsoleOutputCallback)(const char *aBuf, uint16_t aBufLength,
  * @param[in]  aContext    A user context pointer.
  *
  */
-void otCliConsoleInit(otInstance *aInstance, otCliConsoleOutputCallback aCallback, void *aContext);
+void otCliConsoleInit(otInstance *aInstance,
+		otCliConsoleOutputCallback aCallback, void *aContext);
 
 /**
  * This method is called to feed in a console input line.
@@ -110,7 +111,8 @@ void otCliUartInit(otInstance *aInstance);
  * @param[in]  aUserCommands  A pointer to an array with user commands.
  * @param[in]  aLength        @p aUserCommands length.
  */
-void otCliUartSetUserCommands(const otCliCommand *aUserCommands, uint8_t aLength);
+void otCliUartSetUserCommands(const otCliCommand *aUserCommands,
+		uint8_t aLength);
 
 /**
  * Write a number of bytes to the CLI console as a hex string.
@@ -143,7 +145,8 @@ void otCliUartAppendResult(otError aError);
  * @param[in]  aFormat     A pointer to the format string.
  * @param[in]  aArgs       va_list matching aFormat.
  */
-void otCliPlatLogv(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, va_list aArgs);
+void otCliPlatLogv(otLogLevel aLogLevel, otLogRegion aLogRegion,
+		const char *aFormat, va_list aArgs);
 
 /**
  * @}

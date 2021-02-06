@@ -1,11 +1,10 @@
-
 /**
-  ******************************************************************************
-  * @file    common_blesvc.h
-  * @author  MCD Application Team
-  * @brief   Header for ble modules
-  ******************************************************************************
-  * @attention
+ ******************************************************************************
+ * @file    common_blesvc.h
+ * @author  MCD Application Team
+ * @brief   Header for ble modules
+ ******************************************************************************
+ * @attention
  *
  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
  * All rights reserved.</center></h2>
@@ -17,7 +16,6 @@
  *
  ******************************************************************************
  */
-
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __COMMON_BLESVC_H
@@ -32,19 +30,16 @@ extern "C" {
 #include "ble.h"
 #include "dbg_trace.h"
 
-
-
 /* Exported types ------------------------------------------------------------*/
 typedef enum
 {
-  COMSVC_Notification = ( 1 << 0 ),
-  COMSVC_Indication =   ( 1 << 1 ),
-} COMSVC_ClientCharConfMask_t;
+	COMSVC_Notification = ( 1 << 0 ),
+	COMSVC_Indication = ( 1 << 1 ),
+}COMSVC_ClientCharConfMask_t;
 
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
-
 
 #ifdef __cplusplus
 }
