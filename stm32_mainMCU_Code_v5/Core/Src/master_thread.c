@@ -24,6 +24,7 @@
 #include "task.h"
 #include "captivate_config.h"
 #include "driver_BNO080.h"
+#include "dt_server_app.h"
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
@@ -89,12 +90,12 @@ void MasterThreadTask(void *argument) {
 		osWaitForever);
 #endif
 
-		togLogMessageReceived.status = 1;
-		togLogMessageReceived.logStatus = 1;
-		togLogMessageReceived.blinkEnabled = 1;
-		togLogMessageReceived.tempEnabled = 0;
-		togLogMessageReceived.positionEnabled = 0;
-		togLogMessageReceived.intertialEnabled = 0;
+//		togLogMessageReceived.status = 1;
+//		togLogMessageReceived.logStatus = 1;
+//		togLogMessageReceived.blinkEnabled = 1;
+//		togLogMessageReceived.tempEnabled = 0;
+//		togLogMessageReceived.positionEnabled = 0;
+//		togLogMessageReceived.intertialEnabled = 0;
 
 		// this below togLogMessageReceived manipulation is for debugging
 //		togLogMessageReceived.status = 1;
@@ -157,8 +158,12 @@ void MasterThreadTask(void *argument) {
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
 				/**********************************************************************************/
 
-				APP_THREAD_SendBorderPacket(&sensorPacket);
-
+				if( togLogMessageReceived.status == SEND_VIA_BLE ){ //send via BLE
+					SendDataBLE(&sensorPacket);
+				}
+				else{ //send via OpenThread
+					APP_THREAD_SendBorderPacket(&sensorPacket);
+				}
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
 				/**********************************************************************************/
@@ -209,7 +214,7 @@ void MasterThreadTask(void *argument) {
 			logEnabled = 0;
 			masterExitRoutine();
 		}
-		else if (lightLabDemoEnabled == 0 && togLogMessageReceived.status == LIGHT_LAB_DEMO){
+		else if (lightLabDemoEnabled == 0 && (togLogMessageReceived.status == LIGHT_LAB_DEMO)){
 			// keep record of this message so new message doesn't overwrite
 			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
 
@@ -245,7 +250,7 @@ void MasterThreadTask(void *argument) {
 				}
 			}
 		}
-		else if ((lightLabDemoEnabled == LIGHT_LAB_DEMO) && (togLogMessageReceived.status == DISABLE_LOG)){
+		else if ((lightLabDemoEnabled == LIGHT_LAB_DEMO) && (togLogMessageReceived.status == DISABLE_SENSING)){
 
 			osSemaphoreRelease(lightingLabDemoEndHandle);
 

@@ -139,7 +139,7 @@ osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = {
   .name = "blinkTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512
+  .stack_size = 512 * 2
 };
 /* Definitions for msgPassingUSB_T */
 osThreadId_t msgPassingUSB_THandle;
@@ -387,26 +387,26 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
+//  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of frontLightsTask */
-//  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
-//
-//  /* creation of masterTask */
-//  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
-//
-//  /* creation of inertialTask */
-//  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
-//
-//  /* creation of pulseTask */
-//  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
-//
-//  /* creation of interProcTask */
-//  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
-//
-//  /* creation of blinkTask */
-//  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-//
+  frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL, &frontLightsTask_attributes);
+
+  /* creation of masterTask */
+  masterTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterTask_attributes);
+
+  /* creation of inertialTask */
+  inertialTaskHandle = osThreadNew(InertialSensingTask, NULL, &inertialTask_attributes);
+
+  /* creation of pulseTask */
+  pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL, &pulseTask_attributes);
+
+  /* creation of interProcTask */
+  interProcTaskHandle = osThreadNew(InterProcessorTask, NULL, &interProcTask_attributes);
+
+  /* creation of blinkTask */
+  blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
 //  /* creation of msgPassingUSB_T */
 //  msgPassingUSB_THandle = osThreadNew(msgPassingUSB, NULL, &msgPassingUSB_T_attributes);
 

@@ -128,6 +128,11 @@ void APPE_Init( void )
    */
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 
+#ifdef NUCLEO_LED_ACTIVE
+   BSP_LED_Init(LED_BLUE);
+   BSP_LED_Init(LED_GREEN);
+   BSP_LED_Init(LED_RED);
+#endif
 /* USER CODE END APPE_Init_1 */
   appe_Tl_Init();	/* Initialize all transport layers */
 

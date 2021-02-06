@@ -263,7 +263,7 @@ static void APP_THREAD_SendCoapMsgForBorderSync(void *message, uint16_t msgSize,
 		uint8_t request_ack, otCoapCode coapCode, uint8_t msgID);
 
 void APP_THREAD_GetBorderRouterIP(void);
-void updateRTC(time_t now);
+
 void APP_THREAD_SendMyInfo(void);
 void APP_THREAD_UpdateBorderRouter(void);
 void APP_THREAD_SyncWithBorderRouter(void);

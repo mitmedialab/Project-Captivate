@@ -167,6 +167,7 @@ void APP_THREAD_Init_Dyn_1(void);
 void APP_THREAD_Init_Dyn_2(void);
 void APP_THREAD_Stop(void);
 void APP_THREAD_CleanCallbacks(void);
+void updateRTC(time_t now);
 /* USER CODE END EF */
 
 #ifdef __cplusplus

@@ -57,7 +57,7 @@ const uint16_t GPIO_PIN_DONGLE[3] = {LED1_Pin, LED2_Pin, LED3_Pin};
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 200
+#define MAX_BRIGHTNESS 255
 
 uint8_t led_left_PWM[9] = {0};
 uint8_t led_right_PWM[9] = {0};

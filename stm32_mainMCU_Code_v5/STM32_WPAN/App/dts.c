@@ -24,9 +24,22 @@
 #include "dbg_trace.h"
 #include "dts.h"   
 
+#include "captivate_config.h"
+#include "master_thread.h"
+
 #include "main.h"
 
+#include "lp5523.h"
+
+#include "time.h"
+#include "rtc.h"
+
+#include "app_thread.h"
+
+
+
 #define UUID_128_SUPPORTED 1
+#define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
 
 #if (UUID_128_SUPPORTED == 1)
 #define DT_UUID_LENGTH  UUID_TYPE_128
@@ -65,6 +78,36 @@ const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
 #endif
 
 #if (UUID_128_SUPPORTED == 1)
+const uint8_t DT_REQ_CHAR_LED_UUID[16] =
+{ 0x19, 0xed, 0x82, 0xae,
+  0xed, 0x21, 0x4c, 0x9d,
+  0x41, 0x45, 0x22, 0x8e,
+  0x84, 0xFE, 0x00, 0x00};
+#else
+const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+#endif
+
+#if (UUID_128_SUPPORTED == 1)
+const uint8_t DT_REQ_CHAR_CONTROL_UUID[16] =
+{ 0x19, 0xed, 0x82, 0xae,
+  0xed, 0x21, 0x4c, 0x9d,
+  0x41, 0x45, 0x22, 0x8e,
+  0x85, 0xFE, 0x00, 0x00};
+#else
+const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+#endif
+
+#if (UUID_128_SUPPORTED == 1)
+const uint8_t DT_REQ_CHAR_TIME_UUID[16] =
+{ 0x19, 0xed, 0x82, 0xae,
+  0xed, 0x21, 0x4c, 0x9d,
+  0x41, 0x45, 0x22, 0x8e,
+  0x86, 0xFE, 0x00, 0x00};
+#else
+const uint8_t DT_REQ_CHAR3_UUID[2] = { 0x83, 0xFE };
+#endif
+
+#if (UUID_128_SUPPORTED == 1)
 const uint8_t DT_REQ_SERV_UUID[16] =
 { 0x19, 0xed, 0x82, 0xae,
   0xed, 0x21, 0x4c, 0x9d,
@@ -87,6 +130,9 @@ uint16_t DataTransferSvcHdle; /**< Service handle */
 uint16_t DataTransferTxCharHdle; /**< Characteristic handle */
 uint16_t DataTransferRxCharHdle; /**< Characteristic handle */
 uint16_t DataTransferTxChar3Hdle; /**< Characteristic handle */
+uint16_t DataTransferRxCharLedHdle; /**< Characteristic handle */
+uint16_t DataTransferRxCharControlHdle; /**< Characteristic handle */
+uint16_t DataTransferRxCharTimeHdle;
 } DataTransferSvcContext_t;
 
 /* Private defines -----------------------------------------------------------*/
@@ -99,6 +145,9 @@ static tBleStatus TX_Update_Char( DTS_STM_Payload_t *pDataValue );
 static SVCCTL_EvtAckStatus_t DTS_Event_Handler( void *pckt );
 static DataTransferSvcContext_t aDataTransferContext;
 extern uint16_t Att_Mtu_Exchanged;
+struct LogMessage receivedCntrlPacket;
+union ColorComplex receivedColor;
+time_t receivedEpoch;
 
 /* Functions Definition ------------------------------------------------------*/
 /* Private functions ----------------------------------------------------------*/
@@ -164,26 +213,26 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler( void *Event )
               DTS_Notification(&Notification);
             }
           }
-          //if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 2))
-          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 5))
-          {
-            /**
-            * Notify to application to start measurement
-            */
-            if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
-            {
-              APP_DBG_MSG("notification enabled\n");
-              Notification.Evt_Opcode = DTC_NOTIFICATION_ENABLED;
-              DTS_Notification(&Notification);
-            }
-            else
-            {
-              APP_DBG_MSG("notification disabled\n");
-              Notification.Evt_Opcode = DTC_NOTIFICATION_DISABLED;
-              DTS_Notification(&Notification);
-            }
-          }
-          if(attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferRxCharHdle + 1))
+//          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 2))
+////          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 5))
+//          {
+//            /**
+//            * Notify to application to start measurement
+//            */
+//            if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
+//            {
+//              APP_DBG_MSG("notification enabled\n");
+//              Notification.Evt_Opcode = DTC_NOTIFICATION_ENABLED;
+//              DTS_Notification(&Notification);
+//            }
+//            else
+//            {
+//              APP_DBG_MSG("notification disabled\n");
+//              Notification.Evt_Opcode = DTC_NOTIFICATION_DISABLED;
+//              DTS_Notification(&Notification);
+//            }
+//          }
+          if(attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferRxCharHdle + 2))
           {
             return_value = SVCCTL_EvtAckFlowEnable;
             
@@ -191,6 +240,91 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler( void *Event )
             Notification.DataTransfered.Length=attribute_modified->Attr_Data_Length;
             DTS_Notification(&Notification); 
           }
+
+          // if LED characteristic was modified
+          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferRxCharLedHdle + 1))
+                   {
+#ifdef NUCLEO_LED_ACTIVE
+        	  	  	  	  BSP_LED_Toggle(LED_BLUE);
+#endif
+        				  memcpy(&receivedColor, attribute_modified->Attr_Data, sizeof(receivedColor) );
+        				  FrontLightsSet(&receivedColor);
+
+//                     /**
+//                      * Notify to application to start measurement
+//                      */
+//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
+//                     {
+//                       APP_DBG_MSG("notification enabled\n");
+//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+//                     else
+//                     {
+//                       APP_DBG_MSG("notification disabled\n");
+//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+                   }
+
+          // if system config was modified
+          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferRxCharControlHdle + 1))
+                   {
+#ifdef NUCLEO_LED_ACTIVE
+        	  BSP_LED_Toggle(LED_GREEN);
+#endif
+			  memcpy(&receivedCntrlPacket, attribute_modified->Attr_Data, sizeof(struct LogMessage) );
+
+			  osMessageQueuePut(togLoggingQueueHandle, &receivedCntrlPacket, 0U, 0U);
+
+//                     /**
+//                      * Notify to application to start measurement
+//                      */
+//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
+//                     {
+//                       APP_DBG_MSG("notification enabled\n");
+//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+//                     else
+//                     {
+//                       APP_DBG_MSG("notification disabled\n");
+//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+                   }
+
+          // if epoch was set
+          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferRxCharTimeHdle + 1))
+                   {
+#ifdef NUCLEO_LED_ACTIVE
+						  BSP_LED_Toggle(LED_GREEN);
+#endif
+						  memcpy(&receivedEpoch, attribute_modified->Attr_Data, sizeof(receivedEpoch) );
+
+						  receivedEpoch = receivedEpoch / 1000;
+						  updateRTC(receivedEpoch);
+
+//                     /**
+//                      * Notify to application to start measurement
+//                      */
+//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
+//                     {
+//                       APP_DBG_MSG("notification enabled\n");
+//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+//                     else
+//                     {
+//                       APP_DBG_MSG("notification disabled\n");
+//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
+//                       DTS_Notification(&Notification);
+//                     }
+                   }
+
+
+
+
           }
           break;
         case EVT_BLUE_GATT_TX_POOL_AVAILABLE:
@@ -258,7 +392,7 @@ void DTS_STM_Init( void )
   /* DT service and characteristics */
   hciCmdResult = aci_gatt_add_service(DT_UUID_LENGTH, (Service_UUID_t *) DT_REQ_SERV_UUID,
   PRIMARY_SERVICE,
-                                      10, &(aDataTransferContext.DataTransferSvcHdle));
+  	  	  1+3*NUM_OF_CHARACTERISTICS, &(aDataTransferContext.DataTransferSvcHdle));
   if (hciCmdResult != 0)
   {
     APP_DBG_MSG("error add service 0x%x\n", hciCmdResult);
@@ -268,7 +402,7 @@ void DTS_STM_Init( void )
   }
 
   /**
-   *  Add Data Transfer TX Characteristic
+   *  Add Data Transfer TX Characteristic (characteristic that is used to send data)
    */
   hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
   DT_UUID_LENGTH,
@@ -289,7 +423,7 @@ void DTS_STM_Init( void )
   }
 
   /**
-   *  Add Data Transfer RX Characteristic
+   *  Add Data Transfer RX Characteristic (not intended to be used in the end)
    */
   hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
   DT_UUID_LENGTH,
@@ -309,20 +443,41 @@ void DTS_STM_Init( void )
     BSP_LED_On(LED_RED);
 #endif
   }
+//
+//  /**
+//   *  Add Data Transfer TX Characteristic (not intended to be used in the end)
+//   */
+//  hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+//  DT_UUID_LENGTH,
+//                    (Char_UUID_t *) DT_REQ_CHAR3_UUID,
+//                    255, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+//                    CHAR_PROP_NOTIFY,
+//                    ATTR_PERMISSION_NONE,
+//                    GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+//                    10, /* encryKeySize */
+//                    1, /* isVariable */
+//                    &(aDataTransferContext.DataTransferTxChar3Hdle));
+//  if (hciCmdResult != 0)
+//  {
+//    APP_DBG_MSG("error add char Tx\n");
+//#ifdef NUCLEO_LED_ACTIVE
+//    BSP_LED_On(LED_RED);
+//#endif
+//  }
   
   /**
-   *  Add Data Transfer TX Characteristic
+   *  Add Data LED Control Characteristic
    */
   hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
   DT_UUID_LENGTH,
-                    (Char_UUID_t *) DT_REQ_CHAR3_UUID,
-                    255, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
-                    CHAR_PROP_NOTIFY,
+                    (Char_UUID_t *) DT_REQ_CHAR_LED_UUID,
+                    100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+					CHAR_PROP_WRITE_WITHOUT_RESP,
                     ATTR_PERMISSION_NONE,
-                    GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+					GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                     10, /* encryKeySize */
                     1, /* isVariable */
-                    &(aDataTransferContext.DataTransferTxChar3Hdle));
+                    &(aDataTransferContext.DataTransferRxCharLedHdle));
   if (hciCmdResult != 0)
   {
     APP_DBG_MSG("error add char Tx\n");
@@ -330,7 +485,50 @@ void DTS_STM_Init( void )
     BSP_LED_On(LED_RED);
 #endif
   }
-  
+
+    /**
+     *  Add System Control Characteristic
+     */
+    hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+    DT_UUID_LENGTH,
+                      (Char_UUID_t *) DT_REQ_CHAR_CONTROL_UUID,
+                      100, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+						CHAR_PROP_WRITE_WITHOUT_RESP,
+						ATTR_PERMISSION_NONE,
+						GATT_NOTIFY_ATTRIBUTE_WRITE,  //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable */
+                      &(aDataTransferContext.DataTransferRxCharControlHdle));
+    if (hciCmdResult != 0)
+    {
+      APP_DBG_MSG("error add char Tx\n");
+  #ifdef NUCLEO_LED_ACTIVE
+      BSP_LED_On(LED_RED);
+  #endif
+  }
+
+    /**
+     *  Add System Time Characteristic
+     */
+    hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
+    DT_UUID_LENGTH,
+                      (Char_UUID_t *) DT_REQ_CHAR_TIME_UUID,
+                      10, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+						CHAR_PROP_WRITE_WITHOUT_RESP,
+						ATTR_PERMISSION_NONE,
+						GATT_NOTIFY_ATTRIBUTE_WRITE,  //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable */
+                      &(aDataTransferContext.DataTransferRxCharTimeHdle));
+    if (hciCmdResult != 0)
+    {
+      APP_DBG_MSG("error add char Tx\n");
+  #ifdef NUCLEO_LED_ACTIVE
+      BSP_LED_On(LED_RED);
+  #endif
+  }
+
+
   return;
 }
 

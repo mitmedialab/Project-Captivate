@@ -52,7 +52,7 @@
  */
 #define BLE_CFG_SVC_MAX_NBR_CB                                                 7
 
-#define BLE_CFG_CLT_MAX_NBR_CB                                                 3
+#define BLE_CFG_CLT_MAX_NBR_CB                                                 5
 
 /******************************************************************************
  * Device Information Service (DIS)

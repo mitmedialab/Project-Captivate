@@ -84,7 +84,7 @@ const osThreadAttr_t DataTransferProcess_attr = {
     .cb_size = CFG_TP_GENERIC_PROCESS_CB_SIZE,
     .stack_mem = CFG_TP_GENERIC_PROCESS_STACK_MEM,
     .priority = CFG_TP_GENERIC_PROCESS_PRIORITY,
-    .stack_size = CFG_TP_GENERIC_PROCESS_STACK_SIZE
+    .stack_size = CFG_TP_GENERIC_PROCESS_STACK_SIZE * 2
 };
 
 const osThreadAttr_t Button_SW1_Process_attr = {
@@ -156,7 +156,7 @@ void DTS_App_Init(void)
 //  UTIL_SEQ_RegTask( 1<<CFG_TASK_DATA_WRITE_ID, UTIL_SEQ_RFU, BLE_App_Delay_DataThroughput);
 
   DataWriteProcessId= osThreadNew(BLE_App_Delay_DataThroughput, NULL, &DataWriteProcess_attr);
-  DataTransferProcessId= osThreadNew(SendData, NULL, &DataTransferProcess_attr);
+//  DataTransferProcessId= osThreadNew(SendData, NULL, &DataTransferProcess_attr);
 //  Button_SW1_ProcessId= osThreadNew(ButtonTriggerReceived, NULL, &Button_SW1_Process_attr);
 //  Button_SW2_ProcessId= osThreadNew(DT_App_Button2_Trigger_Received, NULL, &Button_SW2_Process_attr);
 //  Button_SW3_ProcessId= osThreadNew(DT_App_Button3_Trigger_Received, NULL, &Button_SW3_Process_attr);
@@ -285,14 +285,15 @@ void SendData( void * argument )
     crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer, (DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
     Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] = crc_result;
 
-//    DataTransferServerContext.TxData.pPayload = Notification_Data_Buffer;
+    DataTransferServerContext.TxData.pPayload = Notification_Data_Buffer;
 //    //DataTransferServerContext.TxData.Length = DATA_NOTIFICATION_MAX_PACKET_SIZE; /* DATA_NOTIFICATION_MAX_PACKET_SIZE */
-//    DataTransferServerContext.TxData.Length =  DATA_NOTIFICATION_MAX_PACKET_SIZE; //Att_Mtu_Exchanged-10;
+    DataTransferServerContext.TxData.Length =  DATA_NOTIFICATION_MAX_PACKET_SIZE; //Att_Mtu_Exchanged-10;
 
-	DataTransferServerContext.TxData.pPayload = &Captivates_Test_Packet;
+//	DataTransferServerContext.TxData.pPayload = &Captivates_Test_Packet;
 	//DataTransferServerContext.TxData.Length = DATA_NOTIFICATION_MAX_PACKET_SIZE; /* DATA_NOTIFICATION_MAX_PACKET_SIZE */
-	DataTransferServerContext.TxData.Length =  sizeof(Captivates_Test_Packet); //Att_Mtu_Exchanged-10;
+//	DataTransferServerContext.TxData.Length =  sizeof(Captivates_Test_Packet); //Att_Mtu_Exchanged-10;
 
+    osDelay(1000);
     status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID, (uint8_t *) &DataTransferServerContext.TxData);
     if (status == BLE_STATUS_INSUFFICIENT_RESOURCES)
     {
@@ -308,6 +309,53 @@ void SendData( void * argument )
 	  }
 //  return;
 }
+
+void SendDataBLE( struct LogPacket *sensorPacket )
+{
+//	UNUSED(argument);
+//	  for(;;)
+//	  {
+//	    osThreadFlagsWait( 1, osFlagsWaitAny, osWaitForever);
+
+  tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+  uint8_t crc_result;
+//
+//  if( (DataTransferServerContext.ButtonTransferReq != DTS_APP_TRANSFER_REQ_OFF)
+//      && (DataTransferServerContext.NotificationTransferReq != DTS_APP_TRANSFER_REQ_OFF)
+//      && (DataTransferServerContext.DtFlowStatus != DTS_APP_FLOW_OFF) )
+//  {
+    /*Data Packet to send to remote*/
+    memcpy(Notification_Data_Buffer, sensorPacket, sizeof(struct LogPacket));
+
+    /* compute CRC */
+    crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer, (DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
+    Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] = crc_result;
+
+    DataTransferServerContext.TxData.pPayload = Notification_Data_Buffer;
+//    //DataTransferServerContext.TxData.Length = DATA_NOTIFICATION_MAX_PACKET_SIZE; /* DATA_NOTIFICATION_MAX_PACKET_SIZE */
+    DataTransferServerContext.TxData.Length =  DATA_NOTIFICATION_MAX_PACKET_SIZE; //Att_Mtu_Exchanged-10;
+
+//	DataTransferServerContext.TxData.pPayload = &Captivates_Test_Packet;
+	//DataTransferServerContext.TxData.Length = DATA_NOTIFICATION_MAX_PACKET_SIZE; /* DATA_NOTIFICATION_MAX_PACKET_SIZE */
+//	DataTransferServerContext.TxData.Length =  sizeof(Captivates_Test_Packet); //Att_Mtu_Exchanged-10;
+
+    status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID, (uint8_t *) &DataTransferServerContext.TxData);
+    //todo: add a retry attempt if insufficient resources
+//    if (status == BLE_STATUS_INSUFFICIENT_RESOURCES)
+//    {
+//      DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_OFF;
+//      (Notification_Data_Buffer[0])-=1;
+//    }
+//    else
+//    {
+////      UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
+//    	osThreadFlagsSet( DataTransferProcessId, 1 );
+//    }
+//  }
+//	  }
+  return;
+}
+
 void Resume_Notification(void)
 {
   DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;

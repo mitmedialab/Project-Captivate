@@ -27,7 +27,7 @@ extern "C" {
 //#define BORDER_ROUTER_NODE_TRANSMITTER	1
 
 //#define LED_TEST	1
-#define TEST_RUN_ON_START 1
+//#define TEST_RUN_ON_START 1
 //#define TEST_TOUCH 1
 
 #ifdef DONGLE_CODE
@@ -77,6 +77,7 @@ extern "C" {
 #define SENSOR_ENABLE							1
 #define LIGHT_LAB_DEMO							2
 #define TARE_NOW								3
+#define SEND_VIA_BLE							4
 
 /* RADIO SPECIFIC */
 #define TRANSMIT_POWER							6 //in dbm

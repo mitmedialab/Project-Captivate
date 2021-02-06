@@ -318,7 +318,8 @@ typedef enum
 /**
  * Define Tx Power
  */
-#define CFG_TX_POWER                      (0x18) /**< 0dbm */
+//#define CFG_TX_POWER                      (0x18) /**< 0dbm */
+#define CFG_TX_POWER                      (0x1F) /**< 0dbm */
 
 /**
  * Define Advertising parameters
@@ -418,7 +419,7 @@ typedef enum
  * 4 if LE_CODED
  * or any combination of 1M | 2M | LE_CODED
  */
-#define CFG_TX_PHY    1
+#define CFG_TX_PHY    2
 
 /**
  * RX PHY configuration
@@ -429,7 +430,7 @@ typedef enum
  * 4 if LE_CODED
  * or any combination of 1M | 2M | LE_CODED
  */
-#define CFG_RX_PHY    1
+#define CFG_RX_PHY    2
 
 /**
  * ALL PHYS configuration

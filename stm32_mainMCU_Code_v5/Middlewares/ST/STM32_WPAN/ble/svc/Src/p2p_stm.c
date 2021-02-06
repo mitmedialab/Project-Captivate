@@ -189,78 +189,82 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
  */
 void P2PS_STM_Init(void)
 {
- 
-  Char_UUID_t  uuid16;
-
-  /**
-   *	Register the event handler to the BLE controller
-   */
-  SVCCTL_RegisterSvcHandler(PeerToPeer_Event_Handler);
-  
-    /**
-     *  Peer To Peer Service
-     *
-     * Max_Attribute_Records = 2*no_of_char + 1
-     * service_max_attribute_record = 1 for Peer To Peer service +
-     *                                2 for P2P Write characteristic +
-     *                                2 for P2P Notify characteristic +
-     *                                1 for client char configuration descriptor +
-     *                                
-     */
-    COPY_P2P_SERVICE_UUID(uuid16.Char_UUID_128);
-    aci_gatt_add_service(UUID_TYPE_128,
-                      (Service_UUID_t *) &uuid16,
-                      PRIMARY_SERVICE,
-                      8,
-                      &(aPeerToPeerContext.PeerToPeerSvcHdle));
-
-    /**
-     *  Add LED Characteristic
-     */
-    COPY_P2P_WRITE_CHAR_UUID(uuid16.Char_UUID_128);
-    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
-                      UUID_TYPE_128, &uuid16,
-                      2,                                   
-                      CHAR_PROP_WRITE_WITHOUT_RESP|CHAR_PROP_READ,
-                      ATTR_PERMISSION_NONE,
-                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
-                      10, /* encryKeySize */
-                      1, /* isVariable */
-                      &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
-
-    /**
-     *   Add Button Characteristic
-     */
-    COPY_P2P_NOTIFY_UUID(uuid16.Char_UUID_128);
-    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
-                      UUID_TYPE_128, &uuid16,
-                      2,
-                      CHAR_PROP_NOTIFY,
-                      ATTR_PERMISSION_NONE,
-                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
-                      10, /* encryKeySize */
-                      1, /* isVariable: 1 */
-                      &(aPeerToPeerContext.P2PNotifyServerToClientCharHdle));
- 
-#if(BLE_CFG_OTA_REBOOT_CHAR != 0)      
-    /**
-     *  Add Boot Request Characteristic
-     */
-    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
-                      BM_UUID_LENGTH,
-                      (Char_UUID_t *)BM_REQ_CHAR_UUID,
-                      BM_REQ_CHAR_SIZE,
-                      CHAR_PROP_WRITE_WITHOUT_RESP,
-                      ATTR_PERMISSION_NONE,
-                      GATT_NOTIFY_ATTRIBUTE_WRITE,
-                      10,
-                      0,
-                      &(aPeerToPeerContext.RebootReqCharHdle));
-#endif    
-
-    
-  return;
+	return;
 }
+//void P2PS_STM_Init(void)
+//{
+//
+//  Char_UUID_t  uuid16;
+//
+//  /**
+//   *	Register the event handler to the BLE controller
+//   */
+//  SVCCTL_RegisterSvcHandler(PeerToPeer_Event_Handler);
+//
+//    /**
+//     *  Peer To Peer Service
+//     *
+//     * Max_Attribute_Records = 2*no_of_char + 1
+//     * service_max_attribute_record = 1 for Peer To Peer service +
+//     *                                2 for P2P Write characteristic +
+//     *                                2 for P2P Notify characteristic +
+//     *                                1 for client char configuration descriptor +
+//     *
+//     */
+//    COPY_P2P_SERVICE_UUID(uuid16.Char_UUID_128);
+//    aci_gatt_add_service(UUID_TYPE_128,
+//                      (Service_UUID_t *) &uuid16,
+//                      PRIMARY_SERVICE,
+//                      8,
+//                      &(aPeerToPeerContext.PeerToPeerSvcHdle));
+//
+//    /**
+//     *  Add LED Characteristic
+//     */
+//    COPY_P2P_WRITE_CHAR_UUID(uuid16.Char_UUID_128);
+//    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+//                      UUID_TYPE_128, &uuid16,
+//                      2,
+//                      CHAR_PROP_WRITE_WITHOUT_RESP|CHAR_PROP_READ,
+//                      ATTR_PERMISSION_NONE,
+//                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+//                      10, /* encryKeySize */
+//                      1, /* isVariable */
+//                      &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
+//
+//    /**
+//     *   Add Button Characteristic
+//     */
+//    COPY_P2P_NOTIFY_UUID(uuid16.Char_UUID_128);
+//    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+//                      UUID_TYPE_128, &uuid16,
+//                      2,
+//                      CHAR_PROP_NOTIFY,
+//                      ATTR_PERMISSION_NONE,
+//                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+//                      10, /* encryKeySize */
+//                      1, /* isVariable: 1 */
+//                      &(aPeerToPeerContext.P2PNotifyServerToClientCharHdle));
+//
+//#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
+//    /**
+//     *  Add Boot Request Characteristic
+//     */
+//    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+//                      BM_UUID_LENGTH,
+//                      (Char_UUID_t *)BM_REQ_CHAR_UUID,
+//                      BM_REQ_CHAR_SIZE,
+//                      CHAR_PROP_WRITE_WITHOUT_RESP,
+//                      ATTR_PERMISSION_NONE,
+//                      GATT_NOTIFY_ATTRIBUTE_WRITE,
+//                      10,
+//                      0,
+//                      &(aPeerToPeerContext.RebootReqCharHdle));
+//#endif
+//
+//
+//  return;
+//}
 
 /**
  * @brief  Characteristic update

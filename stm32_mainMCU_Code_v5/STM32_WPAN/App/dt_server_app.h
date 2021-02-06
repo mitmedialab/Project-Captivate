@@ -36,6 +36,7 @@ typedef void (* IO_RECEIVE_DATA_USER_CALLBACK_TYPE) (uint8_t * rx_data, uint16_t
   /* Includes ------------------------------------------------------------------*/
 #include "cmsis_os.h"
 #include "app_conf.h"
+#include "master_thread.h"
 
   /* Exported types ------------------------------------------------------------*/
   /* Exported constants --------------------------------------------------------*/
@@ -60,6 +61,7 @@ osThreadId_t Button_SW3_ProcessId;
 
   void SendData( void * argument );
   void BLE_App_Delay_DataThroughput(void * argument);
+  void SendDataBLE( struct LogPacket *sensorPacket );
 
 
 

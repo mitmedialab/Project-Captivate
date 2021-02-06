@@ -68,7 +68,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+#ifdef NUCLEO_LED_ACTIVE
+GPIO_TypeDef* GPIO_PORT[LEDn] = {LED1_GPIO_PORT, LED2_GPIO_PORT, LED3_GPIO_PORT};
+const uint16_t GPIO_PIN[LEDn] = {LED1_PIN, LED2_PIN, LED3_PIN};
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,7 +102,8 @@ int main(void)
 	   * The OPTVERR flag is wrongly set at power on
 	   * It shall be cleared before using any HAL_FLASH_xxx() api
 	   */
-	   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -454,6 +458,59 @@ static void Init_Exti( void )
 
   return;
 }
+
+#ifdef NUCLEO_LED_ACTIVE
+void BSP_LED_Init(Led_TypeDef Led)
+{
+  GPIO_InitTypeDef  gpioinitstruct = {0};
+
+  /* Enable the GPIO_LED Clock */
+  LEDx_GPIO_CLK_ENABLE(Led);
+
+  /* Configure the GPIO_LED pin */
+  gpioinitstruct.Pin = GPIO_PIN[Led];
+  gpioinitstruct.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioinitstruct.Pull = GPIO_NOPULL;
+  gpioinitstruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+  HAL_GPIO_Init(GPIO_PORT[Led], &gpioinitstruct);
+
+  HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_RESET);
+}
+
+/**
+  * @brief  Turns selected LED On.
+  * @param  Led: Specifies the Led to be set on.
+  *   This parameter can be one of following parameters:
+  *     @arg LED1
+  *     @arg LED2
+  *     @arg LED3
+  * @retval None
+  */
+void BSP_LED_On(Led_TypeDef Led)
+{
+  HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_SET);
+}
+
+/**
+  * @brief  Turns selected LED Off.
+  * @param  Led: Specifies the Led to be set off.
+  *   This parameter can be one of following parameters:
+  *     @arg LED1
+  *     @arg LED2
+  *     @arg LED3
+  * @retval None
+  */
+void BSP_LED_Off(Led_TypeDef Led)
+{
+  HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_RESET);
+}
+
+void BSP_LED_Toggle(Led_TypeDef Led)
+{
+  HAL_GPIO_TogglePin(GPIO_PORT[Led], GPIO_PIN[Led]);
+}
+#endif
 
 /* USER CODE END 4 */
 
