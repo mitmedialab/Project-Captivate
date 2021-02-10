@@ -1,6 +1,7 @@
 # Project Captivate
-## A Wearable Platform for Measurement and Actuation 
-Across Contexts
+## A Wearable Platform for Across-Context Measurement and Actuation 
+
+### Across Contexts
 
 Project Captivate have been designed to serve as an easy and reliable 
 platform to measure physiology in the real world.  We've designed it to 
