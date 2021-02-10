@@ -90,11 +90,11 @@ void MasterThreadTask(void *argument) {
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U,
 		osWaitForever);
 #endif
-
+//
 //		togLogMessageReceived.status = 1;
 //		togLogMessageReceived.logStatus = 1;
-//		togLogMessageReceived.blinkEnabled = 1;
-//		togLogMessageReceived.tempEnabled = 0;
+//		togLogMessageReceived.blinkEnabled = 0;
+//		togLogMessageReceived.tempEnabled = 1;
 //		togLogMessageReceived.positionEnabled = 0;
 //		togLogMessageReceived.intertialEnabled = 0;
 

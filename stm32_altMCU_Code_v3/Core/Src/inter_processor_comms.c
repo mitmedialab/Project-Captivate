@@ -81,7 +81,7 @@ void SendPacketToMainTask(void *argument){
 		}
 
 		// if master is requesting to start sampling
-		else if(logMessage.status == SAMPLE_ENABLE && logTracking==0)
+		else if(logMessage.status != SAMPLE_DISABLE && logTracking==0)
 		{
 			logTracking = 1;
 

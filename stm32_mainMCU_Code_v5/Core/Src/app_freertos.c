@@ -100,7 +100,7 @@ const osThreadAttr_t frontLightsTask_attributes = { .name = "frontLightsTask",
 /* Definitions for masterTask */
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = { .name = "masterTask", .priority =
-		(osPriority_t) osPriorityNormal, .stack_size = 512 };
+		(osPriority_t) osPriorityNormal, .stack_size = 512 * 3 };
 /* Definitions for inertialTask */
 osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = { .name = "inertialTask",
@@ -116,7 +116,7 @@ const osThreadAttr_t interProcTask_attributes = { .name = "interProcTask",
 /* Definitions for blinkTask */
 osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .priority =
-		(osPriority_t) osPriorityNormal, .stack_size = 512 * 2 };
+		(osPriority_t) osPriorityNormal, .stack_size = 512 * 4 };
 /* Definitions for msgPassingUSB_T */
 osThreadId_t msgPassingUSB_THandle;
 const osThreadAttr_t msgPassingUSB_T_attributes = { .name = "msgPassingUSB_T",

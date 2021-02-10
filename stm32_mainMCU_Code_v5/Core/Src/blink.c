@@ -86,11 +86,15 @@ void BlinkTask(void *argument) {
 			// start timer for ADC to sample at 1kHz
 //			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_float_buffer, sizeof(blink_float_buffer));
 
+
 			// start  PWM channel for blink LED
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
 			// start timer
 			HAL_TIM_Base_Start(&htim2);
+
+
+
 
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
@@ -176,8 +180,8 @@ void BlinkTask(void *argument) {
 //	i++;
 //}
 
-//volatile uint32_t start_time = 0;
-//volatile uint32_t end_time = 0;
+volatile uint32_t start_time = 0;
+volatile uint32_t end_time = 0;
 //
 //volatile uint32_t pwm_tracker_s = 0;
 //volatile uint32_t pwm_tracker_diff = 0;
@@ -188,9 +192,9 @@ void BlinkTask(void *argument) {
 //volatile uint8_t random_sample = 0;
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
-//	end_time = HAL_GetTick() - start_time;
+	end_time = HAL_GetTick() - start_time;
 //	pwm_tracker_diff = pwm_tracker - pwm_tracker_s;
-//	start_time = HAL_GetTick();
+	start_time = HAL_GetTick();
 //	pwm_tracker_s = pwm_tracker;
 //	if(low_adc_sample){
 //		HAL_ADC_Stop(&hadc1);

@@ -40,11 +40,23 @@ void InterProcessorTask(void *argument) {
 	// 		note: this should only happen when debugging and resetting the main processor while secondary is logging
 	osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 	while (HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1,
-			(uint8_t*) &nullMessage, sizeof(togLogMessageReceived), 100)
+			(uint8_t*) &nullMessage, sizeof(togLogMessageReceived), 10)
 			!= HAL_OK) {
 		osSemaphoreRelease(messageI2C_LockHandle);
 		osDelay(100);
 		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+		/* todo: the below code is found to be needed because it was found that if the secondary processor
+		 * calls HAL_I2C_Slave_Receive_IT after the main processor first attempts to send a message via
+		 *  HAL_I2C_Master_Transmit call, the I2C locks up and needs to be reset for the slave (secondary
+		 *  processor) to have its RX I2C interrupt callback triggered.
+		 *
+		 *  This issue needs further investigation since this is an inefficient and unideal fix. A thing to
+		 *  try would be to go into the I2C peripheral on the main processor and see what is not being reset
+		 *  between HAL_I2C_Master_Transmit retries.
+
+		*/
+		HAL_I2C_DeInit(&hi2c1);
+		HAL_I2C_Init(&hi2c1);
 	};
 	osSemaphoreRelease(messageI2C_LockHandle);
 #endif
@@ -63,10 +75,22 @@ void InterProcessorTask(void *argument) {
 			//while(HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1, (uint8_t *) &commandToSend, sizeof(togLogMessageReceived), 100) != HAL_OK);
 			while (HAL_I2C_Master_Transmit(&hi2c1, SECONDARY_MCU_ADDRESS << 1,
 					(uint8_t*) &commandToSend, sizeof(togLogMessageReceived),
-					100) != HAL_OK) {
+					10) != HAL_OK) {
 				osSemaphoreRelease(messageI2C_LockHandle);
 				osDelay(100);
 				osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+				/* todo: the below code is found to be needed because it was found that if the secondary processor
+				 * calls HAL_I2C_Slave_Receive_IT after the main processor first attempts to send a message via
+				 *  HAL_I2C_Master_Transmit call, the I2C locks up and needs to be reset for the slave (secondary
+				 *  processor) to have its RX I2C interrupt callback triggered.
+				 *
+				 *  This issue needs further investigation since this is an inefficient and unideal fix. A thing to
+				 *  try would be to go into the I2C peripheral on the main processor and see what is not being reset
+				 *  between HAL_I2C_Master_Transmit retries.
+
+				*/
+				HAL_I2C_DeInit(&hi2c1);
+				HAL_I2C_Init(&hi2c1);
 			}
 			osDelay(100);
 			osSemaphoreRelease(messageI2C_LockHandle);
@@ -87,11 +111,23 @@ void InterProcessorTask(void *argument) {
 					while (HAL_I2C_Master_Transmit(&hi2c1,
 							SECONDARY_MCU_ADDRESS << 1,
 							(uint8_t*) &commandToSend,
-							sizeof(struct LogMessage), 100) != HAL_OK) {
+							sizeof(struct LogMessage), 10) != HAL_OK) {
 						osSemaphoreRelease(messageI2C_LockHandle);
 						osDelay(100);
 						osSemaphoreAcquire(messageI2C_LockHandle,
 								osWaitForever);
+						/* todo: the below code is found to be needed because it was found that if the secondary processor
+						 * calls HAL_I2C_Slave_Receive_IT after the main processor first attempts to send a message via
+						 *  HAL_I2C_Master_Transmit call, the I2C locks up and needs to be reset for the slave (secondary
+						 *  processor) to have its RX I2C interrupt callback triggered.
+						 *
+						 *  This issue needs further investigation since this is an inefficient and unideal fix. A thing to
+						 *  try would be to go into the I2C peripheral on the main processor and see what is not being reset
+						 *  between HAL_I2C_Master_Transmit retries.
+
+						*/
+						HAL_I2C_DeInit(&hi2c1);
+						HAL_I2C_Init(&hi2c1);
 					}
 					// wait until transmission is successful
 // 					evt = osThreadFlagsWait(0x00000010U, osFlagsWaitAny, osWaitForever);
@@ -109,6 +145,18 @@ void InterProcessorTask(void *argument) {
 						osDelay(100);
 						osSemaphoreAcquire(messageI2C_LockHandle,
 								osWaitForever);
+						/* todo: the below code is found to be needed because it was found that if the secondary processor
+						 * calls HAL_I2C_Slave_Receive_IT after the main processor first attempts to send a message via
+						 *  HAL_I2C_Master_Transmit call, the I2C locks up and needs to be reset for the slave (secondary
+						 *  processor) to have its RX I2C interrupt callback triggered.
+						 *
+						 *  This issue needs further investigation since this is an inefficient and unideal fix. A thing to
+						 *  try would be to go into the I2C peripheral on the main processor and see what is not being reset
+						 *  between HAL_I2C_Master_Transmit retries.
+
+						*/
+						HAL_I2C_DeInit(&hi2c1);
+						HAL_I2C_Init(&hi2c1);
 					}
 // 					taskEXIT_CRITICAL();
 					// wait until packet is received
@@ -151,11 +199,23 @@ void InterProcessorTask(void *argument) {
 					osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 					while (HAL_I2C_Master_Transmit(&hi2c1,
 							SECONDARY_MCU_ADDRESS << 1, (uint8_t*) &nullMessage,
-							sizeof(togLogMessageReceived), 100) != HAL_OK) {
+							sizeof(togLogMessageReceived), 10) != HAL_OK) {
 						osSemaphoreRelease(messageI2C_LockHandle);
 						osDelay(100);
 						osSemaphoreAcquire(messageI2C_LockHandle,
 								osWaitForever);
+						/* todo: the below code is found to be needed because it was found that if the secondary processor
+						 * calls HAL_I2C_Slave_Receive_IT after the main processor first attempts to send a message via
+						 *  HAL_I2C_Master_Transmit call, the I2C locks up and needs to be reset for the slave (secondary
+						 *  processor) to have its RX I2C interrupt callback triggered.
+						 *
+						 *  This issue needs further investigation since this is an inefficient and unideal fix. A thing to
+						 *  try would be to go into the I2C peripheral on the main processor and see what is not being reset
+						 *  between HAL_I2C_Master_Transmit retries.
+
+						*/
+						HAL_I2C_DeInit(&hi2c1);
+						HAL_I2C_Init(&hi2c1);
 					};
 					osSemaphoreRelease(messageI2C_LockHandle);
 					// wait until transmit is complete

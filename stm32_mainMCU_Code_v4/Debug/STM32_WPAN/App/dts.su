@@ -1,5 +1,0 @@
-dts.c:111:30:DTS_Event_Handler	72	static
-dts.c:226:19:TX_Update_Char	32	static
-dts.c:250:6:DTS_STM_Init	40	static
-dts.c:343:12:DTS_STM_UpdateChar	24	static
-dts.c:358:12:DTS_STM_UpdateCharThroughput	32	static

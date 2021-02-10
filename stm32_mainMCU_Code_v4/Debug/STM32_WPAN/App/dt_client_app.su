@@ -1,6 +1,0 @@
-dt_client_app.c:115:6:DTC_App_Init	8	static
-dt_client_app.c:130:6:DTC_App_LinkReadyNotification	16	static
-dt_client_app.c:174:30:DTC_Event_Handler	72	static,ignoring_inline_asm
-dt_client_app.c:385:15:DataThroughput_Calculation	16	static
-dt_client_app.c:405:15:DataThroughputTimer	4	static
-dt_client_app.c:416:15:GattProcReq	24	static
