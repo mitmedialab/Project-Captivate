@@ -181,25 +181,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 					DTS_Notification(&Notification);
 				}
 			}
-//          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 2))
-////          if (attribute_modified->Attr_Handle == (aDataTransferContext.DataTransferTxChar3Hdle + 5))
-//          {
-//            /**
-//            * Notify to application to start measurement
-//            */
-//            if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
-//            {
-//              APP_DBG_MSG("notification enabled\n");
-//              Notification.Evt_Opcode = DTC_NOTIFICATION_ENABLED;
-//              DTS_Notification(&Notification);
-//            }
-//            else
-//            {
-//              APP_DBG_MSG("notification disabled\n");
-//              Notification.Evt_Opcode = DTC_NOTIFICATION_DISABLED;
-//              DTS_Notification(&Notification);
-//            }
-//          }
+
 			if (attribute_modified->Attr_Handle
 					== (aDataTransferContext.DataTransferRxCharHdle + 2)) {
 				return_value = SVCCTL_EvtAckFlowEnable;
@@ -218,23 +200,9 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 #endif
 				memcpy(&receivedColor, attribute_modified->Attr_Data,
 						sizeof(receivedColor));
-				FrontLightsSet(&receivedColor);
+				//FrontLightsSet(&receivedColor);
+				osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 
-//                     /**
-//                      * Notify to application to start measurement
-//                      */
-//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
-//                     {
-//                       APP_DBG_MSG("notification enabled\n");
-//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
-//                       DTS_Notification(&Notification);
-//                     }
-//                     else
-//                     {
-//                       APP_DBG_MSG("notification disabled\n");
-//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
-//                       DTS_Notification(&Notification);
-//                     }
 			}
 
 			// if system config was modified
@@ -249,21 +217,6 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				osMessageQueuePut(togLoggingQueueHandle, &receivedCntrlPacket,
 						0U, 0U);
 
-//                     /**
-//                      * Notify to application to start measurement
-//                      */
-//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
-//                     {
-//                       APP_DBG_MSG("notification enabled\n");
-//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
-//                       DTS_Notification(&Notification);
-//                     }
-//                     else
-//                     {
-//                       APP_DBG_MSG("notification disabled\n");
-//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
-//                       DTS_Notification(&Notification);
-//                     }
 			}
 
 			// if epoch was set
@@ -278,21 +231,6 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 				receivedEpoch = receivedEpoch / 1000;
 				updateRTC(receivedEpoch);
 
-//                     /**
-//                      * Notify to application to start measurement
-//                      */
-//                     if (attribute_modified->Attr_Data[0] & DTS_STM_NOTIFICATION_MASK)
-//                     {
-//                       APP_DBG_MSG("notification enabled\n");
-//                       Notification.Evt_Opcode = DTS_STM__NOTIFICATION_ENABLED;
-//                       DTS_Notification(&Notification);
-//                     }
-//                     else
-//                     {
-//                       APP_DBG_MSG("notification disabled\n");
-//                       Notification.Evt_Opcode = DTS_STM_NOTIFICATION_DISABLED;
-//                       DTS_Notification(&Notification);
-//                     }
 			}
 
 		}

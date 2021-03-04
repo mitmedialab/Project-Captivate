@@ -20,6 +20,11 @@ extern "C" {
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
+
+// only define the below variables if wanting to send a packet at a period of NETWORK_TEST_PERIOD ms
+#define NETWORK_TEST			1
+#define NETWORK_TEST_PERIOD		1000
+
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1
 //#define OTA_ENABLED					1
@@ -128,6 +133,9 @@ extern osMessageQueueId_t blinkMsgQueueHandle;
 extern osThreadId_t frontLightsTaskHandle;
 extern osMessageQueueId_t lightsSimpleQueueHandle;
 
+extern osThreadId_t frontLightsComplexTaskHandle;
+extern osMessageQueueId_t lightsComplexQueueHandle;
+
 extern osMessageQueueId_t togLoggingQueueHandle;
 extern osThreadId_t masterTaskHandle;
 
@@ -159,6 +167,9 @@ extern osSemaphoreId_t lightingLabDemoEndHandle;
 
 extern void startSensorThreads(void);
 
+#ifdef NETWORK_TEST
+extern osSemaphoreId_t networkTestTaskHandle;
+#endif
 /* variables -----------------------------------------------*/
 struct SystemStatus {
 	int blinkThread :1;

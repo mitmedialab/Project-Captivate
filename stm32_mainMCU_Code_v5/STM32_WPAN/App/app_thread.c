@@ -50,6 +50,10 @@
 #include "task.h"
 #include "usbd_cdc_if.h"
 
+#ifdef NETWORK_TEST
+#include "network_test.h"
+#endif
+
 // TODO: fix the below include call to be relative
 // C:\ST\STM32CubeIDE_1.5.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include
 //#include <C:\ST\STM32CubeIDE_1.5.1\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.5.0.202011040924\tools\arm-none-eabi\include\stdio.h>
@@ -555,10 +559,12 @@ void APP_THREAD_Error(uint32_t ErrId, uint32_t ErrCode) {
  */
 static void APP_THREAD_DeviceConfig(void) {
 	otError error;
+#ifndef DYNAMIC_MODE
 	error = otInstanceErasePersistentInfo(NULL);
 	if (error != OT_ERROR_NONE) {
 		APP_THREAD_Error(ERR_THREAD_ERASE_PERSISTENT_INFO, error);
 	}
+#endif
 	otInstanceFinalize(NULL);
 	otInstanceInitSingle();
 	error = otSetStateChangedCallback(NULL, APP_THREAD_StateNotif, NULL);
@@ -1459,6 +1465,16 @@ void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket) {
 			1U);
 
 }
+
+#ifdef NETWORK_TEST
+
+void APP_THREAD_NetworkTestBorderPacket(struct NetworkTestPacket *sensorPacket) {
+//	APP_THREAD_SendCoapMsg(sensorPacket, borderRouter.ipv6, borderPacket, otCoapType type);
+	APP_THREAD_SendCoapMsg(sensorPacket, sizeof(struct NetworkTestPacket),
+			&borderRouter.ipv6, (char*) borderPacket, NO_ACK, OT_COAP_CODE_PUT,
+			1U);
+}
+#endif
 
 static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
 		otMessage *pMessage, otMessageInfo *pMessageInfo) {

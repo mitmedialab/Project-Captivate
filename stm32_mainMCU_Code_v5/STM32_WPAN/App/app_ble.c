@@ -43,6 +43,7 @@
 #include "dt_client_app.h"
 #include "dt_server_app.h"
 #include "dts.h"
+#include "lp5523.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -556,6 +557,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *pckt) {
 					0;
 			BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
 			APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH CLIENT \n");
+			ledDisconnectNotification();
 		}
 		/* restart advertising */
 #ifndef DYNAMIC_MODE
@@ -638,6 +640,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *pckt) {
 			APP_DBG_MSG("supervision_timeout= %.2f ms \n",Supervision_Timeout);
 
 			//	          UTIL_SEQ_SetTask(1 << CFG_TASK_LINK_CONFIG_ID, CFG_SCH_PRIO_0);
+			ledConnectNotification();
+
 			osThreadFlagsSet(LinkConfigProcessId, 1);
 
 			//todo: removed below from example and replaced from BLE DT example

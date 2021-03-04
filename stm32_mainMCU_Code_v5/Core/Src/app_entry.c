@@ -35,6 +35,8 @@
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_ble.h"
+#include "lp5523.h"
+#include "app_freertos.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +50,6 @@ extern RTC_HandleTypeDef hrtc;
 #define POOL_SIZE (CFG_TL_EVT_QUEUE_LENGTH * 4U * DIVC(( sizeof(TL_PacketHeader_t) + TL_EVENT_FRAME_SIZE ), 4U))
 
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macros ------------------------------------------------------------*/
@@ -88,7 +89,6 @@ size_t DbgTraceWrite(int handle, const unsigned char * buf, size_t bufSize);
 #endif
 
 /* USER CODE BEGIN GFP */
-
 /* USER CODE END GFP */
 
 /* Private functions prototypes-----------------------------------------------*/
@@ -335,12 +335,18 @@ static void APPE_SysEvtReadyProcessing(void) {
 	 *                           or joining a Thread Network
 	 */
 	APP_DBG("1- Initialisation of BLE Stack...");
-	APP_BLE_Init_Dyn_1();
+//	APP_BLE_Init_Dyn_1();
 	APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
 	APP_THREAD_Init_Dyn_1();
 
+	startApplicationThreads();
+	osDelay(100);
+	ledStartupSequence();
+	ledDisconnectNotification();
+
+
 	APP_DBG("3- Start BLE ADV...");
-	APP_BLE_Init_Dyn_2();
+//	APP_BLE_Init_Dyn_2();
 	APP_DBG(
 			"4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
 	APP_THREAD_Init_Dyn_2();
@@ -375,6 +381,10 @@ static void ShciUserEvtProcess(void *argument) {
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
 
+
+void startTasks(){
+
+}
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
 /*************************************************************

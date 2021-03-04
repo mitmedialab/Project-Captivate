@@ -24,8 +24,8 @@
 
 typedef union ColorComplex {
 	struct colors_indiv {
-		uint8_t left_front_b;
 		uint8_t left_front_g;
+		uint8_t left_front_b;
 		uint8_t left_top_b;
 		uint8_t left_top_g;
 		uint8_t left_side_b;
@@ -34,8 +34,8 @@ typedef union ColorComplex {
 		uint8_t left_top_r;
 		uint8_t left_side_r;
 
-		uint8_t right_front_b;
 		uint8_t right_front_g;
+		uint8_t right_front_b;
 		uint8_t right_top_b;
 		uint8_t right_top_g;
 		uint8_t right_side_b;
@@ -43,7 +43,7 @@ typedef union ColorComplex {
 		uint8_t right_front_r;
 		uint8_t right_top_r;
 		uint8_t right_side_r;
-	};
+	} colors_indiv;
 	uint8_t color[18];
 };
 
@@ -127,6 +127,8 @@ typedef union ColorComplex {
 #define 	POWERSAVE_EN				0x20
 #define 	INT_CLK_EN					0x03
 
+#define LED_START_SEQ_INTERVAL		80//mseconds
+
 #ifdef DONGLE_CODE
 #define LEDn                                    3
 
@@ -190,10 +192,18 @@ uint32_t lightsSimpleMessage;
  *
  *************************************************************/
 void ThreadFrontLightsTask(void *argument);
+void ThreadFrontLightsComplexTask(void *argument);
+
 
 void setup_LP5523(uint8_t ADDR);
 
 void FrontLightsSet(union ColorComplex *setColors);
+
+void ledDisconnectNotification(void);
+void ledConnectNotification(void);
+void ledStartupSequence(void);
+void ledAllRed(void);
+void resetColor(union ColorComplex * colorComplex);
 
 //class LP5523
 //{

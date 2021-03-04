@@ -28,7 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "app_entry.h"
 #include "master_thread.h"
-
+#include "app_freertos.h"
 #include "adc.h"
 #include "tim.h"
 #include "lp5523.h"
@@ -45,6 +45,10 @@
 #include "usbd_cdc_if.h"
 #include "coap.h"
 #include "app_thread.h"
+
+#ifdef NETWORK_TEST
+#include "network_test.h"
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,7 +68,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+#ifdef NETWORK_TEST
+osThreadId_t networkTestTaskHandle;
+const osThreadAttr_t networkTestTask_attributes = { .name = "networkTestTask",
+		.priority = (osPriority_t) osPriorityLow, .stack_size = 512 * 2 };
+#endif
 //osThreadId_t blinkTaskHandle;
 ////osMessageQueueId_t	blinkMsgQueueHandle;
 //
@@ -96,7 +104,11 @@ const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
 /* Definitions for frontLightsTask */
 osThreadId_t frontLightsTaskHandle;
 const osThreadAttr_t frontLightsTask_attributes = { .name = "frontLightsTask",
-		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512 };
+		.priority = (osPriority_t) osPriorityLow, .stack_size = 512 * 2};
+/* Definitions for frontLightsComplexTask */
+osThreadId_t frontLightsComplexTaskHandle;
+const osThreadAttr_t frontLightsComplexTask_attributes = { .name = "frontLightsComplexTask",
+		.priority = (osPriority_t) osPriorityLow, .stack_size = 512 * 2 };
 /* Definitions for masterTask */
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = { .name = "masterTask", .priority =
@@ -129,6 +141,10 @@ const osMessageQueueAttr_t blinkMsgQueue_attributes =
 osMessageQueueId_t lightsSimpleQueueHandle;
 const osMessageQueueAttr_t lightsSimpleQueue_attributes = { .name =
 		"lightsSimpleQueue" };
+/* Definitions for lightsComplexQueue */
+osMessageQueueId_t lightsComplexQueueHandle;
+const osMessageQueueAttr_t lightsComplexQueue_attributes = { .name =
+		"lightsComplexQueue" };
 /* Definitions for togLoggingQueue */
 osMessageQueueId_t togLoggingQueueHandle;
 const osMessageQueueAttr_t togLoggingQueue_attributes = { .name =
@@ -303,6 +319,10 @@ void MX_FREERTOS_Init(void) {
 	lightsSimpleQueueHandle = osMessageQueueNew(3, 4,
 			&lightsSimpleQueue_attributes);
 
+	/* creation of lightsSimpleQueue */
+	lightsComplexQueueHandle = osMessageQueueNew(3, sizeof(union ColorComplex),
+			&lightsComplexQueue_attributes);
+
 	/* creation of togLoggingQueue */
 	togLoggingQueueHandle = osMessageQueueNew(4, 6,
 			&togLoggingQueue_attributes);
@@ -344,35 +364,37 @@ void MX_FREERTOS_Init(void) {
 	/* Create the thread(s) */
 	/* creation of defaultTask */
 //  defaultTaskHandle = osThreadNew(DefaultTask, NULL, &defaultTask_attributes);
-	/* creation of frontLightsTask */
-	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL,
-			&frontLightsTask_attributes);
+//	/* creation of frontLightsTask */
+//	frontLightsTaskHandle = osThreadNew(ThreadFrontLightsTask, NULL,
+//			&frontLightsTask_attributes);
 
-	/* creation of masterTask */
-	masterTaskHandle = osThreadNew(MasterThreadTask, NULL,
-			&masterTask_attributes);
+//	frontLightsComplexTaskHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
+//				&frontLightsComplexTask_attributes);
 
-	/* creation of inertialTask */
-	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL,
-			&inertialTask_attributes);
-
-	/* creation of pulseTask */
-	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
-			&pulseTask_attributes);
-
-	/* creation of interProcTask */
-	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL,
-			&interProcTask_attributes);
-
-	/* creation of blinkTask */
-	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+//	/* creation of masterTask */
+//	masterTaskHandle = osThreadNew(MasterThreadTask, NULL,
+//			&masterTask_attributes);
+//
+//	/* creation of inertialTask */
+//	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL,
+//			&inertialTask_attributes);
+//
+//	/* creation of pulseTask */
+//	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
+//			&pulseTask_attributes);
+//
+//	/* creation of interProcTask */
+//	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL,
+//			&interProcTask_attributes);
+//
+//	/* creation of blinkTask */
+//	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
 //  /* creation of msgPassingUSB_T */
 //  msgPassingUSB_THandle = osThreadNew(msgPassingUSB, NULL, &msgPassingUSB_T_attributes);
 
 	/* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
-	APPE_Init();
 	/* USER CODE END RTOS_THREADS */
 
 	/* USER CODE BEGIN RTOS_EVENTS */
@@ -422,7 +444,35 @@ void watchDogReset(void *argument) {
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+void startApplicationThreads(void){
+	/* creation of masterTask */
+	masterTaskHandle = osThreadNew(MasterThreadTask, NULL,
+			&masterTask_attributes);
 
+	/* creation of frontLightsTask */
+	frontLightsComplexTaskHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
+				&frontLightsComplexTask_attributes);
+
+	/* creation of inertialTask */
+	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL,
+			&inertialTask_attributes);
+
+	/* creation of pulseTask */
+	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
+			&pulseTask_attributes);
+
+	/* creation of interProcTask */
+	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL,
+			&interProcTask_attributes);
+
+	/* creation of blinkTask */
+	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+#ifdef NETWORK_TEST
+	networkTestTaskHandle = osThreadNew(NetworkTestTask, NULL, &networkTestTask_attributes);
+#endif
+
+}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

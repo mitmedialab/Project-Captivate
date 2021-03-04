@@ -139,6 +139,9 @@ int main(void) {
 #ifndef BORDER_ROUTER_NODE
 	USBD_Stop(&hUsbDeviceFS);
 #endif
+	HAL_Delay(100);
+	APPE_Init();
+
 	/* USER CODE END 2 */
 
 	/* Init scheduler */

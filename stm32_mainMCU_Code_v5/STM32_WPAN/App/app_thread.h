@@ -39,6 +39,9 @@ extern "C" {
 #include "captivate_config.h"
 #include "ip6.h"
 #include "coap.h"
+#ifdef NETWORK_TEST
+#include "network_test.h"
+#endif
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -155,6 +158,9 @@ void APP_THREAD_ProcessMsgM0ToM4(void);
 void APP_THREAD_Init_UART_CLI(void);
 void APP_THREAD_TL_THREAD_INIT(void);
 /* USER CODE BEGIN EF */
+#ifdef NETWORK_TEST
+void APP_THREAD_NetworkTestBorderPacket(struct NetworkTestPacket *sensorPacket);
+#endif
 void APP_THREAD_SendBorderPacket(struct LogPacket *sensorPacket);
 void APP_THREAD_SendBorderMessage(void *packet, uint8_t len, char *resource);
 void APP_THREAD_SendCoapMsg(void *message, uint16_t msgSize,
