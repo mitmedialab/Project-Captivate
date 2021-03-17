@@ -589,6 +589,8 @@ void ledStartupSequence(void){
 	receivedColor.colors_indiv.right_front_r = 0;
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 //	FrontLightsSet(&receivedColor);
+
+	ledDisconnectNotification();
 }
 
 void ledDisconnectNotification(void){
@@ -599,6 +601,7 @@ void ledDisconnectNotification(void){
 	receivedColor.colors_indiv.left_side_b = 50;
 	receivedColor.colors_indiv.right_side_b = 50;
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
+	osDelay(10);
 //	FrontLightsSet(&receivedColor);
 }
 

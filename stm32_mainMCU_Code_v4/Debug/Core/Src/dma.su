@@ -1,0 +1,2 @@
+stm32wbxx_ll_bus.h:365:22:LL_AHB1_GRP1_EnableClock	24	static
+dma.c:38:6:MX_DMA_Init	8	static

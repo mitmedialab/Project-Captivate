@@ -89,15 +89,16 @@ void MasterThreadTask(void *argument) {
 #ifndef TEST_RUN_ON_START
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U,
 		osWaitForever);
-#endif
+#else
 //
-//		togLogMessageReceived.status = 1;
-//		togLogMessageReceived.logStatus = 1;
-//		togLogMessageReceived.blinkEnabled = 0;
-//		togLogMessageReceived.tempEnabled = 1;
-//		togLogMessageReceived.positionEnabled = 0;
-//		togLogMessageReceived.intertialEnabled = 0;
-
+		osDelay(3000);
+		togLogMessageReceived.status = 1;
+		togLogMessageReceived.logStatus = 1;
+		togLogMessageReceived.blinkEnabled = 1;
+		togLogMessageReceived.tempEnabled = 1;
+		togLogMessageReceived.positionEnabled = 0;
+		togLogMessageReceived.intertialEnabled = 1;
+#endif
 		// this below togLogMessageReceived manipulation is for debugging
 //		togLogMessageReceived.status = 1;
 //		togLogMessageReceived.logStatus = 1;
@@ -161,7 +162,7 @@ void MasterThreadTask(void *argument) {
 				/**********************************************************************************/
 
 				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-					SendDataBLE(&sensorPacket);
+					//SendDataBLE(&sensorPacket);
 				} else { //send via OpenThread
 					APP_THREAD_SendBorderPacket(&sensorPacket);
 				}

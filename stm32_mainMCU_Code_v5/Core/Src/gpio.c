@@ -112,7 +112,20 @@ void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 2 */
+void MX_BLINK_GPIO_Init(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+			GPIO_PIN_RESET);
+
+	/*Configure GPIO pin : PH3 */
+	GPIO_InitStruct.Pin = BLINK_PWM_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(BLINK_PWM_GPIO_Port, &GPIO_InitStruct);
+}
 /* USER CODE END 2 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

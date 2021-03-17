@@ -233,23 +233,33 @@ static void APP_THREAD_SendCoapUnicastRequest(char *message,
 //                                  otMessage           * pMessage,
 //                                  const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapLightsSimpleRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapLightsComplexRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapToggleLoggingRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo);
 
-static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapBorderTimeRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo);
 
 //static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otMessage *pMessage,
 //		const otMessageInfo *pMessageInfo);
 
-static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo);
+static void APP_THREAD_CoapNodeInfoRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo);
 
 static void APP_THREAD_CoapRespHandler_UpdateBorderRouter(otCoapHeader *pHeader,
 		otMessage *pMessage, const otMessageInfo *pMessageInfo, otError Result);
@@ -1476,8 +1486,10 @@ void APP_THREAD_NetworkTestBorderPacket(struct NetworkTestPacket *sensorPacket) 
 }
 #endif
 
-static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapLightsSimpleRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo) {
 	do {
 
 		// if get, send response with current log message
@@ -1520,8 +1532,10 @@ static void APP_THREAD_CoapLightsSimpleRequestHandler(otCoapHeader *pHeader,
 
 #ifndef DONGLE_CODE
 // request handler for when receiving a message directed at the data logging resource
-static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapToggleLoggingRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo) {
 	do {
 		// if get, send response with current log message
 		if (otCoapHeaderGetCode(pHeader) == OT_COAP_CODE_GET) {
@@ -1552,8 +1566,10 @@ static void APP_THREAD_CoapToggleLoggingRequestHandler(otCoapHeader *pHeader,
 #endif
 
 // request handler for when receiving a message directed at the border router synchronizing resource
-static void APP_THREAD_CoapBorderTimeRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapBorderTimeRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo) {
 	do {
 #ifdef DONGLE_CODE
 		BSP_LED_Toggle(LED_RED);
@@ -1648,8 +1664,10 @@ static void APP_THREAD_CoapBorderPacketRequestHandler(otCoapHeader *pHeader, otM
 // Only get requests allowed for this resource
 struct sendIP_struct tempVar = { "test", "test", 0 };
 //char test_string[200] = "test";
-static void APP_THREAD_CoapNodeInfoRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, const otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapNodeInfoRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo) {
 	do {
 #ifdef DONGLE_CODE
 		BSP_LED_Toggle(LED_RED);
@@ -1708,11 +1726,13 @@ void updateRTC(time_t now) {
 	HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2); // lock it in with the backup registers
 }
 
-static void APP_THREAD_CoapLightsComplexRequestHandler(otCoapHeader *pHeader,
-		otMessage *pMessage, otMessageInfo *pMessageInfo) {
+static void APP_THREAD_CoapLightsComplexRequestHandler(void                * pContext,
+		otCoapHeader        * pHeader,
+		otMessage           * pMessage,
+		const otMessageInfo * pMessageInfo) {
 	do {
-		//APP_THREAD_SendCoapUnicastRequest();
-
+//		APP_THREAD_SendCoapUnicastRequest(NULL, NULL, MULICAST_FTD_MED, borderSyncResource);
+		APP_THREAD_SendMyInfo();
 		if (otMessageRead(pMessage, otMessageGetOffset(pMessage),
 				&lightMessageComplex, sizeof(lightMessageComplex))
 				== sizeof(lightMessageComplex)) {

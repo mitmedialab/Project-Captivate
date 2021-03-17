@@ -1,0 +1,8 @@
+udp.c:36:12:otUdpNewMessage	24	static
+udp.c:53:9:otUdpOpen	32	static
+udp.c:72:9:otUdpClose	24	static
+udp.c:89:9:otUdpBind	24	static
+udp.c:107:9:otUdpConnect	24	static
+udp.c:125:9:otUdpSend	32	static
+udp.c:144:6:otUdpProxySetSender	32	static
+udp.c:159:6:otUdpProxyReceive	32	static

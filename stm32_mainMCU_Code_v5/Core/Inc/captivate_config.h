@@ -22,8 +22,8 @@ extern "C" {
 /* defines -----------------------------------------------------------*/
 
 // only define the below variables if wanting to send a packet at a period of NETWORK_TEST_PERIOD ms
-#define NETWORK_TEST			1
-#define NETWORK_TEST_PERIOD		1000
+//#define NETWORK_TEST			1
+//#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1

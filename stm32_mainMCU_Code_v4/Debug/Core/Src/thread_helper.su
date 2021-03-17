@@ -1,0 +1,2 @@
+thread_helper.c:52:22:otThreadSetChildSupervisionCheckTimeout	24	static
+thread_helper.c:74:22:otThreadSetChildSupervisionInterval	24	static

@@ -86,12 +86,15 @@ void BlinkTask(void *argument) {
 			// start timer for ADC to sample at 1kHz
 //			HAL_ADC_Start_DMA(&hadc1, (uint32_t*) blink_float_buffer, sizeof(blink_float_buffer));
 
+//
+//			 start timer
+			HAL_TIM_Base_Start(&htim2);
 
-			// start  PWM channel for blink LED
+//			 start  PWM channel for blink LED
 			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
-			// start timer
-			HAL_TIM_Base_Start(&htim2);
+//			HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+//					GPIO_PIN_SET);
 
 
 
@@ -143,6 +146,8 @@ void BlinkTask(void *argument) {
 
 					HAL_ADC_Stop_DMA(&hadc1);
 					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+//					HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+//										GPIO_PIN_RESET);
 					HAL_TIM_Base_Stop(&htim2);
 					previousTick_ms = 0;
 
