@@ -117,9 +117,14 @@ extern "C" {
 #define IMU_CALIBRATION				1
 
 /* BLINK SPECIFIC CONFIGURATION */
+#define BLINK_SAMPLE_RATE		1000
 #define BLINK_HALF_BUFFER_SIZE	1000
 #define BLINK_PACKET_SIZE		100
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
+#define INFRARED_DETECT_ALPHA 	0.5
+#define INFRARED_DETECT_LOWER_THRESH 	7
+#define INFRARED_DETECT_UPPER_THRESH 	235
+
 
 /* macros ------------------------------------------------------------*/
 

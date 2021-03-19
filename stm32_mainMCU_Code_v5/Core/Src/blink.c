@@ -19,6 +19,7 @@
 #include "string.h"
 #include "master_thread.h"
 #include "captivate_config.h"
+#include "arm_math.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -48,12 +49,15 @@ uint8_t blink_buffer[2000] = { 0 };
 volatile uint8_t *blink_ptr;
 volatile uint8_t *blink_ptr_copy;
 
+//volatile uint8_t blink_copy[1000];
+
 uint32_t payload_ID = 0;
 uint32_t iterator = 0;
 float previousTick_ms = 0;
 float tick_ms_diff = 0;
 
 struct LogMessage statusMessage;
+uint8_t diodeState = 0;
 
 /**
  * @brief Thread initialization.
@@ -63,6 +67,8 @@ struct LogMessage statusMessage;
 void BlinkTask(void *argument) {
 
 	uint32_t evt;
+	uint8_t diodeSaturatedFlag = 0;
+	float rolling_avg = 255;
 
 	while (1) {
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
@@ -91,13 +97,16 @@ void BlinkTask(void *argument) {
 			HAL_TIM_Base_Start(&htim2);
 
 //			 start  PWM channel for blink LED
-			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+//			if(HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2) == HAL_OK){
+//				diodeState = 1;
+//			}
 
-//			HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-//					GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+					GPIO_PIN_SET);
+			diodeState = 1;
 
-
-
+			// reset external infrared detection flag
+			diodeSaturatedFlag = 0;
 
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
@@ -109,6 +118,7 @@ void BlinkTask(void *argument) {
 				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny,
 						osWaitForever);
 				blink_ptr_copy = blink_ptr;
+//				memcpy(blink_copy,blink_ptr,1000);
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
 
@@ -118,6 +128,21 @@ void BlinkTask(void *argument) {
 					}
 					tick_ms_diff = (HAL_GetTick() - previousTick_ms)
 							/ ((float) BLINK_ITERATOR_COUNT);
+
+					/* check to see if external infrared is saturating
+					 *   if so, disable active diode
+					 *   otherwise, leave enabled */
+
+					// BLINK_SAMPLE_RATE == size of blink_ptr array
+					diodeSaturatedFlag = externalInfraredDetect(blink_ptr_copy, BLINK_SAMPLE_RATE, &rolling_avg);
+
+					if(diodeSaturatedFlag){
+						if(diodeState) turnOffDiode();
+					}
+					else{
+						if(!diodeState) turnOnDiode();
+					}
+
 
 					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
 					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT;
@@ -145,9 +170,13 @@ void BlinkTask(void *argument) {
 				if ((evt & 0x00000002U) == 0x00000002U) {
 
 					HAL_ADC_Stop_DMA(&hadc1);
-					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
-//					HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
-//										GPIO_PIN_RESET);
+//					if(HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2) == HAL_OK){
+//						diodeState = 0;
+//					}
+					HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+										GPIO_PIN_RESET);
+					diodeState = 0;
+
 					HAL_TIM_Base_Stop(&htim2);
 					previousTick_ms = 0;
 
@@ -175,6 +204,48 @@ void BlinkTask(void *argument) {
 	}
 }
 
+void turnOffDiode(){
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+			GPIO_PIN_RESET);
+	diodeState = 0;
+
+}
+
+void turnOnDiode(){
+	HAL_GPIO_WritePin(BLINK_PWM_GPIO_Port, BLINK_PWM_Pin,
+			GPIO_PIN_SET);
+	diodeState = 1;
+}
+
+#define INFRARED_DETECT 	1
+#define NO_INFRARED_DETECT	0
+float32_t sample_avg;
+uint8_t detect_active = 0;
+uint8_t externalInfraredDetect(uint8_t* blink_sample, uint32_t size_of_blink_ptr, float* rolling_avg){
+
+	//todo: convert to q format or float32 and use arm library. uint8_t can't be typecasted to 32-bit float
+//	arm_mean_f32((float *) random_array, 2, &sample_avg);
+
+	// temporary brute force average
+	sample_avg = blink_sample[0] + blink_sample[100] + blink_sample[200] + blink_sample[300] + blink_sample[400]
+               + blink_sample[500] + blink_sample[600] + blink_sample[700] + blink_sample[800] + blink_sample[900];
+	sample_avg /= 10;
+
+	*rolling_avg = INFRARED_DETECT_ALPHA * sample_avg + (1.0-INFRARED_DETECT_ALPHA) * (*rolling_avg);
+
+	/* SCHMITT TRIGGER */
+	if(detect_active){
+		if( (*rolling_avg) > INFRARED_DETECT_UPPER_THRESH ){
+			detect_active = NO_INFRARED_DETECT;
+		}
+	}else{
+		if( (*rolling_avg) < INFRARED_DETECT_LOWER_THRESH ){
+			detect_active = INFRARED_DETECT;
+		}
+	}
+
+	return detect_active;
+}
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //{
 //    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);

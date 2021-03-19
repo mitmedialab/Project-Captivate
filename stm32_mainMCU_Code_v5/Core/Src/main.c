@@ -137,7 +137,7 @@ int main(void) {
 	MX_TSC_Init();
 
 	/* the below code makes the blink PWM into a GPIO since the QRE cannot be modulated due to the terrible response of the diode */
-//	MX_BLINK_GPIO_Init();
+	MX_BLINK_GPIO_Init();
 
 
 #ifndef BORDER_ROUTER_NODE
