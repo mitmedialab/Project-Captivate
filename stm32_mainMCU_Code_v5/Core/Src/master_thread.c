@@ -162,7 +162,7 @@ void MasterThreadTask(void *argument) {
 				/**********************************************************************************/
 
 				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-					//SendDataBLE(&sensorPacket);
+					SendDataBLE(&sensorPacket);
 				} else { //send via OpenThread
 					APP_THREAD_SendBorderPacket(&sensorPacket);
 				}

@@ -335,9 +335,9 @@ static void APPE_SysEvtReadyProcessing(void) {
 	 *                           or joining a Thread Network
 	 */
 //	APP_DBG("1- Initialisation of BLE Stack...");
-//	APP_BLE_Init_Dyn_1();
+	APP_BLE_Init_Dyn_1();
 //	APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
-	APP_THREAD_Init_Dyn_1();
+//	APP_THREAD_Init_Dyn_1();
 
 	startApplicationThreads();
 	osDelay(100);
@@ -346,10 +346,10 @@ static void APPE_SysEvtReadyProcessing(void) {
 
 
 //	APP_DBG("3- Start BLE ADV...");
-//	APP_BLE_Init_Dyn_2();
+	APP_BLE_Init_Dyn_2();
 //	APP_DBG(
 //			"4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
-	APP_THREAD_Init_Dyn_2();
+//	APP_THREAD_Init_Dyn_2();
 	UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
 
 #if ( CFG_LPM_SUPPORTED == 1)
