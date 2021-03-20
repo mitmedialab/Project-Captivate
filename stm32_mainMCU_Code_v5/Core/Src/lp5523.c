@@ -204,7 +204,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
 
-	uint8_t counter = 0;
+	uint32_t counter = 0;
 
 	while (1) {
 		osMessageQueueGet(lightsComplexQueueHandle, &receivedColors,
@@ -222,10 +222,16 @@ void ThreadFrontLightsComplexTask(void *argument){
 //		HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, I2C_TIMEOUT);
 		counter = 0;
-		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY) || (counter > 100) ){
+		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY)){
 			counter+=20;
 			osDelay(20);
+
+			if(counter > 100){
+				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
+			}
 		}
+
+
 
 		HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
 				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9);
@@ -233,6 +239,10 @@ void ThreadFrontLightsComplexTask(void *argument){
 		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY) || (counter > 100) ){
 			counter+=20;
 			osDelay(20);
+
+			if(counter > 100){
+				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
+			}
 		}
 
 		osSemaphoreRelease(messageI2C_LockHandle);
