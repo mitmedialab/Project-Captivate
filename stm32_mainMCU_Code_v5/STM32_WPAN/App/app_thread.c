@@ -39,7 +39,7 @@
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "coap.h"
-#include "main.h"
+//#include "main.h"
 #include "stm32wbxx_hal_gpio.h"
 #include "lp5523.h"
 #include "captivate_config.h"

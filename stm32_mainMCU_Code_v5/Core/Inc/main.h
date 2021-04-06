@@ -63,7 +63,8 @@ void BSP_LED_Init(Led_TypeDef Led);
 void BSP_LED_On(Led_TypeDef Led);
 void BSP_LED_Off(Led_TypeDef Led);
 void BSP_LED_Toggle(Led_TypeDef Led);
-
+void enterLowPowerRun(void);
+void exitLowPowerRun(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

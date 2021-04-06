@@ -84,6 +84,8 @@ extern "C" {
 
 /* RADIO SPECIFIC */
 #define TRANSMIT_POWER							6 //in dbm
+//#define TRANSMIT_POWER							-3 //in dbm
+
 #define CHILD_SUPERVISION_INTERVAL				2 // default is 129 (how often a router broadcasts to its child to ensure its alive)
 #define CHILD_SUPERVISION_TIMEOUT				3	// default is 190 (when child trying to find a new router)
 

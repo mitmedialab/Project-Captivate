@@ -26,7 +26,7 @@
 #include "captivate_config.h"
 #include "master_thread.h"
 
-#include "main.h"
+//#include "main.h"
 
 #include "lp5523.h"
 

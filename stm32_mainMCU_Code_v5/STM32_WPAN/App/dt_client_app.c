@@ -30,7 +30,7 @@
 
 #include "cmsis_os.h"
 
-#include "main.h"
+//#include "main.h"
 
 //#include "stm32_seq.h"
 

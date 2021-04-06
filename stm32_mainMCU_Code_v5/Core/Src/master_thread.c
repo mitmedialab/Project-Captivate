@@ -84,6 +84,7 @@ void MasterThreadTask(void *argument) {
 	touchSensingStart();
 #endif
 	while (1) {
+
 		// check if the queue has a new message (a command to start/stop logging)
 		//   .... this function waits forever
 #ifndef TEST_RUN_ON_START
@@ -91,8 +92,8 @@ void MasterThreadTask(void *argument) {
 		osWaitForever);
 #else
 //
-		osDelay(3000);
-		togLogMessageReceived.status = 1;
+		osDelay(300);
+		togLogMessageReceived.status = 4;
 		togLogMessageReceived.logStatus = 1;
 		togLogMessageReceived.blinkEnabled = 1;
 		togLogMessageReceived.tempEnabled = 1;
@@ -127,6 +128,7 @@ void MasterThreadTask(void *argument) {
 		togLogMessageReceived.logStatus = ENABLE_LOG;
 #endif
 
+
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
 		if (logEnabled == 0 && togLogMessageReceived.logStatus == ENABLE_LOG) {
@@ -160,12 +162,14 @@ void MasterThreadTask(void *argument) {
 				/**********************************************************************************/
 				/*.... SEND PACKET TO BORDER ROUTER .....*/
 				/**********************************************************************************/
-
+//				exitLowPowerRun();
 				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
 					SendDataBLE(&sensorPacket);
 				} else { //send via OpenThread
 					APP_THREAD_SendBorderPacket(&sensorPacket);
 				}
+//				enterLowPowerRun();
+
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
 				/**********************************************************************************/

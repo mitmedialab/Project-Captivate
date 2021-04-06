@@ -18,7 +18,7 @@
 #include "stdint.h"
 #include "cmsis_os.h"
 #include "captivate_config.h"
-#include "main.h"
+//#include "main.h"
 
 /* typedef -----------------------------------------------------------*/
 
