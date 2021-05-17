@@ -117,6 +117,9 @@ extern "C" {
 #define STEP_CNT_PERIOD				500
 #define STABILITY_CLASS_PERIOD		500
 #define IMU_CALIBRATION				1
+#define ACC_GYRO_PACKET_SIZE		14
+#define ACC_GYRO_QUEUE_SIZE			10
+#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */
 #define BLINK_SAMPLE_RATE		1000
@@ -153,6 +156,8 @@ extern osMessageQueueId_t inertialSensingQueueHandle;
 
 extern osMessageQueueId_t activitySampleQueueHandle;
 extern osMessageQueueId_t rotationSampleQueueHandle;
+extern osMessageQueueId_t accSampleQueueHandle;
+extern osMessageQueueId_t gyroSampleQueueHandle;
 
 extern osThreadId_t interProcTaskHandle;
 extern osMessageQueueId_t interProcessorMsgQueueHandle;

@@ -76,6 +76,7 @@ void InertialSensingTask(void *argument) {
 		IMU_enableActivityClassifier(ACT_CLASS_PERIOD, enableActivities,
 				activityClasses);
 
+
 		// give some time for things to buffer
 		// TODO: remove this to see if it still works fine
 		osDelay(400);
@@ -123,6 +124,95 @@ void InertialSensingTask(void *argument) {
 		}
 	}
 }
+
+
+
+
+void InertialSensingTask_Accel_Gyro(void *argument) {
+	inertialEnabled = 1;
+#ifndef DONGLE_CODE
+	IMU_begin(BNO080_ADDRESS, IMU_INT_Pin, IMU_INT_GPIO_Port);
+#endif
+
+	uint32_t evt = 0;
+
+	while (1) {
+
+		/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
+		osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
+
+		// configure IMU
+//		osDelay(500);
+//		IMU_enableRotationVector(ROT_VEC_PERIOD);
+//		osDelay(100);
+//		IMU_enableActivityClassifier(ACT_CLASS_PERIOD, enableActivities,
+//				activityClasses);
+
+//		osDelay(500);
+//		IMU_enableRawAccelerometer(10); // should output at 400Hz
+//		osDelay(100);
+//		IMU_enableRawGyro(10); // should output at 400Hz
+
+//		osDelay(500);
+//		IMU_enableRotationVector(1000);
+		IMU_enableAccelerometer(1000);
+//		osDelay(500);
+		IMU_enableRawAccelerometer(5); // outputs at ((input)/1000) period
+		IMU_enableGyro(1000);
+//		osDelay(100);
+		IMU_enableRawGyro(5); // outputs at ((input)/1000) period
+
+		// give some time for things to buffer
+		// TODO: remove this to see if it still works fine
+		osDelay(400);
+
+		while (1) {
+
+			// grab packets
+			osDelay(100);
+
+			// get acceleration data if available
+//			osMessageQueueGet(accSampleQueueHandle,
+//					&inertialPacket_AccGyro.accData, 0U, 0);
+//			osMessageQueueGet(gyroSampleQueueHandle,
+//					&inertialPacket_AccGyro.gyroData, 0U, 0);
+//
+//
+//			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U,
+//					0);
+
+			if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin)
+					== GPIO_PIN_RESET)
+				IMU_dataAvailable();
+
+			// check for break condition
+			evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
+
+			// stop timer and put thread in idle if signal was reset
+			if ((evt & 0x00000002U) == 0x00000002U) {
+
+				// reset IMU
+				IMU_softReset();
+
+				// give some time to ensure no interrupts are handled
+				osDelay(500);
+
+				inertialEnabled = 0;
+
+				// empty queues
+				osMessageQueueReset(accSampleQueueHandle);
+				osMessageQueueReset(gyroSampleQueueHandle);
+
+				// clear any flags
+				osThreadFlagsClear(0x0000000EU);
+
+				// exit and wait for next start condition
+				break;
+			}
+		}
+	}
+}
+
 
 //struct LogMessage calLogMessage;
 //void calibrate_tare(void){

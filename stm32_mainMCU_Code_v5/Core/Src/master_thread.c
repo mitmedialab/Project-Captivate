@@ -38,6 +38,8 @@
 struct blinkData blinkMsgReceived;
 struct parsedSecondaryProcessorPacket secondaryProcessorMsgReceived;
 struct inertialData inertialMsgReceived;
+//struct genericThreeAxisData axialMsgReceived[ACC_GYRO_PACKET_SIZE];
+struct genericThreeAxisData *axialMsgPtrReceived;
 struct VIVEVars vive_loc;
 struct LogMessage statusMessage;
 
@@ -145,6 +147,7 @@ void MasterThreadTask(void *argument) {
 			osDelay(500);
 
 			while (1) {
+
 				startTime = HAL_GetTick();
 
 				/**********************************************************************************/
@@ -152,24 +155,34 @@ void MasterThreadTask(void *argument) {
 				/**********************************************************************************/
 
 				// grab data from sensor thread queues
-				grabSensorData();
+				if(grabSensorData()){
 
-				// add all sensor data into a packet
-				packetizeData(&sensorPacket, &blinkMsgReceived,
-						&secondaryProcessorMsgReceived, &inertialMsgReceived,
-						&vive_loc);
+					// add all sensor data into a packet
+#ifndef INERTIAL_ACC_GYRO_EN
+					packetizeData(&sensorPacket, &blinkMsgReceived,
+							&secondaryProcessorMsgReceived, &inertialMsgReceived,
+							&vive_loc);
 
-				/**********************************************************************************/
-				/*.... SEND PACKET TO BORDER ROUTER .....*/
-				/**********************************************************************************/
-//				exitLowPowerRun();
-				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-					SendDataBLE(&sensorPacket);
-				} else { //send via OpenThread
-					APP_THREAD_SendBorderPacket(&sensorPacket);
+					/**********************************************************************************/
+					/*.... SEND PACKET TO BORDER ROUTER .....*/
+					/**********************************************************************************/
+	//				exitLowPowerRun();
+					if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
+						SendDataBLE(&sensorPacket);
+					} else { //send via OpenThread
+						APP_THREAD_SendBorderPacket(&sensorPacket);
+					}
+	//				enterLowPowerRun();
+#else
+//					osDelay(1);
+					sensorPacket.packetIdx += 1;
+					if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
+						SendDataBLE(&sensorPacket);
+					} else { //send via OpenThread
+						APP_THREAD_SendBorderPacket(&sensorPacket);
+					}
+#endif
 				}
-//				enterLowPowerRun();
-
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
 				/**********************************************************************************/
@@ -205,7 +218,7 @@ void MasterThreadTask(void *argument) {
 								&lightsSimpleMessageAck, 0U, 0);
 					}
 				}
-
+#ifndef INERTIAL_ACC_GYRO_EN
 				// add delay to wait for next transmission period
 				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
 				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
@@ -215,6 +228,7 @@ void MasterThreadTask(void *argument) {
 				} else {
 					osDelay(waitTime);
 				}
+#endif
 
 			}
 		} else if (logEnabled
@@ -271,7 +285,9 @@ void MasterThreadTask(void *argument) {
 	}
 }
 
-void grabSensorData(void) {
+uint8_t grabSensorData(void) {
+
+#ifndef INERTIAL_ACC_GYRO_EN
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
 		if (osOK
 				!= osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U,
@@ -305,9 +321,28 @@ void grabSensorData(void) {
 					sizeof(struct inertialData));
 		}
 	}
+#else
+	if (osOK != osMessageQueueGet(accSampleQueueHandle,
+							&axialMsgPtrReceived, 0U, 0)) {
+		if(osOK != osMessageQueueGet(gyroSampleQueueHandle,
+				&axialMsgPtrReceived, 0U, 0)){
+			osDelay(2); //no data available so allow for some time
+			return 0;
+		}else{
+			memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
+			sensorPacket.descriptor = 2;
+		}
+	}else{
+		memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
+		sensorPacket.descriptor = 1;
+	}
+
+#endif
+	return 1;
 }
 
 void masterEnterRoutine(void) {
+#ifndef INERTIAL_ACC_GYRO_EN
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 	}
@@ -329,9 +364,14 @@ void masterEnterRoutine(void) {
 	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
 		osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
 	}
+#else
+	osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
+#endif
 }
 
 void masterExitRoutine(void) {
+#ifndef INERTIAL_ACC_GYRO_EN
+
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
 	}
@@ -349,9 +389,13 @@ void masterExitRoutine(void) {
 	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
 		osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
 	}
+#else
+	osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
+#endif
 
 }
 
+#ifndef INERTIAL_ACC_GYRO_EN
 void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 		struct parsedSecondaryProcessorPacket *processorMsg,
 		struct inertialData *inertialMsg, VIVEVars *posMsg) {
@@ -370,7 +414,7 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 	memcpy(&(packet->inertial), inertialMsg, sizeof(struct inertialData));
 	memcpy(&(packet->pos), posMsg, sizeof(struct VIVEVars));
 }
-
+#endif
 // Convert Date/Time structures to epoch time
 //uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 //	uint8_t a;

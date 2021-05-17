@@ -50,6 +50,7 @@ extern "C" {
 #define SENSOR_REPORTID_LINEAR_ACCELERATION 0x04
 #define SENSOR_REPORTID_ROTATION_VECTOR 0x05
 #define SENSOR_REPORTID_GRAVITY 0x06
+#define SENSOR_REPORTID_GYROSCOPE_UNCAL	0x07
 #define SENSOR_REPORTID_GAME_ROTATION_VECTOR 0x08
 #define SENSOR_REPORTID_GEOMAGNETIC_ROTATION_VECTOR 0x09
 #define SENSOR_REPORTID_TAP_DETECTOR 0x10
@@ -115,6 +116,7 @@ void IMU_enableGameRotationVector(uint16_t timeBetweenReports);
 void IMU_enableAccelerometer(uint16_t timeBetweenReports);
 void IMU_enableLinearAccelerometer(uint16_t timeBetweenReports);
 void IMU_enableGyro(uint16_t timeBetweenReports);
+void IMU_enableUncalGyro(uint16_t timeBetweenReports);
 void IMU_enableMagnetometer(uint16_t timeBetweenReports);
 void IMU_enableStepCounter(uint16_t timeBetweenReports);
 void IMU_enableStabilityClassifier(uint16_t timeBetweenReports);

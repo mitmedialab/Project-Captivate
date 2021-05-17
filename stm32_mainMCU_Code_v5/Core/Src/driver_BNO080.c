@@ -19,6 +19,7 @@
 #include "inter_processor_comms.h"
 #include "master_thread.h"
 #include "task.h"
+//#include "cmsis_os2.h"
 
 #include "captivate_config.h"
 
@@ -39,6 +40,20 @@ struct stepData stepSample;
 struct stabilityData stabilitySample;
 struct activityData activitySample;
 struct rotationData rotSample;
+struct genericThreeAxisData accSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
+struct genericThreeAxisData gyroSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
+
+struct genericThreeAxisData *accSamplePtr;
+struct genericThreeAxisData *gyroSamplePtr;
+
+
+volatile uint16_t accPacketIdx = 0;
+volatile uint16_t gyroPacketIdx = 0;
+
+volatile uint16_t accQueueIdx = 0;
+volatile uint16_t gyroQueueIdx = 0;
+
+
 
 //Registers
 const uint8_t CHANNEL_COMMAND = 0;
@@ -320,6 +335,8 @@ void IMU_parseInputReport(void) {
 		rawAccelY = data2;
 		rawAccelZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_LINEAR_ACCELERATION) {
+
+
 		accelLinAccuracy = status;
 		rawLinAccelX = data1;
 		rawLinAccelY = data2;
@@ -329,6 +346,14 @@ void IMU_parseInputReport(void) {
 		rawGyroX = data1;
 		rawGyroY = data2;
 		rawGyroZ = data3;
+	} else if (shtpData[5] == SENSOR_REPORTID_GYROSCOPE_UNCAL) {
+
+
+		gyroAccuracy = status;
+		rawGyroX = data1;
+		rawGyroY = data2;
+		rawGyroZ = data3;
+
 	} else if (shtpData[5] == SENSOR_REPORTID_MAGNETIC_FIELD) {
 		magAccuracy = status;
 		rawMagX = data1;
@@ -389,10 +414,66 @@ void IMU_parseInputReport(void) {
 //		test = osMessageQueueGetCount(activitySampleQueueHandle);
 
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_ACCELEROMETER) {
+		// put acceleration sample in queue for message packing
+		accSample[accQueueIdx][accPacketIdx].imu_tick_ms = data5;
+		accSample[accQueueIdx][accPacketIdx].tick_ms = HAL_GetTick();
+		accSample[accQueueIdx][accPacketIdx].x = data1
+		;
+		accSample[accQueueIdx][accPacketIdx].y = data2
+		;
+		accSample[accQueueIdx][accPacketIdx].z = data3
+		;
+		accSample[accQueueIdx][accPacketIdx].accuracy = status;
+
+		accPacketIdx++;
+
+		if(accPacketIdx >= ACC_GYRO_PACKET_SIZE){
+			accPacketIdx = 0;
+			accSamplePtr = accSample[accQueueIdx];
+			if(osOK == osMessageQueuePut(accSampleQueueHandle, ( void * ) &accSamplePtr, 0U, 0)){
+				accQueueIdx += 1;
+
+				if(accQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+					accQueueIdx = 0;
+				}
+
+			}
+
+
+
+		}
+
+
 		memsRawAccelX = data1;
 		memsRawAccelY = data2;
 		memsRawAccelZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_GYROSCOPE) {
+		// put acceleration sample in queue for message packing
+		gyroSample[gyroQueueIdx][gyroPacketIdx].imu_tick_ms = data5;
+		gyroSample[gyroQueueIdx][gyroPacketIdx].tick_ms = HAL_GetTick();
+		gyroSample[gyroQueueIdx][gyroPacketIdx].x = data1
+		;
+		gyroSample[gyroQueueIdx][gyroPacketIdx].y = data2
+		;
+		gyroSample[gyroQueueIdx][gyroPacketIdx].z = data3
+		;
+		gyroSample[gyroQueueIdx][gyroPacketIdx].accuracy = IMU_qToFloat(status, 12);
+
+		gyroPacketIdx++;
+
+		if(gyroPacketIdx >= ACC_GYRO_PACKET_SIZE){
+			gyroPacketIdx = 0;
+			gyroSamplePtr = gyroSample[gyroQueueIdx];
+			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, ( void * ) &gyroSamplePtr, 0U, 0)){
+				gyroQueueIdx += 1;
+
+				if(gyroQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+					gyroQueueIdx = 0;
+				}
+			}
+
+		}
+
 		memsRawGyroX = data1;
 		memsRawGyroY = data2;
 		memsRawGyroZ = data3;
@@ -810,6 +891,11 @@ void IMU_enableLinearAccelerometer(uint16_t timeBetweenReports) {
 //Sends the packet to enable the gyro
 void IMU_enableGyro(uint16_t timeBetweenReports) {
 	IMU_setFeatureCommand_2(SENSOR_REPORTID_GYROSCOPE, timeBetweenReports);
+}
+
+//Sends the packet to enable the gyro
+void IMU_enableUncalGyro(uint16_t timeBetweenReports) {
+	IMU_setFeatureCommand_2(SENSOR_REPORTID_GYROSCOPE_UNCAL, timeBetweenReports);
 }
 
 //Sends the packet to enable the magnetometer
