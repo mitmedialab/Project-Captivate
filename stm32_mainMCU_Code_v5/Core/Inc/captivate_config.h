@@ -48,10 +48,10 @@ extern "C" {
 #endif
 
 //// enable sensing subsystems
-#define BLINK_SENSING_ENABLE		1
-#define TEMP_SENSING_ENABLE			1
-#define POS_SENSING_ENABLE			1
-#define	INERTIA_SENSING_ENABLE		1
+#define BLINK_SENSING_ENABLE		0
+#define TEMP_SENSING_ENABLE			0
+#define POS_SENSING_ENABLE			0
+#define	INERTIA_SENSING_ENABLE		0
 
 #define DISABLE_SENSING				0
 
@@ -119,7 +119,7 @@ extern "C" {
 #define IMU_CALIBRATION				1
 #define ACC_GYRO_PACKET_SIZE		14
 #define ACC_GYRO_QUEUE_SIZE			10
-#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
+//#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */
 #define BLINK_SAMPLE_RATE		1000

@@ -438,6 +438,8 @@ typedef enum {
 #define MAX_HCI_CMD_EVENT_PAYLOAD_SIZE 255
 
 #define SCAN_L (0x320)
+
+//#define INERTIAL_ACC_GYRO_EN	1
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */
