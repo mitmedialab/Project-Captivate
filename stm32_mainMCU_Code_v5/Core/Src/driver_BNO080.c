@@ -40,8 +40,12 @@ struct stepData stepSample;
 struct stabilityData stabilitySample;
 struct activityData activitySample;
 struct rotationData rotSample;
-struct genericThreeAxisData accSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
-struct genericThreeAxisData gyroSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
+//struct genericThreeAxisData accSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
+//struct genericThreeAxisData gyroSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
+
+GenericThreeAxisPayload accSample[ACC_GYRO_QUEUE_SIZE];
+GenericThreeAxisPayload gyroSample[ACC_GYRO_QUEUE_SIZE];
+
 
 struct genericThreeAxisData *accSamplePtr;
 struct genericThreeAxisData *gyroSamplePtr;
@@ -415,22 +419,21 @@ void IMU_parseInputReport(void) {
 
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_ACCELEROMETER) {
 		// put acceleration sample in queue for message packing
-		accSample[accQueueIdx][accPacketIdx].imu_tick_ms = data5;
-		accSample[accQueueIdx][accPacketIdx].tick_ms = HAL_GetTick();
-		accSample[accQueueIdx][accPacketIdx].x = data1
+		accSample[accQueueIdx].data[accPacketIdx].imu_tick_ms = data5;
+		accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
+		accSample[accQueueIdx].data[accPacketIdx].x = data1
 		;
-		accSample[accQueueIdx][accPacketIdx].y = data2
+		accSample[accQueueIdx].data[accPacketIdx].y = data2
 		;
-		accSample[accQueueIdx][accPacketIdx].z = data3
+		accSample[accQueueIdx].data[accPacketIdx].z = data3
 		;
-		accSample[accQueueIdx][accPacketIdx].accuracy = status;
+		accSample[accQueueIdx].data[accPacketIdx].accuracy = status;
 
 		accPacketIdx++;
 
-		if(accPacketIdx >= ACC_GYRO_PACKET_SIZE){
+		if(accPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
 			accPacketIdx = 0;
-			accSamplePtr = accSample[accQueueIdx];
-			if(osOK == osMessageQueuePut(accSampleQueueHandle, ( void * ) &accSamplePtr, 0U, 0)){
+			if(osOK == osMessageQueuePut(accSampleQueueHandle, ( void * ) &accSample[accQueueIdx], 0U, 0)){
 				accQueueIdx += 1;
 
 				if(accQueueIdx >= ACC_GYRO_QUEUE_SIZE){
@@ -438,9 +441,6 @@ void IMU_parseInputReport(void) {
 				}
 
 			}
-
-
-
 		}
 
 
@@ -449,22 +449,21 @@ void IMU_parseInputReport(void) {
 		memsRawAccelZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_GYROSCOPE) {
 		// put acceleration sample in queue for message packing
-		gyroSample[gyroQueueIdx][gyroPacketIdx].imu_tick_ms = data5;
-		gyroSample[gyroQueueIdx][gyroPacketIdx].tick_ms = HAL_GetTick();
-		gyroSample[gyroQueueIdx][gyroPacketIdx].x = data1
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].imu_tick_ms = data5;
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick();
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].x = data1
 		;
-		gyroSample[gyroQueueIdx][gyroPacketIdx].y = data2
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].y = data2
 		;
-		gyroSample[gyroQueueIdx][gyroPacketIdx].z = data3
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].z = data3
 		;
-		gyroSample[gyroQueueIdx][gyroPacketIdx].accuracy = IMU_qToFloat(status, 12);
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].accuracy = IMU_qToFloat(status, 12);
 
 		gyroPacketIdx++;
 
-		if(gyroPacketIdx >= ACC_GYRO_PACKET_SIZE){
+		if(gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
 			gyroPacketIdx = 0;
-			gyroSamplePtr = gyroSample[gyroQueueIdx];
-			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, ( void * ) &gyroSamplePtr, 0U, 0)){
+			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, ( void * ) &gyroSample[accQueueIdx], 0U, 0)){
 				gyroQueueIdx += 1;
 
 				if(gyroQueueIdx >= ACC_GYRO_QUEUE_SIZE){

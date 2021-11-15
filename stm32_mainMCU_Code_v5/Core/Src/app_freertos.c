@@ -383,9 +383,9 @@ void MX_FREERTOS_Init(void) {
 
 	/* USER CODE BEGIN RTOS_QUEUES */
 //#ifdef INERTIAL_ACC_GYRO_EN
-	accSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(struct genericThreeAxisData *),
+	accSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(GenericThreeAxisPayload *),
 			&accSampleQueue_attributes);
-	gyroSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(struct genericThreeAxisData *),
+	gyroSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(GenericThreeAxisPayload *),
 			&gyroSampleQueue_attributes);
 //#endif
 	/* add queues, ... */

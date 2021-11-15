@@ -12,6 +12,7 @@
 
 #include "stdint.h"
 #include "cmsis_os.h"
+#include "captivate_config.h"
 
 //#ifdef __cplusplus
 //extern "C" {
@@ -40,6 +41,9 @@ struct genericThreeAxisData {
 //	uint32_t tick_ms;
 };
 
+typedef struct GenericThreeAxisPayloads{
+  struct genericThreeAxisData data[MAX_THREE_AXIS_PAYLOAD_ENTRIES];
+}GenericThreeAxisPayload;
 
 struct activityData {
 	uint8_t activityConfidence[9];

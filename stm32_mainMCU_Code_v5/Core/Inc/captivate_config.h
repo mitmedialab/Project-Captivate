@@ -118,7 +118,8 @@ extern "C" {
 #define STABILITY_CLASS_PERIOD		500
 #define IMU_CALIBRATION				1
 #define ACC_GYRO_PACKET_SIZE		14
-#define ACC_GYRO_QUEUE_SIZE			10
+#define ACC_GYRO_QUEUE_SIZE			5
+#define MAX_THREE_AXIS_PAYLOAD_ENTRIES	50
 //#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */
@@ -135,12 +136,12 @@ extern "C" {
 #define MAX_THERMAL_ENTRIES	5
 
  /* PACKET DESCRIPTORS */
-#define BLINK_DATA 		5;
-#define THERMAL_DATA		6;
-#define ACC_DATA		7;
-#define MAG_DATA		8;
-#define GYRO_DATA		9;
-#define MAX_PACKET_QUEUE_SIZE 	10;
+#define BLINK_DATA 		5
+#define THERMAL_DATA		6
+#define ACC_DATA		7
+#define MAG_DATA		8
+#define GYRO_DATA		9
+#define MAX_PACKET_QUEUE_SIZE 	10
 
 #define PACKET_SEND_SUCCESS	0
 #define PACKET_LENGTH_EXCEEDED	1

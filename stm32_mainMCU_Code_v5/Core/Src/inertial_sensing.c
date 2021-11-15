@@ -9,7 +9,7 @@
  */
 
 /* includes -----------------------------------------------------------*/
-#include <inertial_sensing.h>
+#include "inertial_sensing.h"
 #include "driver_BNO080.h"
 #include "math.h"
 #include "stm32wbxx_hal.h"
@@ -53,6 +53,9 @@ float z;
 uint8_t activityClasses[9];
 uint32_t enableActivities = 0x1F; //Enable all 9 possible activities including Unknown
 uint8_t inertialEnabled = 0;
+
+CaptivatePacket *captivatePacket;
+uint8_t accPayloadID, magPayloadID;
 
 struct inertialData inertialPacket;
 
@@ -128,6 +131,9 @@ void InertialSensingTask(void *argument) {
 
 
 
+static GenericThreeAxisPayload *accData;
+static GenericThreeAxisPayload *gyroData;
+
 void InertialSensingTask_Accel_Gyro(void *argument) {
 	inertialEnabled = 1;
 #ifndef DONGLE_CODE
@@ -141,26 +147,15 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 		/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
 		osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 
+		accPayloadID = 0,
+		magPayloadID = 0;
+
 		// configure IMU
-//		osDelay(500);
-//		IMU_enableRotationVector(ROT_VEC_PERIOD);
-//		osDelay(100);
-//		IMU_enableActivityClassifier(ACT_CLASS_PERIOD, enableActivities,
-//				activityClasses);
-
-//		osDelay(500);
-//		IMU_enableRawAccelerometer(10); // should output at 400Hz
-//		osDelay(100);
-//		IMU_enableRawGyro(10); // should output at 400Hz
-
-//		osDelay(500);
-//		IMU_enableRotationVector(1000);
 		IMU_enableAccelerometer(1000);
-//		osDelay(500);
 		IMU_enableRawAccelerometer(5); // outputs at ((input)/1000) period
 		IMU_enableGyro(1000);
-//		osDelay(100);
 		IMU_enableRawGyro(5); // outputs at ((input)/1000) period
+
 
 		// give some time for things to buffer
 		// TODO: remove this to see if it still works fine
@@ -172,11 +167,16 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 			osDelay(100);
 
 			// get acceleration data if available
-//			osMessageQueueGet(accSampleQueueHandle,
-//					&inertialPacket_AccGyro.accData, 0U, 0);
-//			osMessageQueueGet(gyroSampleQueueHandle,
-//					&inertialPacket_AccGyro.gyroData, 0U, 0);
-//
+			if(osOK == osMessageQueueGet(accSampleQueueHandle,
+						     accData, 0U, 0)){
+			    packAndSend(ACC_DATA, accData);
+			}
+
+			if(osOK == osMessageQueueGet(gyroSampleQueueHandle,
+						     gyroData, 0U, 0)){
+			    packAndSend(GYRO_DATA, gyroData);
+			}
+
 //
 //			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U,
 //					0);
@@ -211,6 +211,46 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 			}
 		}
 	}
+}
+
+
+void packAndSend(uint8_t dataType, GenericThreeAxisPayload *data){
+  // grab available memory for packet creation
+  if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, captivatePacket, 0U,
+	      5)){
+      if(dataType==ACC_DATA){
+	  accPayloadID++;
+      }
+      else if(dataType==GYRO_DATA){
+	  magPayloadID++;
+      }
+      return; //no memory available so drop packet
+  }
+
+    // copy payload
+    memcpy(captivatePacket->payload,
+	   data,
+	   sizeof(GenericThreeAxisPayload));
+
+    captivatePacket->header.packetType = dataType;
+    captivatePacket->header.msFromStart = HAL_GetTick();
+    captivatePacket->header.epoch = 0;
+    captivatePacket->header.payloadLength = sizeof(GenericThreeAxisPayload);
+
+    // add tick cnt
+    if(dataType==ACC_DATA){
+	captivatePacket->header.packetID  = accPayloadID;
+	accPayloadID++;
+    }
+    else if(dataType==GYRO_DATA){
+	captivatePacket->header.packetID  = magPayloadID;
+	magPayloadID++;
+    }
+
+    // put into queue
+    osMessageQueuePut(capPacket_QueueHandle,
+		    (void*) captivatePacket, 0U, 0);
+
 }
 
 
