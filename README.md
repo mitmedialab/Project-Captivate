@@ -1,6 +1,12 @@
 # Project Captivate
 ## A Wearable Platform for Across-Context Measurement and Actuation 
 
+### Note: experimental branch with new packet sending architecture
+(1) Each sensor channel sends its own packet versus the original architecture of interleaving different sensor data into one packet type
+(2) Once turned on, the glasses send data via BLE with the following definition:
+ \tService: 19ed82aeed214c9d4145228e80FE0000 
+ \tCharacteristic: 19ed82aeed214c9d4145228e81FE0000  
+
 ### Across Contexts
 
 Project Captivate have been designed to serve as an easy and reliable 
