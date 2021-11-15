@@ -177,9 +177,9 @@ void InterProcessorTask(void *argument) {
 					if ((evt & 0x00000002U) == 0x00000002U)
 						break;
 
-					// package received data into 100ms chunks and put in queue
-					parsedPacket.tick_ms = receivedPacket.tick_ms;
-					parsedPacket.epoch = receivedPacket.epoch;
+//					// package received data into 100ms chunks and put in queue
+//					parsedPacket.tick_ms = receivedPacket.tick_ms;
+//					parsedPacket.epoch = receivedPacket.epoch;
 
 					memcpy(&packetPayload.data[packetIndex], &receivedPacket, sizeof(struct secondaryProcessorData));
 					packetIndex++;
