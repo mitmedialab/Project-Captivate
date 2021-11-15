@@ -55,7 +55,7 @@ uint32_t enableActivities = 0x1F; //Enable all 9 possible activities including U
 uint8_t inertialEnabled = 0;
 
 CaptivatePacket *captivatePacket;
-uint8_t accPayloadID, magPayloadID;
+uint8_t accPayloadID, gyroPayloadID;
 
 struct inertialData inertialPacket;
 
@@ -148,7 +148,7 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 		osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
 
 		accPayloadID = 0,
-		magPayloadID = 0;
+		gyroPayloadID = 0;
 
 		// configure IMU
 		IMU_enableAccelerometer(1000);
@@ -222,7 +222,7 @@ void packAndSend(uint8_t dataType, GenericThreeAxisPayload *data){
 	  accPayloadID++;
       }
       else if(dataType==GYRO_DATA){
-	  magPayloadID++;
+	  gyroPayloadID++;
       }
       return; //no memory available so drop packet
   }
@@ -243,8 +243,8 @@ void packAndSend(uint8_t dataType, GenericThreeAxisPayload *data){
 	accPayloadID++;
     }
     else if(dataType==GYRO_DATA){
-	captivatePacket->header.packetID  = magPayloadID;
-	magPayloadID++;
+	captivatePacket->header.packetID  = gyroPayloadID;
+	gyroPayloadID++;
     }
 
     // put into queue

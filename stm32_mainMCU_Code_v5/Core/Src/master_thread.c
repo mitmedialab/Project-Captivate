@@ -157,41 +157,9 @@ void MasterThreadTask(void *argument) {
 
 			while (1) {
 
-				startTime = HAL_GetTick();
+			      osDelay(100);
 
-				/**********************************************************************************/
-				/*.... WAIT UNTIL DATA PACKET IS READY.....*/
-				/**********************************************************************************/
 
-				// grab data from sensor thread queues
-				if(grabSensorData()){
-
-					// add all sensor data into a packet
-#ifndef INERTIAL_ACC_GYRO_EN
-					packetizeData(&sensorPacket, &blinkMsgReceived,
-							&secondaryProcessorMsgReceived, &inertialMsgReceived,
-							&vive_loc);
-
-					/**********************************************************************************/
-					/*.... SEND PACKET TO BORDER ROUTER .....*/
-					/**********************************************************************************/
-	//				exitLowPowerRun();
-					if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-						SendDataBLE(&sensorPacket);
-					} else { //send via OpenThread
-						APP_THREAD_SendBorderPacket(&sensorPacket);
-					}
-	//				enterLowPowerRun();
-#else
-//					osDelay(1);
-					sensorPacket.packetIdx += 1;
-					if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-						SendDataBLE(&sensorPacket);
-					} else { //send via OpenThread
-						APP_THREAD_SendBorderPacket(&sensorPacket);
-					}
-#endif
-				}
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
 				/**********************************************************************************/
@@ -227,17 +195,6 @@ void MasterThreadTask(void *argument) {
 								&lightsSimpleMessageAck, 0U, 0);
 					}
 				}
-#ifndef INERTIAL_ACC_GYRO_EN
-				// add delay to wait for next transmission period
-				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
-				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
-				// or greater than the allotted PACKET_SEND_PERIOD
-				if ((waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)) {
-					waitTime = 0; //set to zero (i.e. dont wait)
-				} else {
-					osDelay(waitTime);
-				}
-#endif
 
 			}
 		} else if (logEnabled
@@ -294,64 +251,63 @@ void MasterThreadTask(void *argument) {
 	}
 }
 
-uint8_t grabSensorData(void) {
-
-#ifndef INERTIAL_ACC_GYRO_EN
-	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
-		if (osOK
-				!= osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U,
-						0)) {
-			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
-		}
-	}
-
-	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {
-		if (osOK
-				!= osMessageQueueGet(interProcessorMsgQueueHandle,
-						&secondaryProcessorMsgReceived, 0U, 0)) {
-			memcpy(&secondaryProcessorMsgReceived,
-					&nullSecondaryProcessorMsgReceived,
-					sizeof(struct parsedSecondaryProcessorPacket));
-		}
-	}
-
-	if ((prevLogMessage.positionEnabled == SENSOR_ENABLE)) {
-		if (osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 0)) {
-			memcpy(&vive_loc, &nullViveMsgReceived, sizeof(VIVEVars));
-
-		}
-	}
-
-	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
-		if (osOK
-				!= osMessageQueueGet(inertialSensingQueueHandle,
-						&inertialMsgReceived, 0U, 0)) {
-			memcpy(&inertialMsgReceived, &nullInertialMsgReceived,
-					sizeof(struct inertialData));
-		}
-	}
-#else
-	if (osOK != osMessageQueueGet(accSampleQueueHandle,
-							&axialMsgPtrReceived, 0U, 0)) {
-		if(osOK != osMessageQueueGet(gyroSampleQueueHandle,
-				&axialMsgPtrReceived, 0U, 0)){
-			osDelay(2); //no data available so allow for some time
-			return 0;
-		}else{
-			memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
-			sensorPacket.descriptor = 2;
-		}
-	}else{
-		memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
-		sensorPacket.descriptor = 1;
-	}
-
-#endif
-	return 1;
-}
+//uint8_t grabSensorData(void) {
+//
+//#ifndef INERTIAL_ACC_GYRO_EN
+//	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
+//		if (osOK
+//				!= osMessageQueueGet(blinkMsgQueueHandle, &blinkMsgReceived, 0U,
+//						0)) {
+//			memcpy(&blinkMsgReceived, &nullBlinkMsg, sizeof(struct blinkData));
+//		}
+//	}
+//
+//	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {
+//		if (osOK
+//				!= osMessageQueueGet(interProcessorMsgQueueHandle,
+//						&secondaryProcessorMsgReceived, 0U, 0)) {
+//			memcpy(&secondaryProcessorMsgReceived,
+//					&nullSecondaryProcessorMsgReceived,
+//					sizeof(struct parsedSecondaryProcessorPacket));
+//		}
+//	}
+//
+//	if ((prevLogMessage.positionEnabled == SENSOR_ENABLE)) {
+//		if (osOK != osMessageQueueGet(viveQueueHandle, &vive_loc, 0U, 0)) {
+//			memcpy(&vive_loc, &nullViveMsgReceived, sizeof(VIVEVars));
+//
+//		}
+//	}
+//
+//	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
+//		if (osOK
+//				!= osMessageQueueGet(inertialSensingQueueHandle,
+//						&inertialMsgReceived, 0U, 0)) {
+//			memcpy(&inertialMsgReceived, &nullInertialMsgReceived,
+//					sizeof(struct inertialData));
+//		}
+//	}
+//#else
+//	if (osOK != osMessageQueueGet(accSampleQueueHandle,
+//							&axialMsgPtrReceived, 0U, 0)) {
+//		if(osOK != osMessageQueueGet(gyroSampleQueueHandle,
+//				&axialMsgPtrReceived, 0U, 0)){
+//			osDelay(2); //no data available so allow for some time
+//			return 0;
+//		}else{
+//			memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
+//			sensorPacket.descriptor = 2;
+//		}
+//	}else{
+//		memcpy(sensorPacket.data,axialMsgPtrReceived,sizeof(struct genericThreeAxisData)*ACC_GYRO_PACKET_SIZE);
+//		sensorPacket.descriptor = 1;
+//	}
+//
+//#endif
+//	return 1;
+//}
 
 void masterEnterRoutine(void) {
-#ifndef INERTIAL_ACC_GYRO_EN
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 	}
@@ -371,15 +327,12 @@ void masterEnterRoutine(void) {
 	}
 
 	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
-		osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
+	    osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
 	}
-#else
-	osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
-#endif
+
 }
 
 void masterExitRoutine(void) {
-#ifndef INERTIAL_ACC_GYRO_EN
 
 	if (prevLogMessage.blinkEnabled == SENSOR_ENABLE) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
@@ -398,13 +351,9 @@ void masterExitRoutine(void) {
 	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
 		osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
 	}
-#else
-	osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
-#endif
 
 }
 
-#ifndef INERTIAL_ACC_GYRO_EN
 void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 		struct parsedSecondaryProcessorPacket *processorMsg,
 		struct inertialData *inertialMsg, VIVEVars *posMsg) {
@@ -423,7 +372,6 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 	memcpy(&(packet->inertial), inertialMsg, sizeof(struct inertialData));
 	memcpy(&(packet->pos), posMsg, sizeof(struct VIVEVars));
 }
-#endif
 // Convert Date/Time structures to epoch time
 //uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {
 //	uint8_t a;

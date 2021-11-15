@@ -489,11 +489,8 @@ void startApplicationThreads(void){
 	frontLightsComplexTaskHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
 				&frontLightsComplexTask_attributes);
 
-	/* creation of inertialTask */
-#ifndef INERTIAL_ACC_GYRO_EN
-	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL,
-			&inertialTask_attributes);
 
+	/* creation of pulseTask */
 	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
 			&pulseTask_attributes);
 
@@ -503,12 +500,11 @@ void startApplicationThreads(void){
 
 	/* creation of blinkTask */
 	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
-#else
+
+	/* creation of inertialTask */
 	inertialTaskHandle = osThreadNew(InertialSensingTask_Accel_Gyro, NULL,
 			&inertialTask_attributes);
 
-#endif
-	/* creation of pulseTask */
 
 
 	/* creation of packetSendingQueue */
