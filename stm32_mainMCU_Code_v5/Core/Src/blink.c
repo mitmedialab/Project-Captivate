@@ -63,6 +63,12 @@ struct LogMessage statusMessage;
 void BlinkTask(void *argument) {
 
 	uint32_t evt;
+	CaptivatePacket *captivatePacket;
+//	header.packetType = BLINK_DATA;
+//	header.packetID = 0;
+//	header.msFromStart = 0;
+//	header.epoch = 0;
+//	header.payloadLength = BLINK_PACKET_SIZE;
 
 	while (1) {
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
@@ -93,16 +99,13 @@ void BlinkTask(void *argument) {
 			// start timer
 			HAL_TIM_Base_Start(&htim2);
 
-
-
-
 			// message passing until told to stop
 			//      note: DMA triggers callback where buffers are switched and the full one
 			//      is passed by reference via queue to masterThread for packetization
 
 			while (1) {
 
-				// wait for data ready flag and/or stop task flasg
+				// wait for data ready flag and/or stop task flags
 				evt = osThreadFlagsWait(0x00000006U, osFlagsWaitAny,
 						osWaitForever);
 				blink_ptr_copy = blink_ptr;
@@ -120,21 +123,31 @@ void BlinkTask(void *argument) {
 					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT;
 							iterator++) {
 
-						// grab packet of size BLINK_PACKET_SIZE
-						memcpy(blinkMsgBuffer_1.data,
+						// grab available memory for packet creation
+						if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, captivatePacket, 0U,
+							    5)){
+						    payload_ID++;
+						    continue; //no memory available so drop packet
+						}
+
+						// copy payload
+						memcpy(captivatePacket->payload,
 								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
 								BLINK_PACKET_SIZE);
-						blinkMsgBuffer_1.tick_ms = previousTick_ms
-								+ tick_ms_diff;
-						blinkMsgBuffer_1.payload_ID = payload_ID;
+
+						captivatePacket->header.packetType = BLINK_DATA;
+						captivatePacket->header.packetID = payload_ID;
+						captivatePacket->header.msFromStart = previousTick_ms + tick_ms_diff;
+						captivatePacket->header.epoch = 0;
+						captivatePacket->header.payloadLength = BLINK_PACKET_SIZE;
 
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
 						payload_ID++;
 
 						// put into queue
-						osMessageQueuePut(blinkMsgQueueHandle,
-								(void*) &blinkMsgBuffer_1, 0U, 0);
+						osMessageQueuePut(capPacket_QueueHandle,
+								(void*) captivatePacket, 0U, 0);
 					}
 				}
 

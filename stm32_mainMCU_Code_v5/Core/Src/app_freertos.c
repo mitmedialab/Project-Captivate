@@ -45,7 +45,7 @@
 #include "usbd_cdc_if.h"
 #include "coap.h"
 #include "app_thread.h"
-
+#include "dt_server_app.h"
 #ifdef NETWORK_TEST
 #include "network_test.h"
 #endif
@@ -95,7 +95,7 @@ const osThreadAttr_t networkTestTask_attributes = { .name = "networkTestTask",
 //
 //osThreadId_t pulseTaskHandle;
 
-//uint8_t temp[2048] = {0};
+//uint8_t temp[2048] = {0};+
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -129,6 +129,9 @@ const osThreadAttr_t interProcTask_attributes = { .name = "interProcTask",
 osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .priority =
 		(osPriority_t) osPriorityNormal, .stack_size = 512 * 4 };
+osThreadId_t senderThreadHandle;
+const osThreadAttr_t  senderThread_attributes = { .name = "senderThread", .priority =
+		(osPriority_t) osPriorityAboveNormal, .stack_size = 512 * 4 };
 /* Definitions for msgPassingUSB_T */
 osThreadId_t msgPassingUSB_THandle;
 const osThreadAttr_t msgPassingUSB_T_attributes = { .name = "msgPassingUSB_T",
@@ -201,7 +204,14 @@ const osSemaphoreAttr_t lightingLabDemoEnd_attributes = { .name =
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+/* Definitions for blinkMsgQueue */
+osMessageQueueId_t capPacket_QueueHandle;
+const osMessageQueueAttr_t capPacketQueue_attributes =
+		{ .name = "capPacketQueue" };
 
+osMessageQueueId_t capPacketAvail_QueueHandle;
+const osMessageQueueAttr_t capPacketAvailQueue_attributes =
+		{ .name = "capPacketAvai" };
 /* USER CODE END FunctionPrototypes */
 
 void DefaultTask(void *argument);
@@ -359,6 +369,12 @@ void MX_FREERTOS_Init(void) {
 
 	/* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
+	capPacket_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(CaptivatePacket *),
+			&capPacketQueue_attributes);
+
+	capPacketAvail_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(CaptivatePacket *),
+				&capPacketAvailQueue_attributes);
+
 	/* USER CODE END RTOS_QUEUES */
 
 	/* Create the thread(s) */
@@ -467,6 +483,11 @@ void startApplicationThreads(void){
 
 	/* creation of blinkTask */
 	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+
+	/* creation of packetSendingQueue */
+	senderThreadHandle = osThreadNew(senderThread, NULL, &senderThread_attributes);
+
+
 
 #ifdef NETWORK_TEST
 	networkTestTaskHandle = osThreadNew(NetworkTestTask, NULL, &networkTestTask_attributes);

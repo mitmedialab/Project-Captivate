@@ -18,6 +18,7 @@ extern "C" {
 #include "stdint.h"
 #include "cmsis_os.h"
 #include "stm32wbxx_hal.h"
+#include "captivate_config.h"
 /* typedef -----------------------------------------------------------*/
 
 /***** TEMPERATURE SPECIFIC DATATYPES ************************/
@@ -32,6 +33,8 @@ struct thermopilePackagedData {
 	struct thermopileData temple[5];
 	struct thermopileData nose[5];
 };
+
+
 
 /***** IMU SPECIFIC DATATYPES *********************************/
 
@@ -76,6 +79,10 @@ struct parsedSecondaryProcessorPacket {
 	uint32_t tick_ms;
 	uint32_t epoch;
 };
+
+typedef struct ThermopileData_BLE {
+  struct secondaryProcessorData data[MAX_THERMAL_ENTRIES];
+}thermopileData_BLE;
 
 /* defines -----------------------------------------------------------*/
 #define SECONDARY_MCU_ADDRESS 	0x73

@@ -75,6 +75,8 @@ uint32_t viveStateVar = 0;
 uint64_t waitTime = 0;
 uint32_t lightsSimpleMessageAck = 0;
 
+static CaptivatePacket captivatePacket[MAX_PACKET_QUEUE_SIZE];
+
 void MasterThreadTask(void *argument) {
 
 #ifndef DONGLE_CODE
@@ -83,6 +85,13 @@ void MasterThreadTask(void *argument) {
 #ifdef TEST_TOUCH
 	touchSensingStart();
 #endif
+
+	// add available memory to queue for threads to use
+	for (int i; i<MAX_PACKET_QUEUE_SIZE; i++){
+	    osMessageQueuePut(capPacketAvail_QueueHandle, (void*) &captivatePacket[i], 0U, 0);
+	}
+
+
 	while (1) {
 		// check if the queue has a new message (a command to start/stop logging)
 		//   .... this function waits forever
@@ -142,29 +151,8 @@ void MasterThreadTask(void *argument) {
 			osDelay(500);
 
 			while (1) {
-				startTime = HAL_GetTick();
+//				startTime = HAL_GetTick();
 
-				/**********************************************************************************/
-				/*.... WAIT UNTIL DATA PACKET IS READY.....*/
-				/**********************************************************************************/
-
-				// grab data from sensor thread queues
-				grabSensorData();
-
-				// add all sensor data into a packet
-				packetizeData(&sensorPacket, &blinkMsgReceived,
-						&secondaryProcessorMsgReceived, &inertialMsgReceived,
-						&vive_loc);
-
-				/**********************************************************************************/
-				/*.... SEND PACKET TO BORDER ROUTER .....*/
-				/**********************************************************************************/
-
-				if (togLogMessageReceived.status == SEND_VIA_BLE) { //send via BLE
-					SendDataBLE(&sensorPacket);
-				} else { //send via OpenThread
-					APP_THREAD_SendBorderPacket(&sensorPacket);
-				}
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
 				/**********************************************************************************/
@@ -172,7 +160,7 @@ void MasterThreadTask(void *argument) {
 				// check if the queue has a new message (potentially a command to stop logging)
 				//   otherwise, timeout
 				if (osMessageQueueGet(togLoggingQueueHandle,
-						&togLogMessageReceived, 0U, 0) == osOK) {
+						&togLogMessageReceived, 0U, 100) == osOK) {
 					// disable threads
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
 
@@ -201,15 +189,15 @@ void MasterThreadTask(void *argument) {
 					}
 				}
 
-				// add delay to wait for next transmission period
-				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
-				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
-				// or greater than the allotted PACKET_SEND_PERIOD
-				if ((waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)) {
-					waitTime = 0; //set to zero (i.e. dont wait)
-				} else {
-					osDelay(waitTime);
-				}
+//				// add delay to wait for next transmission period
+//				waitTime = PACKET_SEND_PERIOD - (HAL_GetTick() - startTime);
+//				// if wait time is less than zero (i.e. the border packet send took longer than PACKET_SEND_PERIOD)
+//				// or greater than the allotted PACKET_SEND_PERIOD
+//				if ((waitTime <= 0) || (waitTime > PACKET_SEND_PERIOD)) {
+//					waitTime = 0; //set to zero (i.e. dont wait)
+//				} else {
+//					osDelay(waitTime);
+//				}
 
 			}
 		} else if (logEnabled
@@ -347,24 +335,42 @@ void masterExitRoutine(void) {
 
 }
 
-void packetizeData(struct LogPacket *packet, struct blinkData *blink,
-		struct parsedSecondaryProcessorPacket *processorMsg,
-		struct inertialData *inertialMsg, VIVEVars *posMsg) {
-	// get processor tick counts (in terms of ms)
-	packet->tick_ms = HAL_GetTick();
+//void packetizeData(struct LogPacket *packet, struct blinkData *blink,
+//		struct parsedSecondaryProcessorPacket *processorMsg,
+//		struct inertialData *inertialMsg, VIVEVars *posMsg) {
+//	// get processor tick counts (in terms of ms)
+//	packet->tick_ms = HAL_GetTick();
+//
+//	// get epoch time from RTC
+//	HAL_RTC_GetTime(&hrtc, &RTC_time, RTC_FORMAT_BIN);
+//	HAL_RTC_GetDate(&hrtc, &RTC_date, RTC_FORMAT_BIN);
+//	packet->epoch = RTC_ToEpoch(&RTC_time, &RTC_date);
+//
+//	// add sensor data
+//	memcpy(&(packet->blink), blink, sizeof(struct blinkData));
+//	memcpy(&(packet->procData), processorMsg,
+//			sizeof(struct parsedSecondaryProcessorPacket));
+//	memcpy(&(packet->inertial), inertialMsg, sizeof(struct inertialData));
+//	memcpy(&(packet->pos), posMsg, sizeof(struct VIVEVars));
+//}
 
-	// get epoch time from RTC
-	HAL_RTC_GetTime(&hrtc, &RTC_time, RTC_FORMAT_BIN);
-	HAL_RTC_GetDate(&hrtc, &RTC_date, RTC_FORMAT_BIN);
-	packet->epoch = RTC_ToEpoch(&RTC_time, &RTC_date);
 
-	// add sensor data
-	memcpy(&(packet->blink), blink, sizeof(struct blinkData));
-	memcpy(&(packet->procData), processorMsg,
-			sizeof(struct parsedSecondaryProcessorPacket));
-	memcpy(&(packet->inertial), inertialMsg, sizeof(struct inertialData));
-	memcpy(&(packet->pos), posMsg, sizeof(struct VIVEVars));
-}
+
+
+//static uint8_t rxPacket[DATA_NOTIFICATION_MAX_PACKET_SIZE];
+//void packetizeData(PacketHeader header, void *data, uint16_t len){
+//  memcpy(rxPacket, data, len);
+//}
+
+
+// add data to global packet queue
+
+// Sender thread pops off values from queue and sends them out
+
+//
+
+
+
 
 // Convert Date/Time structures to epoch time
 //uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date) {

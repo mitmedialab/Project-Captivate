@@ -32,9 +32,14 @@ extern struct LogPacket sensorPacket;
 extern struct LogMessage togLogMessageReceived;
 static const struct LogMessage nullMessage = { 0 };
 struct LogMessage commandToSend;
+static thermopileData_BLE packetPayload;
 
 void InterProcessorTask(void *argument) {
 	uint32_t evt = 0;
+	uint32_t packetIndex = 0;
+	uint32_t payload_ID = 0;
+	CaptivatePacket *captivatePacket;
+
 #ifndef DONGLE_CODE
 	// ensure secondary processor is not active, trying to send data
 	// 		note: this should only happen when debugging and resetting the main processor while secondary is logging
@@ -176,18 +181,38 @@ void InterProcessorTask(void *argument) {
 					parsedPacket.tick_ms = receivedPacket.tick_ms;
 					parsedPacket.epoch = receivedPacket.epoch;
 
-					for (int i = 0; i < 5; i++) {
-						memcpy(&parsedPacket.temple,
-								&receivedPacket.temp.temple[i],
-								sizeof(struct thermopileData));
-						memcpy(&parsedPacket.nose, &receivedPacket.temp.nose[i],
-								sizeof(struct thermopileData));
+					memcpy(&packetPayload.data[packetIndex], &receivedPacket, sizeof(struct secondaryProcessorData));
+					packetIndex++;
 
-						// pass to master thread to handle
-						osMessageQueuePut(interProcessorMsgQueueHandle,
-								(void*) &parsedPacket, 0U, 0);
+					if(packetIndex == MAX_THERMAL_ENTRIES){
+					  packetIndex = 0;
 
+					  // grab available memory for packet creation
+					  if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, captivatePacket, 0U,
+						      5)){
+					      payload_ID++;
+					      continue; //no memory available so drop packet
+					  }
+
+					  // copy payload
+					  memcpy(captivatePacket->payload,
+							  &packetPayload,
+							  sizeof(thermopileData_BLE));
+
+					  captivatePacket->header.packetType = THERMAL_DATA;
+					  captivatePacket->header.packetID = payload_ID;
+					  captivatePacket->header.msFromStart = HAL_GetTick();
+					  captivatePacket->header.epoch = 0;
+					  captivatePacket->header.payloadLength = sizeof(thermopileData_BLE);
+
+					  // add tick cnt
+					  payload_ID++;
+
+					  // put into queue
+					  osMessageQueuePut(capPacket_QueueHandle,
+							  (void*) captivatePacket, 0U, 0);
 					}
+
 				}
 
 				// stop thread and clear queues
@@ -223,6 +248,9 @@ void InterProcessorTask(void *argument) {
 
 					// empty queue
 					osMessageQueueReset(interProcessorMsgQueueHandle);
+
+					packetIndex = 0;
+					payload_ID = 0;
 
 					break;
 				}

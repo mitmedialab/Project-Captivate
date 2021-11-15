@@ -16,7 +16,7 @@ extern "C" {
 
 /* includes -----------------------------------------------------------*/
 #include "cmsis_os2.h"
-
+#include "app_conf.h"
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
@@ -118,9 +118,25 @@ extern "C" {
 
 /* BLINK SPECIFIC CONFIGURATION */
 #define BLINK_HALF_BUFFER_SIZE	1000
-#define BLINK_PACKET_SIZE		100
+#define BLINK_PACKET_SIZE		200
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
 
+/* TP SPECIFIC CONFIGURATION */
+#define MAX_THERMAL_ENTRIES	5
+
+ /* PACKET DESCRIPTORS */
+#define BLINK_DATA 		5;
+#define THERMAL_DATA		6;
+#define ACC_DATA		7;
+#define MAG_DATA		8;
+#define GYRO_DATA		9;
+#define MAX_PACKET_QUEUE_SIZE 	10;
+
+#define PACKET_SEND_SUCCESS	0
+#define PACKET_LENGTH_EXCEEDED	1
+#define PACKET_UNDEFINED_ERR	10
+#define MAX_PACKET_LEN		DATA_NOTIFICATION_MAX_PACKET_SIZE
+#define MAX_PACKET_QUEUE_SIZE	10
 /* macros ------------------------------------------------------------*/
 
 /* function prototypes -----------------------------------------------*/
@@ -165,6 +181,9 @@ extern osSemaphoreId_t locCompleteHandle;
 
 extern osSemaphoreId_t lightingLabDemoEndHandle;
 
+extern osMessageQueueId_t capPacket_QueueHandle;
+extern osMessageQueueId_t capPacketAvail_QueueHandle;
+
 extern void startSensorThreads(void);
 
 #ifdef NETWORK_TEST
@@ -182,6 +201,21 @@ struct USB_msgPass {
 	uint8_t len;
 	uint8_t buf[10];
 };
+
+typedef struct PacketHeaders{
+  uint16_t packetType;
+  uint16_t packetID;
+  uint32_t msFromStart;
+  uint32_t epoch;
+  uint32_t payloadLength;
+  uint32_t reserved[5];
+}PacketHeader;
+
+#define MAX_PAYLOAD_SIZE 	MAX_PACKET_LEN - sizeof(PacketHeader)
+typedef struct CaptivatePackets{
+  PacketHeader header;
+  uint8_t payload[MAX_PAYLOAD_SIZE]; // should be MAX_PACKET_LEN - sizeof(PacketHeader)
+}CaptivatePacket;
 
 /* Functions Definition ------------------------------------------------------*/
 
