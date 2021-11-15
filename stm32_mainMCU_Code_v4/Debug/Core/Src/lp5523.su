@@ -1,0 +1,3 @@
+lp5523.c:80:6:setup_LP5523	32	static
+lp5523.c:152:6:FrontLightsSet	32	static
+lp5523.c:220:6:ThreadFrontLightsTask	48	static

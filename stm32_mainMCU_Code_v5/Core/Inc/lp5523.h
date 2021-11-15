@@ -18,7 +18,7 @@
 #include "stdint.h"
 #include "cmsis_os.h"
 #include "captivate_config.h"
-#include "main.h"
+//#include "main.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -128,6 +128,8 @@ typedef union ColorComplex {
 #define 	INT_CLK_EN					0x03
 
 #define LED_START_SEQ_INTERVAL		80//mseconds
+//#define LED_START_SEQ_INTERVAL		1000//mseconds
+
 
 #ifdef DONGLE_CODE
 #define LEDn                                    3

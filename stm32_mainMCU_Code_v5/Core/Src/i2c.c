@@ -30,7 +30,8 @@ I2C_HandleTypeDef hi2c1;
 void MX_I2C1_Init(void) {
 
 	hi2c1.Instance = I2C1;
-	hi2c1.Init.Timing = 0x00E27CAE;
+	hi2c1.Init.Timing = 0x00E27CAE; //100kHz
+//	hi2c1.Init.Timing = 0x00920F2B; //400kHz
 	hi2c1.Init.OwnAddress1 = 0;
 	hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 	hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -71,7 +72,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *i2cHandle) {
 		GPIO_InitStruct.Pin = GPIO_PIN_9 | GPIO_PIN_10;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 

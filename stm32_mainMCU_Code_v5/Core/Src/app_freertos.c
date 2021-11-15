@@ -45,7 +45,7 @@
 #include "usbd_cdc_if.h"
 #include "coap.h"
 #include "app_thread.h"
-#include "dt_server_app.h"
+#include "app_conf.h"
 #ifdef NETWORK_TEST
 #include "network_test.h"
 #endif
@@ -95,7 +95,19 @@ const osThreadAttr_t networkTestTask_attributes = { .name = "networkTestTask",
 //
 //osThreadId_t pulseTaskHandle;
 
-//uint8_t temp[2048] = {0};+
+//uint8_t temp[2048] = {0};
+
+/* Definitions for rotationSampleQueue */
+//#ifdef INERTIAL_ACC_GYRO_EN
+osMessageQueueId_t accSampleQueueHandle;
+const osMessageQueueAttr_t accSampleQueue_attributes = { .name =
+		"accSampleQueue"};
+
+osMessageQueueId_t gyroSampleQueueHandle;
+const osMessageQueueAttr_t gyroSampleQueue_attributes = { .name =
+		"gyroSampleQueue"};
+//#endif
+
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -116,7 +128,7 @@ const osThreadAttr_t masterTask_attributes = { .name = "masterTask", .priority =
 /* Definitions for inertialTask */
 osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = { .name = "inertialTask",
-		.priority = (osPriority_t) osPriorityNormal, .stack_size = 1024 };
+		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512*3 };
 /* Definitions for pulseTask */
 osThreadId_t pulseTaskHandle;
 const osThreadAttr_t pulseTask_attributes = { .name = "pulseTask", .priority =
@@ -288,6 +300,7 @@ void MX_FREERTOS_Init(void) {
 
 	/* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
+
 	/* USER CODE END RTOS_MUTEX */
 
 	/* Create the semaphores(s) */
@@ -368,6 +381,12 @@ void MX_FREERTOS_Init(void) {
 			&msgPasssingUSB_Queue_attributes);
 
 	/* USER CODE BEGIN RTOS_QUEUES */
+//#ifdef INERTIAL_ACC_GYRO_EN
+	accSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(struct genericThreeAxisData *),
+			&accSampleQueue_attributes);
+	gyroSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(struct genericThreeAxisData *),
+			&gyroSampleQueue_attributes);
+//#endif
 	/* add queues, ... */
 	capPacket_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(CaptivatePacket *),
 			&capPacketQueue_attributes);
@@ -470,10 +489,10 @@ void startApplicationThreads(void){
 				&frontLightsComplexTask_attributes);
 
 	/* creation of inertialTask */
+#ifndef INERTIAL_ACC_GYRO_EN
 	inertialTaskHandle = osThreadNew(InertialSensingTask, NULL,
 			&inertialTask_attributes);
 
-	/* creation of pulseTask */
 	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
 			&pulseTask_attributes);
 
@@ -483,6 +502,13 @@ void startApplicationThreads(void){
 
 	/* creation of blinkTask */
 	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
+#else
+	inertialTaskHandle = osThreadNew(InertialSensingTask_Accel_Gyro, NULL,
+			&inertialTask_attributes);
+
+#endif
+	/* creation of pulseTask */
+
 
 	/* creation of packetSendingQueue */
 	senderThreadHandle = osThreadNew(senderThread, NULL, &senderThread_attributes);

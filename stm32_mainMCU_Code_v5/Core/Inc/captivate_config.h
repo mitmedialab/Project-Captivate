@@ -23,7 +23,7 @@ extern "C" {
 
 // only define the below variables if wanting to send a packet at a period of NETWORK_TEST_PERIOD ms
 //#define NETWORK_TEST			1
-#define NETWORK_TEST_PERIOD		1000
+//#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
 //#define DONGLE_CODE					1
@@ -48,10 +48,10 @@ extern "C" {
 #endif
 
 //// enable sensing subsystems
-#define BLINK_SENSING_ENABLE		1
-#define TEMP_SENSING_ENABLE			1
-#define POS_SENSING_ENABLE			1
-#define	INERTIA_SENSING_ENABLE		1
+#define BLINK_SENSING_ENABLE		0
+#define TEMP_SENSING_ENABLE			0
+#define POS_SENSING_ENABLE			0
+#define	INERTIA_SENSING_ENABLE		0
 
 #define DISABLE_SENSING				0
 
@@ -84,6 +84,8 @@ extern "C" {
 
 /* RADIO SPECIFIC */
 #define TRANSMIT_POWER							6 //in dbm
+//#define TRANSMIT_POWER							-3 //in dbm
+
 #define CHILD_SUPERVISION_INTERVAL				2 // default is 129 (how often a router broadcasts to its child to ensure its alive)
 #define CHILD_SUPERVISION_TIMEOUT				3	// default is 190 (when child trying to find a new router)
 
@@ -115,11 +117,19 @@ extern "C" {
 #define STEP_CNT_PERIOD				500
 #define STABILITY_CLASS_PERIOD		500
 #define IMU_CALIBRATION				1
+#define ACC_GYRO_PACKET_SIZE		14
+#define ACC_GYRO_QUEUE_SIZE			10
+//#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */
+#define BLINK_SAMPLE_RATE		1000
 #define BLINK_HALF_BUFFER_SIZE	1000
 #define BLINK_PACKET_SIZE		200
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
+#define INFRARED_DETECT_ALPHA 	0.5
+#define INFRARED_DETECT_LOWER_THRESH 	7
+#define INFRARED_DETECT_UPPER_THRESH 	235
+
 
 /* TP SPECIFIC CONFIGURATION */
 #define MAX_THERMAL_ENTRIES	5
@@ -162,6 +172,8 @@ extern osMessageQueueId_t inertialSensingQueueHandle;
 
 extern osMessageQueueId_t activitySampleQueueHandle;
 extern osMessageQueueId_t rotationSampleQueueHandle;
+extern osMessageQueueId_t accSampleQueueHandle;
+extern osMessageQueueId_t gyroSampleQueueHandle;
 
 extern osThreadId_t interProcTaskHandle;
 extern osMessageQueueId_t interProcessorMsgQueueHandle;

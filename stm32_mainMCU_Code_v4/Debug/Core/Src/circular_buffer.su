@@ -1,0 +1,5 @@
+circular_buffer.c:9:9:empty	16	static
+circular_buffer.c:13:10:size	16	static
+circular_buffer.c:17:7:front	16	static
+circular_buffer.c:21:9:pop_front	16	static
+circular_buffer.c:33:6:append_back	16	static

@@ -36,7 +36,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "dis_app.h"
-#include "main.h"
+//#include "main.h"
 #include "ble_legacy.h"
 #include "ble_defs.h"
 

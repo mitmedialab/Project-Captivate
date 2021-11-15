@@ -12,7 +12,7 @@
 
 struct NetworkTestPacket testPacket;
 
-
+#ifdef NETWORK_TEST
 void NetworkTestTask(void *argument){
 
 	uint32_t startTime = 0;
@@ -43,3 +43,4 @@ void NetworkTestTask(void *argument){
 	}
 
 }
+#endif

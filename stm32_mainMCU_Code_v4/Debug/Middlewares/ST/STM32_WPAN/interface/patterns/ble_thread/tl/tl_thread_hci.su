@@ -1,0 +1,5 @@
+tl_thread_hci.c:45:13:Pre_OtCmdProcessing	4	static
+tl_thread_hci.c:46:13:Ot_Cmd_Transfer	4	static
+tl_thread_hci.c:47:33:THREAD_Get_OTCmdPayloadBuffer	4	static
+tl_thread_hci.c:48:33:THREAD_Get_OTCmdRspPayloadBuffer	4	static
+tl_thread_hci.c:49:33:THREAD_Get_NotificationPayloadBuffer	4	static

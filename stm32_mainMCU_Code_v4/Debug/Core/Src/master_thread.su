@@ -1,0 +1,5 @@
+master_thread.c:76:6:MasterThreadTask	32	static
+master_thread.c:261:6:grabSensorData	16	static
+master_thread.c:289:6:masterEnterRoutine	8	static
+master_thread.c:313:6:masterExitRoutine	8	static
+master_thread.c:336:6:packetizeData	24	static

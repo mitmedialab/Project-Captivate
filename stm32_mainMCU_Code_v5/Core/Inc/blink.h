@@ -62,6 +62,10 @@ void BlinkTask(void *argument);
  * @retval None
  */
 void SetupBlinkSensing(void);
+void turnOffDiode();
+void turnOnDiode();
+
+uint8_t externalInfraredDetect(uint8_t* blink_ptr, uint32_t size_of_blink_ptr, float* rolling_avg);
 
 /**
  * @brief DMA Transfer Complete Callback.

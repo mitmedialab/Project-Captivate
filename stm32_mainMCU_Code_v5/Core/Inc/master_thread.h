@@ -25,6 +25,7 @@ extern "C" {
 #include "messages.h"
 /* typedef -----------------------------------------------------------*/
 
+#ifndef INERTIAL_ACC_GYRO_EN
 struct LogPacket {
 	struct blinkData blink;
 	struct parsedSecondaryProcessorPacket procData;
@@ -33,6 +34,13 @@ struct LogPacket {
 	uint32_t tick_ms;
 	uint32_t epoch;
 };
+#else
+struct LogPacket{
+	uint32_t descriptor;
+	uint32_t packetIdx;
+	struct genericThreeAxisData data[ACC_GYRO_PACKET_SIZE];
+};
+#endif
 
 struct LogMessage {
 	uint8_t status;
@@ -53,7 +61,7 @@ void packetizeData(struct LogPacket *packet, struct blinkData *blink,
 		struct inertialData *inertialMsg, VIVEVars *posMsg);
 void MasterThreadTask(void *argument);
 void masterExitRoutine(void);
-void grabSensorData(void);
+uint8_t grabSensorData(void);
 void masterEnterRoutine(void);
 
 uint32_t RTC_ToEpoch(RTC_TimeTypeDef *time, RTC_DateTypeDef *date);

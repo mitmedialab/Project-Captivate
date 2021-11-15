@@ -87,11 +87,11 @@
  *
  ******************************************************************************/
 
-#define CFG_FULL_LOW_POWER    0
+#define CFG_FULL_LOW_POWER    1
 
 #if (CFG_FULL_LOW_POWER == 1)
 #undef CFG_LPM_SUPPORTED
-#define CFG_LPM_SUPPORTED   1
+#define CFG_LPM_SUPPORTED   0
 #endif /* CFG_FULL_LOW_POWER */
 
 /******************************************************************************
@@ -317,7 +317,8 @@ typedef enum {
  * Define Tx Power
  */
 //#define CFG_TX_POWER                      (0x18) /**< 0dbm */
-#define CFG_TX_POWER                      (0x1F) /**< 0dbm */
+//#define CFG_TX_POWER                      (0x12) /**< 6dbm */
+#define CFG_TX_POWER                      (0x1F) /**< 6dbm */
 
 /**
  * Define Advertising parameters
@@ -437,6 +438,8 @@ typedef enum {
 #define MAX_HCI_CMD_EVENT_PAYLOAD_SIZE 255
 
 #define SCAN_L (0x320)
+
+//#define INERTIAL_ACC_GYRO_EN	1
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */

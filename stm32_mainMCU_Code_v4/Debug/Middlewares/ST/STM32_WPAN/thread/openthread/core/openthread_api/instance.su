@@ -1,0 +1,11 @@
+instance.c:55:13:otInstanceInitSingle	16	static
+instance.c:72:6:otInstanceIsInitialized	24	static
+instance.c:88:6:otInstanceFinalize	24	static
+instance.c:103:22:otSetStateChangedCallback	32	static
+instance.c:123:19:otRemoveStateChangeCallback	32	static
+instance.c:142:19:otInstanceReset	24	static
+instance.c:157:19:otInstanceFactoryReset	24	static
+instance.c:172:9:otInstanceErasePersistentInfo	24	static
+instance.c:188:12:otGetDynamicLogLevel	24	static
+instance.c:204:9:otSetDynamicLogLevel	24	static
+instance.c:221:26:otGetVersionString	16	static

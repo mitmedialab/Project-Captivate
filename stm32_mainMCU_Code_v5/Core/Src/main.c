@@ -84,6 +84,7 @@ static void Reset_IPCC(void);
 static void Reset_BackupDomain(void);
 static void Init_Exti(void);
 static void Config_HSE(void);
+void SystemClock_Decrease(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -112,7 +113,7 @@ int main(void) {
 
 	/* USER CODE BEGIN Init */
 	Reset_Device();
-	Config_HSE();
+//	Config_HSE();
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -131,13 +132,19 @@ int main(void) {
 	MX_I2C1_Init();
 	MX_RTC_Init();
 	MX_TIM2_Init();
-	MX_TIM16_Init();
-	MX_USB_Device_Init();
+//	MX_TIM16_Init();
+//	MX_USB_Device_Init();
 	/* USER CODE BEGIN 2 */
 	MX_TSC_Init();
 
+	/* the below code makes the blink PWM into a GPIO since the QRE cannot be modulated due to the terrible response of the diode */
+	MX_BLINK_GPIO_Init();
+
+
+
+
 #ifndef BORDER_ROUTER_NODE
-	USBD_Stop(&hUsbDeviceFS);
+//	USBD_Stop(&hUsbDeviceFS);
 #endif
 	HAL_Delay(100);
 	APPE_Init();
@@ -203,9 +210,9 @@ void SystemClock_Config(void) {
 			| RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1
 			| RCC_CLOCKTYPE_PCLK2;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV16;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV16;
 	RCC_ClkInitStruct.AHBCLK2Divider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.AHBCLK4Divider = RCC_SYSCLK_DIV1;
 
@@ -223,10 +230,10 @@ void SystemClock_Config(void) {
 	PeriphClkInitStruct.PLLSAI1.PLLR = RCC_PLLR_DIV2;
 	PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_USBCLK
 			| RCC_PLLSAI1_ADCCLK;
-	PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+	PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
 	PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLLSAI1;
 	PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
-	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_HSE_DIV32;
+	PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
 	PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
 	PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
 	PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE1;
@@ -238,7 +245,53 @@ void SystemClock_Config(void) {
 	/* USER CODE END Smps */
 }
 
+void enterLowPowerRun(void){
+	SystemClock_Decrease();
+
+	/* Set regulator voltage to scale 2 */
+	HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE2);
+
+	/* Enter LP RUN Mode */
+	HAL_PWREx_EnableLowPowerRunMode();
+}
+
+void exitLowPowerRun(void){
+    /* Disable low power run mode and reset the clock to initialization configuration */
+    HAL_PWREx_DisableLowPowerRunMode();
+
+    /* Configure the system clock for the RUN mode */
+    SystemClock_Config();
+}
+
 /* USER CODE BEGIN 4 */
+void SystemClock_Decrease(void)
+{
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+
+  /* Select MSI as system clock source */
+  /* Note: Keep AHB and APB prescaler settings from previous structure initialization */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+  if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  {
+    /* Initialization Error */
+    while(1);
+  }
+
+  /* Disable PLL to reduce power consumption since MSI is used from that point */
+  /* Change MSI frequency */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_5;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_OFF;
+  if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    /* Initialization Error */
+    while(1);
+  }
+}
+
 
 void PeriphClock_Config(void) {
 #if (CFG_USB_INTERFACE_ENABLE != 0)

@@ -38,7 +38,7 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void MX_BLINK_GPIO_Init(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

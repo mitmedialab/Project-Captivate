@@ -1,0 +1,4 @@
+diag.c:34:6:otDiagInit	24	static
+diag.c:49:6:otDiagProcessCmd	32	static
+diag.c:65:6:otDiagProcessCmdLine	32	static
+diag.c:81:6:otDiagIsEnabled	16	static

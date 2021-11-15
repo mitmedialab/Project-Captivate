@@ -1,0 +1,8 @@
+dataset_ftd.c:34:22:otDatasetSetActive	24	static
+dataset_ftd.c:51:22:otDatasetSetPending	24	static
+dataset_ftd.c:68:22:otDatasetSendMgmtActiveGet	32	static
+dataset_ftd.c:92:22:otDatasetSendMgmtActiveSet	32	static
+dataset_ftd.c:112:22:otDatasetSendMgmtPendingGet	32	static
+dataset_ftd.c:136:22:otDatasetSendMgmtPendingSet	32	static
+dataset_ftd.c:156:23:otDatasetGetDelayTimerMinimal	24	static
+dataset_ftd.c:172:22:otDatasetSetDelayTimerMinimal	24	static

@@ -30,6 +30,17 @@ struct rotationData {
 	uint32_t tick_ms;
 };
 
+struct genericThreeAxisData {
+	uint16_t x;
+	uint16_t y;
+	uint16_t z;
+	uint16_t imu_tick_ms;
+	uint32_t tick_ms;
+	float accuracy;
+//	uint32_t tick_ms;
+};
+
+
 struct activityData {
 	uint8_t activityConfidence[9];
 	uint32_t tick_ms;
@@ -63,6 +74,7 @@ struct inertialData {
 
 /* Functions Definition ------------------------------------------------------*/
 void InertialSensingTask(void *argument);
+void InertialSensingTask_Accel_Gyro(void *argument);
 void Setup_BNO080(void);
 
 /*************************************************************

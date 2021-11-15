@@ -1,0 +1,10 @@
+app_freertos.c:264:13:configureTimerForRunTimeStats	4	static
+app_freertos.c:269:22:getRunTimeCounterValue	8	static
+app_freertos.c:276:13:vApplicationTickHook	4	static
+app_freertos.c:288:13:vApplicationStackOverflowHook	16	static
+app_freertos.c:299:13:vApplicationMallocFailedHook	4	static
+app_freertos.c:317:13:vPortSuppressTicksAndSleep	16	static
+app_freertos.c:330:6:MX_FREERTOS_Init	8	static
+app_freertos.c:462:13:DefaultTask	16	static
+app_freertos.c:480:13:msgPassingUSB	48	static
+app_freertos.c:512:6:watchDogReset	16	static

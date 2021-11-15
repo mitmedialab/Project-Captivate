@@ -291,6 +291,7 @@ void SendData(void *argument) {
 //  return;
 }
 
+volatile temp_var = 0;
 void SendDataBLE(struct LogPacket *sensorPacket) {
 //	UNUSED(argument);
 //	  for(;;)
@@ -324,7 +325,9 @@ void SendDataBLE(struct LogPacket *sensorPacket) {
 	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
 			(uint8_t*) &DataTransferServerContext.TxData);
 	//todo: add a retry attempt if insufficient resources
-//    if (status == BLE_STATUS_INSUFFICIENT_RESOURCES)
+
+	temp_var = status;
+
 //    {
 //      DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_OFF;
 //      (Notification_Data_Buffer[0])-=1;
