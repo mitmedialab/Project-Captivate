@@ -59,6 +59,8 @@ float tick_ms_diff = 0;
 struct LogMessage statusMessage;
 uint8_t diodeState = 0;
 
+static CaptivatePacket *captivatePacket;
+
 /**
  * @brief Thread initialization.
  * @param  None

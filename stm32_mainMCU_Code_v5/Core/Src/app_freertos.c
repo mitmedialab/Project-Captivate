@@ -46,6 +46,7 @@
 #include "coap.h"
 #include "app_thread.h"
 #include "app_conf.h"
+#include "dt_server_app.h"
 #ifdef NETWORK_TEST
 #include "network_test.h"
 #endif
