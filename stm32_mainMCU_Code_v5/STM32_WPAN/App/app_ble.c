@@ -436,15 +436,15 @@ void APP_BLE_Init_Dyn_1(void) {
 	/**
 	 * From here, all initialization are BLE application specific
 	 */
-#if(CFG_BLE_PERIPHERAL != 0)
-	//ST SW Engineers converted the below statement to a FreeRTOS-friendly function: Adv_Request()
-	//  UTIL_SEQ_RegTask( 1<<CFG_TASK_START_ADV_ID, UTIL_SEQ_RFU, Adv_Request);
-	/**
-	 * Create timer for Data Throughput process (write data)
-	 */
-	HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(TimerDataThroughputWrite_Id),
-			hw_ts_SingleShot, DataThroughput_proc);
-#endif
+//#if(CFG_BLE_PERIPHERAL != 0)
+//	//ST SW Engineers converted the below statement to a FreeRTOS-friendly function: Adv_Request()
+//	//  UTIL_SEQ_RegTask( 1<<CFG_TASK_START_ADV_ID, UTIL_SEQ_RFU, Adv_Request);
+//	/**
+//	 * Create timer for Data Throughput process (write data)
+//	 */
+//	HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(TimerDataThroughputWrite_Id),
+//			hw_ts_SingleShot, DataThroughput_proc);
+//#endif
 
 #if(CFG_BLE_CENTRAL != 0)
 	//TODO: below not converted to FreeRTOS but the goal is to implement the peripheral above
@@ -475,7 +475,7 @@ void APP_BLE_Init_Dyn_1(void) {
 	 * Initialize Data Server (GATT SERVER)
 	 */
 
-	DTS_App_Init();
+//	DTS_App_Init();
 
 	//  //TODO: ripped from heartbeat. I think this sends the manufacturer information to the connecting device
 	//  /**
@@ -906,7 +906,7 @@ void APP_BLE_Stop(void) {
 	/* BLE STOP Procedure */
 	aci_hal_stack_reset();
 
-	APP_DBG("INSERT SOME WAIT");
+//	APP_DBG("INSERT SOME WAIT");
 	HAL_Delay(100);
 
 	/* Stop Advertising Timer */

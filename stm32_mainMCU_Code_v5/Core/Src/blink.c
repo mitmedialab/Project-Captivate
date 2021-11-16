@@ -20,7 +20,7 @@
 #include "master_thread.h"
 #include "captivate_config.h"
 #include "arm_math.h"
-
+#include "math.h"
 /* typedef -----------------------------------------------------------*/
 
 /* defines -----------------------------------------------------------*/
@@ -51,7 +51,7 @@ volatile uint8_t *blink_ptr_copy;
 
 //volatile uint8_t blink_copy[1000];
 
-uint32_t payload_ID = 0;
+//uint32_t payload_ID = 0;
 uint32_t iterator = 0;
 float previousTick_ms = 0;
 float tick_ms_diff = 0;
@@ -59,7 +59,7 @@ float tick_ms_diff = 0;
 struct LogMessage statusMessage;
 uint8_t diodeState = 0;
 
-static CaptivatePacket *captivatePacket;
+CaptivatePacket *captivatePacket;
 
 /**
  * @brief Thread initialization.
@@ -71,6 +71,10 @@ void BlinkTask(void *argument) {
 	uint32_t evt;
 	uint8_t diodeSaturatedFlag = 0;
 	float rolling_avg = 255;
+	uint16_t packetsPerHalfBuffer = ceil( ( (float) BLINK_HALF_BUFFER_SIZE)/BLINK_PACKET_SIZE );
+	uint16_t payloadLength = 0;
+	uint16_t blinkDataTracker = 0;
+	uint32_t payload_ID = 0;
 
 	while (1) {
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
@@ -145,13 +149,23 @@ void BlinkTask(void *argument) {
 						if(!diodeState) turnOnDiode();
 					}
 
-
+					blinkDataTracker = BLINK_HALF_BUFFER_SIZE;
 					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
-					for (iterator = 0; iterator < BLINK_ITERATOR_COUNT;
+					for (iterator = 0; iterator < packetsPerHalfBuffer;
 							iterator++) {
 
+						if(blinkDataTracker > BLINK_PACKET_SIZE){
+						    payloadLength = BLINK_PACKET_SIZE;
+						    blinkDataTracker -= BLINK_PACKET_SIZE;
+						}else if(blinkDataTracker != 0){
+						    payloadLength = blinkDataTracker;
+						    blinkDataTracker = 0;
+						}else{
+						    break; //should never happen
+						}
+
 						// grab available memory for packet creation
-						if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, captivatePacket, 0U,
+						if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, &captivatePacket, 0U,
 							    5)){
 						    payload_ID++;
 						    continue; //no memory available so drop packet
@@ -160,13 +174,14 @@ void BlinkTask(void *argument) {
 						// copy payload
 						memcpy(captivatePacket->payload,
 								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
-								BLINK_PACKET_SIZE);
+								payloadLength);
 
 						captivatePacket->header.packetType = BLINK_DATA;
 						captivatePacket->header.packetID = payload_ID;
 						captivatePacket->header.msFromStart = previousTick_ms + tick_ms_diff;
 						captivatePacket->header.epoch = 0;
-						captivatePacket->header.payloadLength = BLINK_PACKET_SIZE;
+						captivatePacket->header.payloadLength = payloadLength;
+						captivatePacket->header.reserved[0] = diodeSaturatedFlag;
 
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
@@ -174,7 +189,8 @@ void BlinkTask(void *argument) {
 
 						// put into queue
 						osMessageQueuePut(capPacket_QueueHandle,
-								(void*) captivatePacket, 0U, 0);
+								&captivatePacket, 0U, 0);
+
 					}
 				}
 
@@ -208,6 +224,8 @@ void BlinkTask(void *argument) {
 
 					// clear any flags
 					osThreadFlagsClear(0x0000000EU);
+
+					payload_ID = 0;
 
 					break;
 				}

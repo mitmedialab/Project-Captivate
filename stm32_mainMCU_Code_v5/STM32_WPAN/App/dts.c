@@ -34,6 +34,7 @@
 #include "rtc.h"
 
 #include "app_thread.h"
+#include "app_conf.h"
 
 #define UUID_128_SUPPORTED 1
 #define	NUM_OF_CHARACTERISTICS 6 //https://community.st.com/s/question/0D50X00009XkYAvSAN/sensortile-bluenrgms-custom-service-aci
@@ -109,7 +110,7 @@ typedef struct {
 } DataTransferSvcContext_t;
 
 /* Private defines -----------------------------------------------------------*/
-#define DATA_TRANSFER_NOTIFICATION_LEN_MAX                                 (255)
+#define DATA_TRANSFER_NOTIFICATION_LEN_MAX                                 DATA_NOTIFICATION_MAX_PACKET_SIZE
 
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -267,16 +268,48 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
  * @param  pFeatureValue: The address of the new value to be written
  * @retval None
  */
+//https://www.st.com/resource/en/programming_manual/pm0271-stm32wb-ble-stack-programming-guidelines-stmicroelectronics.pdf
+# define MAX_PACKET_LENGTH	243 // https://www.compel.ru/wordpress/wp-content/uploads/2019/12/en.dm00598033.pdf
+
 static tBleStatus TX_Update_Char(DTS_STM_Payload_t *pDataValue) {
 	tBleStatus ret;
 
 	/**
 	 *  Notification Data Transfer Packet
 	 */
-	ret = aci_gatt_update_char_value(aDataTransferContext.DataTransferSvcHdle,
-			aDataTransferContext.DataTransferTxCharHdle, 0, /* charValOffset */
-			pDataValue->Length, /* charValueLen */
-			(uint8_t*) pDataValue->pPayload);
+	if(pDataValue->Length <= MAX_PACKET_LENGTH){
+	  ret = aci_gatt_update_char_value(aDataTransferContext.DataTransferSvcHdle,
+			  aDataTransferContext.DataTransferTxCharHdle, 0, /* charValOffset */
+			  pDataValue->Length, /* charValueLen */
+			  (uint8_t*) pDataValue->pPayload);
+	}
+	else if(pDataValue->Length <= DATA_NOTIFICATION_MAX_PACKET_SIZE){
+
+	    uint16_t packetLen = pDataValue->Length;
+	    uint16_t offset = 0;
+
+	    while(packetLen > MAX_PACKET_LENGTH){
+	      aci_gatt_update_char_value_ext (0,
+				       aDataTransferContext.DataTransferSvcHdle,
+				       aDataTransferContext.DataTransferTxCharHdle,
+					0x00, //dont notify
+					pDataValue->Length,
+					offset,
+					MAX_PACKET_LENGTH,
+					((uint8_t*) pDataValue->pPayload) + offset);
+	      offset += MAX_PACKET_LENGTH;
+	      packetLen -= MAX_PACKET_LENGTH;
+	    }
+
+	    ret = aci_gatt_update_char_value_ext (0,
+	    					     aDataTransferContext.DataTransferSvcHdle,
+	    					     aDataTransferContext.DataTransferTxCharHdle,
+	    	0x01, //notify
+		pDataValue->Length,
+		offset,
+		packetLen,
+	    	((uint8_t*) pDataValue->pPayload) + offset);
+	}
 
 	return ret;
 }/* end TX_Update_Char() */
@@ -316,7 +349,7 @@ void DTS_STM_Init(void) {
 	DATA_TRANSFER_NOTIFICATION_LEN_MAX,
 	CHAR_PROP_NOTIFY,
 	ATTR_PERMISSION_NONE,
-	GATT_DONT_NOTIFY_EVENTS, /* gattEvtMask */
+	GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
 	10, /* encryKeySize */
 	1, /* isVariable */
 	&(aDataTransferContext.DataTransferTxCharHdle));
@@ -331,7 +364,7 @@ void DTS_STM_Init(void) {
 	 *  Add Data Transfer RX Characteristic (not intended to be used in the end)
 	 */
 	hciCmdResult = aci_gatt_add_char(aDataTransferContext.DataTransferSvcHdle,
-	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR2_UUID, 255, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
+	DT_UUID_LENGTH, (Char_UUID_t*) DT_REQ_CHAR2_UUID, DATA_TRANSFER_NOTIFICATION_LEN_MAX, /* DATA_TRANSFER_NOTIFICATION_LEN_MAX, */
 	CHAR_PROP_WRITE_WITHOUT_RESP,
 	ATTR_PERMISSION_NONE,
 	GATT_NOTIFY_ATTRIBUTE_WRITE, //GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */

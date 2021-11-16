@@ -34,11 +34,12 @@ static const struct LogMessage nullMessage = { 0 };
 struct LogMessage commandToSend;
 static thermopileData_BLE packetPayload;
 
+CaptivatePacket *captivatePacket;
 void InterProcessorTask(void *argument) {
 	uint32_t evt = 0;
 	uint32_t packetIndex = 0;
 	uint32_t payload_ID = 0;
-	CaptivatePacket *captivatePacket;
+
 
 #ifndef DONGLE_CODE
 	// ensure secondary processor is not active, trying to send data
@@ -180,7 +181,6 @@ void InterProcessorTask(void *argument) {
 //					// package received data into 100ms chunks and put in queue
 //					parsedPacket.tick_ms = receivedPacket.tick_ms;
 //					parsedPacket.epoch = receivedPacket.epoch;
-
 					memcpy(&packetPayload.data[packetIndex], &receivedPacket, sizeof(struct secondaryProcessorData));
 					packetIndex++;
 
@@ -188,7 +188,7 @@ void InterProcessorTask(void *argument) {
 					  packetIndex = 0;
 
 					  // grab available memory for packet creation
-					  if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, captivatePacket, 0U,
+					  if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, &captivatePacket, 0U,
 						      5)){
 					      payload_ID++;
 					      continue; //no memory available so drop packet
@@ -210,7 +210,7 @@ void InterProcessorTask(void *argument) {
 
 					  // put into queue
 					  osMessageQueuePut(capPacket_QueueHandle,
-							  (void*) captivatePacket, 0U, 0);
+							  &captivatePacket, 0U, 0);
 					}
 
 				}

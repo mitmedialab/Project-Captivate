@@ -113,7 +113,7 @@ const osMessageQueueAttr_t gyroSampleQueue_attributes = { .name =
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = { .name = "defaultTask",
-		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512 };
+		.priority = (osPriority_t) osPriorityAboveNormal, .stack_size = 512 };
 /* Definitions for frontLightsTask */
 osThreadId_t frontLightsTaskHandle;
 const osThreadAttr_t frontLightsTask_attributes = { .name = "frontLightsTask",
@@ -328,8 +328,8 @@ void MX_FREERTOS_Init(void) {
 			(void*) &viveStateVar, &viveTimer_attributes);
 
 	/* creation of watchDogTimer */
-	watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL,
-			&watchDogTimer_attributes);
+//	watchDogTimerHandle = osTimerNew(watchDogReset, osTimerPeriodic, NULL,
+//			&watchDogTimer_attributes);
 
 	/* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
@@ -337,7 +337,7 @@ void MX_FREERTOS_Init(void) {
 
 	/* Create the queue(s) */
 	/* creation of blinkMsgQueue */
-	blinkMsgQueueHandle = osMessageQueueNew(10, 108, &blinkMsgQueue_attributes);
+//	blinkMsgQueueHandle = osMessageQueueNew(10, 108, &blinkMsgQueue_attributes);
 
 	/* creation of lightsSimpleQueue */
 	lightsSimpleQueueHandle = osMessageQueueNew(3, 4,
@@ -356,16 +356,16 @@ void MX_FREERTOS_Init(void) {
 			&interProcessorMsgQueue_attributes);
 
 	/* creation of inertialSensingQueue */
-	inertialSensingQueueHandle = osMessageQueueNew(10, 40,
-			&inertialSensingQueue_attributes);
+//	inertialSensingQueueHandle = osMessageQueueNew(10, 40,
+//			&inertialSensingQueue_attributes);
 
 	/* creation of activitySampleQueue */
-	activitySampleQueueHandle = osMessageQueueNew(10, 16,
-			&activitySampleQueue_attributes);
+//	activitySampleQueueHandle = osMessageQueueNew(10, 16,
+//			&activitySampleQueue_attributes);
 
 	/* creation of rotationSampleQueue */
-	rotationSampleQueueHandle = osMessageQueueNew(3, 24,
-			&rotationSampleQueue_attributes);
+//	rotationSampleQueueHandle = osMessageQueueNew(3, 24,
+//			&rotationSampleQueue_attributes);
 
 	/* creation of pulseQueue */
 	pulseQueueHandle = osMessageQueueNew(10, 6, &pulseQueue_attributes);
@@ -382,12 +382,10 @@ void MX_FREERTOS_Init(void) {
 			&msgPasssingUSB_Queue_attributes);
 
 	/* USER CODE BEGIN RTOS_QUEUES */
-//#ifdef INERTIAL_ACC_GYRO_EN
 	accSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(GenericThreeAxisPayload *),
 			&accSampleQueue_attributes);
 	gyroSampleQueueHandle = osMessageQueueNew(ACC_GYRO_QUEUE_SIZE, sizeof(GenericThreeAxisPayload *),
 			&gyroSampleQueue_attributes);
-//#endif
 	/* add queues, ... */
 	capPacket_QueueHandle = osMessageQueueNew(MAX_PACKET_QUEUE_SIZE, sizeof(CaptivatePacket *),
 			&capPacketQueue_attributes);
@@ -449,9 +447,11 @@ void MX_FREERTOS_Init(void) {
 __weak void DefaultTask(void *argument) {
 	/* USER CODE BEGIN DefaultTask */
 	/* Infinite loop */
-	for (;;) {
-		osDelay(1);
-	}
+//	for (;;) {
+//	    HAL_Delay(100);
+//	    	APPE_Init();
+//	}
+//      APPE_Init();
 	/* USER CODE END DefaultTask */
 }
 

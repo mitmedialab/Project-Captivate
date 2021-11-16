@@ -26,12 +26,14 @@ extern "C" {
 //#define NETWORK_TEST_PERIOD		1000
 
 // uncomment if programming the STM32 USB dongle
+#define CUSTOM_NETWORK_STACK	1
+#define DYNAMIC_MODE	1
 //#define DONGLE_CODE					1
 //#define OTA_ENABLED					1
 //#define BORDER_ROUTER_NODE			1
 //#define BORDER_ROUTER_NODE_TRANSMITTER	1
 //#define LED_TEST	1
-//#define TEST_RUN_ON_START 1
+#define TEST_RUN_ON_START 1
 //#define TEST_TOUCH 1
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes
@@ -119,13 +121,13 @@ extern "C" {
 #define IMU_CALIBRATION				1
 #define ACC_GYRO_PACKET_SIZE		14
 #define ACC_GYRO_QUEUE_SIZE			5
-#define MAX_THREE_AXIS_PAYLOAD_ENTRIES	50
+#define MAX_THREE_AXIS_PAYLOAD_ENTRIES	35
 //#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */
 #define BLINK_SAMPLE_RATE		1000
 #define BLINK_HALF_BUFFER_SIZE	1000
-#define BLINK_PACKET_SIZE		200
+#define BLINK_PACKET_SIZE		400
 #define BLINK_ITERATOR_COUNT 	BLINK_HALF_BUFFER_SIZE / BLINK_PACKET_SIZE
 #define INFRARED_DETECT_ALPHA 	0.5
 #define INFRARED_DETECT_LOWER_THRESH 	7
@@ -133,7 +135,7 @@ extern "C" {
 
 
 /* TP SPECIFIC CONFIGURATION */
-#define MAX_THERMAL_ENTRIES	5
+#define MAX_THERMAL_ENTRIES	2
 
  /* PACKET DESCRIPTORS */
 #define BLINK_DATA 		5

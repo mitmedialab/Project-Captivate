@@ -512,7 +512,7 @@ typedef enum {
 /**
  * Maximum supported ATT_MTU size
  */
-#define CFG_BLE_MAX_ATT_MTU             (251)
+#define CFG_BLE_MAX_ATT_MTU             (512)
 
 /**
  * Size of the storage area for Attribute values
@@ -603,7 +603,7 @@ typedef enum {
 #define CFG_BUTTON_SUPPORTED      1
 #endif /* CFG_FULL_LOW_POWER */
 
-#define DATA_NOTIFICATION_MAX_PACKET_SIZE           240
+#define DATA_NOTIFICATION_MAX_PACKET_SIZE           512
 /* USER CODE END Defines */
 
 /******************************************************************************
@@ -769,7 +769,7 @@ typedef enum {
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 7)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
 
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_NAME        "THREAD_MSG_M0_TO_M4_PROCESS"
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_ATTR_BITS   (0)

@@ -44,11 +44,11 @@ struct VIVEVars vive_loc;
 struct LogMessage statusMessage;
 
 static const struct LogMessage nullStatusMessage = { 0 };
-static const struct blinkData nullBlinkMsg = { 0 };
-static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived =
-		{ 0 };
-static const struct inertialData nullInertialMsgReceived = { 0 };
-static const struct VIVEVars nullViveMsgReceived = { 0 };
+//static const struct blinkData nullBlinkMsg = { 0 };
+//static const struct parsedSecondaryProcessorPacket nullSecondaryProcessorMsgReceived =
+//		{ 0 };
+//static const struct inertialData nullInertialMsgReceived = { 0 };
+//static const struct VIVEVars nullViveMsgReceived = { 0 };
 
 // variables for storing epoch time
 RTC_TimeTypeDef RTC_time;
@@ -78,6 +78,7 @@ uint64_t waitTime = 0;
 uint32_t lightsSimpleMessageAck = 0;
 
 static CaptivatePacket captivatePacket[MAX_PACKET_QUEUE_SIZE];
+CaptivatePacket* capPacketPtr;
 
 void MasterThreadTask(void *argument) {
 
@@ -89,8 +90,11 @@ void MasterThreadTask(void *argument) {
 #endif
 
 	// add available memory to queue for threads to use
-	for (int i; i<MAX_PACKET_QUEUE_SIZE; i++){
-	    osMessageQueuePut(capPacketAvail_QueueHandle, (void*) &captivatePacket[i], 0U, 0);
+	for (int i = 0; i<MAX_PACKET_QUEUE_SIZE; i++){
+	    capPacketPtr = &captivatePacket[i];
+	    if(osOK != osMessageQueuePut(capPacketAvail_QueueHandle, &(capPacketPtr), 0U, 0)){
+		while(1); // should never happen
+	    }
 	}
 
 
@@ -103,13 +107,13 @@ void MasterThreadTask(void *argument) {
 		osWaitForever);
 #else
 //
-		osDelay(300);
+		osDelay(2000);
 		togLogMessageReceived.status = 4;
 		togLogMessageReceived.logStatus = 1;
-		togLogMessageReceived.blinkEnabled = 1;
+		togLogMessageReceived.blinkEnabled = 0;
 		togLogMessageReceived.tempEnabled = 1;
 		togLogMessageReceived.positionEnabled = 0;
-		togLogMessageReceived.intertialEnabled = 1;
+		togLogMessageReceived.intertialEnabled = 0;
 #endif
 		// this below togLogMessageReceived manipulation is for debugging
 //		togLogMessageReceived.status = 1;

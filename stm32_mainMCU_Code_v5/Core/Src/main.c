@@ -31,6 +31,7 @@
 #include "tim.h"
 #include "usb_device.h"
 #include "gpio.h"
+//#include "ipcc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -113,11 +114,14 @@ int main(void) {
 
 	/* USER CODE BEGIN Init */
 	Reset_Device();
-//	Config_HSE();
+	Config_HSE();
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
 	SystemClock_Config();
+
+	  /* IPCC initialisation */
+//	   MX_IPCC_Init();
 
 	/* USER CODE BEGIN SysInit */
 
@@ -135,7 +139,7 @@ int main(void) {
 //	MX_TIM16_Init();
 //	MX_USB_Device_Init();
 	/* USER CODE BEGIN 2 */
-	MX_TSC_Init();
+//	MX_TSC_Init();
 
 	/* the below code makes the blink PWM into a GPIO since the QRE cannot be modulated due to the terrible response of the diode */
 	MX_BLINK_GPIO_Init();
@@ -146,9 +150,8 @@ int main(void) {
 #ifndef BORDER_ROUTER_NODE
 //	USBD_Stop(&hUsbDeviceFS);
 #endif
-	HAL_Delay(100);
-	APPE_Init();
 
+	APPE_Init();
 	/* USER CODE END 2 */
 
 	/* Init scheduler */

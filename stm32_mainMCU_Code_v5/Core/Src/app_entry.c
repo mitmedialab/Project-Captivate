@@ -67,6 +67,7 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t)
 		+ TL_EVT_HDR_SIZE + 255];
 
+
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
@@ -81,7 +82,7 @@ const osThreadAttr_t ShciUserEvtProcess_attr = { .name =
 		CFG_SHCI_USER_EVT_PROCESS_CB_SIZE, .stack_mem =
 		CFG_SHCI_USER_EVT_PROCESS_STACK_MEM, .priority =
 		CFG_SHCI_USER_EVT_PROCESS_PRIORITY, .stack_size =
-		CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE * 2 };
+		CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE};
 
 /* Global function prototypes -----------------------------------------------*/
 #if(CFG_DEBUG_TRACE != 0)
@@ -109,29 +110,42 @@ extern void MX_USART1_UART_Init(void);
 #endif
 
 /* USER CODE BEGIN PFP */
-
+static void Init_Rtc( void );
+static void System_Init( void );
+void Init_Exti( void );
+void Init_Smps( void );
+static void AppCustom_SysUserEvtRx( void * pPayload );
+static void appCustom_Init( void );
+static void AppCustom_SysEvtReadyProcessing( void );
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
 void APPE_Init(void) {
+    System_Init( );       /**< System initialization */
+
+
 	SystemPower_Config(); /**< Configure the system Power Mode */
 
 	HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
 	/* USER CODE BEGIN APPE_Init_1 */
-	/* initialize debugger module if supported and debug trace if activated */
-//  Init_Debug();
-	/**
-	 * The Standby mode should not be entered before the initialization is over
-	 * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
-	 */
-	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
+#ifdef CUSTOM_NETWORK_STACK
+	  /* initialize debugger module if supported and debug trace if activated */
+//	  Init_Debug();
 
-#ifdef NUCLEO_LED_ACTIVE
-   BSP_LED_Init(LED_BLUE);
-   BSP_LED_Init(LED_GREEN);
-   BSP_LED_Init(LED_RED);
-#endif
+	  /* Display Dynamic concurrent mode (BLE and Thread)  */
+//	  displayConcurrentMode();
+
+	  /**
+	   * The Standby mode should not be entered before the initialization is over
+	   * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
+	   */
+	  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
+//	  Led_Init();
+
+
+	  appCustom_Init();
+#else
 	/* USER CODE END APPE_Init_1 */
 	appe_Tl_Init(); /* Initialize all transport layers */
 
@@ -141,11 +155,61 @@ void APPE_Init(void) {
 	 * This system event is received with APPE_SysUserEvtRx()
 	 */
 	/* USER CODE BEGIN APPE_Init_2 */
-
+#endif
 	/* USER CODE END APPE_Init_2 */
 	return;
 }
 /* USER CODE BEGIN FD */
+static void System_Init( void )
+{
+  Init_Smps( );
+
+  Init_Exti( );
+
+  Init_Rtc( );
+
+  return;
+}
+
+static void Init_Rtc( void )
+{
+  /* Disable RTC registers write protection */
+  LL_RTC_DisableWriteProtection(RTC);
+
+  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER);
+
+  /* Enable RTC registers write protection */
+  LL_RTC_EnableWriteProtection(RTC);
+
+  return;
+}
+
+void Init_Smps( void )
+{
+#if (CFG_USE_SMPS != 0)
+  /**
+   *  Configure and enable SMPS
+   *
+   *  The SMPS configuration is not yet supported by CubeMx
+   *  when SMPS output voltage is set to 1.4V, the RF output power is limited to 3.7dBm
+   *  the SMPS output voltage shall be increased for higher RF output power
+   */
+  LL_PWR_SMPS_SetStartupCurrent(LL_PWR_SMPS_STARTUP_CURRENT_80MA);
+  LL_PWR_SMPS_SetOutputVoltageLevel(LL_PWR_SMPS_OUTPUT_VOLTAGE_1V40);
+  LL_PWR_SMPS_Enable();
+#endif
+
+  return;
+}
+
+void Init_Exti( void )
+{
+  /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
+  LL_EXTI_DisableIT_0_31(~0);
+  LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
 
 /* USER CODE END FD */
 
@@ -243,7 +307,7 @@ static void appe_Tl_Init(void) {
 	shci_init(APPE_SysUserEvtRx, (void*) &SHci_Tl_Init_Conf);
 
 	/**< Memory Manager channel initialization */
-	tl_mm_config.p_BleSpareEvtBuffer = BleSpareEvtBuffer;
+	tl_mm_config.p_BleSpareEvtBuffer = 0;
 	tl_mm_config.p_SystemSpareEvtBuffer = SystemSpareEvtBuffer;
 	tl_mm_config.p_AsynchEvtPool = EvtPool;
 	tl_mm_config.AsynchEvtPoolSize = POOL_SIZE;
@@ -380,11 +444,91 @@ static void ShciUserEvtProcess(void *argument) {
 }
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
+static void appCustom_Init( void )
+{
+  TL_MM_Config_t tl_mm_config;
+  SHCI_TL_HciInitConf_t SHci_Tl_Init_Conf;
+  /**< Reference table initialization */
+  TL_Init();
 
+  MtxShciId = osMutexNew( NULL );
+  SemShciId = osSemaphoreNew( 1, 0, NULL ); /*< Create the semaphore and make it busy at initialization */
 
-void startTasks(){
+  /** FreeRTOS system task creation */
+  ShciUserEvtProcessId = osThreadNew(ShciUserEvtProcess, NULL, &ShciUserEvtProcess_attr);
 
+  /**< System channel initialization */
+  SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*)&SystemCmdBuffer;
+  SHci_Tl_Init_Conf.StatusNotCallBack = APPE_SysStatusNot;
+  shci_init(AppCustom_SysUserEvtRx, (void*) &SHci_Tl_Init_Conf);
+
+  /**< Memory Manager channel initialization */
+//  tl_mm_config.p_BleSpareEvtBuffer = 0;
+  tl_mm_config.p_BleSpareEvtBuffer = BleSpareEvtBuffer;
+  tl_mm_config.p_SystemSpareEvtBuffer = SystemSpareEvtBuffer;
+  tl_mm_config.p_AsynchEvtPool = EvtPool;
+  tl_mm_config.AsynchEvtPoolSize = POOL_SIZE;
+  TL_MM_Init( &tl_mm_config );
+
+  TL_Enable();
+
+  return;
 }
+
+/**
+ * The type of the payload for a system user event is tSHCI_UserEvtRxParam
+ * When the system event is both :
+ *    - a ready event (subevtcode = SHCI_SUB_EVT_CODE_READY)
+ *    - reported by the FUS (sysevt_ready_rsp == FUS_FW_RUNNING)
+ * The buffer shall not be released
+ * ( eg ((tSHCI_UserEvtRxParam*)pPayload)->status shall be set to SHCI_TL_UserEventFlow_Disable )
+ * When the status is not filled, the buffer is released by default
+ */
+static void AppCustom_SysUserEvtRx( void * pPayload )
+{
+  TL_AsynchEvt_t *p_sys_event;
+  p_sys_event = (TL_AsynchEvt_t*)(((tSHCI_UserEvtRxParam*)pPayload)->pckt->evtserial.evt.payload);
+
+  switch(p_sys_event->subevtcode)
+  {
+     case SHCI_SUB_EVT_CODE_READY:
+         AppCustom_SysEvtReadyProcessing();
+         break;
+     case SHCI_SUB_EVT_ERROR_NOTIF:
+         APPE_SysEvtError((SCHI_SystemErrCode_t) (p_sys_event->payload[0]));
+         break;
+     default:
+         break;
+  }
+  return;
+}
+
+static void AppCustom_SysEvtReadyProcessing( void )
+{
+  /* Traces channel initialization */
+  TL_TRACES_Init( );
+
+
+//  APP_DBG("1- Initialisation of BLE Stack...");
+  APP_BLE_Init_Dyn_1();
+//  APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
+//  APP_THREAD_Init_Dyn_1();
+
+//  APP_DBG("3- Start BLE ADV...");
+  APP_BLE_Init_Dyn_2();
+//  APP_DBG("4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
+//  APP_THREAD_Init_Dyn_2();
+
+  startApplicationThreads();
+  osDelay(100);
+  ledStartupSequence();
+
+//  APP_THREAD_Init();
+  UTIL_LPM_SetOffMode(1U << CFG_LPM_APP, UTIL_LPM_ENABLE);
+
+  return;
+}
+
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
 /*************************************************************

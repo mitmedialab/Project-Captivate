@@ -43,12 +43,13 @@ struct rotationData rotSample;
 //struct genericThreeAxisData accSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
 //struct genericThreeAxisData gyroSample[ACC_GYRO_QUEUE_SIZE][ACC_GYRO_PACKET_SIZE];
 
-GenericThreeAxisPayload accSample[ACC_GYRO_QUEUE_SIZE];
-GenericThreeAxisPayload gyroSample[ACC_GYRO_QUEUE_SIZE];
+static GenericThreeAxisPayload accSample[ACC_GYRO_QUEUE_SIZE];
+static GenericThreeAxisPayload gyroSample[ACC_GYRO_QUEUE_SIZE];
+GenericThreeAxisPayload *accSamplePtr;
+GenericThreeAxisPayload *gyroSamplePtr;
 
-
-struct genericThreeAxisData *accSamplePtr;
-struct genericThreeAxisData *gyroSamplePtr;
+//struct genericThreeAxisData *accSamplePtr;
+//struct genericThreeAxisData *gyroSamplePtr;
 
 
 volatile uint16_t accPacketIdx = 0;
@@ -334,10 +335,34 @@ void IMU_parseInputReport(void) {
 
 	//Store these generic values to their proper global variable
 	if (shtpData[5] == SENSOR_REPORTID_ACCELEROMETER) {
-		accelAccuracy = status;
-		rawAccelX = data1;
-		rawAccelY = data2;
-		rawAccelZ = data3;
+//		accelAccuracy = status;
+//		rawAccelX = data1;
+//		rawAccelY = data2;
+//		rawAccelZ = data3;
+
+		accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
+		accSample[accQueueIdx].data[accPacketIdx].x = data1
+		;
+		accSample[accQueueIdx].data[accPacketIdx].y = data2
+		;
+		accSample[accQueueIdx].data[accPacketIdx].z = data3;
+
+		accPacketIdx++;
+
+		if(accPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
+			  accPacketIdx = 0;
+			  accSamplePtr = &(accSample[accQueueIdx]);
+			  if(osOK == osMessageQueuePut(accSampleQueueHandle, &accSamplePtr, 0U, 0)){
+				  accQueueIdx += 1;
+
+				  if(accQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+					  accQueueIdx = 0;
+				  }
+
+			  }
+		  }
+
+
 	} else if (shtpData[5] == SENSOR_REPORTID_LINEAR_ACCELERATION) {
 
 
@@ -346,10 +371,35 @@ void IMU_parseInputReport(void) {
 		rawLinAccelY = data2;
 		rawLinAccelZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_GYROSCOPE) {
-		gyroAccuracy = status;
-		rawGyroX = data1;
-		rawGyroY = data2;
-		rawGyroZ = data3;
+//		gyroAccuracy = status;
+//		rawGyroX = data1;
+//		rawGyroY = data2;
+//		rawGyroZ = data3;
+
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick();
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].x = data1
+		;
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].y = data2
+		;
+		gyroSample[gyroQueueIdx].data[gyroPacketIdx].z = data3
+		;
+
+		gyroPacketIdx++;
+
+		if(gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
+			gyroPacketIdx = 0;
+			gyroSamplePtr = &(gyroSample[accQueueIdx]);
+			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, &gyroSamplePtr, 0U, 0)){
+				gyroQueueIdx += 1;
+
+				if(gyroQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+					gyroQueueIdx = 0;
+				}
+			}
+
+		}
+
+
 	} else if (shtpData[5] == SENSOR_REPORTID_GYROSCOPE_UNCAL) {
 
 
@@ -418,64 +468,66 @@ void IMU_parseInputReport(void) {
 //		test = osMessageQueueGetCount(activitySampleQueueHandle);
 
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_ACCELEROMETER) {
-		// put acceleration sample in queue for message packing
-		accSample[accQueueIdx].data[accPacketIdx].imu_tick_ms = data5;
-		accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
-		accSample[accQueueIdx].data[accPacketIdx].x = data1
-		;
-		accSample[accQueueIdx].data[accPacketIdx].y = data2
-		;
-		accSample[accQueueIdx].data[accPacketIdx].z = data3
-		;
-		accSample[accQueueIdx].data[accPacketIdx].accuracy = status;
-
-		accPacketIdx++;
-
-		if(accPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
-			accPacketIdx = 0;
-			if(osOK == osMessageQueuePut(accSampleQueueHandle, ( void * ) &accSample[accQueueIdx], 0U, 0)){
-				accQueueIdx += 1;
-
-				if(accQueueIdx >= ACC_GYRO_QUEUE_SIZE){
-					accQueueIdx = 0;
-				}
-
-			}
-		}
-
-
-		memsRawAccelX = data1;
-		memsRawAccelY = data2;
-		memsRawAccelZ = data3;
+//		// put acceleration sample in queue for message packing
+////		accSample[accQueueIdx].data[accPacketIdx].imu_tick_ms = data5;
+//		accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
+//		accSample[accQueueIdx].data[accPacketIdx].x = data1
+//		;
+//		accSample[accQueueIdx].data[accPacketIdx].y = data2
+//		;
+//		accSample[accQueueIdx].data[accPacketIdx].z = data3
+//		;
+////		accSample[accQueueIdx].data[accPacketIdx].accuracy = status;
+//
+//		accPacketIdx++;
+//
+//		if(accPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
+//			accPacketIdx = 0;
+//			accSamplePtr = &(accSample[accQueueIdx]);
+//			if(osOK == osMessageQueuePut(accSampleQueueHandle, &accSamplePtr, 0U, 0)){
+//				accQueueIdx += 1;
+//
+//				if(accQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+//					accQueueIdx = 0;
+//				}
+//
+//			}
+//		}
+//
+//
+//		memsRawAccelX = data1;
+//		memsRawAccelY = data2;
+//		memsRawAccelZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_GYROSCOPE) {
-		// put acceleration sample in queue for message packing
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].imu_tick_ms = data5;
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick();
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].x = data1
-		;
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].y = data2
-		;
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].z = data3
-		;
-		gyroSample[gyroQueueIdx].data[gyroPacketIdx].accuracy = IMU_qToFloat(status, 12);
-
-		gyroPacketIdx++;
-
-		if(gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
-			gyroPacketIdx = 0;
-			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, ( void * ) &gyroSample[accQueueIdx], 0U, 0)){
-				gyroQueueIdx += 1;
-
-				if(gyroQueueIdx >= ACC_GYRO_QUEUE_SIZE){
-					gyroQueueIdx = 0;
-				}
-			}
-
-		}
-
-		memsRawGyroX = data1;
-		memsRawGyroY = data2;
-		memsRawGyroZ = data3;
+//		// put acceleration sample in queue for message packing
+////		gyroSample[gyroQueueIdx].data[gyroPacketIdx].imu_tick_ms = data5;
+//		gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick();
+//		gyroSample[gyroQueueIdx].data[gyroPacketIdx].x = data1
+//		;
+//		gyroSample[gyroQueueIdx].data[gyroPacketIdx].y = data2
+//		;
+//		gyroSample[gyroQueueIdx].data[gyroPacketIdx].z = data3
+//		;
+////		gyroSample[gyroQueueIdx].data[gyroPacketIdx].accuracy = IMU_qToFloat(status, 12);
+//
+//		gyroPacketIdx++;
+//
+//		if(gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
+//			gyroPacketIdx = 0;
+//			gyroSamplePtr = &(gyroSample[accQueueIdx]);
+//			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, &gyroSamplePtr, 0U, 0)){
+//				gyroQueueIdx += 1;
+//
+//				if(gyroQueueIdx >= ACC_GYRO_QUEUE_SIZE){
+//					gyroQueueIdx = 0;
+//				}
+//			}
+//
+//		}
+//
+//		memsRawGyroX = data1;
+//		memsRawGyroY = data2;
+//		memsRawGyroZ = data3;
 	} else if (shtpData[5] == SENSOR_REPORTID_RAW_MAGNETOMETER) {
 		memsRawMagX = data1;
 		memsRawMagY = data2;

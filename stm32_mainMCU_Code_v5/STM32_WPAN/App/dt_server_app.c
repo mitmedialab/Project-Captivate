@@ -141,8 +141,8 @@ void DTS_App_Init(void) {
 //  UTIL_SEQ_RegTask( 1<<CFG_TASK_DATA_TRANSFER_UPDATE_ID, UTIL_SEQ_RFU, SendData);
 //  UTIL_SEQ_RegTask( 1<<CFG_TASK_DATA_WRITE_ID, UTIL_SEQ_RFU, BLE_App_Delay_DataThroughput);
 
-	DataWriteProcessId = osThreadNew(BLE_App_Delay_DataThroughput, NULL,
-			&DataWriteProcess_attr);
+//	DataWriteProcessId = osThreadNew(BLE_App_Delay_DataThroughput, NULL,
+//			&DataWriteProcess_attr);
 //  DataTransferProcessId= osThreadNew(SendData, NULL, &DataTransferProcess_attr);
 //  Button_SW1_ProcessId= osThreadNew(ButtonTriggerReceived, NULL, &Button_SW1_Process_attr);
 //  Button_SW2_ProcessId= osThreadNew(DT_App_Button2_Trigger_Received, NULL, &Button_SW2_Process_attr);
@@ -151,9 +151,9 @@ void DTS_App_Init(void) {
 	/**
 	 * Initialize data buffer
 	 */
-	for (i = 0; i < (DATA_NOTIFICATION_MAX_PACKET_SIZE - 1); i++) {
-		Notification_Data_Buffer[i] = i;
-	}
+//	for (i = 0; i < (DATA_NOTIFICATION_MAX_PACKET_SIZE - 1); i++) {
+//		Notification_Data_Buffer[i] = i;
+//	}
 
 	DataTransferServerContext.NotificationTransferReq =
 			DTS_APP_TRANSFER_REQ_OFF;
@@ -180,7 +180,7 @@ void DTS_App_KeyButton3Action(void) {
 void DTS_App_TxPoolAvailableNotification(void) {
 	DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
 //  UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
-	osThreadFlagsSet(DataTransferProcessId, 1);
+//	osThreadFlagsSet(DataTransferProcessId, 1);
 
 	return;
 }
@@ -196,7 +196,7 @@ void DTS_Notification(DTS_STM_App_Notification_evt_t *pNotification) {
 		DataTransferServerContext.NotificationTransferReq =
 				DTS_APP_TRANSFER_REQ_ON;
 //      UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
-		osThreadFlagsSet(DataTransferProcessId, 1);
+//		osThreadFlagsSet(DataTransferProcessId, 1);
 		break;
 
 	case DTS_STM_NOTIFICATION_DISABLED:
@@ -229,7 +229,7 @@ void DTS_Notification(DTS_STM_App_Notification_evt_t *pNotification) {
 	case DTS_STM_GATT_TX_POOL_AVAILABLE:
 		DataTransferServerContext.DtFlowStatus = DTS_APP_FLOW_ON;
 //      UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
-		osThreadFlagsSet(DataTransferProcessId, 1);
+//		osThreadFlagsSet(DataTransferProcessId, 1);
 		break;
 
 	default:
@@ -284,7 +284,7 @@ void SendData(void *argument) {
 				(Notification_Data_Buffer[0]) -= 1;
 			} else {
 //      UTIL_SEQ_SetTask(1 << CFG_TASK_DATA_TRANSFER_UPDATE_ID, CFG_SCH_PRIO_0);
-				osThreadFlagsSet(DataTransferProcessId, 1);
+//				osThreadFlagsSet(DataTransferProcessId, 1);
 			}
 		}
 	}
@@ -342,18 +342,20 @@ void SendDataBLE(struct LogPacket *sensorPacket) {
 	return;
 }
 
+CaptivatePacket *captivatePacket;
 void senderThread(void *argument){
-    CaptivatePacket *captivatePacket;
     while(1){
       osMessageQueueGet(capPacket_QueueHandle,
-		      (void*) captivatePacket, 0U, osWaitForever);
+		      &captivatePacket, 0U, osWaitForever);
 
       // todo: implement retry mechanism
       sendCaptivatePacket_BLE(captivatePacket);
 
       // return memory back to pool
       osMessageQueuePut(capPacketAvail_QueueHandle,
-		      (void*) captivatePacket, 0U, 0);
+		      &captivatePacket, 0U, osWaitForever);
+
+      osDelay(1);
     }
 
 }
@@ -365,13 +367,13 @@ uint8_t sendCaptivatePacket_BLE(CaptivatePacket *packet){
 	}
 
 	tBleStatus status = BLE_STATUS_INVALID_PARAMS;
-	uint8_t crc_result;
-
-	/* compute CRC */
-	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
-			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
-	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
-			crc_result;
+//	uint8_t crc_result;
+//
+//	/* compute CRC */
+//	crc_result = APP_BLE_ComputeCRC8((uint8_t*) Notification_Data_Buffer,
+//			(DATA_NOTIFICATION_MAX_PACKET_SIZE - 1));
+//	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
+//			crc_result;
 
 	DataTransferServerContext.TxData.pPayload = packet->payload;
 	DataTransferServerContext.TxData.Length = packet->header.payloadLength + sizeof(PacketHeader); //Att_Mtu_Exchanged-10;

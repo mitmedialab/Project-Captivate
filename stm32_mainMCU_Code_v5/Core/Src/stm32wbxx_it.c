@@ -295,15 +295,16 @@ void IPCC_C1_TX_IRQHandler(void) {
 void IPCC_C1_RX_IRQHandler(void) {
 	HW_IPCC_Rx_Handler();
 	return;
-	void TSC_IRQHandler(void) {
-		/* USER CODE BEGIN TSC_IRQn 0 */
+}
 
-		/* USER CODE END TSC_IRQn 0 */
-		HAL_TSC_IRQHandler(&htsc);
-		/* USER CODE BEGIN TSC_IRQn 1 */
+void TSC_IRQHandler(void) {
+	/* USER CODE BEGIN TSC_IRQn 0 */
 
-		/* USER CODE END TSC_IRQn 1 */
-	}
+	/* USER CODE END TSC_IRQn 0 */
+	HAL_TSC_IRQHandler(&htsc);
+	/* USER CODE BEGIN TSC_IRQn 1 */
+
+	/* USER CODE END TSC_IRQn 1 */
 }
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
