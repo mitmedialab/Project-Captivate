@@ -763,13 +763,13 @@ typedef enum {
 /******************************************************************************
  * FreeRTOS
  ******************************************************************************/
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
-#define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
+//#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
+//#define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
+//#define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
+//#define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
+//#define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
+//#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
+//#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
 
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_NAME        "THREAD_MSG_M0_TO_M4_PROCESS"
 #define CFG_THREAD_MSG_M0_TO_M4_PROCESS_ATTR_BITS   (0)

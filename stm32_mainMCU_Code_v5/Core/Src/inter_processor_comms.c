@@ -27,9 +27,9 @@
 // */
 
 struct secondaryProcessorData receivedPacket;
-struct parsedSecondaryProcessorPacket parsedPacket;
-extern struct LogPacket sensorPacket;
-extern struct LogMessage togLogMessageReceived;
+//struct parsedSecondaryProcessorPacket parsedPacket;
+//extern struct LogPacket sensorPacket;
+//extern struct LogMessage togLogMessageReceived;
 static const struct LogMessage nullMessage = { 0 };
 struct LogMessage commandToSend;
 static thermopileData_BLE packetPayload;
@@ -69,6 +69,9 @@ void InterProcessorTask(void *argument) {
 	while (1) {
 
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
+
+		HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
+		HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
 
 		// if signal was received successfully, start task
 		if ((evt & 0x00000001U) == 0x00000001U) {

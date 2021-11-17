@@ -137,7 +137,7 @@ const osThreadAttr_t pulseTask_attributes = { .name = "pulseTask", .priority =
 /* Definitions for interProcTask */
 osThreadId_t interProcTaskHandle;
 const osThreadAttr_t interProcTask_attributes = { .name = "interProcTask",
-		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512 };
+		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512 * 2};
 /* Definitions for blinkTask */
 osThreadId_t blinkTaskHandle;
 const osThreadAttr_t blinkTask_attributes = { .name = "blinkTask", .priority =

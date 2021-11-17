@@ -121,7 +121,7 @@ static void AppCustom_SysEvtReadyProcessing( void );
 
 /* Functions Definition ------------------------------------------------------*/
 void APPE_Init(void) {
-    System_Init( );       /**< System initialization */
+//    System_Init( );       /**< System initialization */
 
 
 	SystemPower_Config(); /**< Configure the system Power Mode */

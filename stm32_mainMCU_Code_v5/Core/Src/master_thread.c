@@ -110,10 +110,10 @@ void MasterThreadTask(void *argument) {
 		osDelay(2000);
 		togLogMessageReceived.status = 4;
 		togLogMessageReceived.logStatus = 1;
-		togLogMessageReceived.blinkEnabled = 0;
+		togLogMessageReceived.blinkEnabled = 1;
 		togLogMessageReceived.tempEnabled = 1;
 		togLogMessageReceived.positionEnabled = 0;
-		togLogMessageReceived.intertialEnabled = 0;
+		togLogMessageReceived.intertialEnabled = 1;
 #endif
 		// this below togLogMessageReceived manipulation is for debugging
 //		togLogMessageReceived.status = 1;
