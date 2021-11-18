@@ -342,20 +342,28 @@ void SendDataBLE(struct LogPacket *sensorPacket) {
 	return;
 }
 
+#define MAX_BLE_RETRIES	2
 CaptivatePacket *captivatePacket;
 void senderThread(void *argument){
+    uint8_t retry;
     while(1){
       osMessageQueueGet(capPacket_QueueHandle,
 		      &captivatePacket, 0U, osWaitForever);
 
-      // todo: implement retry mechanism
-      sendCaptivatePacket_BLE(captivatePacket);
+      retry = 0;
+      while(PACKET_SEND_SUCCESS != sendCaptivatePacket_BLE(captivatePacket)){
+	  if(retry >= MAX_BLE_RETRIES){
+	      break;
+	  }
+	  retry++;
+	  osDelay(5);
+      };
 
       // return memory back to pool
       osMessageQueuePut(capPacketAvail_QueueHandle,
 		      &captivatePacket, 0U, osWaitForever);
 
-      osDelay(1);
+//      osDelay(1);
     }
 
 }
@@ -375,7 +383,7 @@ uint8_t sendCaptivatePacket_BLE(CaptivatePacket *packet){
 //	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
 //			crc_result;
 
-	DataTransferServerContext.TxData.pPayload = packet;
+	DataTransferServerContext.TxData.pPayload = (uint8_t*) packet;
 	DataTransferServerContext.TxData.Length = packet->header.payloadLength + sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
 
 	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
