@@ -4,8 +4,8 @@
 ### Note: experimental branch with new packet sending architecture
 * Each sensor channel sends its own packet versus the original architecture of interleaving different sensor data into one packet type
 * Once turned on, the glasses send data via BLE with the following definition:
-  * Service: 19ed82aeed214c9d4145228e80FE0000 
-    * Characteristic: 19ed82aeed214c9d4145228e81FE0000  
+  * Service: 0000FE808E2245419D4C21EDAE82ED19
+    * Characteristic: 0000FE818E2245419D4C21EDAE82ED19 
 
 ### Across Contexts
 
