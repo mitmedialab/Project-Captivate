@@ -113,6 +113,8 @@ float tab_conn_interval[SIZE_TAB_CONN_INT] = { 50, 1000 }; /* ms */
 uint8_t index_con_int, mutex;
 #endif 
 
+struct LogMessage sensorLogMsg;
+
 /**
  * Advertising Data
  */
@@ -557,6 +559,15 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *pckt) {
 					0;
 			BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
 			APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH CLIENT \n");
+
+//			sensorLogMsg.status = 4;
+//			sensorLogMsg.logStatus = 0;
+//			sensorLogMsg.blinkEnabled = 1;
+//			sensorLogMsg.tempEnabled = 1;
+//			sensorLogMsg.positionEnabled = 0;
+//			sensorLogMsg.intertialEnabled = 1;
+//			osMessageQueuePut(togLoggingQueueHandle, &sensorLogMsg, 0U, 0U);
+
 			ledDisconnectNotification();
 		}
 		/* restart advertising */
@@ -641,6 +652,14 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *pckt) {
 
 			//	          UTIL_SEQ_SetTask(1 << CFG_TASK_LINK_CONFIG_ID, CFG_SCH_PRIO_0);
 			ledConnectNotification();
+
+			sensorLogMsg.status = 4;
+			sensorLogMsg.logStatus = 1;
+			sensorLogMsg.blinkEnabled = 1;
+			sensorLogMsg.tempEnabled = 1;
+			sensorLogMsg.positionEnabled = 0;
+			sensorLogMsg.intertialEnabled = 1;
+			osMessageQueuePut(togLoggingQueueHandle, &sensorLogMsg, 0U, 0U);
 
 			osThreadFlagsSet(LinkConfigProcessId, 1);
 

@@ -33,7 +33,7 @@ extern "C" {
 //#define BORDER_ROUTER_NODE			1
 //#define BORDER_ROUTER_NODE_TRANSMITTER	1
 //#define LED_TEST	1
-#define TEST_RUN_ON_START 1
+//#define TEST_RUN_ON_START 1
 //#define TEST_TOUCH 1
 #ifdef DONGLE_CODE
 #define NODE_TYPE				"dongle"  // max 11 bytes

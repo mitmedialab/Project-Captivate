@@ -375,7 +375,7 @@ uint8_t sendCaptivatePacket_BLE(CaptivatePacket *packet){
 //	Notification_Data_Buffer[DATA_NOTIFICATION_MAX_PACKET_SIZE - 1] =
 //			crc_result;
 
-	DataTransferServerContext.TxData.pPayload = packet->payload;
+	DataTransferServerContext.TxData.pPayload = packet;
 	DataTransferServerContext.TxData.Length = packet->header.payloadLength + sizeof(PacketHeader); //Att_Mtu_Exchanged-10;
 
 	status = DTS_STM_UpdateChar(DATA_TRANSFER_TX_CHAR_UUID,
