@@ -35,7 +35,7 @@ struct genericThreeAxisData {
 	uint16_t x;
 	uint16_t y;
 	uint16_t z;
-//	uint16_t imu_tick_ms;
+	uint32_t imu_tick_ms;
 	uint32_t tick_ms;
 //	float accuracy;
 //	uint32_t tick_ms;

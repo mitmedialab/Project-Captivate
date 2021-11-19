@@ -121,7 +121,7 @@ extern "C" {
 #define IMU_CALIBRATION				1
 #define ACC_GYRO_PACKET_SIZE		14
 #define ACC_GYRO_QUEUE_SIZE			5
-#define MAX_THREE_AXIS_PAYLOAD_ENTRIES	35
+#define MAX_THREE_AXIS_PAYLOAD_ENTRIES	25
 //#define INERTIAL_ACC_GYRO_EN		1 // comment out if wanting just the rotation matrix and normal use
 
 /* BLINK SPECIFIC CONFIGURATION */

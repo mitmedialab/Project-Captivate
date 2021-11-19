@@ -359,6 +359,8 @@ void senderThread(void *argument){
 	  osDelay(5);
       };
 
+      osDelay(5); // artificial delay to allow for the connected device to handle the latest sent packet
+
       // return memory back to pool
       osMessageQueuePut(capPacketAvail_QueueHandle,
 		      &captivatePacket, 0U, osWaitForever);
