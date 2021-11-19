@@ -75,6 +75,10 @@ void BlinkTask(void *argument) {
 	uint16_t payloadLength = 0;
 	uint16_t blinkDataTracker = 0;
 	uint32_t payload_ID = 0;
+	uint32_t tickCnt;
+	uint32_t blinkSampleHalfBuffer_ms = BLINK_HALF_BUFFER_SIZE * (1.0/BLINK_SAMPLE_RATE) * 1000.0;
+	uint32_t packetRemainder = BLINK_SAMPLE_RATE % BLINK_PACKET_SIZE;
+
 
 	while (1) {
 		evt = osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
@@ -128,6 +132,8 @@ void BlinkTask(void *argument) {
 
 				if ((evt & 0x00000004U) == 0x00000004U) {
 
+					tickCnt = HAL_GetTick() - blinkSampleHalfBuffer_ms;
+
 					// interpolate timestamps for blink packets
 					if (previousTick_ms == 0) {
 						previousTick_ms = HAL_GetTick();
@@ -176,9 +182,10 @@ void BlinkTask(void *argument) {
 								&(blink_ptr_copy[iterator * BLINK_PACKET_SIZE]),
 								payloadLength);
 
+						tickCnt += payloadLength;
 						captivatePacket->header.packetType = BLINK_DATA;
 						captivatePacket->header.packetID = payload_ID;
-						captivatePacket->header.msFromStart = previousTick_ms + tick_ms_diff;
+						captivatePacket->header.msFromStart = tickCnt;
 						captivatePacket->header.epoch = 0;
 						captivatePacket->header.payloadLength = payloadLength;
 						captivatePacket->header.reserved[0] = diodeSaturatedFlag;
