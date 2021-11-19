@@ -374,7 +374,7 @@ IMU_parseInputReport (void)
 	  accPacketIdx = 0;
 	  accSamplePtr = &(accSample[accQueueIdx]);
 	  if (osOK
-	      == osMessageQueuePut (accSampleQueueHandle, &accSamplePtr, 0U, 5))
+	      == osMessageQueuePut (accSampleQueueHandle, &accSamplePtr, 0U, 0))
 	    {
 	      accQueueIdx += 1;
 
@@ -416,7 +416,7 @@ IMU_parseInputReport (void)
 	  gyroSamplePtr = &(gyroSample[gyroPacketIdx]);
 	  if (osOK
 	      == osMessageQueuePut (gyroSampleQueueHandle, &gyroSamplePtr, 0U,
-				    5))
+				    0))
 	    {
 	      gyroQueueIdx += 1;
 
