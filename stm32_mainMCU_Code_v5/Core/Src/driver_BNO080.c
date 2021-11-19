@@ -339,7 +339,6 @@ void IMU_parseInputReport(void) {
 //		rawAccelX = data1;
 //		rawAccelY = data2;
 //		rawAccelZ = data3;
-
 		accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
 		accSample[accQueueIdx].data[accPacketIdx].x = data1
 		;
@@ -388,7 +387,7 @@ void IMU_parseInputReport(void) {
 
 		if(gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES){
 			gyroPacketIdx = 0;
-			gyroSamplePtr = &(gyroSample[accQueueIdx]);
+			gyroSamplePtr = &(gyroSample[gyroPacketIdx]);
 			if(osOK == osMessageQueuePut(gyroSampleQueueHandle, &gyroSamplePtr, 0U, 0)){
 				gyroQueueIdx += 1;
 
