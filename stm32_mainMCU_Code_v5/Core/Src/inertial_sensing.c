@@ -156,7 +156,7 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 		gyroPayloadID = 0;
 
 		// configure IMU
-		IMU_enableAccelerometer(10);
+		IMU_enableAccelerometer(20);
 //		IMU_enableRawAccelerometer(10); // outputs at ((input)/1000) period
 		IMU_enableGyro(10);
 //		IMU_enableRawGyro(10); // outputs at ((input)/1000) period
@@ -164,7 +164,7 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 
 		// give some time for things to buffer
 		// TODO: remove this to see if it still works fine
-		osDelay(400);
+//		osDelay(400);
 
 		while (1) {
 
@@ -184,17 +184,17 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 
 			// grab packets
 			if(status != osOK){
-			    osDelay(5);
-			    status = osErrorTimeout;
+			    osDelay(10);
+
+				if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin)
+						== GPIO_PIN_RESET)
+					IMU_dataAvailable();
 			}
 
-//
+			status = osErrorTimeout;
 //			osMessageQueuePut(inertialSensingQueueHandle, &inertialPacket, 0U,
 //					0);
 
-			if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin)
-					== GPIO_PIN_RESET)
-				IMU_dataAvailable();
 
 			// check for break condition
 			evt = osThreadFlagsWait(0x00000002U, osFlagsWaitAny, 0);
@@ -228,7 +228,7 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 void packAndSend(uint8_t dataType, GenericThreeAxisPayload *data){
   // grab available memory for packet creation
   if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, &captivatePacket, 0U,
-	      5)){
+	      10)){
       if(dataType==ACC_DATA){
 	  accPayloadID++;
       }

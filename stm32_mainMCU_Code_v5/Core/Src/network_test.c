@@ -6,7 +6,7 @@
  */
 #include "network_test.h"
 #include "captivate_config.h"
-#include "app_thread.h"
+//#include "app_thread.h"
 #include "master_thread.h"
 
 

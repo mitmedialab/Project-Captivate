@@ -33,7 +33,7 @@
 #include "time.h"
 #include "rtc.h"
 
-#include "app_thread.h"
+//#include "app_thread.h"
 #include "app_conf.h"
 
 #define UUID_128_SUPPORTED 1
@@ -230,7 +230,7 @@ static SVCCTL_EvtAckStatus_t DTS_Event_Handler(void *Event) {
 						sizeof(receivedEpoch));
 
 				receivedEpoch = receivedEpoch / 1000;
-				updateRTC(receivedEpoch);
+//				updateRTC(receivedEpoch);
 
 			}
 

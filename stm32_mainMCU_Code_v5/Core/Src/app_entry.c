@@ -22,7 +22,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "app_entry.h"
-#include "app_thread.h"
+//#include "app_thread.h"
 #include "app_conf.h"
 #include "hw_conf.h"
 #include "cmsis_os.h"

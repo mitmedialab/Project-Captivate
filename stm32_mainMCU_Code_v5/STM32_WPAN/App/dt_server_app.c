@@ -342,8 +342,9 @@ void SendDataBLE(struct LogPacket *sensorPacket) {
 	return;
 }
 
-#define MAX_BLE_RETRIES	2
+#define MAX_BLE_RETRIES	4
 CaptivatePacket *captivatePacket;
+
 void senderThread(void *argument){
     uint8_t retry;
     while(1){
@@ -352,19 +353,18 @@ void senderThread(void *argument){
 
       retry = 0;
       while(PACKET_SEND_SUCCESS != sendCaptivatePacket_BLE(captivatePacket)){
-	  if(retry >= MAX_BLE_RETRIES){
-	      break;
-	  }
-	  retry++;
-	  osDelay(5);
+		  if(retry >= MAX_BLE_RETRIES){
+			  break;
+		  }
+		  retry++;
+		  osDelay(5);
       };
-
-      osDelay(5); // artificial delay to allow for the connected device to handle the latest sent packet
 
       // return memory back to pool
       osMessageQueuePut(capPacketAvail_QueueHandle,
 		      &captivatePacket, 0U, osWaitForever);
 
+      if(retry == 0) osDelay(5); // artificial delay to allow for the connected device to handle the latest sent packet
 //      osDelay(1);
     }
 

@@ -43,8 +43,8 @@
 #include "input.h"
 //#include "iwdg.h"
 #include "usbd_cdc_if.h"
-#include "coap.h"
-#include "app_thread.h"
+//#include "coap.h"
+//#include "app_thread.h"
 #include "app_conf.h"
 #include "dt_server_app.h"
 #ifdef NETWORK_TEST
@@ -481,19 +481,20 @@ void watchDogReset(void *argument) {
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 void startApplicationThreads(void){
-	/* creation of masterTask */
-	masterTaskHandle = osThreadNew(MasterThreadTask, NULL,
-			&masterTask_attributes);
+
 
 	/* creation of frontLightsTask */
 	frontLightsComplexTaskHandle = osThreadNew(ThreadFrontLightsComplexTask, NULL,
 				&frontLightsComplexTask_attributes);
 
+//	/* creation of masterTask */
+	masterTaskHandle = osThreadNew(MasterThreadTask, NULL,
+			&masterTask_attributes);
 
-	/* creation of pulseTask */
-	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
-			&pulseTask_attributes);
-
+//	/* creation of pulseTask */
+//	pulseTaskHandle = osThreadNew(PulseHandlerTask, NULL,
+//			&pulseTask_attributes);
+//
 	/* creation of interProcTask */
 	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL,
 			&interProcTask_attributes);

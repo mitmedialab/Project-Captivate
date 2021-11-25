@@ -33,7 +33,7 @@ struct secondaryProcessorData receivedPacket;
 static const struct LogMessage nullMessage = { 0 };
 struct LogMessage commandToSend;
 static thermopileData_BLE packetPayload;
-
+volatile uint32_t tempTick;
 CaptivatePacket *captivatePacket;
 void InterProcessorTask(void *argument) {
 	uint32_t evt = 0;
@@ -104,6 +104,8 @@ void InterProcessorTask(void *argument) {
 			osDelay(100);
 			osSemaphoreRelease(messageI2C_LockHandle);
 
+			HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
+			HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
 			// message passing until told to stop
 			while (1) {
 
@@ -146,10 +148,11 @@ void InterProcessorTask(void *argument) {
 					// clear receiving flag
 					osThreadFlagsClear(0x00000008U);
 					// grab packet from secondary MCU
-					while (HAL_I2C_Master_Receive_IT(&hi2c1,
+					tempTick = HAL_GetTick();
+					while (HAL_I2C_Master_Receive(&hi2c1,
 							SECONDARY_MCU_ADDRESS << 1,
 							(uint8_t*) &receivedPacket,
-							sizeof(struct secondaryProcessorData)) != HAL_OK) {
+							sizeof(struct secondaryProcessorData), 100) != HAL_OK) {
 						osSemaphoreRelease(messageI2C_LockHandle);
 						osDelay(100);
 						osSemaphoreAcquire(messageI2C_LockHandle,
@@ -167,10 +170,12 @@ void InterProcessorTask(void *argument) {
 						HAL_I2C_DeInit(&hi2c1);
 						HAL_I2C_Init(&hi2c1);
 					}
+					tempTick = HAL_GetTick() - tempTick;
 // 					taskEXIT_CRITICAL();
 					// wait until packet is received
 					evt = osThreadFlagsWait(0x0000000AU, osFlagsWaitAny,
-							osWaitForever);
+							0);
+					evt |= 0x8; //backwords compatibility with legacy code structure
 					// ensure I2C is disabled
 //					HAL_I2C_Master_Abort_IT(&hi2c1, SECONDARY_MCU_ADDRESS << 1);
 

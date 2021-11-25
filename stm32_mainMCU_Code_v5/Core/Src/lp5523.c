@@ -21,7 +21,7 @@ extern "C" {
 #include "cmsis_os.h"
 //#include "main.h"
 #include "string.h"
-#include "config.h"
+//#include "config.h"
 #include "master_thread.h"
 
 #include "system_settings.h"
@@ -204,7 +204,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 	setup_LP5523(LIS3DH_LEFT_ADDRESS);
 	setup_LP5523(LIS3DH_RIGHT_ADDRESS);
 
-	uint32_t counter = 0;
+	HAL_StatusTypeDef state = 0;
 
 	while (1) {
 		osMessageQueueGet(lightsComplexQueueHandle, &receivedColors,
@@ -214,32 +214,40 @@ void ThreadFrontLightsComplexTask(void *argument){
 	#ifndef DONGLE_CODE
 		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
 
-		HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
-				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
-
-		counter = 0;
-		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY)){
-			counter+=20;
-			osDelay(20);
-
-			if(counter > 1000){
-				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
-			}
-		}
+//		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+//				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
+		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
+				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9, 5);
 
 
-		HAL_I2C_Mem_Write_IT(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
-				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9);
+//		counter = 0;
+//		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY)){
+//			counter+=20;
+//			osDelay(20);
+//			if(counter > 1000){
+//				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
+//				break;
+//			}
+////			if(counter > 1000){
+////				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
+////			}
+//		}
 
-		counter = 0;
-		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY)){
-			counter+=20;
-			osDelay(20);
+		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9, 5);
 
-			if(counter > 1000){
-				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
-			}
-		}
+//		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_RIGHT_ADDRESS << 1,
+//				LIS3DH_D1_PWM_REG, 1, led_right_PWM, 9);
+
+//		counter = 0;
+//		while( (HAL_I2C_GetState(I2C_HANDLE_TYPEDEF) != HAL_I2C_STATE_READY)){
+//			counter+=20;
+//			osDelay(20);
+//
+//			if(counter > 1000){
+//				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
+//			}
+//		}
 
 		osSemaphoreRelease(messageI2C_LockHandle);
 	#endif

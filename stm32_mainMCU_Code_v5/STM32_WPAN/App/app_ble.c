@@ -653,13 +653,13 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *pckt) {
 			//	          UTIL_SEQ_SetTask(1 << CFG_TASK_LINK_CONFIG_ID, CFG_SCH_PRIO_0);
 			ledConnectNotification();
 
-			sensorLogMsg.status = 4;
-			sensorLogMsg.logStatus = 1;
-			sensorLogMsg.blinkEnabled = 1;
-			sensorLogMsg.tempEnabled = 1;
-			sensorLogMsg.positionEnabled = 0;
-			sensorLogMsg.intertialEnabled = 1;
-			osMessageQueuePut(togLoggingQueueHandle, &sensorLogMsg, 0U, 0U);
+//			sensorLogMsg.status = 4;
+//			sensorLogMsg.logStatus = 1;
+//			sensorLogMsg.blinkEnabled = 1;
+//			sensorLogMsg.tempEnabled = 1;
+//			sensorLogMsg.positionEnabled = 0;
+//			sensorLogMsg.intertialEnabled = 1;
+//			osMessageQueuePut(togLoggingQueueHandle, &sensorLogMsg, 0U, 0U);
 
 			osThreadFlagsSet(LinkConfigProcessId, 1);
 

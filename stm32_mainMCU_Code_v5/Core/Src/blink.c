@@ -159,6 +159,7 @@ void BlinkTask(void *argument) {
 					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
 					for (iterator = 0; iterator < packetsPerHalfBuffer;
 							iterator++) {
+						payload_ID++;
 
 						if(blinkDataTracker > BLINK_PACKET_SIZE){
 						    payloadLength = BLINK_PACKET_SIZE;
@@ -172,8 +173,7 @@ void BlinkTask(void *argument) {
 
 						// grab available memory for packet creation
 						if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, &captivatePacket, 0U,
-							    5)){
-						    payload_ID++;
+							    300)){
 						    continue; //no memory available so drop packet
 						}
 
@@ -192,7 +192,6 @@ void BlinkTask(void *argument) {
 
 						// add tick cnt
 						previousTick_ms = blinkMsgBuffer_1.tick_ms;
-						payload_ID++;
 
 						// put into queue
 						osMessageQueuePut(capPacket_QueueHandle,

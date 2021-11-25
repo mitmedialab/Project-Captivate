@@ -15,7 +15,7 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "main.h"
-#include "app_thread.h"
+//#include "app_thread.h"
 #include "rtc.h"
 #include "blink.h"
 #include "inertial_sensing.h"

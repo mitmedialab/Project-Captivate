@@ -103,8 +103,8 @@ void get3D_location(void *arguments) {
 			if (osOK
 					== osMessageQueueGet(viveQueueHandle, &vive_loc_demo, 0U,
 							1000)) {
-				APP_THREAD_SendBorderMessage(&vive_loc_demo, sizeof(VIVEVars),
-						"capLoc");
+//				APP_THREAD_SendBorderMessage(&vive_loc_demo, sizeof(VIVEVars),
+//						"capLoc");
 			}
 //			else{
 //				vive_loc_demo.pos[2] = 100;
