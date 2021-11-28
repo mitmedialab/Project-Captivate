@@ -54,7 +54,7 @@ GenericThreeAxisPayload *gyroSamplePtr;
 volatile uint16_t accPacketIdx = 0;
 volatile uint16_t accQueueIdx = 0;
 
-volatile uint16_t accQueueIdx = 0;
+volatile uint16_t gyroPacketIdx = 0;
 volatile uint16_t gyroQueueIdx = 0;
 
 //Registers
