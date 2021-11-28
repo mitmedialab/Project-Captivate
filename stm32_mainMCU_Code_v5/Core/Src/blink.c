@@ -159,8 +159,9 @@ void BlinkTask(void *argument) {
 					// because of COAP packet size restrictions, separate blink packet into chunks of size BLINK_PACKET_SIZE
 					for (iterator = 0; iterator < packetsPerHalfBuffer;
 							iterator++) {
-						payload_ID++;
 
+
+						// add to packet maximum sized payload
 						if(blinkDataTracker > BLINK_PACKET_SIZE){
 						    payloadLength = BLINK_PACKET_SIZE;
 						    blinkDataTracker -= BLINK_PACKET_SIZE;
@@ -174,7 +175,9 @@ void BlinkTask(void *argument) {
 						// grab available memory for packet creation
 						if(osOK != osMessageQueueGet(capPacketAvail_QueueHandle, &captivatePacket, 0U,
 							    300)){
-						    continue; //no memory available so drop packet
+						    //no memory available so increment payload ID and drop packet
+						    payload_ID++;
+						    continue;
 						}
 
 						// copy payload
@@ -196,6 +199,10 @@ void BlinkTask(void *argument) {
 						// put into queue
 						osMessageQueuePut(capPacket_QueueHandle,
 								&captivatePacket, 0U, 0);
+
+						payload_ID++;
+
+						osDelay(10); // (patrick being extra careful) artificial delay to allow time for other processing to trigger, should be able to remove with no problem
 
 					}
 				}

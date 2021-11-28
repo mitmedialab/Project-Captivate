@@ -52,7 +52,7 @@ GenericThreeAxisPayload *gyroSamplePtr;
 //struct genericThreeAxisData *gyroSamplePtr;
 
 volatile uint16_t accPacketIdx = 0;
-volatile uint16_t gyroPacketIdx = 0;
+volatile uint16_t accQueueIdx = 0;
 
 volatile uint16_t accQueueIdx = 0;
 volatile uint16_t gyroQueueIdx = 0;
@@ -362,7 +362,7 @@ IMU_parseInputReport (void)
 //		rawAccelZ = data3;
 
       accSample[accQueueIdx].data[accPacketIdx].imu_tick_ms = timeStamp;
-      accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick ();
+      accSample[accQueueIdx].data[accPacketIdx].tick_ms = HAL_GetTick();
       accSample[accQueueIdx].data[accPacketIdx].x = data1;
       accSample[accQueueIdx].data[accPacketIdx].y = data2;
       accSample[accQueueIdx].data[accPacketIdx].z = data3;
@@ -403,7 +403,7 @@ IMU_parseInputReport (void)
 //		rawGyroZ = data3;
 
       gyroSample[gyroQueueIdx].data[gyroPacketIdx].imu_tick_ms = timeStamp;
-      gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick ();
+      gyroSample[gyroQueueIdx].data[gyroPacketIdx].tick_ms = HAL_GetTick();
       gyroSample[gyroQueueIdx].data[gyroPacketIdx].x = data1;
       gyroSample[gyroQueueIdx].data[gyroPacketIdx].y = data2;
       gyroSample[gyroQueueIdx].data[gyroPacketIdx].z = data3;
@@ -413,7 +413,7 @@ IMU_parseInputReport (void)
       if (gyroPacketIdx >= MAX_THREE_AXIS_PAYLOAD_ENTRIES)
 	{
 	  gyroPacketIdx = 0;
-	  gyroSamplePtr = &(gyroSample[gyroPacketIdx]);
+	  gyroSamplePtr = &(gyroSample[gyroQueueIdx]);
 	  if (osOK
 	      == osMessageQueuePut (gyroSampleQueueHandle, &gyroSamplePtr, 0U,
 				    0))
