@@ -508,19 +508,19 @@ static void AppCustom_SysEvtReadyProcessing( void )
   /* Traces channel initialization */
   TL_TRACES_Init( );
 
-
 //  APP_DBG("1- Initialisation of BLE Stack...");
   APP_BLE_Init_Dyn_1();
 //  APP_DBG("2- Initialisation of OpenThread Stack. FW info :");
 //  APP_THREAD_Init_Dyn_1();
-
+  HAL_Delay(100);
 //  APP_DBG("3- Start BLE ADV...");
   APP_BLE_Init_Dyn_2();
 //  APP_DBG("4- Configure OpenThread (Channel, PANID, IPv6 stack, ...) and Start it...");
 //  APP_THREAD_Init_Dyn_2();
 
   startApplicationThreads();
-  osDelay(100);
+  HAL_Delay(100); //needed or FreeRTOS can stall up sometimes. Not sure why yet.
+//  osDelay(100);
   ledStartupSequence();
 
 //  APP_THREAD_Init();
