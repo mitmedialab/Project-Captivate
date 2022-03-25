@@ -499,6 +499,7 @@ void startApplicationThreads(void){
 	interProcTaskHandle = osThreadNew(InterProcessorTask, NULL,
 			&interProcTask_attributes);
 
+
 	/* creation of blinkTask */
 	blinkTaskHandle = osThreadNew(BlinkTask, NULL, &blinkTask_attributes);
 
