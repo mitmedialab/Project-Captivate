@@ -316,23 +316,23 @@ void masterEnterRoutine(void) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000001U);
 	}
 
-	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
-		// update status queue to notify other threads position is active
-		osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
-		statusMessage.positionEnabled = 1;
-		osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
-
-		// start timer for 3D position sample to be taken
-		osTimerStart(viveTimerHandle, VIVE_SAMPLE_PERIOD);
-	}
+//	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
+//		// update status queue to notify other threads position is active
+//		osMessageQueueGet(statusQueueHandle, &statusMessage, 0U, osWaitForever);
+//		statusMessage.positionEnabled = 1;
+//		osMessageQueuePut(statusQueueHandle, (void*) &statusMessage, 0U, 0);
+//
+//		// start timer for 3D position sample to be taken
+//		osTimerStart(viveTimerHandle, VIVE_SAMPLE_PERIOD);
+//	}
 
 	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {
 		osThreadFlagsSet(interProcTaskHandle, 0x00000001U);
 	}
 
-	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
-	    osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
-	}
+//	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
+//	    osThreadFlagsSet(inertialTaskHandle, 0x00000001U);
+//	}
 
 }
 
@@ -342,19 +342,19 @@ void masterExitRoutine(void) {
 		osThreadFlagsSet(blinkTaskHandle, 0x00000002U);
 	}
 
-	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
-		// stop timer for 3D position sensing
-		osTimerStop(viveTimerHandle);
-		viveStateVar = 0;
-	}
+//	if (prevLogMessage.positionEnabled == SENSOR_ENABLE) {
+//		// stop timer for 3D position sensing
+//		osTimerStop(viveTimerHandle);
+//		viveStateVar = 0;
+//	}
 
 	if ((prevLogMessage.tempEnabled == SENSOR_ENABLE)) {
 		osThreadFlagsSet(interProcTaskHandle, 0x00000002U);
 	}
 
-	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
-		osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
-	}
+//	if ((prevLogMessage.intertialEnabled == SENSOR_ENABLE)) {
+//		osThreadFlagsSet(inertialTaskHandle, 0x00000002U);
+//	}
 
 }
 
