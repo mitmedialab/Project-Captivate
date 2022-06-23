@@ -238,13 +238,13 @@ IMU_dataAvailable (void)
   //If we have an interrupt pin connection available, check if data is available.
   //If int pin is not set, then we'll rely on receivePacket() to timeout
   //See issue 13: https://github.com/sparkfun/SparkFun_BNO080_Arduino_Library/issues/13
-  if (_int != 255)
-    {
-      if (HAL_GPIO_ReadPin (_intPort, _int) == GPIO_PIN_SET)
-	return (false);
+//  if (_int != 255)
+//    {
+//      if (HAL_GPIO_ReadPin (_intPort, _int) == GPIO_PIN_SET)
+//	return (false);
 //		if (digitalRead(_int) == HIGH)
 //			return (false);
-    }
+//    }
 
 //	if(HAL_GPIO_ReadPin(_intPort, _int) == GPIO_PIN_SET)
 //	{
@@ -1454,8 +1454,8 @@ IMU_saveCalibration ()
 bool
 IMU_receivePacket (void)
 {
-  if (HAL_GPIO_ReadPin (_intPort, _int) == GPIO_PIN_SET)
-    return (false);
+  //if (HAL_GPIO_ReadPin (_intPort, _int) == GPIO_PIN_SET)
+  //  return (false);
 
   //Ask for four bytes to find out how much data we need to read
   osSemaphoreAcquire (messageI2C_LockHandle, osWaitForever);

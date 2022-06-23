@@ -121,7 +121,7 @@ const osThreadAttr_t frontLightsTask_attributes = { .name = "frontLightsTask",
 /* Definitions for frontLightsComplexTask */
 osThreadId_t frontLightsComplexTaskHandle;
 const osThreadAttr_t frontLightsComplexTask_attributes = { .name = "frontLightsComplexTask",
-		.priority = (osPriority_t) osPriorityLow, .stack_size = 512 * 2 };
+		.priority = (osPriority_t) osPriorityLow, .stack_size = 512 * 3 };
 /* Definitions for masterTask */
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = { .name = "masterTask", .priority =

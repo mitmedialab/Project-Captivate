@@ -83,9 +83,11 @@ CaptivatePacket* capPacketPtr;
 void MasterThreadTask(void *argument) {
 
 #ifndef DONGLE_CODE
+	//NOT CALLED
 	//touchSensingStart();
 #endif
 #ifdef TEST_TOUCH
+	//NOT CALLED
 	touchSensingStart();
 #endif
 
@@ -106,7 +108,7 @@ void MasterThreadTask(void *argument) {
 		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U,
 		osWaitForever);
 #else
-//
+//Called (TEST_RUN_ON_START IS DEFINED)
 		osDelay(2000);
 		togLogMessageReceived.status = 4;
 		togLogMessageReceived.logStatus = 1;
@@ -139,6 +141,9 @@ void MasterThreadTask(void *argument) {
 		osMessageQueueReset(statusQueueHandle);
 		osMessageQueuePut(statusQueueHandle, (void*) &nullStatusMessage, 0U, 0);
 #else
+		//CALLED-- overwrites logStatus, which we just
+		//set above, using ENABLE_LOG.  Still 1.
+		//reiterates logEnabled global is 0.
 		logEnabled = 0;
 		togLogMessageReceived.logStatus = ENABLE_LOG;
 #endif
@@ -147,6 +152,7 @@ void MasterThreadTask(void *argument) {
 		// if the received command enables logging
 		//    otherwise, skip if statement and wait for an enabling command
 		if (logEnabled == 0 && togLogMessageReceived.logStatus == ENABLE_LOG) {
+			//CALLED
 			logEnabled = 1;
 
 			// keep record of this message so new message doesn't overwrite
@@ -227,7 +233,7 @@ void MasterThreadTask(void *argument) {
 			masterEnterRoutine();
 
 			// add a delay to ensure all threads are given enough time to collect initial samples
-			osDelay(500);
+			osDelay(5000);
 
 			while (1) {
 				if (osMessageQueueGet(togLoggingQueueHandle,
