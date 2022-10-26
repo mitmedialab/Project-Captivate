@@ -121,11 +121,11 @@ const osThreadAttr_t frontLightsTask_attributes = { .name = "frontLightsTask",
 /* Definitions for frontLightsComplexTask */
 osThreadId_t frontLightsComplexTaskHandle;
 const osThreadAttr_t frontLightsComplexTask_attributes = { .name = "frontLightsComplexTask",
-		.priority = (osPriority_t) osPriorityNormal, .stack_size = 512 * 3 };
+		.priority = (osPriority_t) osPriorityAboveNormal, .stack_size = 512 * 3 };
 /* Definitions for masterTask */
 osThreadId_t masterTaskHandle;
 const osThreadAttr_t masterTask_attributes = { .name = "masterTask", .priority =
-		(osPriority_t) osPriorityNormal, .stack_size = 512 * 3 };
+		(osPriority_t) osPriorityNormal, .stack_size = 512 * 4 };
 /* Definitions for inertialTask */
 osThreadId_t inertialTaskHandle;
 const osThreadAttr_t inertialTask_attributes = { .name = "inertialTask",

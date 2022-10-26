@@ -15,6 +15,7 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "main.h"
+#include "lp5523.h"
 //#include "app_thread.h"
 #include "rtc.h"
 #include "blink.h"
@@ -163,12 +164,45 @@ void MasterThreadTask(void *argument) {
 			masterEnterRoutine();
 
 			// add a delay to ensure all threads are given enough time to collect initial samples
-			osDelay(500);
+			osDelay(3000);
+
+			union ColorComplex sendColor;
+			resetColor(&sendColor);
+
+			sendColor.colors_indiv.left_front_g = 55;
+			sendColor.colors_indiv.right_front_g = 55;
+			sendColor.colors_indiv.left_top_g = 55;
+			sendColor.colors_indiv.right_top_g = 55;
+			sendColor.colors_indiv.left_side_g = 55;
+			sendColor.colors_indiv.right_side_g = 55;
+
+			//uint32_t timeNowMs = HAL_GetTick();
+			//TickType_t ticker = xTaskGetTickCountFromISR();
 
 			while (1) {
 
-			      osDelay(100);
+			    //2392 gives us 10min10sec of gradient before red; 2x too long
 
+			    osDelay(1275); //2352 = 10min*60*1000 (ms) / 255.  0 to 255 over 10 min.
+
+			    if (sendColor.colors_indiv.left_front_g < 255) {
+			    	sendColor.colors_indiv.left_front_g += 1;
+			    	sendColor.colors_indiv.right_front_g += 1;
+			    	sendColor.colors_indiv.left_top_g += 1;
+			    	sendColor.colors_indiv.right_top_g += 1;
+			    	sendColor.colors_indiv.left_side_g += 1;
+			    	sendColor.colors_indiv.right_side_g += 1;
+
+			    	osMessageQueuePut(lightsComplexQueueHandle, &sendColor, 0, 0);
+			    }
+			    //else{
+
+			    //	ledAllRed();
+			    //}
+			    //else {
+			    //	ledAllRed();
+			    //	while(1){osDelay(15000);}
+			    //}
 
 				/**********************************************************************************/
 				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
@@ -176,7 +210,8 @@ void MasterThreadTask(void *argument) {
 
 				// check if the queue has a new message (potentially a command to stop logging)
 				//   otherwise, timeout
-				if (osMessageQueueGet(togLoggingQueueHandle,
+				/*
+			    if (osMessageQueueGet(togLoggingQueueHandle,
 						&togLogMessageReceived, 0U, 100) == osOK) {
 					// disable threads
 					if (togLogMessageReceived.status == DISABLE_SENSING) {
@@ -204,7 +239,7 @@ void MasterThreadTask(void *argument) {
 						osMessageQueuePut(lightsSimpleQueueHandle,
 								&lightsSimpleMessageAck, 0U, 0);
 					}
-				}
+				}*/
 
 			}
 		} else if (logEnabled

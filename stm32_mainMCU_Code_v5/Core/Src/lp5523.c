@@ -213,7 +213,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 		memcpy(led_right_PWM, &(receivedColors.color[9]), 9);
 	#ifndef DONGLE_CODE
 		osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
-		taskENTER_CRITICAL();
+		//taskENTER_CRITICAL();
 //		HAL_I2C_Mem_Write_DMA(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
 //				LIS3DH_D1_PWM_REG, 1, led_left_PWM, 9);
 		state = HAL_I2C_Mem_Write(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1,
@@ -248,7 +248,7 @@ void ThreadFrontLightsComplexTask(void *argument){
 //				HAL_I2C_Master_Abort_IT(I2C_HANDLE_TYPEDEF, LIS3DH_LEFT_ADDRESS << 1);
 //			}
 //		}
-		taskEXIT_CRITICAL();
+		//taskEXIT_CRITICAL();
 		osSemaphoreRelease(messageI2C_LockHandle);
 	#endif
 	}
