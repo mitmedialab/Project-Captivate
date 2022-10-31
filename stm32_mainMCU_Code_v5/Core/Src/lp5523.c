@@ -53,7 +53,7 @@ union ColorComplex receivedColor;
  *
  *************************************************************/
 
-#define MAX_BRIGHTNESS 16
+#define MAX_BRIGHTNESS 30
 
 uint8_t led_left_PWM[9] = { 0 };
 uint8_t led_right_PWM[9] = { 0 };
@@ -608,6 +608,7 @@ void ledStartupSequence(void){
 }
 
 void ledDisconnectNotification(void){
+	/*
 	resetColor(&receivedColor);
 
 	receivedColor.colors_indiv.left_side_g = 0;
@@ -617,9 +618,12 @@ void ledDisconnectNotification(void){
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 	osDelay(10);
 //	FrontLightsSet(&receivedColor);
+ *
+ */
 }
 
 void ledConnectNotification(void){
+	/*
 	resetColor(&receivedColor);
 
 	receivedColor.colors_indiv.left_side_b = 0;
@@ -633,6 +637,8 @@ void ledConnectNotification(void){
 	receivedColor.colors_indiv.right_side_g = 0;
 	osMessageQueuePut(lightsComplexQueueHandle, &receivedColor, 0, 0);
 //	FrontLightsSet(&receivedColor);
+
+ */
 }
 
 void ledAllRed(void){

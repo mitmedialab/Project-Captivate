@@ -173,8 +173,8 @@ void MasterThreadTask(void *argument) {
 			sendColor.colors_indiv.right_front_g = 55;
 			sendColor.colors_indiv.left_top_g = 55;
 			sendColor.colors_indiv.right_top_g = 55;
-			sendColor.colors_indiv.left_side_g = 55;
-			sendColor.colors_indiv.right_side_g = 55;
+			sendColor.colors_indiv.left_side_b = 55;
+			sendColor.colors_indiv.right_side_b = 55;
 
 			//uint32_t timeNowMs = HAL_GetTick();
 			//TickType_t ticker = xTaskGetTickCountFromISR();
@@ -183,15 +183,15 @@ void MasterThreadTask(void *argument) {
 
 			    //2392 gives us 10min10sec of gradient before red; 2x too long
 
-			    osDelay(1275); //2352 = 10min*60*1000 (ms) / 255.  0 to 255 over 10 min.
+			    osDelay(1200); //2352 = 10min*60*1000 (ms) / 255.  0 to 255 over 10 min.
 
 			    if (sendColor.colors_indiv.left_front_g < 255) {
 			    	sendColor.colors_indiv.left_front_g += 1;
 			    	sendColor.colors_indiv.right_front_g += 1;
 			    	sendColor.colors_indiv.left_top_g += 1;
 			    	sendColor.colors_indiv.right_top_g += 1;
-			    	sendColor.colors_indiv.left_side_g += 1;
-			    	sendColor.colors_indiv.right_side_g += 1;
+			    	sendColor.colors_indiv.left_side_b += 1;
+			    	sendColor.colors_indiv.right_side_b += 1;
 
 			    	osMessageQueuePut(lightsComplexQueueHandle, &sendColor, 0, 0);
 			    }
