@@ -57,115 +57,18 @@ struct thermopilePackagedData	thermMsgReceived;
  * @param  None
  * @retval None
  */
-uint8_t logEnabled = 0;
+
+//starts thermopile thread after 1 second, packetizes data from thermopile thread and sends it to interproc comms
 void MasterThreadTask(void *argument)
 {
+	osDelay(1000);
+	osThreadFlagsSet(thermopileTaskHandle, 0x00000001U);
 
-	uint8_t skipPeriod = 0;
-
-	while(1)
-	{
-		// check if the queue has a new message (a command to start/stop logging)
-		//   .... this function waits forever
-		osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, osWaitForever);
-
-//		togLogMessageReceived.status = 1;
-//		togLogMessageReceived.logStatus = 1;
-//		togLogMessageReceived.blinkEnabled = 1;
-//		togLogMessageReceived.tempEnabled = 1;
-//		togLogMessageReceived.intertialEnabled = 1;
-//		togLogMessageReceived.positionEnabled = 1;
-
-		// if the received command enables logging
-		//    otherwise, skip if statement and wait for an enabling command
-		if(togLogMessageReceived.logStatus == ENABLE_LOG)
-		{
-			uint8_t logEnabled = 0;
-
-			// keep record of this message so new message doesn't overwrite
-			memcpy(&prevLogMessage, &togLogMessageReceived, sizeof(struct LogMessage));
-
-			// start all sensor subsystems
-			if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-			{
-				osThreadFlagsSet(thermopileTaskHandle, 0x00000001U);
-			}
-
-			while(1)
-			{
-				/**********************************************************************************/
-				/*.... WAIT UNTIL DATA PACKET IS READY.....*/
-				/**********************************************************************************/
-
-				if(togLogMessageReceived.tempEnabled == SENSOR_ENABLE)
-				{
-					if( osOK != osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, 1000)){
-						skipPeriod = 1;
-					}
-				}
-
-				if(skipPeriod != 1){
-					packetizeData(&sensorPacket, &thermMsgReceived);
-
-				/**********************************************************************************/
-				/*.... SEND PACKET TO MAIN MCU (STM32WB) .....*/
-				/**********************************************************************************/
-
-					osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
-
-					// assert interrupt pin to notify master a packet is waiting
-					HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_SET);
-
-				}else{
-					skipPeriod = 0;
-				}
-
-				/**********************************************************************************/
-				/*.... CHECK IF NODE HAS BEEN REQUESTED TO STOP .....*/
-				/**********************************************************************************/
-
-				// check if the queue has a new message (potentially a command to stop logging)
-				//   otherwise, timeout
-				if(osMessageQueueGet(togLoggingQueueHandle, &togLogMessageReceived, 0U, 0) == osOK)
-				{
-
-					// disable threads
-					if(togLogMessageReceived.status == DISABLE_SENSING){
-
-						if(prevLogMessage.tempEnabled == SENSOR_ENABLE)
-						{
-							osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
-						}
-
-						// give enough time for threads to finish and recognize termination
-						osDelay(500);
-
-						// empty queues
-						osMessageQueueReset(sendMsgToMainQueueHandle);
-
-						// break out of first while loop and wait until told to start logging again
-						break;
-					}
-				}
-			}
+	while(1) {
+		if(osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, 0) == osOK){
+			packetizeData(&sensorPacket, &thermMsgReceived);
+			osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
 		}
-
-		else if( logEnabled==1 && togLogMessageReceived.logStatus == DISABLE_LOG)
-		{
-			logEnabled = 0;
-
-			if(prevLogMessage.tempEnabled == SENSOR_ENABLE)
-			{
-				osThreadFlagsSet(thermopileTaskHandle, 0x00000002U);
-			}
-
-			// give enough time for threads to finish and recognize termination
-			osDelay(500);
-
-			// empty queues
-			osMessageQueueReset(sendMsgToMainQueueHandle);
-		}
-
 	}
 }
 

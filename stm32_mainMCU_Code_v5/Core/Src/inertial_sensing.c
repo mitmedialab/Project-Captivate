@@ -17,6 +17,7 @@
 #include "inter_processor_comms.h"
 #include "captivate_config.h"
 #include "String.h"
+#include "i2c.h"
 
 /* typedef -----------------------------------------------------------*/
 
@@ -131,7 +132,7 @@ struct inertialData inertialPacket;
 //}
 
 
-
+uint8_t numcalls=0;
 
 GenericThreeAxisPayload *accData;
 GenericThreeAxisPayload *gyroData;
@@ -140,10 +141,12 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 	inertialEnabled = 1;
 #ifndef DONGLE_CODE
 	IMU_begin(BNO080_ADDRESS, IMU_INT_Pin, IMU_INT_GPIO_Port);
+	//Wait and then disable interrupt
 #endif
 
 	uint32_t evt = 0;
 	osStatus_t status = osErrorTimeout;
+	uint8_t tries = 0;
 
 	while (1) {
 
@@ -159,12 +162,16 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 		IMU_enableAccelerometer(20);
 //		IMU_enableRawAccelerometer(10); // outputs at ((input)/1000) period
 		IMU_enableGyro(10);
+//		IMU_enableGyro(20);
 //		IMU_enableRawGyro(10); // outputs at ((input)/1000) period
 
+		//HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 
 		// give some time for things to buffer
 		// TODO: remove this to see if it still works fine
-//		osDelay(400);
+		osDelay(400);
+
+
 
 		while (1) {
 
@@ -183,12 +190,51 @@ void InertialSensingTask_Accel_Gyro(void *argument) {
 			}
 
 			// grab packets
-			if(status != osOK){
+			/*if(status != osOK){
 			    osDelay(10);
 
 				if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin)
 						== GPIO_PIN_RESET)
 					IMU_dataAvailable();
+			}*/
+
+			//we enter here if we have no data to process;
+			//no need to exit until we succeed
+			if(status != osOK){
+
+				//try a bunch, if we still fail
+				for (tries=0; tries<100; tries++){
+					if (HAL_GPIO_ReadPin(IMU_INT_GPIO_Port, IMU_INT_Pin) == GPIO_PIN_RESET){
+								IMU_dataAvailable();
+								break;
+					}
+					osDelay(10);
+				}
+
+				if (tries>=99){
+					//Deinit, init, IMU_reset, 2x
+					for (tries=0; tries<2; tries++){
+						osSemaphoreAcquire(messageI2C_LockHandle, osWaitForever);
+						HAL_I2C_DeInit(&hi2c1);
+						HAL_I2C_Init(&hi2c1);
+
+						//HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+						osSemaphoreRelease(messageI2C_LockHandle);
+						osDelay(200);
+						numcalls = 0;
+						IMU_softReset();
+						osMessageQueueReset(accSampleQueueHandle);
+						osMessageQueueReset(gyroSampleQueueHandle);
+						osDelay(200);
+						//HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+						IMU_enableAccelerometer(20);
+						IMU_enableGyro(10);
+
+
+					}
+				}
+
 			}
 
 			status = osErrorTimeout;
@@ -297,8 +343,10 @@ void packAndSend(uint8_t dataType, GenericThreeAxisPayload *data){
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	// if interrupt is triggered, sample!
 	// todo: only do when inertial measurements are enabled?
-	if ((GPIO_Pin == IMU_INT_Pin) && (inertialEnabled == 1)) {
+	if ((GPIO_Pin == IMU_INT_Pin) && numcalls++<8){ //(inertialEnabled == 1)) {
 		IMU_dataAvailable();
+	}else {
+		numcalls=10;
 	}
 }
 

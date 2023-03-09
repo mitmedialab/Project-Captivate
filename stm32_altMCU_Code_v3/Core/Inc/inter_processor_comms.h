@@ -39,8 +39,9 @@ osSemaphoreId_t interprocessMessageLockSem;
 /* Functions Definition ------------------------------------------------------*/
 void SendPacketToMainTask(void *argument);
 //void ReceivePacketFromMainTask(void *argument);
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle);
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle);
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c);
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode);
 
 /*************************************************************
  *

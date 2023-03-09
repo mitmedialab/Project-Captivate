@@ -56,28 +56,15 @@
 
 
 
-//uint32_t ADC_Data[600] = {0};
 struct thermopilePackagedData tempData;
-//volatile uint16_t test = 0;
-
 struct adcThermopileData buffer = {0};
-//volatile uint16_t buffer_2[3] = {0};
-//volatile uint32_t avgVal = 0;
 volatile uint16_t start;
 volatile uint16_t stop;
-//uint16_t diff;
-
 volatile uint32_t evt = 0;
 
 void ThermopileTask(void *argument){
 
   Setup_LMP91051();
-
-  //HAL_ADC_Start(&hadc1);
-//  HAL_ADC_Start(&hadc1);
-//  HAL_ADC_Start_DMA(&hadc1, temp_ADC_Data, 600);
-
-//  sensorChoice sensor = nose;
 
   uint8_t index_thermopile = 0;
   uint32_t avgVal = 0;
@@ -85,10 +72,9 @@ void ThermopileTask(void *argument){
 
   while(1){
 
-	  	/********* WAIT FOR START CONDITION FROM MASTER THREAD ************************/
 		evt = osThreadFlagsWait (0x00000001U, osFlagsWaitAny, osWaitForever);
-//	  evt = 0x00000001U;
-	    // if signal was received successfully, start blink task
+
+		// if signal was received successfully, start blink task
 		if (evt == 0x00000001U)  {
 
 			// start timer for ADC to sample at 20Hz (10Hz each channel)
@@ -106,12 +92,7 @@ void ThermopileTask(void *argument){
 					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 12);
 
 					// wait for data to be received from nose
-					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
-
-					// break if told to stop by master thread
-					if( (evt & 0x00000002U) == 0x00000002U){
-						break;
-					}
+					evt = osThreadFlagsWait (0x00000004U, osFlagsWaitAny, osWaitForever);
 
 					// turn off PGA's to save power
 					TurnOff_LMP91051();
@@ -134,12 +115,7 @@ void ThermopileTask(void *argument){
 					HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &buffer, 12);
 
 					// wait for data to be received from temple
-					evt = osThreadFlagsWait (0x00000006U, osFlagsWaitAny, osWaitForever);
-
-					// break if told to stop by master thread
-					if( (evt & 0x00000002U) == 0x00000002U){
-						break;
-					}
+					evt = osThreadFlagsWait (0x00000004U, osFlagsWaitAny, osWaitForever);
 
 					// turn off PGA's to save power
 					TurnOff_LMP91051();
@@ -163,66 +139,33 @@ void ThermopileTask(void *argument){
 					if((delta_time > 0) && (delta_time < SAMPLING_DELAY)){
 						osDelay(delta_time);
 					}
-				}
-
-				if( (evt & 0x00000002U) == 0x00000002U){
-					break;
-				}
-				// if not told to shut down sampling
-				else{
-					// send data to master thread
-					osMessageQueuePut(thermMsgQueueHandle, &tempData, 0U, 0);
-				}
 			}
 
-			// stop timer and put thread in idle if signal was reset
-			if( (evt & 0x00000002U) == 0x00000002U){
-				HAL_ADC_Stop_DMA(&hadc1);
-				HAL_ADC_Stop(&hadc1);
-				HAL_TIM_Base_Stop(&htim6);
+			// send data to master thread
+			osMessageQueuePut(thermMsgQueueHandle, &tempData, 0U, 0);
 
-				// empty queue
-				osMessageQueueReset(thermMsgQueueHandle);
-
-				// clear any flags
-				osThreadFlagsClear(0x0000000EU);
-
-				// turn off PGA's to save power
-				TurnOff_LMP91051();
-
-				// exit and wait for another start condition
-//				break;
-			}
 		}
 	}
+  }
 }
 
-volatile uint8_t complete = 0;
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	complete++;
-
 	// notify ThermopileTask that conversion is complete
 	while( HAL_ADC_Stop(&hadc1) != HAL_OK);
 	osThreadFlagsSet(thermopileTaskHandle, 0x00000004U);
-
 }
 
 //volatile uint8_t half = 0;
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	//half++;
-//	memcpy(blinkMsgBuffer_1.data, &(blink_buffer), 100);
-//	blinkMsgBuffer_1.tick_ms = HAL_GetTick();
-//	blink_ptr = &blink_buffer;
-//	osThreadFlagsSet(blinkTaskHandle, 0x00000004U);
 
 }
 
-volatile uint8_t i = 0;
+
 void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
 {
-  i++;
+
 }
 
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
