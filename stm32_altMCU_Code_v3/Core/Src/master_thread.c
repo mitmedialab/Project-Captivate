@@ -65,7 +65,7 @@ void MasterThreadTask(void *argument)
 	osThreadFlagsSet(thermopileTaskHandle, 0x00000001U);
 
 	while(1) {
-		if(osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, 0) == osOK){
+		if(osMessageQueueGet(thermMsgQueueHandle, &thermMsgReceived, 0U, 5000) == osOK){
 			packetizeData(&sensorPacket, &thermMsgReceived);
 			osMessageQueuePut(sendMsgToMainQueueHandle, (void *) &sensorPacket, 0U, 0);
 		}

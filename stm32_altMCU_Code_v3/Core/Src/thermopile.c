@@ -198,7 +198,7 @@ void SwitchTemperatureSensor(sensorChoice sense){
 
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi3, packet, 2, 1);
-	HAL_Delay(1);
+	osDelay(1);
 	HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 
 //	packet[0] = LMP91051_DAC_REG;
@@ -231,7 +231,7 @@ void Setup_LMP91051(void){
 //  packet[1] = 140; // shift signal down by -33.8mV (159 - 128) during 2nd stage amp
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi3, packet, 2, 1);
-  HAL_Delay(2);
+  osDelay(2);
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 
   TurnOff_LMP91051();
@@ -243,7 +243,7 @@ void TurnOff_LMP91051(void){
   packet[1] = 0; //todo: add blocking semaphore so no LED conflict
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi3, packet, 2, 1);
-  HAL_Delay(2);
+  osDelay(2);
   HAL_GPIO_WritePin(TP_SS_GPIO_Port, TP_SS_Pin, GPIO_PIN_SET);
 }
 

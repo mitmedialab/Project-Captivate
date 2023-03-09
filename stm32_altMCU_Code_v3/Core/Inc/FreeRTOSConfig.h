@@ -117,6 +117,9 @@ to exclude the API function. */
 function. */
 #define configLIBRARY_LOWEST_INTERRUPT_PRIORITY   15
 
+#define configRECORD_STACK_HIGH_ADDRESS 1
+#define configCHECK_FOR_STACK_OVERFLOW 1
+
 /* The highest interrupt priority that can be used by any interrupt service
 routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
 INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER

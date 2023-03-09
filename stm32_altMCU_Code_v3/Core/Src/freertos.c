@@ -105,22 +105,22 @@ void MX_FREERTOS_Init(void) {
     const osThreadAttr_t thermopileTask_attributes = {
     .name = "thermopileTask",
     .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 256
+    .stack_size = 512*2
   };
     thermopileTaskHandle = osThreadNew(ThermopileTask, NULL, &thermopileTask_attributes);
 
 //
   const osThreadAttr_t masterThreadTask_attributes = {
         .name = "masterThreadTask",
-        .priority = (osPriority_t) osPriorityNormal,
-        .stack_size = 256
+        .priority = (osPriority_t) osPriorityLow,
+        .stack_size = 512*2
       };
   masterThreadTaskHandle = osThreadNew(MasterThreadTask, NULL, &masterThreadTask_attributes);
 //
   const osThreadAttr_t sendMsgToMainTask_attributes = {
           .name = "sendMsgToMainTask",
           .priority = (osPriority_t) osPriorityNormal,
-          .stack_size = 128
+          .stack_size = 512*2
         };
   sendMsgToMainTaskHandle = osThreadNew(SendPacketToMainTask, NULL, &sendMsgToMainTask_attributes);
 

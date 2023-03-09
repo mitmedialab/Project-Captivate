@@ -29,18 +29,35 @@ void SendPacketToMainTask(void *argument){
 	while(1){
 
 		//try to get packetized data
-		if(osMessageQueueGet(sendMsgToMainQueueHandle, &packetReceived, 0U, 10000) == osOK) {
+		if(osMessageQueueGet(sendMsgToMainQueueHandle, &packetReceived, 0U, 60000) == osOK) {
 
 			//if successful, assert interrupt pin to notify master a packet is waiting
 			HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_SET);
 
 			// wait for transmit to succeed
-			osThreadFlagsWait(0x00000001U, osFlagsWaitAny, osWaitForever);
+			if (osThreadFlagsWait(0x00000001U, osFlagsWaitAny, 30000) == osFlagsErrorTimeout){
+				HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_RESET);
+				HAL_I2C_DisableListen_IT(&hi2c1);
+				HAL_I2C_DeInit(&hi2c1);
+				osDelay(300);
+				HAL_I2C_Init(&hi2c1);
+				HAL_I2C_EnableListen_IT(&hi2c1);
+
+			}
+
+		}else{
+
+			//non-standard operation; no events for 60 sec.
+			HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_RESET);
+			HAL_I2C_DisableListen_IT(&hi2c1);
+			osDelay(300);
+			HAL_I2C_EnableListen_IT(&hi2c1);
 
 		}
 
 		HAL_GPIO_WritePin(EXPANSION_INT_GPIO_Port, EXPANSION_INT_Pin, GPIO_PIN_RESET);
 		osDelay(10);
+
 
 	}
 }
